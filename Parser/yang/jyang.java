@@ -55,7 +55,7 @@ public class jyang {
 					case 'n':
 						break;
 					default:
-						System.err.println("Iillegal option " + flag);
+						System.err.println("Illegal option " + flag);
 						System.exit(-1);
 						break;
 					}
@@ -190,6 +190,8 @@ public class jyang {
 					if (format.compareTo("yin") == 0){
 					Yang2Yin y2y = new Yang2Yin(yangspec, paths,out);
 					}
+					else
+						System.err.println("only yin format enabled (now)");
 				}
 				
 				
