@@ -1,0 +1,23 @@
+<project name="yang" default="yang" basedir=".">
+
+  <property name="javacc.home" value="C:\Program Files\Java\javacc-4.0\bin"/>
+
+  <target name="yang" description="Builds example 'yang'">
+    <!--delete dir="yang"/ -->
+    <mkdir dir="yang"/> 
+    <copy file="yang.jjt" todir="yang"/>
+    <jjtree target="yang.jjt" outputdirectory="yang" javacchome="${javacc.home}"/>
+    <javacc target="yang/yang.jj" outputdirectory="yang" javacchome="${javacc.home}"/>
+    <javac deprecation="false" srcdir="yang" destdir="yang"/>
+    <echo message="*******"/>
+    <echo message="******* Now cd into the yang directory and run 'java yang' ******"/>
+    <echo message="*******"/>
+  </target>
+
+
+  <target name="clean" description="Cleans up any example directories">
+    <delete dir="yang"/>
+  </target>
+    
+
+</project>
