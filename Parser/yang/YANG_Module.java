@@ -19,7 +19,6 @@
  */
 
 import java.util.*;
-import java.io.*;
 
 public class YANG_Module extends YANG_Specification {
 

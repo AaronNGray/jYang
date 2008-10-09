@@ -96,6 +96,7 @@ public abstract class YANG_Specification extends SimpleNode {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void check(String[] p, Vector<String> checkeds, YangContext c)
 			throws YangParserException {
 
@@ -127,7 +128,6 @@ public abstract class YANG_Specification extends SimpleNode {
 				YANG_Module module = es.nextElement();
 				String importedmodulename = module.getName();
 				if (!checkeds.contains(importedmodulename)) {
-					YangContext ctxt = context.clone();
 					Vector<String> cks = (Vector<String>) checkeds.clone();
 					module.check(p, cks);
 				}
@@ -137,7 +137,6 @@ public abstract class YANG_Specification extends SimpleNode {
 				YANG_SubModule submodule = es.nextElement();
 				String includedsubmodulename = submodule.getName();
 				if (!checkeds.contains(includedsubmodulename)) {
-					YangContext ctxt = context.clone();
 					Vector<String> cks = (Vector<String>) checkeds.clone();
 					submodule.check(p, cks);
 				}

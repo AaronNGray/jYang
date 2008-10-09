@@ -290,11 +290,12 @@ public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
 							+ " not found in list " + getList());
 			}
 		}
+		/*
 		for (Enumeration<YANG_Unique> eu = getUniques().elements(); eu
 				.hasMoreElements();) {
 			YANG_Unique unique = eu.nextElement();
 		}
-
+		 */
 		if (datadefs.size() == 0)
 			throw new YangParserException("@" + getLine() + ":" + getCol()
 					+ ":no data in list " + list);

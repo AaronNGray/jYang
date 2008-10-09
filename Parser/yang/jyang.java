@@ -166,7 +166,7 @@ public class jyang {
 					System.err.println("The path : " + paths[pos]
 							+ " cannot be read, ignore it.");
 				else if (paths[pos].compareTo(".") != 0) // We will force the
-															// . at the end
+					// . at the end
 					// TODO force it if it is not given in YANGPAT
 					pathsHT.put(paths[pos], paths[pos]);
 			} catch (NullPointerException np) {
@@ -204,20 +204,18 @@ public class jyang {
 				YANG_Specification yangspec = yang.Start();
 				Vector<String> checkeds = new Vector<String>();
 				yangspec.check(paths, checkeds);
-				
-				if (format != null){
-					if (format.compareTo("yin") == 0){
-					Yang2Yin y2y = new Yang2Yin(yangspec, paths,out);
-					}
-					else
+
+				if (format != null) {
+					if (format.compareTo("yin") == 0) {
+						new Yang2Yin(yangspec, paths, out);
+					} else
 						System.err.println("only yin format enabled (now)");
 				}
-				
-				
+
 			} catch (ParseException pe) {
 				System.err.println(pe.getMessage());
 				System.exit(-1);
-			} 
+			}
 		}
 	}
 }

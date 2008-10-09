@@ -25,7 +25,7 @@ public class YANG_StringRestriction extends SimpleNode {
 	private YANG_Length length = null;
 	private Vector<YANG_Pattern> patterns = new Vector<YANG_Pattern>();
 
-	private boolean b_length = false, b_pattern = false;
+	private boolean b_length = false;
 
 	public YANG_StringRestriction(int id) {
 		super(id);

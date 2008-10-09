@@ -186,18 +186,7 @@ public class Yang2Yin {
 				+ "</text>\n" + prefix + "</description>";
 	}
 
-	private String leftAlign(String d, String p) {
-
-		System.out.println(d);
-		p += "\n";
-		CharSequence prefix = p.subSequence(0, p.length());
-		String CRLF = new String("\n");
-		CharSequence crlf = CRLF.subSequence(0, CRLF.length());
-
-		System.out.println(d.replace(crlf, prefix));
-
-		return d.replace(crlf, prefix);
-	}
+	
 
 	private String gReference(YANG_Reference ref, String prefix) {
 		return prefix + "<reference info=\"" + unquote(ref.getReference())

@@ -17,7 +17,7 @@
     along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-import java.util.*;
+
 
 public class YANG_Default extends SimpleNode {
 
