@@ -39,7 +39,7 @@
 %%
 \RRauthor{% les auteurs
  % Premier auteur, avec une note
-Emmanuel Nataf\thanks{Ma\^itre de conf\'erence - Universit\'e Nancy2}%
+Emmanuel Nataf\thanks{Ma\^itre de conf\'erences - Universit\'e Nancy2}%
   % note partag\'ee (optionnelle)
   \thanks[sfn]{Madynes INRIA project}%
  % \and entre chaque auteur s'il y en a plusieurs
@@ -54,24 +54,28 @@ Olivier Festor\thanks{Directeur de Recherche INRIA}%
 %%
 \RRtitle{jYang : un analyseur yang en java}
 %% English title
-\RRetitle{jYang : yang java parser}
+\RRetitle{jYang : A \y\ parser in java}
 %%
 \titlehead{jYang}
 %%
 %\RRnote{This is a note}
 %\RRnote{This is a second note}
 %%
-\RRresume{Dans le contexte du groupe  de travail r\'eseaux de l'IETF, le
-protocole   de   configuration   NETCONF   permet  de   manipuler   la
-configuration  de mat\'eriel  r\'eseau. YANG  est le  langage en  cours de
-standardisation permettant de sp\'ecifier des configurations. Ce rapport
-d\'ecrit un analyseur syntaxique et s\'emantique de sp\'ecifications yang}
+\RRresume{Dans  le contexte  du  groupe de  travail administration  et
+op\'eration  des r\'eseaux  de l'IETF,  le protocole  de configuration
+\nc\   a   été   d\'evelopp\'e   pour   manipuler   la   configuration
+d'\'equipement   r\'eseau.    \y\  est   le   langage   en  cours   de
+standardisation dans  ce groupe permettant de  sp\'ecifier des modèles
+de donn\'ees  utilisable dans l'approche \nc.  Ce  rapport d\'ecrit la
+conc\'eption et la r\'ealisation  en java d'un analyseur syntaxique et
+s\'emantique de sp\'ecifications yang}
 
-\RRabstract{The NETCONF configuration protocol of the IETF Network
-Working Group provides mechanisms to maniupulate the configuration of
-network devices. YANG is the language on the standard track for
-specify such configuration.  This report describes the use of a yang
-syntactic and semantic parser.}
+\RRabstract{The  NETCONF configuration  protocol of  the  IETF Network
+Working Group  provides mechanisms to manipulate  the configuration of
+network devices. YANG is the language currently under consideration in
+the IETF to specify the data models  to be used in \nc\ .  This report
+describes the design and development  of a syntax and semantics parser for
+\y\ in java.}
 %%
 \RRmotcle{parser, java, yang, netconf}
 \RRkeyword{parser, java, yang, netconf}
@@ -112,45 +116,46 @@ syntactic and semantic parser.}
 \section{Introduction}
 
 It is frequent  in the network management world that  a protocol and a
-data    model   are    separatly   but    conjointly    designed,   as
-SNMP\cite{rfc1157}             protocol             and            its
-SMI\cite{rfc1155},CO\-PS\cite{rfc2748}  and  SP\-PI\cite{rfc3159},  or
+data model are  separated even if jointly designed,  as it was already
+the case in the  SNMP\cite{rfc1157} protocol and its SMI\cite{rfc1155}
+data   modeling,CO\-PS\cite{rfc2748}   and  SP\-PI\cite{rfc3159},   or
 SMI\-nG\cite{rfc3780} (GDMO and CMIS or  WBEM and CIM outside the IETF
 scope).
 
-\nc\  \cite{rfc4741} is  the IETF  standard from  the  netconf working
-group for  the configuration protocol  of network devices.  The netmod
+\nc\ \cite{rfc4741} is the IETF standard that emerged from the netconf
+working     group    to     configure     network    devices.      The
+netmod\footnote{http://www.ietf.org/html.charters/netmod-charter.html}
 working  group defines  \y\ as  a candidate  language to  specify data
-models of  values carried by \nc.  This report describe  a YANG parser
+models of values  carried by \nc.  This report  describes a YANG parser
 called  \jyang\ that provides  a syntaxic  and semantic  validation of
 YANG specifications (called modules or sub-modules).
 
-This report  gives first a short  description of \nc\  where some parts
-are referenced  by \y. The  part \ref{yang} details  language concepts
-and the last part shows the implementation of \jyang.
+This  report first  provides a  short description  of \nc\  where some
+parts  are referenced  by  \y.  The part  \ref{yang}  details the  \y\
+language  concepts   and  the  last   part  details  the   design  and
+implementation of the \jyang parser.
 
 
 \section{NETCONF protocol}
 
-The NETCONF is a client/server  protocol where the server is a network
+The \nc\ is a client/server  protocol where the server is a network
 device  and the  client a  management framework  that  runs management
-applications. Protocol requests  and responses focuse on configuration
-manipulation as  getting the current configuration,  update, create or
-delete it  or some  part of  it. Configuration are  modeled by  an XML
+applications. Protocol requests  and responses focus on configuration
+manipulation such as  getting the current configuration,  update, create or
+delete it  or some  part of  it. Configurations are  represented in XML
 document that contains two sort of data :
 \begin{itemize}
 \item
-configuration  data   that  could  be  writable   and  that  described
-configuration parameter of the NETCONF agent.
+configuration  data   that  is  writable   and  that  describes
+configuration parameters of the \nc\  agent.
 \item
-state data that are read-only and that described operational data such
+state data that is read-only and that describes operational data such
 as counter or statistics.
 \end{itemize}
 
-The  figure \ref{netconfarchi}  from
-\cite{rfc4741}  shows  the   protocol  architecture  of  NETCONF.  The
-protocol mainly defines operations  and how they
-are carried by rpc mechanisms.
+Figure  \ref{netconfarchi}  extracted  from \cite{rfc4741}  shows  the
+layered protocol architecture of NETCONF.  The protocol mainly defines
+operations and how they are carried by rpc mechanisms.
 
 \begin{figure}[htbp]
 \begin{center}
@@ -167,11 +172,11 @@ relationship with the transport protocol used with NETCONF.
 
 \subsection{RPC}
 
-The Remote  Procedure Call  is described by  two XML\cite{Bray:00:EML}
-elements  :  {\tt  <rpc>}   for  request  and  {\tt  <rpc-reply>}  for
-response. This  latter could contain a {\tt  <rpc-error>} element when
-an error  occurs during  the process of  a request inside  the NETCONF
-agent.
+The Remote  Procedure Call  on wich the  \nc\ operations are  built is
+described  by two  XML\cite{Bray:00:EML}  elements :  {\tt <rpc>}  for
+requests and {\tt <rpc-reply>} for responses.  This latter can contain
+a {\tt <rpc-error>} element when an error occurs during the process of
+a request inside the NETCONF agent.
 
 \subsection{Operations}
 
@@ -179,7 +184,7 @@ Basic operations are defined as XML elements :
 
 \begin{itemize}
 \item
-{\tt <get>} : to retrieve all or part of data (configuration and state);
+{\tt <get>} : to retrieve all or part of a configuration;
 \item
 {\tt <get-config>} : to retrieve all or part of configuration data;
 \item
@@ -202,27 +207,28 @@ operations in progress.
 \end{itemize}
 
 All these operations are in  {\tt <rpc>} elements. A common element of
-getting, edit or delete operations is a filter element ({\tt <filter>}
+get, edit  or delete operations  is a filter element  ({\tt <filter>})
 that allows some filtering on data by using the hierarchical structure
 of XML documents.
 
 \subsection{Capabilities}
 
 Accepted operations (basics and  news operations) and data are defined
-by  capabilities.   A  \nc\  agent   could  provides  more   than  one
-capabilities and an unique URI reference each capabilities.
+by capabilities.  A \nc\ agent  can provide more than one capabilities
+and  an  unique  URI  reference each  capabilities.  Capabilities  are
+excanged between entities at session establishement time.
 
 
 \section{\y}
 \label{yang}
 
-The  Internet-Draft \y\cite{yang01}  defines  \y\ as  a data  modeling
-language  used to  describe \nc\  configuration and  state  data. \nc\
-standard  does not  define such  language  for its  content layer  (cf
+The  \y\ Internet-Draft\cite{yang01}  defines \y\  as a  data modeling
+language used to describe \nc\  configuration and state data. The \nc\
+standard does  not define  such a language  for its content  layer (cf
 fig.\ref{netconfarchi}).       The      netmod      working      group
 charter\footnote{http://www.ietf.org/html.charters/netmod-charter.html}
-explains why  a language more hight  level that XML is  needed (An old
-draft          could           be          seen          at          :
+explains why  a more hight  level that XML language  is  needed (An old
+draft          can           be          seen          at          :
 http://www.yang-central.org/twiki/pub/Main/Yang\-Do\-cu\-ments/draft-lengyel-why-yang-00.txt).
 
 
@@ -233,15 +239,14 @@ that contain data definitions.
 
 \subsection{\y\ module and submodule headers}
 
-\y\  module  and submodule  have  some  headers  that are  informations
+\y\  modules  and submodules  have  some  headers  that are  informations
 related to the module or submodule itself.
 
 \subsubsection{Module header}
 \label{spec:module}
 
-A module  could have two or three  headers. It must have  a {\tt name space}
-and a  {\tt prefix}.  For
-example :
+A module has mandatory headers and one optional header. The mandatory
+ones are the {\tt name space} and {\tt prefix}.  For example :
 
 \begin{verbatim}
 module router {
@@ -250,14 +255,14 @@ module router {
 ...
 \end{verbatim}
 
-the name space is for all data defined in the module and the prefix
-could be used inside the module (when confusion is possible) to refer
-somes data. A \y\ {\tt version} header is optional.
+The name  space is for all data  defined in the module  and the prefix
+could be used inside the  module (when confusion is possible) to refer
+some data. A \y\ {\tt version} header is optional.
 
 \subsubsection{Submodule header}
 \label{spec:submodule}
 
-A submodule could have one or two headers. It must have a {\tt belongs
+A submodule has one or two headers. It must have a {\tt belongs
 to} statement and may have the \y\ {\tt version} statement. A
 submodule belongs to one and only one module. For example :
 
@@ -273,17 +278,18 @@ submodule routing-policies {
 Meta  statements  give some  general  information  on  the module  or
 submodule.  These  informations  concern  the  organization  that
 defines the module, the contact,  the description and the reference of
-the  \y\ specification.   There  could be at most four meta statement.
-A meta statement of a  specification must not be dupplicated (i.e. two
+the  \y\ specification.   There  could be at most four meta statements.
+A meta statement of a  specification must not be duplicated (i.e. two
 contact meta statement in a module).
 
 \subsubsection{Yang linkage statements}
 
-A  yang specification  could  have import  and  include statements.  
+A  yang  specification  can   have  {\tt  import}  and  {\tt  include}
+statements.
 
 \paragraph{Import statement}
 
-The  syntax  allows  to  refer     module  and    associated
+The syntax  allows to identify an  other module and associate  to it a
 prefix. For example :
 
 \begin{verbatim}
@@ -293,10 +299,10 @@ import yang-types { prefix yang;}
 ...
 \end{verbatim}
 
-The module {\tt yang-types} is imported  so any type or data defined in
-this module  can be used in the  {\tt router} module. In  order to use
-them without conflict, the prefix {\tt yang} must be used. For example
-(again in the  {\tt router} module):
+The module {\tt yang-types} is imported so that any type or data
+defined in this module can be used in the {\tt router} module. In
+order to use them without conflict, the prefix {\tt yang} must be
+used. For example (again in the {\tt router} module):
 
 \begin{verbatim}
 ...
@@ -307,19 +313,18 @@ leaf network {
 \end{verbatim}
 
 where {\tt counter32}  is defined in the {\tt  yang-types} module. The
-prefix  used must  be the  same than  this one  defined in  the prefix
+prefix  used must  be the  same than  the one  defined in  the prefix
 statement of the imported  module (see section \ref{spec:module}). 
 
- There  could be  several import  statements but  each prefix  must be
-unique in the module.  The prefix defined in a module could be used in
-this module. A  submodule could import modules but  no submodule could
-be imported (just module could be).
+ There can be several import statements but each prefix must be unique
+in the  module.  The prefix  defined in a  module can be used  in this
+module. A submodule can import modules but no submodules.
 
 
 \paragraph{Include statement}
 \label{spec:include}
 
-The syntax allows to refer submodule. For example :
+The syntax allows to refer to a submodule. For example :
 
 \begin{verbatim}
 module router {
@@ -328,36 +333,33 @@ include routing-policies;
 ...
 \end{verbatim}
 
-The module {\tt router} include the submodule {\tt routing-policies}
-so any type or data defined in the submodule could be used in the
-module {\tt router}.
+The {\tt router} module  includes the {\tt routing-policies} submodule
+so any type or  data defined in the submodule can be  used in that {\tt
+router} module.
 
-An  included  submodule must  have  a  belongs-to  statement with  the
-reference of the including module (see section \ref{spec:submodule}).  A
-submodule could include  other submodules but they must  all belong to
+An included submodule must have  a {\tt belongs-to} statement with the
+reference of the  including module (see section \ref{spec:submodule}).
+A submodule can  include other submodules but they  must all belong to
 the same module.
 
 
 
 \subsubsection{Yang revision statement}
 
-Any yang specification should  contains revision statements.  There is
+Any yang specification should  contain revision statements.  There is
 one YANG\_Re\-vi\-si\-on  instance for each yang  revision statement and
-each one could contains none or one description statement.
+each one can contain none or one description statement.
 
 
 
 
-\y\ specification describes data as a tree of  nodes. 
-
-
-There are two main node types; leaf
-nodes that contains data values  and construct nodes that contains (in
-the hierarchical meaning) other nodes.
+\y\ specifications describes data as a tree of nodes. There are two
+main node types; leaf nodes that contain data values and 
+nodes that contain (in the hierarchical meaning) other nodes.
 
 \subsection{Leaf nodes}
 
-There is two classes of leaf nodes~:
+There are two classes of leaf nodes~:
 \begin{itemize}
 \item
 ({\tt leaf}) that contains one value;
@@ -368,21 +370,21 @@ type.
 
 \subsection{Construct nodes}
 
-Three construct nodes are defined : 
+Three containing nodes are defined : 
 \begin{itemize}
 \item
 {\tt container} that contains other nodes
 \item
-{\tt list} that  contains a list of other nodes  and where there could
-be several instances of  the list of nodes. A list could  be seen as a
-two  dimensions array  and a  {\tt key}  parameter of  the  {\tt list}
-allows the reference of one instance of the list of node (an entry);
+{\tt list} that contains a list  of other nodes and where there can be
+several instances of  the list of nodes.  A list can be seen  as a two
+dimensional array  and a {\tt key}  parameter of the  {\tt list} allows
+the reference of one instance of the list of node (an entry);
 \item
 {\tt  choice} that  contains  {\tt case}  constructs containing  other
 nodes;
 \item
-{\tt rpc} that contains other nodes and is used in rpc mechanism of
-\nc.
+{\tt rpc} that  contains other nodes and is used  in the rpc mechanism
+of \nc.
 \item
 {\tt  notification} that  contains other  nodes  and is  used by  \nc\
 notifications.
@@ -470,11 +472,11 @@ counter from the basic unsigned integer {\tt uint32}.
     }
 \end{verbatim}
 
-New  types can  be  used in  data  node and  in  other {\tt  typedef}.
-Depending on the  base type used in a  {\tt typedef}, some restriction
-could be  added as  a range  restriction on numerical  values or  as a
+New  types can  be used  in  data nodes  and in  other {\tt  typedef}.
+Depending on the base type  used in a {\tt typedef}, some restrictions
+can be  added like  a range  restriction on numerical  values or  as a
 string  pattern on  string derived  types. When  defining a  new type,
-restriction must only  restricts the values set of  the base type. The
+restrictions must  only restrict the value  set of the  base type. The
 new type is a sub-type of the base type.
 
 \subsection{Grouping and Uses}
@@ -483,7 +485,7 @@ new type is a sub-type of the base type.
 statements. A  grouping is a  set of definitions (leafs  and construct
 nodes, typedef, grouping\ldots) that  can be used in other definitions
 with the {\tt uses} statement.  For example below is the definition of
-the grouping  {\tt address} with two  leaf nodes and its  using in the
+the grouping  {\tt address} with two  leaf nodes and its  usage in the
 {\tt http-container} container.
 
 \noindent
@@ -535,9 +537,9 @@ container http-server {
 \subsection{Augmenting}
 
 The {\tt augment}  statement contains nodes and is  used to add theses
-nodes  to an  existing construct  node. In  the specification  below a
+nodes to  an existing  construct node. In  the specification  below, a
 container {\tt  login} contains a leaf  {\tt message} and  a list {\tt
-user} having several leaf nodes  (just {\tt name} is showed). The {\tt
+user} having several  leaf nodes (just {\tt name}  is shown). The {\tt
 augment} statement  refers to the  list {\tt user}  and add to  it the
 leaf {\tt uid}.
 
@@ -580,7 +582,7 @@ parameters added to standard ones.
 \subsection{Rpc}
 
 As  a  \nc\  agent  can  provide capabilities  with  new  rpc  embeded
-operations \y\ allows the specification of such operation. For example
+operations, \y\ allows the specification of such operation. For example
 the {\tt  activate-software} operation below defines data  sended in a
 {\tt <rpc>} message with {\tt  input} statement and data returned in a
 {\tt <rpc-reply>} with the {\tt ouput} statement.
@@ -602,10 +604,10 @@ rpc activate-software-image {
 
 \subsection{Notification}
 
-A \nc\ agent  can send notification that can be  specified with \y\ by
+A \nc\ agent can send notifications  that can be specified with \y\ by
 the  {\tt   notification}  statement.   Nodes  contained   in  a  {\tt
-specification} statement model  data sended by the agent.  Below is an
-example where the index of a failed interface will be send.
+specification} statement  model data sent  by the agent.  Below  is an
+example where the index of a failed interface will be sent.
 
 \begin{verbatim} 
 notification link-failure {
@@ -618,11 +620,11 @@ notification link-failure {
 
 \subsection{Extensions}
 
-\y\  allows the  definition of  new statements  when  specific process
+\y\ allows  the definition of  new statements when  specific processes
 requires  it. The  content of  an extention  is to  be  interpreted by
 specific  implementation.   Extensions can  be  used  anywhere in  \y\
 specification. In  the example below, the extension  {\tt c-define} is
-specified  and used  with one  name  argument (use of extension must  be
+specified and  used with one name  argument (use of  extension must be
 prefixed).
 
 \begin{verbatim}
@@ -645,18 +647,18 @@ extension c-define {
 \section{\jyang}
 
 \jyang\ is  a java  parser for \y\  specifications and  an application
-programming    interface    allowing   a    java    access   to    \y\
-specifications. 
+programming interface  offering a programmatic  access in java  to \y\
+specifications.
 
 \subsection{\y\ Parser}
 
-The    java    parser    is    build   with    JJTree    and    JavaCC
-\footnote{https://javacc.dev.java.net}  but  no  external library  are
+The    java    parser    is    built   with    JJTree    and    JavaCC
+\footnote{https://javacc.dev.java.net}  but  no  external  library  is
 needed to use it.
 
 \begin{itemize}
 \item
-lexical and syntax  check are comformant to the  ABNF grammar given in
+lexical and syntax  checks are conformant to the  ABNF grammar given in
 \cite{yang01}
 \item
 semantical check covers following features :
@@ -704,16 +706,18 @@ needed   if  import  or   include  statements   are  in   the  checked
 specification or  if the environement variable {\tt  YANG\_PATH} is not
 set.
 \item
-{\tt file [file]*} specifies files containing \y\ specification. It must be one specification ({\tt module} or {\tt submodule} for each file.
+{\tt file  [file]*} specifies  files containing \y\  specification. It
+must be  one specification ({\tt  module} or {\tt submodule}  for each
+file.
 \end{itemize}
 
 \subsubsection{Errors}
 
-Errors  in \y\  specification  are printed  on  the standard  error
-output. \jyang\ stop checking at the first lexical or syntaxical error
-but try to  check after a first semantical  error is encountered. When
-such  error is  detected the  current  bloc statement  is escaped  and
-\jyang\ pass to the next statement.
+Errors  in  \y\  specifications  are  printed on  the  standard  error
+output.  \jyang\ stops  checking at  the first  lexical  or syntaxical
+error  but   try  to   check  after  a   first  semantical   error  is
+encountered. When such an error is detected the current bloc statement
+is escaped and \jyang\ passes to the next statement.
 
 \section{\jyang\ API}
 
@@ -721,7 +725,7 @@ such  error is  detected the  current  bloc statement  is escaped  and
 
 Following sections  contain UML class  diagrams of the \jyang\  API. UML
 classes (abstacts or not) are java classes and UML interfaces are java
-interfaces.  Inheritance   relations  are  directly   mapped  to  java
+interfaces.  Inheritance   relations  are  directly   mapped  to the java
 inheritance  mechanism  (we   have  limited  multiple  inheritance  to
 interfaces only).
 
@@ -732,17 +736,17 @@ when  the cardinality  is {\tt  0-1} there  is a  getter and  a setter
 method  with  the name  of  the related  class  in  the other  related
 class. For example in figure  \ref{extension} there is a method called
 {\tt  getArgument} in the  {\tt YANG\_Extension}  java class  and this
-method return an instance of the {\tt YANG\_Argument} java class. Such
-method returns  {\tt null} if there  is no related  instance (but some
-relations  have  no  {\tt  0}  lower  bound and  so  must  not  return
-null).     There     is      also     a     method     called     {\tt
+method  returns   an  instance   of  the  {\tt   YANG\_Argument}  java
+class. Such method returns {\tt  null} if there is no related instance
+(but some relations have no {\tt 0} lower bound and so must not return
+null).      There     is     also     a     method     called     {\tt
 setArgument(YANG\_Argument)}.
 \item
-when  the cardinality  is  {\tt 0-n}  the  getter return  a java  {\tt
+when  the cardinality  is {\tt  0-n} the  getter returns  a  java {\tt
 Vector} instance containing related instances. The getter has an extra
 's', for  example in  the figure \ref{spec}  there is a  method called
-{\tt  getLinkages()} in  the {\tt  YANG\_Specification} java  class. If
-there is  no related  instance, the method  return an empty  java {\tt
+{\tt getLinkages()}  in the  {\tt YANG\_Specification} java  class. If
+there is  no related instance, the  method returns an  empty java {\tt
 Vector}. For the setter, as it  is often used during parsing, there is
 a  method   called  {\tt   add}{\sl  Class-Name}  (for   example  {\tt
 addLinkage(YANG\_Linkage}).
@@ -750,9 +754,9 @@ addLinkage(YANG\_Linkage}).
  
 \subsection{\y\ specifications}
 
-The  figure  \ref{spec}  shows  the  top level  of  java  classes  and
-interface hierarchy.  On top is the  YANG\_Specification interface that
-could be a YANG\_Module for a  yang module or a YANG\_SubModule for yang
+The figure  \ref{spec} shows the  top level of classes  and interfaces
+hierarchy.  On top is the  YANG\_Specification interface that can be a
+YANG\_Module  for  a  yang  module  or a  YANG\_SubModule  for  a  \y\
 submodule.
 
 \begin{figure}[htbp]
@@ -763,10 +767,10 @@ submodule.
 \label{spec}
 \end{figure}
 
-\subsection{Yang bodies statements}
+\subsection{Yang body statements}
 
-Data definition are in bodies statements that could be extension, type
-definition,  grouping,  data  definition,  rpc  or  notification.  The
+Data definitions  are in body  statements that can be  extension, type
+definition,  grouping,  data  definition,  rpc or  notification.   The
 YANG\_Body interface is the common  interface for all bodies in a yang
 specification.
 
@@ -775,11 +779,10 @@ specification.
 \subsubsection{Extension statement}
 \label{extension:section:global}
 
-An extension statement (fig.  \ref{extension}) could be stand alone or
+An extension  statement (fig.  \ref{extension}) can be  stand alone or
 could contains  other statement  as argument, status,  description and
-reference.  Each   of  these  statement  could  occurs   at  most  one
-time.     Their     description     are     detailed     in     section
-\ref{extension:section:detail}.
+reference.  Each  of these  statement can occur  at most  once.  Their
+description is detailed in section \ref{extension:section:detail}.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{extension.eps}
@@ -791,11 +794,10 @@ time.     Their     description     are     detailed     in     section
 \subsubsection{TypeDef statement}
 \label{typedef:section:global}
 
-A  typedef  statement  (fig.   \ref{typedef})  must  contains  a  type
-statement and  could contains  units, default, status,  description and
-reference statement. Each of these  statement could occurs at most one
-time.Their     description     are     detailed     in     section
-\ref{typedef:section:detail}.
+A  typedef  statement  (fig.    \ref{typedef})  must  contain  a  type
+statement  and can  contain  units, default,  status, description  and
+reference statement.  Each of these  statement can occur at most once.
+Their description is detailed in section \ref{typedef:section:detail}.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{typedef.eps}
@@ -807,11 +809,11 @@ time.Their     description     are     detailed     in     section
 \subsubsection{Grouping statement}
 \label{grouping:section:global}
 
-A  grouping statement (fig.  \ref{grouping}) could  be stand  alone or
-could contains  status, description  and reference statement.  Each of
-these statement  could occurs at  most one time. A  grouping statement
-could  also  contains  several  other grouping,  typedef  and  datadef
-statements. Their     description     are     detailed     in     section
+A grouping statement (fig.  \ref{grouping})  can be stand alone or can
+contain status,  description and reference statements.   Each of these
+statements can occur at most one time. A grouping statement can also
+contains  several  other  grouping,  typedef and  datadef  statements.
+Their       description       is       detailed      in       section
 \ref{grouping:section:detail}.
 \begin{figure}[htbp]
 \begin{center}
@@ -825,7 +827,7 @@ statements. Their     description     are     detailed     in     section
 \label{datadef:section:global}
 
 A datadef  statement (fig. \ref{datadef}) is either  a leaf, leaflist,
-list, choice,  anyxml, uses or augment  statement.Their description are
+list, choice,  anyxml, uses or augment  statement. Their description is
 detailed in section \ref{datadef:section:detail}.
 \begin{figure}[htbp]
 \begin{center}
@@ -837,10 +839,10 @@ detailed in section \ref{datadef:section:detail}.
 
 \subsubsection{Rpc statement}
 
-A  rpc  statement (fig. \ref{rpc}) could  be  stand  alone  or could  contains  status,
-description,  reference, input  and output  statement.  Each  of these
-statement could occurs  at most one time.  A  rpc statement could also
-contains several other grouping, typedef and datadef statements.
+A rpc  statement (fig.  \ref{rpc}) can be  stand alone or  can contain
+status, description, reference, input  and output statements.  Each of
+these statements  can occur  at most once.   A rpc statement  can also
+contain several other grouping, typedef and datadef statements.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{rpc.eps}
