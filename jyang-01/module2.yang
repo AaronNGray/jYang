@@ -1,0 +1,42 @@
+module module2 {
+
+	namespace "fr:loria:madynes:module2";
+	prefix m2;
+
+	import module3 { prefix "m3";}
+	import module4 {prefix m4;}
+
+	typedef m2int {
+		type int32 { range "0..5";}
+		default 1;
+	}
+	
+	extension monExt5 {}
+	typedef m3int{
+		type int8;
+		default 321;
+	}
+	
+	typedef m2int2 {
+		//type m3:m3int;
+		type m4:madynesInt2 { range "2..5";}
+	}
+	
+	grouping gm2 {
+	}
+	
+	typedef count { type m3:cont1;
+					default 10;}
+	
+	
+	typedef e2 {
+		type m3:e1;
+		}
+		
+	//	typedef b11 { type m3:b11;}
+		
+		typedef bin122 { type m3:bin1  { length "min..9 | 13..max";}
+		                  default "aaaaaaaaaaaaa";}
+	
+
+}

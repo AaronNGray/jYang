@@ -1,0 +1,12 @@
+submodule module1 {
+
+	belongs-to module3;
+    include module5;
+
+	typedef madynesInt {
+		type int64;
+	}
+	typedef madynesInt01 {
+		type int64;
+	}
+}
