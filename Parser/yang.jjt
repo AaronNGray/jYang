@@ -3,6 +3,7 @@ options {
   MULTI=true;
   NODE_DEFAULT_VOID=true;
   NODE_PREFIX="YANG_";
+  NODE_PACKAGE="jyang";
 }
 
 PARSER_BEGIN(yang)
