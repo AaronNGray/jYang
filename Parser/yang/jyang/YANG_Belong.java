@@ -22,7 +22,8 @@ package jyang;
 public class YANG_Belong extends SimpleNode implements YANG_Header{
 
     private String belong = null;
-
+    private YANG_Prefix prefix = null;
+    
   public YANG_Belong(int id) {
     super(id);
   }
@@ -35,12 +36,20 @@ public class YANG_Belong extends SimpleNode implements YANG_Header{
 	belong = b;
     }
     
+    public void setPrefix(YANG_Prefix p){
+    	prefix = p;
+    }
+    
     public String getBelong(){
     	return belong;
     }
 
+    public YANG_Prefix getPrefix(){
+    	return prefix;
+    }
+    
     public String toString(){
-	return "belongs-to " + belong + ";";
+	return "belongs-to " + belong + "\n{ " + prefix + " }"; 
     }
 
 }
