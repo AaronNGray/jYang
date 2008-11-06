@@ -25,11 +25,12 @@
 
 \usepackage{alltt}
 \usepackage{graphicx}
+\usepackage{listings}
 
 %%\usepackage[frenchb]{babel} % optionnel
 %%
 %% date de publication du rapport
-\RRdate{Avril 2008}
+\RRdate{Novembre 2008}
 %%
 %% Cas d'une version deux
 %% \RRversion{2}
@@ -39,7 +40,7 @@
 %%
 \RRauthor{% les auteurs
  % Premier auteur, avec une note
-Emmanuel Nataf\thanks{Ma\^itre de conf\'erences - Universit\'e Nancy2}%
+Emmanuel Nataf\thanks{Ma\^itre de conf\'erences - Nancy University}%
   % note partag\'ee (optionnelle)
   \thanks[sfn]{Madynes INRIA project}%
  % \and entre chaque auteur s'il y en a plusieurs
@@ -63,19 +64,19 @@ Olivier Festor\thanks{Directeur de Recherche INRIA}%
 %%
 \RRresume{Dans  le contexte  du  groupe de  travail administration  et
 op\'eration  des r\'eseaux  de l'IETF,  le protocole  de configuration
-\nc\   a   été   d\'evelopp\'e   pour   manipuler   la   configuration
+\nc\   a   \'et\'e   d\'evelopp\'e   pour   manipuler   la   configuration
 d'\'equipement   r\'eseau.    \y\  est   le   langage   en  cours   de
-standardisation dans  ce groupe permettant de  sp\'ecifier des modèles
+standardisation dans  ce groupe. Il permet de  sp\'ecifier des mod\`eles
 de donn\'ees  utilisable dans l'approche \nc.  Ce  rapport d\'ecrit la
-conc\'eption et la r\'ealisation  en java d'un analyseur syntaxique et
-s\'emantique de sp\'ecifications yang}
+conception et la r\'ealisation  en java d'un analyseur syntaxique et
+s\'emantique de sp\'ecifications \y.}
 
 \RRabstract{The  NETCONF configuration  protocol of  the  IETF Network
 Working Group  provides mechanisms to manipulate  the configuration of
-network devices. YANG is the language currently under consideration in
-the IETF to specify the data models  to be used in \nc\ .  This report
-describes the design and development  of a syntax and semantics parser for
-\y\ in java.}
+network devices.  YANG is  the language currently  under consideration
+within the IETF to specify the data  models to be used in \nc\ .  This
+report describes the design and  development of a syntax and semantics
+parser for \y\ in java.}
 %%
 \RRmotcle{parser, java, yang, netconf}
 \RRkeyword{parser, java, yang, netconf}
@@ -113,9 +114,14 @@ describes the design and development  of a syntax and semantics parser for
 \makeRT  % cas d'un rapport technique.
 %% a partir d'ici, chacun fait comme il le souhaite
 
+%% Parametrages pour les listings
+
+\lstset{numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=5pt}
+\lstset{escapeinside={(*@}{@*)}}
+
 \section{Introduction}
 
-It is frequent  in the network management world that  a protocol and a
+It is common  in the network management world that  a protocol and a
 data model are  separated even if jointly designed,  as it was already
 the case in the  SNMP\cite{rfc1157} protocol and its SMI\cite{rfc1155}
 data   modeling,CO\-PS\cite{rfc2748}   and  SP\-PI\cite{rfc3159},   or
@@ -131,19 +137,19 @@ called  \jyang\ that provides  a syntaxic  and semantic  validation of
 YANG specifications (called modules or sub-modules).
 
 This  report first  provides a  short description  of \nc\  where some
-parts  are referenced  by  \y.  The part  \ref{yang}  details the  \y\
-language  concepts   and  the  last   part  details  the   design  and
-implementation of the \jyang parser.
+parts  are referenced  by  \y.  Section  \ref{yang}  details the  \y\
+language  concepts   and section \ref{api}  details  the   design  and
+implementation of the \jyang\ parser.
 
 
 \section{NETCONF protocol}
 
-The \nc\  is a  client/server protocol where  the server is  a network
-device  and the  client a  management framework  that  runs management
+\nc\ is a client/server protocol  where the server is a network device
+and   the  client   a  management   framework  that   runs  management
 applications. Protocol  requests and responses  focus on configuration
 manipulation such as getting the current configuration, update, create
-or delete it or some part of it. Configurations are represented in XML
-document that contains two sort of data:
+or delete all or some part of it. Configurations are represented in an
+XML document that contains two sort of data:
 \begin{itemize}
 \item
 configuration  data   that  is  writable   and  that  describes
@@ -153,13 +159,13 @@ state data that is read-only and that describes operational data such
 as counter or statistics.
 \end{itemize}
 
-A  \nc\ agent  can have  several configurations  each  ones containing
-several   configuration  data.    There   can  be   only  one   active
-configuration,  called the  {\tt running}  configuration, at  the same
-time. Other configuration,  called {\tt candidate} configurations, can
-exist  without  interfers  with  the  running one.  A  special  commit
-capability  (cf section \ref{capabilities})  asks the  agent to  pass a
-candidate configuration as the running one. 
+A \nc\ agent can have several configurations each one containing
+several configuration data.  There can be only one active
+configuration, called the {\tt running} configuration, at the same
+time. Other configurations, called {\tt candidate} configurations, can
+exist without interfering with the running one.  A special commit
+capability (cf section \ref{capabilities}) asks the agent to pass a
+candidate configuration as the running one.
 
 
 Figure  \ref{netconfarchi}  extracted  from \cite{rfc4741}  shows  the
@@ -178,24 +184,24 @@ operations and how they are carried by rpc mechanisms.
 
 \subsection{Transport protocol}
 
-\nc\  can  use  several  connexion-oriented transport  protocols.   It
-requires  that  a persistent  connexion  is  maintained between  peers
+\nc\  can  use several  connection-oriented  transport protocols.   It
+requires  that a  persistent  connection is  maintained between  peers
 during a  potentialy long term {\tt  session}.  Ressources reservation
 can  be  granted for  the  session  and  any reserved  ressources  are
-released at the end of the connexion.
+released at the end of the connection.
 
-Authentication, integrity and confidentiality  must be provided bu the
+Authentication, integrity and confidentiality  must be provided by the
 transport  protocol.  A  \nc\  implementation  must  support  the  SSH
 transport protocol mapping.
 
-The  specification   language  described  in  this   report  has  no
-relationship with the transport protocol used with NETCONF.
+The specification  language described in  this report is not  bound to
+the transport protocol used with NETCONF.
 
 \subsection{RPC}
 
 The Remote  Procedure Call  on wich the  \nc\ operations are  built is
 described  by two  XML\cite{Bray:00:EML}  elements :  {\tt <rpc>}  for
-requests and {\tt <rpc-reply>} for responses.  This latter can contain
+requests and {\tt <rpc-reply>}  for responses.  The latter can contain
 a {\tt <rpc-error>} element when an error occurs during the process of
 a request inside the NETCONF agent.
 
@@ -218,30 +224,30 @@ running configuration;
 {\tt <delete-config>} : to delete a configuration (but not the running);
 \item
 {\tt <lock>} :  to lock the running configuration  against any edit or
-copy config  operations originated from  an other session  or external
-access (as SNMP);
+copy  config operations  originated from  another session  or external
+access (like SNMP);
 \item
 {\tt <unlock>} : to unlock a locked configuration;
 \item
 {\tt  <close-session>}  : to  stop  the  NETCONG  session accepting  any
-request but achieves operation in progress;
+request but complete operation in progress;
 \item
-{\tt <kill-session>} : to stop  the NETCONF session without achieving any
-operations in progress.
+{\tt <kill-session>} : to stop  the NETCONF session without completing any
+operation in progress.
 \end{itemize}
 
-All  operations are in  {\tt <rpc>} elements. A common element of
-get, edit  or delete operations  is a filter element  ({\tt <filter>})
-that allows some filtering on data by using the hierarchical structure
-of XML documents.
+All operations are  in carried {\tt <rpc>} elements.  A common element
+of  get,  edit  and  delete  operations  is  a  filter  element  ({\tt
+<filter>})  that   allows  some  filtering   on  data  by   using  the
+hierarchical structure of XML documents.
 
 \subsection{Capabilities}
 \label{capabilities}
 
-Accepted operations (basics and  news operations) and data are defined
+Accepted operations  (basic and news operations) and  data are defined
 by capabilities.  A \nc\ agent  can provide more than one capabilities
-and  an  unique  URI  reference each  capabilities.  Capabilities  are
-excanged between entities at session establishement time.
+and  an unique  URI  references each  capabilities.  Capabilities  are
+exchanged between entities at session establishment time.
 
 
 \section{\y}
@@ -252,7 +258,7 @@ language used to describe \nc\  configuration and state data. The \nc\
 standard does  not define  such a language  for its content  layer (cf
 fig.\ref{netconfarchi}).       The      netmod      working      group
 charter\footnote{http://www.ietf.org/html.charters/netmod-charter.html}
-explains why  a more hight level  that XML language is  needed (An old
+explains why  a more hight level  language than XML is  needed (an old
 draft           can          be           seen           at          :
 http://www.yang-central.org/twiki/\-pub/\-Main/\-Yang\-Do\-cu\-ments/draft-lengyel-why-yang-00.txt).
 
@@ -261,11 +267,11 @@ http://www.yang-central.org/twiki/\-pub/\-Main/\-Yang\-Do\-cu\-ments/draft-lengy
 
 A  \y\ specification contains  formal definitions  of data  types that
 will model  real data maintained  by \nc\ agents.   Formal definitions
-follow the \y\  syntax. \y\ provides constructs that  give semantic to
-XML data. As  XML document is a collection  of imbricated markups, \y\
-defines statements that can be  mapped on pattern of markups. Moreover
-\y\  allows reusability  of specification  with generic  statements or
-augmentation/extension statements.
+follow the \y\ syntax. \y\  provides constructs that give semantics to
+XML data.  As an XML document  is a collection  of imbricated markups,
+\y\   defines  statements   that   can  be   mapped   on  pattern   of
+markups.  Moreover  \y\  allows  reusability  of  specifications  with
+generic statements or augmentation/extension statements.
 
 \y\ specifications are organized in modules and submodules
 that contain data type definitions. 
@@ -281,16 +287,17 @@ related to the module or submodule itself.
 A module has mandatory headers and one optional header. The mandatory
 ones are the {\tt name space} and {\tt prefix}.  For example :
 
-\begin{verbatim}
+\begin{lstlisting}
 module router {
-  namespace ``urn:madynes:xml:ns:yang:router'';
-  prefix router;
+  namespace ``urn:madynes:xml:ns:yang:router'';(*@\label{namespace}@*)
+  prefix router;(*@\label{prefix}@*)
 ...
-\end{verbatim}
+\end{lstlisting}
 
-The name  space is for all data  defined in the module  and the prefix
-could be used inside the  module (when confusion is possible) to refer
-some data. A \y\ {\tt version} header is optional.
+The name space at line \ref{namespace}  is for all data defined in the
+module  and the prefix  at line  \ref{prefix} can  be used  inside the
+module (when  confusion is  possible) to refer  some data. A  \y\ {\tt
+version} header is optional.
 
 \subsubsection{Submodule header}
 \label{spec:submodule}
@@ -299,20 +306,23 @@ A submodule has one or two headers. It must have a {\tt belongs
 to} statement and may have the \y\ {\tt version} statement. A
 submodule belongs to one and only one module. For example :
 
-\begin{verbatim}
+\begin{lstlisting}
 submodule routing-policies {
-  belongs-to router;
-...
-\end{verbatim}
+  belongs-to router ;(*@\label{belongsto}@*)
 
+...
+\end{lstlisting}
+
+The  submodule  {\tt routing-policies}  belongs  to  the {\tt  router}
+module at line \ref{belongsto}.
 
 \subsubsection{Yang specification meta statements}
 
 Meta  statements  give some  general  information  on  the module  or
 submodule.  These  informations  concern  the  organization  that
 defines the module, the contact,  the description and the reference of
-the  \y\ specification.   There  could be at most four meta statements.
-A meta statement of a  specification must not be duplicated (i.e. two
+the  \y\ specification.   At most four meta statements can be made.
+A meta statement of a  specification must not be duplicated (e.g. two
 contact meta statement in a module).
 
 \subsubsection{Yang linkage statements}
@@ -322,28 +332,31 @@ statements.
 
 \paragraph{Import statement}
 
-The syntax  allows to identify an  other module and associate  to it a
+The syntax  allows to identify another module and associate  it to a
 prefix. For example :
 
-\begin{verbatim}
+\begin{lstlisting}
 module router {
 ...
-import yang-types { prefix yang;}
+  import yang-types {  (*@\label{import}@*)
+    prefix yang;       (*@\label{prefiximp}@*)
+  }
 ...
-\end{verbatim}
+\end{lstlisting}
 
-The module {\tt yang-types} is imported so that any type or data
-defined in this module can be used in the {\tt router} module. In
-order to use them without conflict, the prefix {\tt yang} must be
-used. For example (again in the {\tt router} module):
+The module {\tt  yang-types} is imported at line  \ref{import} so that
+any  type or  data defined  in this  module can  be used  in  the {\tt
+router} module. In order to use them without conflict, the prefix {\tt
+yang} defined at line \ref{prefiximp} must be used. For example (again
+in the {\tt router} module):
 
-\begin{verbatim}
+\begin{lstlisting}
 ...
 leaf network {
   type yang:counter32;
 }
 ...
-\end{verbatim}
+\end{lstlisting}
 
 where {\tt counter32}  is defined in the {\tt  yang-types} module. The
 prefix  used must  be the  same than  the one  defined in  the prefix
@@ -357,18 +370,18 @@ module. A submodule can import modules but no submodules.
 \paragraph{Include statement}
 \label{spec:include}
 
-The syntax allows to refer to a submodule. For example :
+The syntax allows to refer to a submodule. For example:
 
-\begin{verbatim}
+\begin{lstlisting}
 module router {
 ...
-include routing-policies;
+include routing-policies; (*@\label{include}@*)
 ...
-\end{verbatim}
+\end{lstlisting}
 
 The {\tt router} module  includes the {\tt routing-policies} submodule
-so any type or  data defined in the submodule can be  used in that {\tt
-router} module.
+at line \ref{include} so any type or data defined in the submodule can
+be used in that {\tt router} module.
 
 An included submodule must have  a {\tt belongs-to} statement with the
 reference of the  including module (see section \ref{spec:submodule}).
@@ -386,9 +399,9 @@ each one can contain none or one description statement.
 
 
 
-\y\ specifications describes data as a tree of nodes. There are two
-main node types; leaf nodes that contain data values and 
-nodes that contain (in the hierarchical meaning) other nodes.
+\y\ specifications describe1 data as a tree of nodes. There are two
+main node types; leaf nodes that contain data values and nodes that
+contain (in the hierarchical meaning) other nodes.
 
 \subsection{Leaf nodes}
 
@@ -495,7 +508,7 @@ allows  the definition  of  new types  from  existing ones  by a  {\tt
 typedef} construct.  For example below  is the definition of a 32 bits
 counter from the basic unsigned integer {\tt uint32}.
 
-\begin{verbatim}
+\begin{lstlisting}
  typedef counter32 {
         type uint32;
         description
@@ -503,7 +516,7 @@ counter from the basic unsigned integer {\tt uint32}.
         reference
            "RFC 2578 (STD 58)";
     }
-\end{verbatim}
+\end{lstlisting}
 
 New  types can  be used  in  data nodes  and in  other {\tt  typedef}.
 Depending on the base type  used in a {\tt typedef}, some restrictions
@@ -518,41 +531,42 @@ new type is a sub-type of the base type.
 statements. A  grouping is a  set of definitions (leafs  and construct
 nodes, typedef, grouping\ldots) that  can be used in other definitions
 with the {\tt uses} statement.  For example below is the definition of
-the grouping  {\tt address} with two  leaf nodes and its  usage in the
-{\tt http-container} container.
+the grouping {\tt  address} with two leaf nodes  at lines \ref{leafip}
+and  \ref{leafport}   and  its  usage  in   the  {\tt  http-container}
+container (line \ref{leafhttpserv}).
 
 \noindent
 \begin{tabular}{lr}
 \begin{minipage}{.5\textwidth}
-\begin{verbatim}
-
+\begin{lstlisting}[name=grouping]
 grouping address {
-    leaf ip {
+    leaf ip { (*@\label{leafip}@*)
       type bits (32);
     }
-    leaf port {
+    leaf port {  (*@\label{leafport}@*)
       type uint32;
     }
 }
-\end{verbatim}
+\end{lstlisting}
 \end{minipage}
 &
 \begin{minipage}{.5\textwidth}
-\begin{verbatim}
-container http-server {
+\begin{lstlisting}[name=grouping]
+
+container http-server { (*@\label{leafhttpserv}@*)
   leaf name { 
     type string; 
   }
   uses address;
 }
-\end{verbatim}
+\end{lstlisting}
 \end{minipage}
 \end{tabular}
 
 This construct is equivalent to :
 
 \noindent
-\begin{verbatim}
+\begin{lstlisting}
 
 container http-server {
   leaf name { 
@@ -565,44 +579,46 @@ container http-server {
     type uint32;
   }
 }
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Augmenting}
 
 The {\tt augment}  statement contains nodes and is  used to add theses
 nodes to  an existing  construct node. In  the specification  below, a
-container {\tt  login} contains a leaf  {\tt message} and  a list {\tt
-user} having several  leaf nodes (just {\tt name}  is shown). The {\tt
-augment} statement  refers to the  list {\tt user}  and add to  it the
-leaf {\tt uid}.
+container  {\tt login} at  line \ref{logincont}  contains a  leaf {\tt
+message} line \ref{leafmess} and a list {\tt user} line \ref{listuser}
+having  several leaf  nodes  (just  {\tt name}  is  shown).  The  {\tt
+augment} statement  at line \ref{augmentuse}  refers to the  list {\tt
+user} under the container {\tt login} and add to it the leaf {\tt uid}
+at line \ref{uid}.
 
 \noindent
 \begin{tabular}{lr}
 \begin{minipage}{.5\textwidth}
-\begin{verbatim}
+\begin{lstlisting}[name=augment]
 
-  container login {
-    leaf message {
+  container login { (*@\label{logincont}@*)
+    leaf message {  (*@\label{leafmess}@*)
       type string;
       }
-    list user {
+    list user {      (*@\label{listuser}@*)
       key ``name'';
       leaf name { 
          type string;
       }
       ...
     }
-\end{verbatim}
+\end{lstlisting}
 \end{minipage}
 &
 \begin{minipage}{.5\textwidth}
-\begin{verbatim}
-augment login/user {
-  leaf uid {
+\begin{lstlisting}[name=augment]
+augment login/user {  (*@\label{augmentuse}@*)
+  leaf uid {           (*@\label{uid}@*) 
     type uint16;
   }
 }
-\end{verbatim}
+\end{lstlisting}
 \end{minipage}
 \end{tabular}
 
@@ -620,7 +636,7 @@ the {\tt  activate-software} operation below defines data  sended in a
 {\tt <rpc>} message with {\tt  input} statement and data returned in a
 {\tt <rpc-reply>} with the {\tt ouput} statement.
 
-\begin{verbatim}
+\begin{lstlisting}
 rpc activate-software-image {
     input {
        leaf image-name {
@@ -633,7 +649,7 @@ rpc activate-software-image {
        }
     }
 }
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Notification}
 
@@ -642,14 +658,14 @@ the  {\tt   notification}  statement.   Nodes  contained   in  a  {\tt
 specification} statement  model data sent  by the agent.  Below  is an
 example where the index of a failed interface will be sent.
 
-\begin{verbatim} 
+\begin{lstlisting} 
 notification link-failure {
   description "A link failure has been detected";
   leaf if-index {
       type int32 { range "1 .. max"; }
   }
 }
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Extensions}
 
@@ -660,7 +676,7 @@ specification. In  the example below, the extension  {\tt c-define} is
 specified and  used with one name  argument (use of  extension must be
 prefixed).
 
-\begin{verbatim}
+\begin{lstlisting}
 extension c-define {
          description
            "Takes as argument a name string.
@@ -668,11 +684,11 @@ extension c-define {
            #define.";
          argument "name";
        }
-\end{verbatim}
+\end{lstlisting}
 
-\begin{verbatim}
+\begin{lstlisting}
  myext:c-define "MY_INTERFACES";
-\end{verbatim}
+\end{lstlisting}
 
 
 \subsection{YIN}
@@ -773,7 +789,7 @@ specification inside a java  program. Internal representation of those
 specifications can be accessed throught the API defined in the section
 \ref{api}. Below is an example of how to parse a \y\ specification.
 
-\begin{verbatim}
+\begin{lstlisting}
 import java.io.*;
 import jyang.*;
 
@@ -800,7 +816,7 @@ public class JyangTest {
         // for example spec.getHeaders() or spec.getImports()
    }
 }
-\end{verbatim}
+\end{lstlisting}
 
 \section{\jyang\ API}
 \label{api}
