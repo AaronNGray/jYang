@@ -585,12 +585,12 @@ container http-server {
 
 The {\tt augment}  statement contains nodes and is  used to add theses
 nodes to  an existing  construct node. In  the specification  below, a
-container  {\tt login} at  line \ref{logincont}  contains a  leaf {\tt
-message} line \ref{leafmess} and a list {\tt user} line \ref{listuser}
-having  several leaf  nodes  (just  {\tt name}  is  shown).  The  {\tt
-augment} statement  at line \ref{augmentuse}  refers to the  list {\tt
-user} under the container {\tt login} and add to it the leaf {\tt uid}
-at line \ref{uid}.
+container named  {\tt login} at  line \ref{logincont} contains  a leaf
+named {\tt  message} line  \ref{leafmess} and a  list {\tt  user} line
+\ref{listuser} having  several leaf nodes (just {\tt  name} is shown).
+The  {\tt augment} statement  at line  \ref{augmentuse} refers  to the
+list {\tt  user} under the  container {\tt login}  and adds to  it the
+leaf {\tt uid} at line \ref{uid}.
 
 \noindent
 \begin{tabular}{lr}
@@ -631,10 +631,10 @@ parameters added to standard ones.
 \subsection{Rpc}
 
 As  a  \nc\  agent  can  provide capabilities  with  new  rpc  embeded
-operations, \y\ allows the specification of such operation. For example
-the {\tt  activate-software} operation below defines data  sended in a
-{\tt <rpc>} message with {\tt  input} statement and data returned in a
-{\tt <rpc-reply>} with the {\tt ouput} statement.
+operations,  \y\ allows the  specification of  such an  operation. For
+example  the  {\tt  activate-software}  operation below  defines  data
+sended in  a {\tt <rpc>} message  with {\tt input}  statement and data
+returned in a {\tt <rpc-reply>} with the {\tt ouput} statement.
 
 \begin{lstlisting}
 rpc activate-software-image {
@@ -672,7 +672,7 @@ notification link-failure {
 \y\ allows  the definition of  new statements when  specific processes
 requires  it. The  content of  an extention  is to  be  interpreted by
 specific  implementation.   Extensions can  be  used  anywhere in  \y\
-specification. In  the example below, the extension  {\tt c-define} is
+specifications. In the example  below, the extension {\tt c-define} is
 specified and  used with one name  argument (use of  extension must be
 prefixed).
 
@@ -693,10 +693,10 @@ extension c-define {
 
 \subsection{YIN}
 
-YIN  is an  alternative XML-based  syntax of  \y\  specifications. YIN
-specifications that can be generated from \y\ ones are equivalent. The
+YIN  is an alternative  XML-based syntax  for \y\  specifications. YIN
+specifications can be generated from  \y\ ones and are equivalent. The
 goal of YIN specifications is to enable seemless interactions with XML
-based tools  (as XSLT).  \jyang\ parser allows  the generation  of YIN
+based tools  (as XSLT).  \jyang\  parser allows the generation  of YIN
 specifications from \y.
 
 \section{\jyang}
@@ -737,8 +737,8 @@ unique statement)
 
 \subsection{Repository}
 
-\jyang\ is an open source distribution under the GPL licence. The
-official repository is at the INRIA Gforge web site :\\
+\jyang\ is  an open source distribution  of our toolkit  under the GPL
+licence. The official repository is at the INRIA Gforge web site :\\
 \begin{verbatim}
 http://jyang.gforge.inria.fr
 \end{verbatim}
@@ -771,16 +771,16 @@ set.
 \item
 {\tt file  [file]*} specifies  files containing \y\  specification. It
 must be  one specification ({\tt  module} or {\tt submodule}  for each
-file.
+file).
 \end{itemize}
 
 \paragraph{Errors}
 
-Errors  in  \y\  specifications  are  printed on  the  standard  error
-output.  \jyang\ stops  checking at  the first  lexical  or syntaxical
-error  but   try  to   check  after  a   first  semantical   error  is
-encountered. When such an error is detected the current bloc statement
-is escaped and \jyang\ passes to the next statement.
+Errors in \y\ specifications are printed on the standard error output.
+\jyang\ stops  checking at the  first lexical or syntaxical  error but
+tring to  check after  a first semantical  error is  encountered. When
+such an error  is detected, the current bloc  statement is escaped and
+\jyang\ passes to the next statement.
 
 \subsubsection{Programmatic access}
 
@@ -823,11 +823,11 @@ public class JyangTest {
 
 \subsection{UML class diagram}
 
-Following sections  contain UML class  diagrams of the \jyang\  API. UML
-classes (abstacts or not) are java classes and UML interfaces are java
-interfaces.  Inheritance   relations  are  directly   mapped  to the java
-inheritance  mechanism  (we   have  limited  multiple  inheritance  to
-interfaces only).
+Following  sections contain  the  UML class  diagrams  of the  \jyang\
+API. UML classes (abstacts or not) are java classes and UML interfaces
+are java interfaces.  Inheritance relations are directly mapped to the
+java  inheritance mechanism (we  have limited  in the  design multiple
+inheritance to interfaces only).
 
 For relationships other than inheritance the API follows theses rules :
 \begin{itemize}
@@ -854,7 +854,7 @@ addLinkage(YANG\_Linkage}).
  
 \subsection{\y\ specifications}
 
-The figure  \ref{spec} shows the  top level of classes  and interfaces
+Figure  \ref{spec}   shows  the  top  level   classes  and  interfaces
 hierarchy.  On top is the  YANG\_Specification interface that can be a
 YANG\_Module  for  a  yang  module  or a  YANG\_SubModule  for  a  \y\
 submodule.
@@ -869,7 +869,7 @@ submodule.
 
 \subsection{Yang body statements}
 
-Data definitions  are in body  statements that can be  extension, type
+Data definitions are  in body statements that can  be: extension, type
 definition,  grouping,  data  definition,  rpc or  notification.   The
 YANG\_Body interface is the common  interface for all bodies in a yang
 specification.
@@ -880,9 +880,11 @@ specification.
 \label{extension:section:global}
 
 An extension  statement (fig.  \ref{extension}) can be  stand alone or
-could contains  other statement  as argument, status,  description and
-reference.  Each  of these  statement can occur  at most  once.  Their
-description is detailed in section \ref{extension:section:detail}.
+can contain  other statements either as  argument, status, description
+and  reference.  Each  of these  statements  can occur  at most  once.
+Their       description       is       detailed       in       section
+\ref{extension:section:detail}.
+
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{extension.eps}
@@ -896,8 +898,9 @@ description is detailed in section \ref{extension:section:detail}.
 
 A  typedef  statement  (fig.    \ref{typedef})  must  contain  a  type
 statement  and can  contain  units, default,  status, description  and
-reference statement.  Each of these  statement can occur at most once.
-Their description is detailed in section \ref{typedef:section:detail}.
+reference  statements.  Each  of these  statements can  occur  at most
+once.      Their     description     is    detailed     in     section
+\ref{typedef:section:detail}.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{typedef.eps}
@@ -909,10 +912,10 @@ Their description is detailed in section \ref{typedef:section:detail}.
 \subsubsection{Grouping statement}
 \label{grouping:section:global}
 
-A grouping statement (fig.  \ref{grouping})  can be stand alone or can
+A grouping statement (fig.  \ref{grouping})  can be single or can
 contain status,  description and reference statements.   Each of these
 statements can occur at most one time. A grouping statement can also
-contains  several  other  grouping,  typedef and  datadef  statements.
+contain  several  other  grouping,  typedef and  datadef  statements.
 Their       description       is       detailed      in       section
 \ref{grouping:section:details}.
 \begin{figure}[htbp]
@@ -939,10 +942,10 @@ detailed in section \ref{datadef:section:detail}.
 
 \subsubsection{Rpc statement}
 
-A rpc  statement (fig.  \ref{rpc}) can be  stand alone or  can contain
-status, description, reference, input  and output statements.  Each of
-these statements  can occur  at most once.   A rpc statement  can also
-contain several other grouping, typedef and datadef statements.
+A rpc statement (fig.  \ref{rpc})  can be alone or can contain status,
+description, reference,  input and  output statements.  Each  of these
+statements can occur  at most once.  A rpc  statement can also contain
+several other grouping, typedef and datadef statements.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{rpc.eps}
@@ -953,8 +956,8 @@ contain several other grouping, typedef and datadef statements.
 
 \subsubsection{Notification statement}
 
-A notification statement (fig.  \ref{notification}) can be stand alone
-or can contain status,  description and reference statements.  Each of
+A notification  statement (fig.   \ref{notification}) can be  alone or
+can  contain status,  description and  reference statements.   Each of
 these statements can occur at  most once. A notification statement can
 also contain several other grouping, typedef and datadef statements.
 \begin{figure}[htbp]
@@ -1014,7 +1017,7 @@ units statements are subject to semantical checking.
 \label{grouping:section:details}
 
 This section  refers to the  section \ref{grouping:section:global}. It
-does not  detail any statement  as status, description  and reference.
+does not  detail any statement  like status, description  and reference.
 Typedef is detailed  in the section \ref{typedef:section:detail}.  The
 {\tt    data-def}   statements   are    detailed   in    the   section
 \ref{datadef:section:detail}.
@@ -1027,9 +1030,9 @@ details those statements that can be a {\tt data-def} statement.
 
 \subsubsection{Container statement}
 
-A  container  (fig.  \ref{container})  can  contain  several  must,
-typedef,  grouping and data-def  statement. Presence,  config, status,
-description and reference statement are optional.
+A  {\tt  container}  statement  (fig.   \ref{container})  can  contain
+several  must, typedef,  grouping and  data-def  statements. Presence,
+config, status, description and reference statements are optional.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{container.eps}
@@ -1040,10 +1043,10 @@ description and reference statement are optional.
 
 \subsubsection{Leaf statement}
 
-A leaf (fig. \ref{leaf}) must  contain one type statement (see section
-\ref{type:section:global})   and  several  must   statements.   Units,
-default,  config,  mandatory, status,  reference  and description  are
-optional.
+A  {\tt  leaf}  statement  (fig.  \ref{leaf}) must  contain  one  type
+statement  (see section  \ref{type:section:global})  and several  must
+statements.  Units, default,  config, mandatory, status, reference and
+description are optional.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{leaf.eps}
@@ -1054,10 +1057,10 @@ optional.
 
 \subsubsection{Leaf List statement}
 
-A  leaf list (fig.   \ref{leaflist}) must  contain one  type statement
-(see  section  \ref{type:section:global}),  several  must  statements.
-Units, default,  config, min element, max  element, mandatory, status,
-reference and description are optional.
+A {\tt  leaf-list} statement  (fig.  \ref{leaflist}) must  contain one
+type statement  (see section \ref{type:section:global}),  several must
+statements.   Units,  default,   config,  min  element,  max  element,
+mandatory, status, reference and description are optional.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{leaflist.eps}
@@ -1068,10 +1071,10 @@ reference and description are optional.
 
 \subsubsection{List statement}
 
-A list (fig. \ref{list}) can contain several must, unique, typedef and
-grouping statements and must  contain at least one data-def statement.
-Key,  min element,  max element,  ordered-by, status,  description and
-reference are optional.
+A {\tt list} statement (fig. \ref{list}) can contain several must,
+unique, typedef and grouping statements and must contain at least one
+data-def statement.  Key, min element, max element, ordered-by,
+status, description and reference are optional.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{list.eps}
@@ -1082,9 +1085,10 @@ reference are optional.
 
 \subsubsection{Choice statement}
 \label{cases:section:global}
-A choice  (fig. \ref{choice}) can  contain several short-case  or case
-statements  that are  detailed in  section \ref{cases:section:detail}.
-Default, mandatory, status, description and reference are optional.
+A  {\tt  choice} statement  (fig.  \ref{choice})  can contain  several
+short-case   or  case   statements  that   are  detailed   in  section
+\ref{cases:section:detail}.   Default, mandatory,  status, description
+and reference are optional.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{choice.eps}
@@ -1095,8 +1099,8 @@ Default, mandatory, status, description and reference are optional.
 
 \subsubsection{Any-xml statement}
 
-An  any-xml (fig.  \ref{anyxml}) can  contain a  config, mandatory,
-status, descrition and reference statements.
+An {\tt any-xml} statement (fig.  \ref{anyxml}) can contain a config,
+mandatory, status, descrition and reference statements.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{anyxml.eps}
@@ -1108,9 +1112,9 @@ status, descrition and reference statements.
 \subsubsection{Uses statement}
 \label{uses:section:global}
 
-An  uses  (fig. \ref{uses})   can  contain  a  status,  description,
-reference and  refinement statements.   The refinement is  detailed in
-section \ref{refinement:section:detail}
+An  {\tt  uses} statement  (fig.  \ref{uses})  can  contain a  status,
+description, reference  and refinement statements.   The refinement is
+detailed in section \ref{refinement:section:detail}
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{uses.eps}
@@ -1121,10 +1125,10 @@ section \ref{refinement:section:detail}
 
 \subsubsection{Augment statement}
 
-An augment  (fig. \ref{augment}) can  contain at least one  datadef or
-case statements or  one input or output statements.  It depends on the
-augmented node. When, status, description and reference statements are
-optional.
+An {\tt  augment} statement (fig. \ref{augment}) can  contain at least
+one datadef or case statements  or one input or output statements.  It
+depends on the augmented node. When, status, description and reference
+statements are optional.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{augment.eps}
@@ -1141,9 +1145,9 @@ Case and short case use are described in section \ref{cases:section:global}.
 \subsubsection{Case statement}
 \label{casedatadef:section:global}
 
-A  case  (fig.    \ref{case})  can  contain  several  case-data-def
-statements.     Status,      description     and     reference     are
-optional.      Case-data-def     is      detailed      in     section
+A  {\tt  case}  statement   (fig.   \ref{case})  can  contain  several
+case-data-def  statements.   Status,  description  and  reference  are
+optional.       Case-data-def     is      detailed      in     section
 \ref{casedatadef:section:detail}.
 \begin{figure}[htbp]
 \begin{center}
@@ -1154,8 +1158,8 @@ optional.      Case-data-def     is      detailed      in     section
 \end{figure}
 
 \subsubsection{Short Case statement}
-A short case (fig. \ref{shortcase}) can be either a container, leaf,
-leaf-list, list or any-xml statements.
+A short  {\tt case} statement  (fig. \ref{shortcase}) can be  either a
+container, leaf, leaf-list, list or any-xml statements.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{shortcase.eps}
@@ -1168,9 +1172,9 @@ leaf-list, list or any-xml statements.
 \subsubsection{Case Data Def statement}
 \label{casedatadef:section:detail}
 
-A case data def (fig.  \ref{casedatadef}) can be either a container, a
-leaf,  a  leaf-list,  a  list,  an  any-xml, an  uses  or  an  augment
-statements.   Case   data   def    use   is   described   in   section
+A case  data def statement  (fig.  \ref{casedatadef}) can be  either a
+container, a  leaf, a  leaf-list, a  list, an any-xml,  an uses  or an
+augment  statements.   Case  data  def  use is  described  in  section
 \ref{casedatadef:section:global}.
 \begin{figure}[htbp]
 \begin{center}
@@ -1185,9 +1189,10 @@ statements.   Case   data   def    use   is   described   in   section
 \subsection{Refinement statement}
 \label{refinement:section:detail}
 
-The  refinement (fig.   \ref{refinement})  can be  a  refinement of  a
-container,  leaf, leaf-list, choice  or any-xml  statement. Refinement
-use is described in section \ref{uses:section:global}.
+The refinement statement (fig.   \ref{refinement}) can be a refinement
+of    a    container,    leaf,    leaf-list,   choice    or    any-xml
+statement.     Refinement    use     is    described     in    section
+\ref{uses:section:global}.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{refinement.eps}
@@ -1196,11 +1201,11 @@ use is described in section \ref{uses:section:global}.
 \label{refinement}
 \end{figure}
 
-\subsubsection{Refine Container statement}
+\subsubsection{Refined Container statement}
 
-A refine container (fig. \ref{refinecontainer}) can contain several
-must  and  refinement  statements.  Presence, config,  description  and
-reference are optional.
+A refined  {\tt container} statement  (fig. \ref{refinecontainer}) can
+contain  several must  and refinement  statements.   Presence, config,
+description and reference are optional.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{refinecontainer.eps}
@@ -1209,10 +1214,11 @@ reference are optional.
 \label{refinecontainer}
 \end{figure}
 
-\subsubsection{Refine Leaf statement}
+\subsubsection{Refined Leaf statement}
 
-A  refine leaf  (fig.  \ref{refineleaf}) can  contain several  must
-statements.  Default, config, description and reference are optional.
+A refined  {\tt leaf}  statement (fig.  \ref{refineleaf})  can contain
+several must  statements.  Default, config,  description and reference
+are optional.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{refineleaf.eps}
@@ -1221,11 +1227,11 @@ statements.  Default, config, description and reference are optional.
 \label{refineleaf}
 \end{figure}
 
-\subsubsection{Refine Leaf List statement}
+\subsubsection{Refined Leaf List statement}
 
-A refine leaf list  (fig. \ref{refineleaflist}) can contain several
-must  statements. Config,  min-element,  max-element, description  and
-reference are optional.
+A  refined {\tt leaf-list}  statement (fig.  \ref{refineleaflist}) can
+contain  several must  statements.  Config, min-element,  max-element,
+description and reference are optional.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{refineleaflist.eps}
@@ -1234,11 +1240,11 @@ reference are optional.
 \label{refineleaflist}
 \end{figure}
 
-\subsubsection{Refine List statement}
+\subsubsection{Refined List statement}
 
-A refine list  (fig. \ref{refinelist}) ) can contain  several must and
-refinement statements.   Config, min-element, max-element, description
-and reference are optional.
+A refined  {\tt list} statement (fig. \ref{refinelist})  ) can contain
+several   must  and   refinement  statements.    Config,  min-element,
+max-element, description and reference are optional.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{refinelist.eps}
@@ -1247,11 +1253,11 @@ and reference are optional.
 \label{refinelist}
 \end{figure}
 
-\subsubsection{Refine Choice statement}
+\subsubsection{Refined Choice statement}
 
-A refine  case (fig.   \ref{refinechoice}) can contain  several refine
-case  statements. Default,  mandatory, description  and  reference are
-optional.
+A refined {\tt case}  statement (fig.  \ref{refinechoice}) can contain
+several  refine case statements.  Default, mandatory,  description and
+reference are optional.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{refinechoice.eps}
@@ -1260,10 +1266,10 @@ optional.
 \label{refinechoice}
 \end{figure}
 
-\subsubsection{Refine Any-xml statement}
+\subsubsection{Refined Any-xml statement}
 
-A  refine  any-xml  (fig.  \ref{refineanyxml})  optionaly  contains  a
-config, mandatory, description and reference statements.
+A refined {\tt any-xml} statement (fig.  \ref{refineanyxml}) optionaly
+contains a config, mandatory, description and reference statements.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale = .3]{refineanyxml.eps}
@@ -1288,27 +1294,26 @@ relationships.
 \section{Conclusions and future work}
 
 This report describes the \jyang parser and its API. The work is based
-on an early release of the draft\cite{yang01} and other revisions will
+on an early release of the draft\cite{yang01}. futhur revisions will
 follow the \y\ evolution.
 
-\jyang\ allows  a static  parsing of \y\  specification but  there are
-several other checking that need to  be done at the execution time. We
-plan to  defines some  mechanisms to ensure  a \nc agent  realize such
-checking. The list below may be not exaustiv but draws our main goals :
+\jyang\ allows  a static parsing  of \y\ specifications but  there are
+several other  checks that need to  be done at the  execution time. We
+plan to  define some mechanisms to  ensure that a  \nc\ agent realizes
+such checks.  The list below may  be not exhaustive but draws our main
+goals :
 \begin{itemize}
 \item
 \y\  specifications can  use an  {\tt object-instance}  data  type that
 refers to  an existing element in  a configuration. A  \nc\ agent must
-verify  that refered  element  effectively exists,  or  has a  default
+verify  that the refered  element  effectively exists,  or  has a  default
 value.
 \item
 \y\ specifications can define new operations and notifications. A \nc\
 agent must provide them on top of the RPC mechanism.
 \end{itemize}
 
-These evolutions will be bound to a particular \nc\ implementation and
-will  lead  to  other  technical  reports. Generic  mapping  from  \y\
-specification to \nc\ agent will be presented in research reports.
+These evolutions will be bound to a particular \nc\ implementation.
 
 \bibliographystyle{plain}
 \bibliography{../bibtex/RFC/rfc,../bibtex/RFC/draft,../bibtex/W3C/w3c}
