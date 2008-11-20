@@ -212,16 +212,19 @@ Basic operations are defined as XML elements :
 
 \begin{itemize}
 \item
-{\tt <get>} : to retrieve all or part of a configuration;
+{\tt <get>} : to retrieve all or part of the running configuration and
+state data;
 \item
-{\tt <get-config>} : to retrieve all or part of configuration data;
+{\tt <get-config>} : to retrieve all or part of a running or candidate
+configuration data;
 \item
-{\tt <edit-config>} : to update configuration data;
+{\tt <edit-config>} : to load all or part of a configuration data to a
+specified target running or candidate configuration;
 \item
 {\tt <copy-config>} : to copy existing configuration data in place of
-running configuration;
+a specified target running or candidate configuration;
 \item
-{\tt <delete-config>} : to delete a configuration (but not the running);
+{\tt <delete-config>} : to delete a candidate configuration ;
 \item
 {\tt <lock>} :  to lock the running configuration  against any edit or
 copy  config operations  originated from  another session  or external
@@ -274,7 +277,7 @@ markups.  Moreover  \y\  allows  reusability  of  specifications  with
 generic statements or augmentation/extension statements.
 
 \y\ specifications are organized in modules and submodules
-that contain data type definitions. 
+that contain data type definitions and operation descriptions. 
 
 \subsection{\y\ module and submodule headers}
 
@@ -399,9 +402,10 @@ each one can contain none or one description statement.
 
 
 
-\y\ specifications describe1 data as a tree of nodes. There are two
-main node types; leaf nodes that contain data values and nodes that
-contain (in the hierarchical meaning) other nodes.
+\y\ specifications  describe1 data as a  tree of nodes.  There are two
+main node  types; {\bf leaf} nodes  that contain data  values and {\bf
+construct}  nodes that  contain  (in the  hierarchical meaning)  other
+nodes.
 
 \subsection{Leaf nodes}
 
@@ -416,24 +420,27 @@ type.
 
 \subsection{Construct nodes}
 
-Three containing nodes are defined : 
+A construct node definition  contains other node definitions. Value of
+such a node depends on the type of the construct node:
 \begin{itemize}
 \item
-{\tt container} that contains other nodes
+{\tt container} that contains other nodes and its value is composed of
+values of all contained nodes;
 \item
-{\tt list} that contains a list  of other nodes and where there can be
-several instances of  the list of nodes.  A list can be seen  as a two
+{\tt list} that contains other nodes and its value is composed of
+several values of all contained nodes.  A list value can be seen  as a two
 dimensional array  and a {\tt key}  parameter of the  {\tt list} allows
 the reference of one instance of the list of node (an entry);
 \item
-{\tt  choice} that  contains  {\tt case}  constructs containing  other
-nodes;
+{\tt choice} that defines {\tt case} constructs containing other nodes
+and its value is the value of contained nodes of one of the defined
+cases;
 \item
 {\tt rpc} that  contains other nodes and is used  in the rpc mechanism
-of \nc.
+of \nc and its value is the value of contained nodes.
 \item
 {\tt  notification} that  contains other  nodes  and is  used by  \nc\
-notifications.
+notifications and its value is the value of contained nodes.
 \end{itemize}
 
 Following is an example of  a part of a \y\ specification\footnote{All
@@ -633,17 +640,18 @@ parameters added to standard ones.
 As  a  \nc\  agent  can  provide capabilities  with  new  rpc  embeded
 operations,  \y\ allows the  specification of  such an  operation. For
 example  the  {\tt  activate-software}  operation below  defines  data
-sended in  a {\tt <rpc>} message  with {\tt input}  statement and data
-returned in a {\tt <rpc-reply>} with the {\tt ouput} statement.
+sended  in a  {\tt <rpc>}  message  with {\tt  input} statement  (line
+\ref{input}) and  data returned in  a {\tt <rpc-reply>} with  the {\tt
+ouput} statement (line \ref{output}).
 
 \begin{lstlisting}
 rpc activate-software-image {
-    input {
+    input {(*@\label{input}@*)
        leaf image-name {
          type string;
        }
     }
-    output {
+    output {(*@\label{output}@*)
        leaf status {
          type string;
        }
@@ -656,12 +664,13 @@ rpc activate-software-image {
 A \nc\ agent can send notifications  that can be specified with \y\ by
 the  {\tt   notification}  statement.   Nodes  contained   in  a  {\tt
 specification} statement  model data sent  by the agent.  Below  is an
-example where the index of a failed interface will be sent.
+example where the index  of a failed interface (line \ref{notifparam})
+will be sent.
 
 \begin{lstlisting} 
 notification link-failure {
   description "A link failure has been detected";
-  leaf if-index {
+  leaf if-index {(*@\label{notifparam}@*)
       type int32 { range "1 .. max"; }
   }
 }
@@ -673,8 +682,9 @@ notification link-failure {
 requires  it. The  content of  an extention  is to  be  interpreted by
 specific  implementation.   Extensions can  be  used  anywhere in  \y\
 specifications. In the example  below, the extension {\tt c-define} is
-specified and  used with one name  argument (use of  extension must be
-prefixed).
+specified and  used with one name  argument (line \ref{extensionarg}).
+Each use of  an extension must be prefixed by  the module prefix where
+the extension is defined.
 
 \begin{lstlisting}
 extension c-define {
@@ -682,7 +692,7 @@ extension c-define {
            "Takes as argument a name string.
            Makes the code generator use the given name in the
            #define.";
-         argument "name";
+         argument "name";(*@\label{extensionarg}@*)
        }
 \end{lstlisting}
 
@@ -804,19 +814,20 @@ public class JyangTest {
    * @param args YANG file name
    */
    public static void main(String[] args) throws Exception {
-        // Get the YANG specification file
-        FileInputStream yangfile = new FileInputStream(args[0]);
-        // Set the jyang parser with the YANG specification file
-        new yang(yangfile);
-        // do the lexical and syntactic check
-        YANG_Specification spec = yang.Start();
-        // do the semantical check
-        spec.check();
-        // Now one can access YANG statements through spec
-        // for example spec.getHeaders() or spec.getImports()
+        FileInputStream yangfile = new FileInputStream(args[0]);(*@\label{getyangfile}@*)
+        new yang(yangfile);(*@\label{jyangparser}@*)
+        YANG_Specification spec = yang.Start();(*@\label{startjyang}@*)
+        spec.check();(*@\label{jyangcheck}@*)
    }
 }
 \end{lstlisting}
+
+The   program  first  gets   the  \y\   specification  file   at  line
+\ref{getyangfile}.    A    new   jyang   parser    is   created   line
+\ref{jyangparser} with this file.  The lexical and syntactic check are
+processed  at line  \ref{startjyang} and  return  a YANG\_specification
+object  instance  that  can   be  semantically  checked,  as  at  line
+\ref{jyangcheck}.
 
 \section{\jyang\ API}
 \label{api}
@@ -1316,7 +1327,7 @@ agent must provide them on top of the RPC mechanism.
 These evolutions will be bound to a particular \nc\ implementation.
 
 \bibliographystyle{plain}
-\bibliography{../bibtex/RFC/rfc,../bibtex/RFC/draft,../bibtex/W3C/w3c}
+\bibliography{../../../bibtex/RFC/rfc,../../../bibtex/RFC/draft,../../../bibtex/W3C/w3c}
 \end{document}
 \endinput
 %%
