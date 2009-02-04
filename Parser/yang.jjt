@@ -73,6 +73,8 @@ TOKEN : /* KEYWORDS */
 |
 <augmentkeyword        : "augment">
 |
+<basekeyword           : "base">
+|
 <belongstokeyword     : "belongs-to">
 |
 <bitkeyword            : "bit">
@@ -99,7 +101,17 @@ TOKEN : /* KEYWORDS */
 |
 <extensionkeyword      : "extension">
 |
+<deviationkeyword        : "deviation">
+|
+<deviatekeyword        : "deviate">
+|
+<featurekeyword        : "feature">
+|
 <groupingkeyword       : "grouping">
+|
+<identitykeyword        : "identity">
+|
+<iffeaturekeyword        : "if-feature">
 |
 <importkeyword         : "import">
 |
@@ -151,6 +163,8 @@ TOKEN : /* KEYWORDS */
 |
 <referencekeyword      : "reference">
 |
+<refinekeyword        : "refine">
+|
 <revisionkeyword       : "revision">
 |
 <rpckeyword            : "rpc">
@@ -177,9 +191,13 @@ TOKEN : /* KEYWORDS */
 |
 <yinelementkeyword    : "yin-element">
 |
+<addkeyword        : "add">
+|
 <currentkeyword        : "current">
 |
 <deprecatedkeyword     : "deprecated">
+|
+<deletekeyword        : "delete">
 |
 <falsekeyword          : "false">
 |
@@ -191,9 +209,13 @@ TOKEN : /* KEYWORDS */
 |
 <neginfkeyword         : "-INF">
 |
+<notsupportedkeyword        : "not-supported">
+|
 <obsoletekeyword       : "obsolete">
 |
 <posinfkeyword         : "INF">
+|
+<replacekeyword        : "replace">
 |
 <systemkeyword         : "system">
 |
@@ -433,7 +455,9 @@ YANG_Unknown un = null;
 	    |
             b = groupingstmt()
 	    |
-            b = datadefstmt() 
+            b = datadefstmt()
+	    |
+	    b = augmentstmt() 
 	    |
             b = rpcstmt() 
 	    |
@@ -463,8 +487,6 @@ YANG_DataDef d = null;}
 	d = anyxmlstmt() 
 	|
 	d = usesstmt() 
-	|
-	d = augmentstmt()
 	)
 		{
 		return d;
@@ -487,8 +509,6 @@ YANG_CaseDef d = null;}
         d = anyxmlstmt() 
 	|
         d = usesstmt() 
-	|
-        d = augmentstmt()
 	)
 		{
 		return d;
@@ -606,13 +626,18 @@ YANG_Belong belongstostmt()       #Belong :
 {
 Token t;
 String b = null;
+YANG_Prefix p = null;
 YANG_Unknown un = null;
 }
 {
 	t = <belongstokeyword>  b = identifierstr() 
-	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
+		"{" 
+		(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
+		p = prefixstmt()
+		(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setBelong(b);
+		jjtThis.setPrefix(p);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		return jjtThis;
