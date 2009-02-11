@@ -3,12 +3,51 @@
 package jyang;
 
 public class YANG_Identity extends SimpleNode {
-  public YANG_Identity(int id) {
-    super(id);
-  }
 
-  public YANG_Identity(yang p, int id) {
-    super(p, id);
-  }
+	private String identity = null;
+
+	private YANG_Base base = null;
+
+	private YANG_Status status = null;
+
+	private YANG_Description description = null;
+
+	private YANG_Reference reference = null;
+
+	private boolean b_base = false, b_status = false, b_description = false,
+			b_reference = false;
+
+	public YANG_Identity(int id) {
+		super(id);
+	}
+
+	public YANG_Identity(yang p, int id) {
+		super(p, id);
+	}
+
+	public void setIdentity(String i) {
+		identity = i;
+	}
+
+	public void setBase(YANG_Base b)  throws YangParserException {
+		if (b_base)
+			throw new YangParserException(
+					"Base is already defined in identity " + identity, b
+							.getLine(), b.getColumn());
+		base = b;
+		b_base = true;
+	}
+
+	public void setStatus(YANG_Status s) {
+		status = s;
+	}
+
+	public void setDescription(YANG_Description d) {
+		description = d;
+	}
+
+	public void setReference(YANG_Reference r) {
+		reference = r;
+	}
 
 }
