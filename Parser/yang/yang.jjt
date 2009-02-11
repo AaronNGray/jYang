@@ -1,14 +1,14 @@
 options {
-
   MULTI=true;
   NODE_DEFAULT_VOID=true;
   NODE_PREFIX="YANG_";
   NODE_PACKAGE="jyang";
-}
+  
+} 
 
 PARSER_BEGIN(yang)
-
-class yang {
+package jyang;
+public class yang {
 }
 
 PARSER_END(yang)
@@ -887,6 +887,16 @@ String yinelementarg()        :
 		{
 		return t.image;
 		}
+}
+
+YANG_Identity identitystmt()	#Identity	:
+{
+Token t;
+String i = null;
+}
+{
+	t = <identitykeyword> i = identifierstr()	
+	
 }
 
 YANG_TypeDef typedefstmt()     #TypeDef      : 
@@ -2645,6 +2655,69 @@ YANG_Refinement r = null;
 		}
 }
 
+YANG_RefineContainer refinecontainerstmt() #RefineContainer : 
+{
+String i = null;
+YANG_Must m = null;
+YANG_Presence p = null;
+YANG_Config c = null;
+YANG_Description d = null;
+YANG_Reference r = null;
+YANG_Refinement re = null;
+YANG_Unknown un = null;
+Token t;
+}
+{
+	t = <containerkeyword>  i = identifierstr()
+		{
+		jjtThis.setLine(t.beginLine);
+		jjtThis.setCol(t.beginColumn);
+		jjtThis.setRefineContainer(i);
+		} 
+        (
+	 ";" 
+	|
+         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+	//(refinecontainerAnyOrder())*
+	 (
+           m= muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
+		{
+		jjtThis.addMust(m);
+		}	
+	 |
+           p = presencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
+		{
+		jjtThis.setPresence(p);
+		}
+	 |
+           c = configstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*		
+		{
+		jjtThis.setConfig(c);
+		}
+	 |
+           d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
+		{
+		jjtThis.setDescription(d);
+		}
+	 |
+           r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
+		{
+		jjtThis.setReference(r);
+		}
+	 |
+           re = refinementstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+		{
+		jjtThis.addRefinement(re);
+		}
+	 )*
+	 "}"
+	)
+		{
+		return jjtThis;
+		}
+}
+
+
 YANG_RefineLeaf refineleafstmt()    #RefineLeaf   : 
 {
 String i = null;
@@ -2946,67 +3019,7 @@ Token t;
 }
 
 
-YANG_RefineContainer refinecontainerstmt() #RefineContainer : 
-{
-String i = null;
-YANG_Must m = null;
-YANG_Presence p = null;
-YANG_Config c = null;
-YANG_Description d = null;
-YANG_Reference r = null;
-YANG_Refinement re = null;
-YANG_Unknown un = null;
-Token t;
-}
-{
-	t = <containerkeyword>  i = identifierstr()
-		{
-		jjtThis.setLine(t.beginLine);
-		jjtThis.setCol(t.beginColumn);
-		jjtThis.setRefineContainer(i);
-		} 
-        (
-	 ";" 
-	|
-         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-	//(refinecontainerAnyOrder())*
-	 (
-           m= muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
-		{
-		jjtThis.addMust(m);
-		}	
-	 |
-           p = presencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
-		{
-		jjtThis.setPresence(p);
-		}
-	 |
-           c = configstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*		
-		{
-		jjtThis.setConfig(c);
-		}
-	 |
-           d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
-		{
-		jjtThis.setDescription(d);
-		}
-	 |
-           r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
-		{
-		jjtThis.setReference(r);
-		}
-	 |
-           re = refinementstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-		{
-		jjtThis.addRefinement(re);
-		}
-	 )*
-	 "}"
-	)
-		{
-		return jjtThis;
-		}
-}
+
 
 
 YANG_RefineAnyXml refineanyxmlstmt()    #RefineAnyXml : 
@@ -3059,52 +3072,6 @@ Token t;
 		}
 }
 
-YANG_Unknown unknownstatement()     #Unknown : 
-{
-String p = null;
-String kw = null;
-String str = null;
-Token i,j,l;
-YANG_Unknown unknown = null;
-}
-{
-	 p = prefix() l = ":" (
-				i = <IDENTIFIER>
-				{
-					jjtThis.setExtension(i.image);
-					jjtThis.setLine(i.beginLine);
-					jjtThis.setCol(i.beginColumn);
-				}
-				|
-				kw = anykeyword()
-				{
-					jjtThis.setExtension(kw);
-					jjtThis.setLine(l.beginLine);
-					jjtThis.setCol(l.beginColumn);
-				}
-			  ) 
-				[ 
-				str = string()
-				{
-					jjtThis.setArgument(str);
-				}
-				]
-         		  (
-	   			";" 
-	  			|
-	 			"{" (
-					unknown = unknownstatement()
-						{
-							jjtThis.addUnknown(unknown);
-						}
-				     )* 
-				"}"
-			  )
-				{
-					jjtThis.setPrefix(p);
-					return jjtThis;
-				}
-}
 
 YANG_Augment augmentstmt()         #Augment  : 
 {
@@ -3159,21 +3126,7 @@ YANG_Unknown un = null;
                 (c = casestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*)
 			{
 			jjtThis.addCase(c);
-			}
-		/*|
-		LOOKAHEAD(3)(
-		    i = inputstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
-			{
-			jjtThis.setInput(i);
-			}
-		   |
-                    outputstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-			{
-			jjtThis.setOutput(o);
-			}
-		)
-		*/
-				
+			}			
 	 )
 	 )*
 	"}"
@@ -3212,6 +3165,52 @@ String a = null;
 		{
 		return a;
 		}
+}
+YANG_Unknown unknownstatement()     #Unknown : 
+{
+String p = null;
+String kw = null;
+String str = null;
+Token i,j,l;
+YANG_Unknown unknown = null;
+}
+{
+	 p = prefix() l = ":" (
+				i = <IDENTIFIER>
+				{
+					jjtThis.setExtension(i.image);
+					jjtThis.setLine(i.beginLine);
+					jjtThis.setCol(i.beginColumn);
+				}
+				|
+				kw = anykeyword()
+				{
+					jjtThis.setExtension(kw);
+					jjtThis.setLine(l.beginLine);
+					jjtThis.setCol(l.beginColumn);
+				}
+			  ) 
+				[ 
+				str = string()
+				{
+					jjtThis.setArgument(str);
+				}
+				]
+         		  (
+	   			";" 
+	  			|
+	 			"{" (
+					unknown = unknownstatement()
+						{
+							jjtThis.addUnknown(unknown);
+						}
+				     )* 
+				"}"
+			  )
+				{
+					jjtThis.setPrefix(p);
+					return jjtThis;
+				}
 }
 
 YANG_When whenstmt()     #When         : 
@@ -3573,7 +3572,7 @@ String d = null,a = null;
 }
 {
           d = nodeidentifier()
-          a= absoluteschemanodeid()
+          a = absoluteschemanodeid()
 		{
 		return d + a;
 		}

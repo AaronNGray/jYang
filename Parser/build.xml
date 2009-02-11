@@ -6,8 +6,8 @@
     <!--delete dir="yang"/ -->
     <mkdir dir="yang"/> 
     <copy file="yang.jjt" todir="yang"/>
-    <jjtree target="yang.jjt" outputdirectory="yang" javacchome="${javacc.home}"/>
-    <javacc target="yang/yang.jj" outputdirectory="yang" javacchome="${javacc.home}"/>
+    <jjtree target="yang.jjt" outputdirectory="yang/jyang" javacchome="${javacc.home}"/>
+    <javacc target="yang/jyang/yang.jj" outputdirectory="yang/jyang" javacchome="${javacc.home}"/>
     <javac deprecation="false" srcdir="yang" destdir="yang"/>
     <echo message="*******"/>
     <echo message="******* Now cd into the yang directory and run 'java yang' ******"/>

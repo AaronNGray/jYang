@@ -1,0 +1,11 @@
+#Fri Feb 06 16:15:13 CET 2009
+CLEAR_CONSOLE=true
+JAVACC_OPTIONS=-JDK_VERSION\=1.6 -OUTPUT_DIRECTORY\="C\:\\Documents and Settings\\nataf\\Mes documents\\WSPACES\\YANG\\Parser\\yang\\jyang"
+JJDOC_OPTIONS=
+JJTREE_OPTIONS=-NODE_PREFIX\=YANG_ -NODE_PACKAGE\=jyang -JDK_VERSION\=1.6 -OUTPUT_DIRECTORY\="C\:\\Documents and Settings\\nataf\\Mes documents\\WSPACES\\YANG\\Parser\\yang\\jyang"
+JJ_NATURE=true
+JTB_OPTIONS=
+RUNTIME_JAR=C\:\\Program Files\\Java\\javacc-4.0\\bin\\javacc.jar
+SHOW_CONSOLE=true
+SUPPRESS_WARNINGS=false
+eclipse.preferences.version=1
