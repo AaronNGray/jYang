@@ -10,7 +10,6 @@ PARSER_BEGIN(yang)
 package jyang;
 public class yang {
 }
-
 PARSER_END(yang)
 
 SKIP :
@@ -449,7 +448,9 @@ YANG_Unknown un = null;
 {
 	(
 	  (
-	    b = extensionstmt() 
+	    	b = extensionstmt() 
+ 	    |
+ 	    	b = identitystmt()
  	    |
             b = typedefstmt() 
 	    |
@@ -893,11 +894,95 @@ YANG_Identity identitystmt()	#Identity	:
 {
 Token t;
 String i = null;
+YANG_Base b = null;
+YANG_Status s = null;
+YANG_Description d = null;
+YANG_Reference r = null;
 }
 {
 	t = <identitykeyword> i = identifierstr()	
-	
+		{
+			
+		}
+		( 
+			";"
+		|
+		
+			"{"
+			(
+				b = basestmt()
+					{
+						jjtThis.setBase(b);
+					}
+				|
+				s = statusstmt()
+					{
+						jjtThis.setStatus(s);
+					}
+				|
+				d = descriptionstmt()
+					{
+						jjtThis.setDescription(d);
+					}
+				|
+				r = referencestmt()
+					{
+						jjtThis.setReference(r);
+					}
+			)*
+			"}"
+			)
 }
+
+YANG_Base basestmt()	#Base :
+{
+	Token t;
+	String i = null;
+	YANG_Unknown un = null;
+}
+{
+	<basekeyword> i = identifierrefstr()
+		{
+		jjtThis.setBase(i);
+		jjtThis.setLine(t.beginLine);
+		jjtThis.setCol(t.beginColumn);
+		}
+}
+
+YANG_Feature featurestmt()	#Feature	:
+{
+	Token t;
+	String f = null;
+}
+{
+	<featurekeyword> f = identifierstr()
+	(
+		";"
+	|
+		"{"
+		(
+			i = iffeaturestmt()
+			|
+			s = statusstmt()
+			|
+			d = descriptionstmt()
+			|
+			r = referencestmt()
+		)*
+		"}"
+	)
+}	
+
+YANG_IfFeature iffeaturestmt() #IfFeature	:
+{
+	Token t;
+}
+{
+	t = <iffeaturekeyword> i = identifierrefstr()
+		{
+		}
+}
+			
 
 YANG_TypeDef typedefstmt()     #TypeDef      : 
 {
