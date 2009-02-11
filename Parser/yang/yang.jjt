@@ -941,7 +941,7 @@ YANG_Base basestmt()	#Base :
 	YANG_Unknown un = null;
 }
 {
-	<basekeyword> i = identifierrefstr()
+	t = <basekeyword> i = identifierrefstr()
 		{
 		jjtThis.setBase(i);
 		jjtThis.setLine(t.beginLine);
@@ -953,9 +953,13 @@ YANG_Feature featurestmt()	#Feature	:
 {
 	Token t;
 	String f = null;
+	YANG_IfFeature i = null;
+	YANG_Status s = null;
+	YANG_Description d = null;
+	YANG_Reference r = null;
 }
 {
-	<featurekeyword> f = identifierstr()
+	t = <featurekeyword> f = identifierstr()
 	(
 		";"
 	|
@@ -976,6 +980,7 @@ YANG_Feature featurestmt()	#Feature	:
 YANG_IfFeature iffeaturestmt() #IfFeature	:
 {
 	Token t;
+	String i = null;
 }
 {
 	t = <iffeaturekeyword> i = identifierrefstr()

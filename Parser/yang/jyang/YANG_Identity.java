@@ -2,7 +2,7 @@
 
 package jyang;
 
-public class YANG_Identity extends SimpleNode {
+public class YANG_Identity extends YANG_Body {
 
 	private String identity = null;
 
@@ -33,7 +33,7 @@ public class YANG_Identity extends SimpleNode {
 		if (b_base)
 			throw new YangParserException(
 					"Base is already defined in identity " + identity, b
-							.getLine(), b.getColumn());
+							.getLine(), b.getCol());
 		base = b;
 		b_base = true;
 	}
@@ -48,6 +48,17 @@ public class YANG_Identity extends SimpleNode {
 
 	public void setReference(YANG_Reference r) {
 		reference = r;
+	}
+
+	@Override
+	public void check(YangContext context) throws YangParserException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getBody() {
+		return identity;
 	}
 
 }
