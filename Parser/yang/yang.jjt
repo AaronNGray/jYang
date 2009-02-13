@@ -164,6 +164,8 @@ TOKEN : /* KEYWORDS */
 |
 <refinekeyword        : "refine">
 |
+<requireinstancekeyword : "require-instance">
+|
 <revisionkeyword       : "revision">
 |
 <rpckeyword            : "rpc">
@@ -208,7 +210,7 @@ TOKEN : /* KEYWORDS */
 |
 <neginfkeyword         : "-INF">
 |
-<notsupportedkeyword        : "not-supported">
+<notsupportedkeyword   : "not-supported">
 |
 <obsoletekeyword       : "obsolete">
 |
@@ -217,8 +219,6 @@ TOKEN : /* KEYWORDS */
 <replacekeyword        : "replace">
 |
 <systemkeyword         : "system">
-|
-<thisvariablekeyword  : "$this">
 |
 <truekeyword           : "true">
 |
@@ -449,6 +449,8 @@ YANG_Unknown un = null;
 	(
 	  (
 	    	b = extensionstmt() 
+	    |
+	    	b = featurestmt()
  	    |
  	    	b = identitystmt()
  	    |
@@ -458,11 +460,14 @@ YANG_Unknown un = null;
 	    |
             b = datadefstmt()
 	    |
-	    b = augmentstmt() 
+		    b = augmentstmt() 
 	    |
             b = rpcstmt() 
 	    |
             b = notificationstmt()
+        |
+        	b = deviationstmt()
+        	
 	  ) (LOOKAHEAD(2) un = unknownstatement() {b.addUnknown(un);})*
 	)
 		{
@@ -538,6 +543,7 @@ YANG_Import importstmt()      #Import      :
 Token t;
 YANG_Prefix n = null;
 String i;
+YANG_Revision r = null;
 YANG_Unknown un = null;
 }
 {
@@ -547,18 +553,28 @@ YANG_Unknown un = null;
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		}
-        "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+     "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+     	  (
            n = prefixstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-        "}"
-		{
-		 jjtThis.setPrefix(n);
-		 return jjtThis;
-		}	
+          		{
+					jjtThis.setPrefix(n);
+				}	
+           |
+           r = revisionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+          		{
+					jjtThis.setRevision(r);
+				}
+			)*
+        
+		
+		"}"
 }
+
 YANG_Include includestmt()       #Include    : 
 {
 Token t;
 String i;
+YANG_Revision r = null;
 YANG_Unknown un = null;
 }
 {
@@ -568,8 +584,22 @@ YANG_Unknown un = null;
 		jjtThis.setIdentifier(i);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
-		return jjtThis;
 		}
+		(
+				";"
+			|
+				"{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+					[ r = revisionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*]
+						{
+							jjtThis.setRevision(r);
+						}
+				"}"
+		)
+		{
+			
+			return jjtThis;
+		}
+					
 }
 
 YANG_NameSpace namespacestmt()   #NameSpace      : 
@@ -898,6 +928,7 @@ YANG_Base b = null;
 YANG_Status s = null;
 YANG_Description d = null;
 YANG_Reference r = null;
+YANG_Unknown un = null;
 }
 {
 	t = <identitykeyword> i = identifierstr()	
@@ -910,22 +941,22 @@ YANG_Reference r = null;
 		
 			"{"
 			(
-				b = basestmt()
+				b = basestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 					{
 						jjtThis.setBase(b);
 					}
 				|
-				s = statusstmt()
+				s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 					{
 						jjtThis.setStatus(s);
 					}
 				|
-				d = descriptionstmt()
+				d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 					{
 						jjtThis.setDescription(d);
 					}
 				|
-				r = referencestmt()
+				r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 					{
 						jjtThis.setReference(r);
 					}
@@ -941,7 +972,7 @@ YANG_Base basestmt()	#Base :
 	YANG_Unknown un = null;
 }
 {
-	t = <basekeyword> i = identifierrefstr()
+	t = <basekeyword> i = identifierrefstr() (";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setBase(i);
 		jjtThis.setLine(t.beginLine);
@@ -957,21 +988,39 @@ YANG_Feature featurestmt()	#Feature	:
 	YANG_Status s = null;
 	YANG_Description d = null;
 	YANG_Reference r = null;
+	YANG_Unknown un = null;
 }
 {
 	t = <featurekeyword> f = identifierstr()
+		{
+			jjtThis.setFeature(f);
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
+		}
 	(
 		";"
 	|
 		"{"
 		(
-			i = iffeaturestmt()
+			i = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+				{
+					jjtThis.addIfFeature(i);
+				}
 			|
-			s = statusstmt()
+			s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+				{
+					jjtThis.setStatus(s);
+				}
 			|
-			d = descriptionstmt()
+			d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+				{
+					jjtThis.setDescription(d);
+				}
 			|
-			r = referencestmt()
+			r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+				{
+					jjtThis.setReference(r);
+				}
 		)*
 		"}"
 	)
@@ -981,10 +1030,14 @@ YANG_IfFeature iffeaturestmt() #IfFeature	:
 {
 	Token t;
 	String i = null;
+	YANG_Unknown un = null;
 }
 {
-	t = <iffeaturekeyword> i = identifierrefstr()
+	t = <iffeaturekeyword> i = identifierrefstr() (";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
+			jjtThis.setIfFeature(i);
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
 		}
 }
 			
@@ -3538,6 +3591,194 @@ YANG_Unknown un = null;
 }
 
 
+YANG_Deviation deviationstmt()  #Deviation :
+{
+	Token t;
+	String dev = null;
+	YANG_Description d = null;
+	YANG_Reference r = null;
+	YANG_DeviateNotSupported dns = null;
+	YANG_DeviateAdd da = null;
+	YANG_DeviateReplace dr = null;
+	YANG_DeviateDelete dd = null;
+	YANG_Unknown un = null;
+}
+{
+	t = <deviationkeyword> dev = absoluteschemanodeid()
+	"{"
+		(
+			d = descriptionstmt()
+			|
+			r = referencestmt()
+			|
+			LOOKAHEAD (2) dns = deviatenotsupportedstmt()
+			|
+			LOOKAHEAD (2)da = deviateaddstmt()
+			|
+			LOOKAHEAD (2)dr = deviatereplacestmt()
+			|
+			LOOKAHEAD (2)dd = deviatedeletestmt()
+		)*
+	"}"
+		{
+			return jjtThis;
+		}
+}
+
+YANG_DeviateNotSupported deviatenotsupportedstmt() #DeviateNotSupported :
+{
+	Token t,u;
+	YANG_Unknown un = null;
+}
+{
+	t = <deviatekeyword> u = <notsupportedkeyword>
+		{
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
+		}
+	(
+			";"
+		|
+			"{"
+			(LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+			"}"
+	)
+		{
+			return jjtThis;
+		}
+}
+
+YANG_DeviateAdd deviateaddstmt() #DeviateAdd :
+{
+	Token t;
+	YANG_Units u = null;
+	YANG_Must m = null;
+	YANG_Unique uq = null;
+	YANG_Default d = null;
+	YANG_Config c = null;
+	YANG_Mandatory ma = null;
+	YANG_MinElement min = null;
+	YANG_MaxElement max = null;
+	YANG_Unknown un = null;
+}
+{
+	t = <deviatekeyword> <addkeyword> 
+		{
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
+		}
+		(
+			";"
+		  |
+			"{"
+				(
+					u = unitsstmt()
+					|
+					m = muststmt()
+					|
+					uq = uniquestmt()
+					|
+					d = defaultstmt()
+					|
+					c = configstmt()
+					|
+					ma = mandatorystmt()
+					|
+					min = minelementsstmt()
+					|
+					max = maxelementsstmt()
+				)*
+			"}"
+		)
+		{
+			return jjtThis;
+		}
+}
+			
+	
+YANG_DeviateDelete deviatedeletestmt() #DeviateDelete :
+{
+	Token t;
+	YANG_Units u = null;
+	YANG_Must m = null;
+	YANG_Unique uq = null;
+	YANG_Default d = null;
+	YANG_Unknown un = null;
+}
+{
+	t = <deviatekeyword> <deletekeyword> 
+		{
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
+		}
+		(
+			";"
+		  |
+			"{"
+				(
+					u = unitsstmt()
+					|
+					m = muststmt()
+					|
+					uq = uniquestmt()
+					|
+					d = defaultstmt()
+				)*
+			"}"
+		)
+		{
+			return jjtThis;
+		}
+}
+		
+		
+YANG_DeviateReplace deviatereplacestmt() #DeviateReplace :
+{
+	Token t;
+	YANG_Units u = null;
+	YANG_Type tp = null;
+	YANG_Default d = null;
+	YANG_Config c = null;
+	YANG_Mandatory ma = null;
+	YANG_MinElement min = null;
+	YANG_MaxElement max = null;
+	YANG_Unknown un = null;
+}
+{
+	t = <deviatekeyword> <replacekeyword> 
+		{
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
+		}
+		(
+			";"
+		  |
+			"{"
+				(
+					tp = typestmt()
+					|
+					u = unitsstmt()
+					|
+					d = defaultstmt()
+					|
+					c = configstmt()
+					|
+					ma = mandatorystmt()
+					|
+					min = minelementsstmt()
+					|
+					max = maxelementsstmt()
+				)*
+			"}"
+		)
+		{
+			return jjtThis;
+		}
+}
+							
+					
+		
+
 // Ranges
 
 String rangeexprstr()         : 
@@ -3875,7 +4116,7 @@ String pathkeyexpr()      :
 String p = null;
 }
 {
-	<thisvariablekeyword> "/" p = relpathkeyexpr()
+	currentfunctioninvocation() "/" p = relpathkeyexpr()
 		{
 		return "this/" + p;
 		}
@@ -3904,6 +4145,16 @@ String n = null, rp = new String();
 		return rp;
 		}
 }
+
+void currentfunctioninvocation() :
+{
+}
+{
+	<currentkeyword> "(" ")"
+}
+
+// Basic Rules
+
 
 String prefixstr()             :
 {String s;}
@@ -3950,11 +4201,13 @@ String anykeyword():
 {Token t;}
 {
 (
-t = <argumentkeyword>
-|
 t = <anyxmlkeyword>
 |
+t = <argumentkeyword>
+|
 t = <augmentkeyword>
+|
+t = <basekeyword>
 |
 t = <belongstokeyword>
 |
@@ -3982,7 +4235,17 @@ t = <errormessagekeyword>
 |
 t = <extensionkeyword>
 |
+t = <deviationkeyword>
+|
+t = <deviatekeyword>
+|
+t = <featurekeyword>
+|
 t = <groupingkeyword>
+|
+t = <identitykeyword>
+|
+t = <iffeaturekeyword>
 |
 t = <importkeyword>
 |
@@ -4034,6 +4297,10 @@ t = <rangekeyword>
 |
 t = <referencekeyword>
 |
+t = <refinekeyword>
+|
+t = <requireinstancekeyword>
+|
 t = <revisionkeyword>
 |
 t = <rpckeyword>
@@ -4060,6 +4327,8 @@ t = <yangversionkeyword>
 |
 t = <yinelementkeyword>
 |
+t = <addkeyword>
+|
 t = <currentkeyword>
 |
 t = <deprecatedkeyword>
@@ -4074,13 +4343,15 @@ t = <nankeyword>
 |
 t = <neginfkeyword>
 |
+t = <notsupportedkeyword>
+|
 t = <obsoletekeyword>
 |
 t = <posinfkeyword>
 |
-t = <systemkeyword>
+t = <replacekeyword>
 |
-t = <thisvariablekeyword>
+t = <systemkeyword>
 |
 t = <truekeyword>
 |

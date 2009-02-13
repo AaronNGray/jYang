@@ -38,16 +38,31 @@ public class YANG_Identity extends YANG_Body {
 		b_base = true;
 	}
 
-	public void setStatus(YANG_Status s) {
+	public void setStatus(YANG_Status s)  throws YangParserException{
+		if (b_status)
+			throw new YangParserException(
+					"Status is already defined in identity " + identity, s
+							.getLine(), s.getCol());
 		status = s;
+		b_status = true;
 	}
 
-	public void setDescription(YANG_Description d) {
+	public void setDescription(YANG_Description d)  throws YangParserException{
+		if (b_description)
+			throw new YangParserException(
+					"Description is already defined in identity " + identity, d
+							.getLine(), d.getCol());
 		description = d;
+		b_description = true;
 	}
 
-	public void setReference(YANG_Reference r) {
+	public void setReference(YANG_Reference r)  throws YangParserException {
+		if (b_reference)
+			throw new YangParserException(
+					"Reference is already defined in identity " + identity, r
+							.getLine(), r.getCol());
 		reference = r;
+		b_reference = true;
 	}
 
 	@Override

@@ -22,6 +22,16 @@ package jyang;
 public class YANG_Include extends SimpleNode implements YANG_Linkage {
 
 	private String include = null;
+	
+	private YANG_Revision revision = null;
+	
+	public YANG_Revision getRevision() {
+		return revision;
+	}
+
+	public void setRevision(YANG_Revision revision) {
+		this.revision = revision;
+	}
 
 	public YANG_Include(int id) {
 		super(id);
