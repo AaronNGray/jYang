@@ -204,6 +204,12 @@ public abstract class YANG_Body extends SimpleNode {
 				YANG_DataDef ddef = (YANG_DataDef) cdef;
 				datadefs.add(ddef);
 			}
+		} else if (this instanceof YANG_Uses){
+			YANG_Uses uses = (YANG_Uses) this;
+			YANG_Grouping g = uses.getGrouping();
+			for (Enumeration<YANG_DataDef> eddef = g.getDataDefs().elements(); eddef.hasMoreElements();){
+				datadefs.add(eddef.nextElement());
+			}
 		} else if (this instanceof YANG_Augment) {
 			YANG_Augment augment = (YANG_Augment) this;
 			datadefs = augment.getDataDefs();

@@ -1,21 +1,22 @@
 package jyang;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
@@ -32,6 +33,16 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDef {
 
 	private boolean b_status = false, b_description = false,
 			b_reference = false;
+	
+	private YANG_Grouping grouping = null;
+
+	public YANG_Grouping getGrouping() {
+		return grouping;
+	}
+
+	public void setGrouping(YANG_Grouping grouping) {
+		this.grouping = grouping;
+	}
 
 	public YANG_Uses(int id) {
 		super(id);
@@ -108,19 +119,22 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDef {
 	}
 
 	public void check(YangContext context) throws YangParserException {
-		YANG_Grouping grouping = context.getUsedGrouping(this);
-		String gping = grouping.getGrouping();
+		
+		
+		if (!context.isGroupingDefined(this)) {
+			System.err
+					.println(context.getSpec().getName() + "@" + getLine()
+							+ "." + getCol() + ":grouping " + uses
+							+ " cannot be found");
+		} else {
+			setGrouping(context.getUsedGrouping(this));
+			String gping = getGrouping().getGrouping();
 
-		if (YangBuiltInTypes.isBuiltIn(gping))
-			System.err.println(context.getSpec().getName() + "@" + getLine()
-					+ "." + getCol() + ":a built-in type cannot be used : "
-					+ uses);
-		else {
-			if (!context.isGroupingDefined(this)) {
+			if (YangBuiltInTypes.isBuiltIn(gping))
 				System.err.println(context.getSpec().getName() + "@"
-						+ getLine() + "." + getCol() + ":grouping " + uses
-						+ " cannot be found");
-			}
+						+ getLine() + "." + getCol()
+						+ ":a built-in type cannot be used : " + uses);
+
 		}
 
 		for (Enumeration<YANG_Refinement> er = refinements.elements(); er

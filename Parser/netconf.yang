@@ -1,0 +1,9 @@
+module netconf {
+
+	namespace "urn:loria:madynes:ensuite:yencap:1.0";
+	prefix ycp;
+	
+	include network;
+	;
+	
+}

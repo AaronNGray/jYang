@@ -662,10 +662,11 @@ YANG_Unknown un = null;
 }
 {
 	t = <belongstokeyword>  b = identifierstr() 
+		//(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		"{" 
-		(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		p = prefixstmt()
-		(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
+		//(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
+		"}"
 		{
 		jjtThis.setBelong(b);
 		jjtThis.setPrefix(p);

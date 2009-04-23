@@ -1,21 +1,22 @@
 package jyang;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
@@ -214,14 +215,13 @@ public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
 							+ getList() + " with config true");
 			} else {
 				YANG_Config parentConfig = getParentConfig();
-				if(parentConfig.getConfig().compareTo("true") == 0)
+				if (parentConfig.getConfig().compareTo("true") == 0)
 					throw new YangParserException("@" + getLine() + "."
 							+ getCol() + ":key not present in list "
 							+ getList() + " with parent config true");
-				}
 			}
-		else {
-			
+		} else {
+
 			if (b_config) {
 				YANG_Config parentConfig = getParentConfig();
 				if (parentConfig.getConfig().compareTo("false") == 0
@@ -240,16 +240,15 @@ public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
 								+ getList());
 				boolean found = false;
 				String configlist = null;
-				if (!b_config){
+				if (!b_config) {
 					configlist = getParentConfig().getConfig();
-				}
-				else
+				} else
 					configlist = getConfig().getConfig();
 				for (Enumeration<YANG_DataDef> ed = getDataDefs().elements(); !found
 						&& ed.hasMoreElements();) {
 					YANG_DataDef dd = ed.nextElement();
-					if (dd.getBody().compareTo(kleafs[i]) == 0) {
-						found = true;
+					found = findKey(context, kleafs[i], dd);
+					if(found){
 						if (dd instanceof YANG_Leaf) {
 							YANG_Leaf leaf = (YANG_Leaf) dd;
 							if (context.getBuiltInType(leaf.getType()) != null) {
@@ -292,10 +291,8 @@ public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
 			}
 		}
 		/*
-		for (Enumeration<YANG_Unique> eu = getUniques().elements(); eu
-				.hasMoreElements();) {
-			YANG_Unique unique = eu.nextElement();
-		}
+		 * for (Enumeration<YANG_Unique> eu = getUniques().elements(); eu
+		 * .hasMoreElements();) { YANG_Unique unique = eu.nextElement(); }
 		 */
 		if (datadefs.size() == 0)
 			throw new YangParserException("@" + getLine() + ":" + getCol()
@@ -305,16 +302,45 @@ public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
 		 * 
 		 * Hashtable<String , YANG_DataDef> nodes = new Hashtable<String,
 		 * YANG_DataDef>(); for (Enumeration <YANG_DataDef> edd =
-		 * getDataDefs().elements(); edd.hasMoreElements();){ YANG_DataDef ddef =
-		 * edd.nextElement(); if (!(ddef instanceof YANG_Uses)){
+		 * getDataDefs().elements(); edd.hasMoreElements();){ YANG_DataDef ddef
+		 * = edd.nextElement(); if (!(ddef instanceof YANG_Uses)){
 		 * nodes.put(ddef.getBody(), ddef); } if (ddef instanceof YANG_Uses){
 		 * YANG_Uses uses = (YANG_Uses) ddef; for (Enumeration <YANG_Refinement>
 		 * er = uses.getRefinements().elements(); er.hasMoreElements();){
 		 * YANG_Refinement ref = er.nextElement(); if
-		 * (nodes.containsKey(ref.getBody())) throw new YangParserException("@" +
-		 * ref.getLine() + "." + ref.getCol() + ":refinement " + ref.getBody() + "
-		 * is already defined in list " + getBody()); } } }
+		 * (nodes.containsKey(ref.getBody())) throw new YangParserException("@"
+		 * + ref.getLine() + "." + ref.getCol() + ":refinement " + ref.getBody()
+		 * + " is already defined in list " + getBody()); } } }
 		 */
+	}
+
+	private boolean findKey(YangContext context, String k, YANG_DataDef dd) {
+		
+		if (dd.getBody().compareTo(k) == 0)
+			return true;
+		if (dd instanceof YANG_Uses) {
+			YANG_Uses uses = (YANG_Uses) dd;
+			YANG_Grouping grouping = context.getUsedGrouping(uses);
+			for (Enumeration<YANG_DataDef> edd = grouping.getDataDefs()
+					.elements(); edd.hasMoreElements();) {
+				YANG_DataDef gdd = edd.nextElement();
+					return findKey(context, k, gdd);
+			}
+		}
+		if (dd instanceof YANG_Choice) {
+			YANG_Choice c = (YANG_Choice) dd;
+			for (Enumeration<YANG_Case> ecases = c.getCases().elements(); ecases
+					.hasMoreElements();) {
+				YANG_Case ca = ecases.nextElement();
+				for (Enumeration<YANG_CaseDef> ecdef = ca.getCaseDefs()
+						.elements(); ecdef.hasMoreElements();) {
+					YANG_CaseDef cdef = ecdef.nextElement();
+					if (cdef instanceof YANG_DataDef)
+						return findKey(context, k, (YANG_DataDef)cdef);
+				}
+			}
+		}
+		return false;
 	}
 
 	public String toString() {

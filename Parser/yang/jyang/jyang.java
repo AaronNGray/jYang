@@ -22,9 +22,14 @@ import java.util.*;
 import java.io.*;
 
 public class jyang {
+	
+	private Hashtable<String, YANG_Specification> yangsSpecs = new Hashtable<String, YANG_Specification>();
+	
 	public static void main(String args[]) {
 		new jyang(args);
 	}
+	
+
 
 	public jyang(String args[]) {
 		// Parsing arguments
@@ -205,7 +210,9 @@ public class jyang {
 				YANG_Specification yangspec = yang.Start();
 				Vector<String> checkeds = new Vector<String>();
 				yangspec.check(paths, checkeds);
-
+				
+				yangsSpecs.put(yangspec.getName(), yangspec);
+				
 				if (format != null) {
 					if (format.compareTo("yin") == 0) {
 						new Yang2Yin(yangspec, paths, out);
@@ -218,5 +225,9 @@ public class jyang {
 				System.exit(-1);
 			}
 		}
+	}
+
+	public Hashtable<String, YANG_Specification> getYangsSpecs() {
+		return yangsSpecs;
 	}
 }
