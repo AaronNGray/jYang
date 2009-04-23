@@ -108,35 +108,35 @@ public class YangController {
 				if (n instanceof Element) {
 					for (Enumeration<YANG_DataDef> eb = ycont.getDataDefs()
 							.elements(); eb.hasMoreElements();) {
+
 						YANG_DataDef ddef = eb.nextElement();
+
 						if (ddef instanceof YANG_Uses) {
 							YANG_Grouping g = ((YANG_Uses) ddef).getGrouping();
 							for (Enumeration<YANG_DataDef> eddef = g
 									.getDataDefs().elements(); eddef
-									.hasMoreElements();)
-
-								cn.addContent(walk(n, eddef.nextElement()));
-						}
-						if (n.getNodeName().equals(ddef.getBody())) {
-							if (ddef instanceof YANG_Container
-									|| ddef instanceof YANG_List)
-								cn.addContent(walk(n, ddef));
-							else if (ddef instanceof YANG_Leaf) {
-								cn.addContent(walk(n, ddef));
+									.hasMoreElements();) {
+								YANG_DataDef ddefused = eddef.nextElement();
+								if (ddefused.getBody().equals(n.getNodeName())) {
+									cn.addContent(walk(n, ddefused));
+								}
 							}
+						}else if (n.getNodeName().equals(ddef.getBody())) {
+								cn.addContent(walk(n, ddef));
 						}
 					}
-					System.out.println("END WALK container");
-					return cn;
-				}
+					
+				}	
 			}
+			System.out.println("END WALK container " + cn.getName());
+					return cn;
 		} else if (b instanceof YANG_List) {
 
 			YANG_List ylist = (YANG_List) b;
 			ListNode ln = new ListNode(ylist);
 			System.out.println("Create list " + ylist.getBody());
-			NodeList nl = node.getChildNodes();
 
+			NodeList nl = node.getChildNodes();
 			for (int i = 0; i < nl.getLength(); i++) {
 				Node n = nl.item(i);
 				if (n instanceof Element) {
@@ -146,34 +146,31 @@ public class YangController {
 							.elements(); eb.hasMoreElements();) {
 
 						YANG_DataDef ddef = eb.nextElement();
-						
+						if (ddef instanceof YANG_Uses) {
+							YANG_Grouping g = ((YANG_Uses) ddef).getGrouping();
+							for (Enumeration<YANG_DataDef> eddef = g
+									.getDataDefs().elements(); eddef
+									.hasMoreElements();) {
+								YANG_DataDef ddefused = eddef.nextElement();
+								lentry.put(ddefused.getBody(),
+										walk(n, ddefused));
+							}
+						}
 						if (ddef.getBody().equals(n.getNodeName())) {
 							if (ddef instanceof YANG_Container
 									|| ddef instanceof YANG_List) {
 								DataNode dn = walk(n, ddef);
 								lentry.put(ddef.getBody(), dn);
 
-							} else if (ddef instanceof YANG_Uses) {
-								YANG_Grouping g = ((YANG_Uses) ddef)
-										.getGrouping();
-								for (Enumeration<YANG_DataDef> eddef = g
-										.getDataDefs().elements(); eddef
-										.hasMoreElements();) {
-									YANG_DataDef ddefused = eddef.nextElement();
-									lentry.put(ddefused.getBody(), walk(n,
-											ddefused));
-
-								}
-
 							} else if (ddef instanceof YANG_Leaf) {
 								lentry.put(ddef.getBody(), walk(n, ddef));
 							}
 						}
-					}ln.addEntry(ylist.getBody(), lentry);
+					}// ln.addEntry(ylist.getBody(), lentry);
 				}
-				
+
 			}
-			System.out.println("END WALK");
+			System.out.println("END WALK list " + ln.getName());
 			return ln;
 		} else if (b instanceof YANG_Grouping) {
 			YANG_Grouping g = (YANG_Grouping) b;
