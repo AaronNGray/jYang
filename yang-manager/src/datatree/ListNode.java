@@ -1,27 +1,34 @@
 package datatree;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import jyang.YANG_List;
 
 public class ListNode extends DataNode {
+
+	private Vector<DataNode> entry = new Vector<DataNode>();
+	private String keyvalue;
 	
-	private class Entry {
-		Hashtable<String, DataNode> entry = new Hashtable<String, DataNode>();
-		Entry(Hashtable<String, DataNode> e){
-			entry = e;
-		}
-	}
-	
-	private Hashtable<String, Entry> entries = new Hashtable<String, Entry>();
-	
-	public ListNode(YANG_List d){
+	public ListNode(YANG_List d) {
 		definition = d;
 	}
-	
-	public void addEntry(String i, Hashtable<String, DataNode> e){
-		Entry entry = new Entry(e);
-		entries.put(i, entry);
+
+	public void setEntry(Vector<DataNode> e) {
+		entry = e;
+	}
+
+	public String toString() {
+		String result = "list " + definition.getBody() + " key : " + keyvalue + "\n";
+		for (Enumeration<DataNode> es = entry.elements(); es.hasMoreElements();)
+			result += es.nextElement().toString() + "\n";
+		return result;
+	}
+
+	public void setKey(String kv) {
+		keyvalue = kv;
+		
 	}
 
 }

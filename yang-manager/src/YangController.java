@@ -37,7 +37,8 @@ public class YangController {
 				YANG_Body b = eb.nextElement();
 				if (b instanceof YANG_Container && b.getBody().equals(root)) {
 					found = true;
-					rootnode = walk(docelt, b);
+					rootnode = walk("", docelt, b);
+					System.out.println(rootnode);
 				}
 			}
 		}
@@ -64,10 +65,7 @@ public class YangController {
 
 	}
 
-	private DataNode walk(Node node, YANG_Body b) {
-
-		System.out.println("START WALK " + node.getNodeName() + " "
-				+ b.getBody());
+	private DataNode walk(String p, Node node, YANG_Body b) {
 
 		if (b instanceof YANG_Leaf) {
 			LeafNode ln = null;
@@ -78,21 +76,22 @@ public class YangController {
 					Matcher m = empty.matcher(n.getTextContent());
 					if (!m.matches()) {
 						ln = new LeafNode((YANG_Leaf) b, n.getTextContent());
-						System.out.println("create leaf " + b.getBody()
-								+ " with value : " + n.getTextContent());
 						return ln;
 					}
-				} else
-					System.err
-							.println("leaf " + b.getBody() + " without value");
+				} else {
+					System.err.println(p + "leaf " + b.getBody()
+							+ " without value");
+					return null;
+				}
 
 			}
+			if (nl.getLength() == 0)
+				return new LeafNode((YANG_Leaf) b, "");
 
 		} else if (b instanceof YANG_Container) {
 
 			YANG_Container ycont = (YANG_Container) b;
 			ContainerNode cn = new ContainerNode(ycont);
-			System.out.println("Create container " + ycont.getBody());
 
 			// retrieve attributes of a node
 			// don't know what to do with
@@ -118,32 +117,41 @@ public class YangController {
 									.hasMoreElements();) {
 								YANG_DataDef ddefused = eddef.nextElement();
 								if (ddefused.getBody().equals(n.getNodeName())) {
-									cn.addContent(walk(n, ddefused));
+									cn.addContent(walk(p + " ", n, ddefused));
 								}
 							}
-						}else if (n.getNodeName().equals(ddef.getBody())) {
-								cn.addContent(walk(n, ddef));
+						} else if (n.getNodeName().equals(ddef.getBody())) {
+							cn.addContent(walk(p + " ", n, ddef));
 						}
 					}
-					
-				}	
+
+				}
 			}
-			System.out.println("END WALK container " + cn.getName());
-					return cn;
+			return cn;
 		} else if (b instanceof YANG_List) {
-
 			YANG_List ylist = (YANG_List) b;
-			ListNode ln = new ListNode(ylist);
-			System.out.println("Create list " + ylist.getBody());
+			int index;
+			String keyname = "";
+			String keyvalue = "";
+			int nbcol = ylist.getDataDefs().size();
 
+			if (ylist.getKey() == null)
+				index = 0;
+			else {
+				YANG_Key k = ylist.getKey();
+				keyname = k.getKey();
+			}
+
+			ListNode ln = new ListNode(ylist);
+
+			Vector<DataNode> lentry = new Vector<DataNode>();
 			NodeList nl = node.getChildNodes();
 			for (int i = 0; i < nl.getLength(); i++) {
 				Node n = nl.item(i);
 				if (n instanceof Element) {
-
-					Hashtable<String, DataNode> lentry = new Hashtable<String, DataNode>();
+					boolean foundElt = false;
 					for (Enumeration<YANG_DataDef> eb = ylist.getDataDefs()
-							.elements(); eb.hasMoreElements();) {
+							.elements(); eb.hasMoreElements() && !foundElt;) {
 
 						YANG_DataDef ddef = eb.nextElement();
 						if (ddef instanceof YANG_Uses) {
@@ -152,37 +160,57 @@ public class YangController {
 									.getDataDefs().elements(); eddef
 									.hasMoreElements();) {
 								YANG_DataDef ddefused = eddef.nextElement();
-								lentry.put(ddefused.getBody(),
-										walk(n, ddefused));
+								lentry.add(walk(p + " ", n,
+										ddefused));
 							}
 						}
 						if (ddef.getBody().equals(n.getNodeName())) {
+							nbcol--;
+							foundElt = true;
 							if (ddef instanceof YANG_Container
 									|| ddef instanceof YANG_List) {
-								DataNode dn = walk(n, ddef);
-								lentry.put(ddef.getBody(), dn);
+								DataNode dn = walk(p + " ", n, ddef);
+								lentry.add(dn);
 
 							} else if (ddef instanceof YANG_Leaf) {
-								lentry.put(ddef.getBody(), walk(n, ddef));
+								lentry.add( walk(p + " ", n,
+										ddef));
+							}
+
+							if (ddef.getBody().equals(keyname)) {
+								NodeList nlk = n.getChildNodes();
+								boolean found = false;
+								for (int k = 0; k < nlk.getLength() && !found; k++) {
+									Node nk = nlk.item(k);
+									if (!(nk instanceof Element)) {
+										Matcher m = empty.matcher(nk
+												.getTextContent());
+										if (!m.matches()) {
+											keyvalue = nk.getTextContent();
+											ln.setKey(keyvalue);
+											found = true;
+										}
+									} else {
+										System.err.println(p + " key leaf "
+												+ nk.getTextContent()
+												+ " without value");
+									}
+								}
+								if (nlk.getLength() == 0)
+									System.err.println(p + " key leaf "
+											+ b.getBody() + " without value");
 							}
 						}
-					}// ln.addEntry(ylist.getBody(), lentry);
+					}
 				}
-
 			}
-			System.out.println("END WALK list " + ln.getName());
+			if (nbcol == 0) {
+				ln.setEntry(lentry);
+				nbcol = ylist.getDataDefs().size();
+			}
 			return ln;
-		} else if (b instanceof YANG_Grouping) {
-			YANG_Grouping g = (YANG_Grouping) b;
-			for (Enumeration<YANG_DataDef> eddef = g.getDataDefs().elements(); eddef
-					.hasMoreElements();) {
-				YANG_DataDef ddefused = eddef.nextElement();
-
-			}
 		}
-		System.out.println("END WALK");
 		return null;
-
 	}
 
 	public YangView createView(XMLStreamReader xsr) {

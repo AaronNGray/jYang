@@ -9,5 +9,5 @@ public abstract class DataNode {
 	public String getName(){
 		return definition.getBody();
 	}
-
+	
 }

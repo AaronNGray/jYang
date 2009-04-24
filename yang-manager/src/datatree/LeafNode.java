@@ -14,5 +14,9 @@ public class LeafNode extends DataNode {
 	public String getValue(){
 		return value;
 	}
+	
+	public String toString(){
+		return "leaf " + definition.getBody() + "; value : " + value;
+	}
 
 }
