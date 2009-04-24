@@ -35,7 +35,7 @@ public class YANG_Key extends SimpleNode {
 	}
 
 	public void setKey(String k) {
-		key = k;
+		key = k.trim();
 	}
 
 	public String getKey() {
