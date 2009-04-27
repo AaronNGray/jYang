@@ -168,6 +168,8 @@ TOKEN : /* KEYWORDS */
 |
 <revisionkeyword       : "revision">
 |
+<revisiondatekeyword : "revision-date">
+|
 <rpckeyword            : "rpc">
 |
 <statuskeyword         : "status">
@@ -379,7 +381,7 @@ YANG_Unknown un = null;
         h = prefixstmt() (LOOKAHEAD(2) un = unknownstatement() {h.addUnknown(un);})*
 	)
 		{
-		return (YANG_Header)h;
+		return (YANG_Header);
 		}
 }
 	
@@ -397,7 +399,7 @@ YANG_Unknown un = null;
 	h = yangversionstmt() (LOOKAHEAD(2) un = unknownstatement() {h.addUnknown(un);})*
 	)
 		{
-		return (YANG_Header)h;
+		return (YANG_Header);
 		}
 }
 
@@ -560,7 +562,7 @@ YANG_Unknown un = null;
 					jjtThis.setPrefix(n);
 				}	
            |
-           r = revisionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+           r = revisiondatestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
           		{
 					jjtThis.setRevision(r);
 				}
@@ -589,7 +591,7 @@ YANG_Unknown un = null;
 				";"
 			|
 				"{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-					[ r = revisionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*]
+					[ r = revisiondatestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*]
 						{
 							jjtThis.setRevision(r);
 						}
@@ -762,7 +764,6 @@ YANG_Unknown un = null;
 		return jjtThis;
 		}
 }
-
 YANG_Revision revisionstmt()    #Revision      : 
 
 {
@@ -772,6 +773,35 @@ String da = null;
 YANG_Unknown un = null;}
 {
 	t = <revisionkeyword>  da = dateexprstr() 
+		{
+		jjtThis.setDate(da);
+		jjtThis.setLine(t.beginLine);
+		jjtThis.setCol(t.beginColumn);
+		}
+        (
+	";" 
+	|
+        "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+         [d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*]
+        "}"
+		{
+		if(d != null)
+			jjtThis.setDescription(d);
+		}
+	)
+		{
+		return jjtThis;
+		}
+}
+YANG_Revision revisiondatestmt()    #Revision      : 
+
+{
+Token t;
+YANG_Description d = null;
+String da = null;
+YANG_Unknown un = null;}
+{
+	t = <revisiondatekeyword>  da = dateexprstr() 
 		{
 		jjtThis.setDate(da);
 		jjtThis.setLine(t.beginLine);
@@ -1123,6 +1153,22 @@ YANG_Unknown un = null;
 	 ";" 
 	|
           "{"  (LOOKAHEAD(2) un = unknownstatement(){jjtThis.addUnknown(un);})*
+          
+	   n = numericalrestrictions() 
+		{
+		jjtThis.setNumRest(n);
+		}
+	   |
+	   d = decimal64specification()
+	     {
+	     	jjtThis.setDec64Spec(d);
+	     }
+	   |
+       s = stringrestrictions()
+		{
+		jjtThis.setStringRest(s);
+		}
+	   |
           ( 
              (
 		  LOOKAHEAD(2) e = enumspecification()
@@ -1131,10 +1177,20 @@ YANG_Unknown un = null;
 			}
 	     )+ 
 	   |
-	   k = keyrefspecification() 
+	   k = leafrefspecification() 
 		{
 		jjtThis.setKeyRef(k);
 		}
+	   |
+	   i = identityrefspecification()
+	    {
+	    	jjtThis.setIdentitySepc(i);
+	    }
+	   |
+	   ii = instanceidentifierspecification()
+	    {
+	    	jjtThis.setInstanceIdentifierSpec(ii);
+	    }
 	   |
 	   b = bitsspecification() 
 		{
@@ -1145,22 +1201,13 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setUnionSpec(u);
 		}
-	   |
-	   n = numericalrestrictions() 
-		{
-		jjtThis.setNumRest(n);
-		}
-	   |
-           s = stringrestrictions()
-		{
-		jjtThis.setStringRest(s);
-		}
           )
           (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
           "}" 
 	)
-		{jjtThis.checkTypeSyntax();
-		return jjtThis;
+		{
+			jjtThis.checkTypeSyntax();
+			return jjtThis;
 		}
 		
 }
@@ -1227,6 +1274,66 @@ Token rt;
 		}
 }
 
+YANG_Decimal64Spec decimal64specification()      #Decimal64Spec:
+{
+	Token f;
+	String s =  null;
+}
+{
+	f = <fractiondigitkeyword> s = fractiondigitstmt()
+	{
+		jjtThis.setFractionDigit(s);
+		jjtThis.setLine(f.beginLine);
+		jjtThis.setCol(f.beginColumn);
+		return jjtThis;
+	}
+}
+
+String fractiondigitstmt()        :
+{
+	String d1 = null, d2 = null;
+}
+{
+	(
+		(
+			d1 = "1"
+			[
+				d2 = "2"
+				|
+				d2 = "3"
+				|
+				d2 = "4"
+				|
+				d2 = "5"
+				|
+				d2 = "6"
+				|
+				d2 = "7"
+				|
+				d2 = "8"
+			]
+		)
+		| 
+		d1 = "2"
+		|
+		d1 = "3"
+		|
+		d1 = "4"
+		|
+		d1 = "5"
+		|
+		d1 = "6"
+		|
+		d1 = "7"
+		|
+		d1 = "8"
+		|
+		d1 = "9"
+	)
+	{
+		return d1 + d2;
+	}	
+}
 YANG_StringRestriction stringrestrictions()     #StringRestriction :
  // these stmts can appear in any order
 {
@@ -1462,16 +1569,27 @@ YANG_Unknown un = null;
 		}
 }
 
-YANG_KeyRefSpecification keyrefspecification()   : 
+YANG_LeafRefSpecification keyrefspecification()   : 
 {
 YANG_Path p = null;
-YANG_Unknown un = null;}
-{
-	p = pathstmt() (LOOKAHEAD(2) un = unknownstatement() {p.addUnknown(un);})*
-		{
-		return (YANG_KeyRefSpecification) p;
-		}	
+YANG_Unknown un = null;
+String r = null;
 }
+{
+	(p = pathstmt() (LOOKAHEAD(2) un = unknownstatement() {p.addUnknown(un);})*
+		
+	|	
+	r =  requireinstancestmt() (LOOKAHEAD(2) un = unknownstatement() {p.addUnknown(un);})*
+	)+
+	{
+		if (r != null && p != null)
+			p.setRequireInstance(r);
+		return (YANG_LeafRefSpecification)p;
+	}
+			
+}
+
+
 
 YANG_Path pathstmt()   #Path           : 
 {
@@ -1485,6 +1603,45 @@ YANG_Unknown un = null;
 		jjtThis.setPath(p);
 		return jjtThis;
 		}
+}
+
+String requireinstancestmt()		:
+{
+Token t;
+}
+{	
+	(
+	t = <truekeyword>
+	|
+	t = <falsekeyword>
+	)
+	{ 
+		return t.image;
+	}
+}
+
+String instanceidentifierspecification()	:
+{
+String s = null;
+}
+{
+	[
+		s = requireinstancestmt()
+		{
+			return s;
+		}
+	]
+}	
+
+YANG_Base identityrefspecification() :
+{
+	YANG_Base b = null;
+}
+{
+	b = basestmt()
+	{
+		return b;
+	}
 }
 
 YANG_UnionSpecification unionspecification()   #UnionSpecification :
@@ -1987,7 +2144,7 @@ String p = null;
 		return t.image;
 		}
 	| 
-	 p = positivedecimalvalue()
+	 p = positiveintegervalue()
 		{
 		return p;
 		}
@@ -1999,7 +2156,7 @@ String d = null;
 YANG_Unknown un = null;
 }
 {
-	<valuekeyword>  d = decimalvalue()
+	<valuekeyword>  d = integervalue()
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setValue(d);
@@ -2078,6 +2235,8 @@ YANG_Container containerstmt()     #Container    :
 {
 Token to;
 String i = null;
+YANG_When w = null;
+YANG_IfFeature i = null;
 YANG_Must m = null;
 YANG_Presence p = null;
 YANG_Config c = null;
@@ -2102,6 +2261,16 @@ YANG_Unknown un = null;
 	 "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 	 //(containerAnyOrder())*
 	  (
+	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.setWhen(w);
+	  		}
+	  	|
+	  	i = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.addIfFeature(i);
+	  		}
+	  	|
 		m = muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 			{
 			jjtThis.addMust(m);
@@ -2162,6 +2331,8 @@ YANG_Leaf leafstmt()          #Leaf    :
 {
 Token leaf;
 String i = null;
+YANG_When w = null;
+YANG_IfFeature i = null;
 YANG_Type t = null;
 YANG_Units u = null;
 YANG_Must m = null;
@@ -2184,6 +2355,16 @@ YANG_Unknown un = null;
 		(LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 		//(leafAnyOrder())*
 		(
+	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.setWhen(w);
+	  		}
+	  	|
+	  	i = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.addIfFeature(i);
+	  		}
+	  	|
 		t = typestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 			{
 			jjtThis.setType(t);
@@ -2241,6 +2422,8 @@ YANG_LeafList leafliststmt()    #LeafList     :
 {
 Token leaflist;
 String i = null;
+YANG_When w = null;
+YANG_IfFeature i = null;
 YANG_Type t = null;
 YANG_Units u = null;
 YANG_Must mu = null;
@@ -2263,6 +2446,16 @@ YANG_Unknown un = null;
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
         // these stmts can appear in any order
 	(
+	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.setWhen(w);
+	  		}
+	  	|
+	  	i = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.addIfFeature(i);
+	  		}
+	  	|
          t = typestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 		{
 		jjtThis.setType(t);
@@ -2323,6 +2516,8 @@ YANG_List liststmt()        #List      :
 {
 Token list;
 String i = null;
+YANG_When w = null;
+YANG_IfFeature i = null;
 YANG_Must m = null;
 YANG_Key k = null;
 YANG_Unique u = null;
@@ -2348,6 +2543,16 @@ YANG_Unknown un = null;
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	
 	(
+	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.setWhen(w);
+	  		}
+	  	|
+	  	i = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.addIfFeature(i);
+	  		}
+	  	|
          m = muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 		{
 		jjtThis.addMust(m);
@@ -2526,6 +2731,8 @@ String d = null,u = new String();
 {
 Token choice;
 String i = null;
+YANG_When w = null;
+YANG_IfFeature i = null;
 YANG_Default d = null;
 YANG_Config cf = null;
 YANG_Mandatory m = null;
@@ -2548,6 +2755,16 @@ YANG_Unknown un = null;
 	|
 	 "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	  (
+	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.setWhen(w);
+	  		}
+	  	|
+	  	i = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.addIfFeature(i);
+	  		}
+	  	|
 
             d = defaultstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 		{
@@ -2624,6 +2841,8 @@ YANG_Case casestmt()      #Case        :
 {
 Token tcase;
 String i = null;
+YANG_When w = null;
+YANG_IfFeature i = null;
 YANG_Status s = null;
 YANG_Description d = null;
 YANG_Reference r = null;
@@ -2642,6 +2861,16 @@ YANG_Unknown un = null;}
          "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(caseAnyOrder())*
 	 (
+	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.setWhen(w);
+	  		}
+	  	|
+	  	i = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.addIfFeature(i);
+	  		}
+	  	|
             s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 		{
 		jjtThis.setStatus(s);
@@ -2673,6 +2902,9 @@ YANG_AnyXml anyxmlstmt()      #AnyXml      :
 {
 Token any;
 String i = null;
+YANG_When w = null;
+YANG_IfFeature i = null;
+YANG_Must mu = null;
 YANG_Config c = null;
 YANG_Mandatory m = null;
 YANG_Status s = null;
@@ -2693,6 +2925,21 @@ YANG_Unknown un = null;
          "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(anyxmlAnyOrder())*
 	 (
+	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.setWhen(w);
+	  		}
+	  	|
+	  	i = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.addIfFeature(i);
+	  		}
+	  	|
+         mu = muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+			{
+				jjtThis.addMust(mu);
+			}
+	  	|
 	  c = configstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 		{
 		jjtThis.setConfig(c);
@@ -2730,10 +2977,13 @@ YANG_Uses usesstmt()          #Uses    :
 {
 Token uses;
 String i = null;
+YANG_When w = null;
+YANG_IfFeature i = null;
 YANG_Status s = null;
 YANG_Description d = null;
 YANG_Reference r = null;
 YANG_Refinement re = null;
+String u = null;
 YANG_Unknown un = null;
 }
 {
@@ -2749,11 +2999,21 @@ YANG_Unknown un = null;
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(useAnyOrder())*
 	 (
+	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.setWhen(w);
+	  		}
+	  	|
+	  	i = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.addIfFeature(i);
+	  		}
+	  	|
           s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 		{
 		jjtThis.setStatus(s);
 		}
-	 |
+	 | 
           d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 		{
 		jjtThis.setDescription(d);
@@ -2768,6 +3028,11 @@ YANG_Unknown un = null;
 		{
 		jjtThis.addRefinement(re);
 		}
+	|
+		u = usesaugmentstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+			{
+				jjtThis.addUsesAugment(u);
+			}
 	 )*
 	"}"
 	)
@@ -2791,6 +3056,8 @@ YANG_Refinement r = null;
         r = refineliststmt() 
 	|
         r = refinechoicestmt() 
+    |
+    	r = refinecasestmt()
 	|
         r = refineanyxmlstmt()
 	)
@@ -2807,7 +3074,6 @@ YANG_Presence p = null;
 YANG_Config c = null;
 YANG_Description d = null;
 YANG_Reference r = null;
-YANG_Refinement re = null;
 YANG_Unknown un = null;
 Token t;
 }
@@ -2847,11 +3113,6 @@ Token t;
            r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
 		{
 		jjtThis.setReference(r);
-		}
-	 |
-           re = refinementstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-		{
-		jjtThis.addRefinement(re);
 		}
 	 )*
 	 "}"
@@ -2996,7 +3257,6 @@ YANG_MinElement mi = null;
 YANG_MaxElement ma = null;
 YANG_Description d = null;
 YANG_Reference r = null;
-YANG_Refinement re = null;
 YANG_Unknown un = null;
 Token t;
 }
@@ -3042,11 +3302,6 @@ Token t;
 		{
 		jjtThis.setReference(r);
 		}	
-	 |
-          re = refinementstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-		{
-		jjtThis.addRefinement(re);
-		}
 	 )*
 	"}"
 	)
@@ -3063,7 +3318,6 @@ YANG_Config c = null;
 YANG_Mandatory m = null;
 YANG_Description de = null;
 YANG_Reference r = null;
-YANG_RefineCase re = null;
 YANG_Unknown un = null;
 Token t;
 }
@@ -3105,11 +3359,6 @@ Token t;
 		{
 		jjtThis.setReference(r);
 		}	
-	 |
-           re = refinecasestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-		{
-		jjtThis.addRefineCase(re);
-		}
 	  )*
 	"}"
 	 )
@@ -3122,9 +3371,7 @@ YANG_RefineCase refinecasestmt()   #RefineCase    :
 {
 String i = null;
 YANG_Description d = null;
-YANG_Reference r = null;
-YANG_Refinement re = null;
-YANG_Unknown un = null;
+YANG_Reference r = null;YANG_Unknown un = null;
 Token t;
 }
 {
@@ -3148,11 +3395,6 @@ Token t;
           r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
 		{
 		jjtThis.setReference(r);
-		}
-	 |
-          re = refinementstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-		{
-		jjtThis.addRefinement(re);
 		}
 	 )*
 	 "}"
@@ -3216,12 +3458,23 @@ Token t;
 		}
 }
 
+String usesaugmentstmt()	 :
+{
+	String s = null;
+}
+{
+	t = <augmentkeyword> s = descendantschemanodeid()
+		{
+			return s;
+		}
+}
 
 YANG_Augment augmentstmt()         #Augment  : 
 {
 Token aug;
 String a = null;
 YANG_When w = null;
+YANG_IfFeature iff = null;
 YANG_Status s = null;
 YANG_Description d = null;
 YANG_Reference r = null;
@@ -3241,11 +3494,17 @@ YANG_Unknown un = null;
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(augmentAnyOrder())*
 	(
-         w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-		{
-		jjtThis.setWhen(w);
-		}		
-	|
+         
+	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.setWhen(w);
+	  		}
+	  	|
+	  	iff = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		{
+	  			jjtThis.addIfFeature(iff);
+	  		}
+	  	|
          s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
 		{
 		jjtThis.setStatus(s);
@@ -3279,37 +3538,19 @@ YANG_Unknown un = null;
 		}
 }
 
-String augmentargstr()        : 
+String augmentargstr()	:
 {
-String a = null;
+	String a = null;
 }
 {
-			//< a string which matches the rule
-                        //   augmentarg >
-	(
-	LOOKAHEAD(2) a = augmentarg() 
-	|
-	a = string()
-	)
+	a = schemanodeid()
 	{
-	return a;
+		return a;
 	}
 }
 
-String augmentarg()            : 
-{
-String a = null;
-}
-{
-	(
-	a = absoluteschemanodeid() 
-	|
-        a = descendantschemanodeid()
-	)
-		{
-		return a;
-		}
-}
+
+
 YANG_Unknown unknownstatement()     #Unknown : 
 {
 String p = null;
@@ -3378,6 +3619,7 @@ YANG_Rpc rpcstmt()         #Rpc      :
 {
 Token to;
 String i = null;
+YANG_IfFeature i = null;
 YANG_Status s = null;
 YANG_Description d = null;
 YANG_Reference r = null;
@@ -3400,6 +3642,11 @@ YANG_Unknown un = null;
          "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(rpcAnyOrder())*
 	 (
+	 	i = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
+	 		{
+	 			jjtThis.addIfFeature(i);
+	 		}
+	 	|
            s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
 		{
 		jjtThis.setStatus(s);
@@ -3530,6 +3777,7 @@ YANG_Notification notificationstmt()   #Notification   :
 {
 Token to;
 String i = null;
+YANG_IfFeature i = null;
 YANG_Status s = null;
 YANG_Description d = null;
 YANG_Reference r = null;
@@ -3552,6 +3800,11 @@ YANG_Unknown un = null;
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(notificationAnyOrder())*
 	(
+	 	i = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
+	 		{
+	 			jjtThis.addIfFeature(i);
+	 		}
+	 	|
          s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 		{
 		jjtThis.setStatus(s);
@@ -3609,16 +3862,34 @@ YANG_Deviation deviationstmt()  #Deviation :
 	"{"
 		(
 			d = descriptionstmt()
+				{
+					jjtThis.setDescriptiond(d);
+				}
 			|
 			r = referencestmt()
+				{
+					jjtThis.setReference(r);
+				}
 			|
 			LOOKAHEAD (2) dns = deviatenotsupportedstmt()
+				{
+					jjtThis.setDeviateNotSupported(dns);
+				}
 			|
 			LOOKAHEAD (2)da = deviateaddstmt()
+				{
+					jjtThis.addDeviateAdd(da);
+				}
 			|
 			LOOKAHEAD (2)dr = deviatereplacestmt()
+				{
+					jjtThis.addDeviateReplace(dr);
+				}
 			|
 			LOOKAHEAD (2)dd = deviatedeletestmt()
+				{
+					jjtThis.addDeviateDelete(dd);
+				}
 		)*
 	"}"
 		{
@@ -3674,20 +3945,44 @@ YANG_DeviateAdd deviateaddstmt() #DeviateAdd :
 			"{"
 				(
 					u = unitsstmt()
+						{
+							jjtThis.setUnits(u);
+						}
 					|
 					m = muststmt()
+						{
+							jjtThis.addmust(m);
+						}
 					|
 					uq = uniquestmt()
+						{
+							jjtThis.addUnique(uq);
+						}
 					|
 					d = defaultstmt()
+						{
+							jjtThis.setDefault(d);
+						}
 					|
 					c = configstmt()
+						{
+							jjtThis.setConfig(c);
+						}
 					|
 					ma = mandatorystmt()
+						{
+							jjtThis.setMandatory(ma);
+						}
 					|
 					min = minelementsstmt()
+						{
+							jjtThis.setMinElement(min);
+						}
 					|
 					max = maxelementsstmt()
+						{
+							jjtThis.setMaxElement(max);
+						}
 				)*
 			"}"
 		)
@@ -3718,12 +4013,24 @@ YANG_DeviateDelete deviatedeletestmt() #DeviateDelete :
 			"{"
 				(
 					u = unitsstmt()
+						{
+							jjtThis.setUnits(u);
+						}
 					|
 					m = muststmt()
+						{
+							jjtThis.addMust(m);
+						}
 					|
 					uq = uniquestmt()
+						{
+							jjtThis.addUnique(uq);
+						}
 					|
 					d = defaultstmt()
+						{
+							jjtThis.setDefault(d);
+						}
 				)*
 			"}"
 		)
@@ -3757,18 +4064,39 @@ YANG_DeviateReplace deviatereplacestmt() #DeviateReplace :
 			"{"
 				(
 					tp = typestmt()
+						{
+							jjtThis.setType(tp);
+						}
 					|
 					u = unitsstmt()
+						{
+							jjtThis.setUnits(u);
+						}
 					|
 					d = defaultstmt()
+						{
+							jjtThis.setDefault(d);
+						}
 					|
 					c = configstmt()
+						{
+							jjtThis.setConfig(c);
+						}
 					|
 					ma = mandatorystmt()
+						{
+							jjtThis.setMandatory(ma);
+						}
 					|
 					min = minelementsstmt()
+						{
+							jjtThis.setMinElement(min);
+						}
 					|
 					max = maxelementsstmt()
+						{
+							jjtThis.setMaxElement(max);
+						}
 				)*
 			"}"
 		)
@@ -3854,7 +4182,7 @@ String s = null;
 		return s;
 		}
 	|
-         s = relativeschemanodeid()
+         s = descendantschemanodeid()
 		{
 		return s;
 		}
@@ -3877,26 +4205,7 @@ String n = null,a = new String();
 		}
 }
 
-String relativeschemanodeid() :
-{
-String d = null, r = new String();
-}
-{
-	d = descendantschemanodeid() 
-	|
-        ( 
-	 ("." {d = ".";}| ".." {d = "..";}) "|" {d += "|";} 
-	 (
-	  LOOKAHEAD(2) r = relativeschemanodeid()
-		{
-		d += r;
-		}
-	  )*
-	)
-		{
-		return d;
-		}
-}
+
 
 String descendantschemanodeid()    :
 {
@@ -3929,54 +4238,66 @@ String p = null,n = new String(), m = null;
 
 // Instance Identifiers
 
-void instanceidentifierstr() : 
-{}
+void instanceidentifier()         : 
 {
-                     //  < a string which matches the rule
-                     //      instanceidentifier >
-			instanceidentifier()
-}
 
-void instanceidentifier()    : 
-{}
-{
-			absoluteinstid() |
-                         relativeinstid()
 }
-
-void absoluteinstid()        : 
-{}
 {
 			("/" (nodeidentifier() (predicate())*))+
 }
 	
 
 
-void relativeinstid()        :
-{}
-{ 
-			descendantinstid() |
-                         (("." | "..") "/"
-                          (LOOKAHEAD(2) relativeinstid())*)
-}
-void descendantinstid()      :
-{}
-{ 
-			nodeidentifier() (predicate())*
-                         absoluteinstid()
-}
 void predicate()              : 
 {}
 {
-		"[" predicateexpr() "]"
+		"[" 
+			(
+				predicateexpr() 
+				|
+				pos()
+			)
+		"]"
 }
 
-void predicateexpr()         :
-{}
+
+String predicateexpr()         :
 {
-			 (nodeidentifier() | ".") "="
-                         ((<DQUOTE> string() <DQUOTE>) |
-                          (<SQUOTE> string() <SQUOTE>))
+String l = null,s = null;
+}
+{
+			 (
+			 	l = nodeidentifier() 
+			 		
+			 	| 
+			 	"."
+			 	{
+			 		l = ".";
+			 	}
+			 ) "=" (
+			 		(<DQUOTE> s = string() <DQUOTE>) 
+			 			{
+			 				l += "=\"" + s + "\"";
+			 			}
+			 		|
+                    (<SQUOTE> string() <SQUOTE>)
+			 			{
+			 				l += "=\'" + s + "\'";
+			 			}
+                   )
+                  {
+                  	return l;
+                  }
+}
+String pos() :
+{
+String p = null;
+}
+{
+	p = nonnegativeintegervalue()
+		{
+			return p;
+		}
 }
 
 // keyref path
@@ -4004,12 +4325,12 @@ String p = null;
 }
 {
 	(
-	p = absolutepatharg() 
-	|
-        p = relativepatharg()
+		p = absolutepatharg() 
+		|
+    	p = relativepatharg()
 	)
 		{
-		return p;
+			return p;
 		}
 }
 
@@ -4447,7 +4768,7 @@ String k = "",s = null,a = null;}
 
 }
 
-String decimalvalue()          :
+String integervalue()          :
 {String n = null;
 Token t;}
 {
@@ -4457,22 +4778,22 @@ Token t;}
 		return  t.image;
 		}
 	|
-        n = nonnegativedecimalvalue()
+        n = nonnegativeintegervalue()
 		{
 		return n;
 		}
 }
 
-String nonnegativedecimalvalue() : 
+String nonnegativeintegervalue() : 
 {String p = null;}
 {              // "0" or positive
-	p = positivedecimalvalue()
+	p = positivedintegervalue()
 		{
 		return p;
 		}
 }
 
-String positivedecimalvalue() : 
+String positiveintegervalue() : 
 {Token t;}
 {
 	 t = <DECVALUE>
@@ -4481,7 +4802,7 @@ String positivedecimalvalue() :
 		}
 }
 
-String zerodecimalvalue() : 
+String zerointegervalue() : 
 {
 Token t;}
 {
