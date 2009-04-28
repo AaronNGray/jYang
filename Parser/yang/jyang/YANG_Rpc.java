@@ -20,21 +20,16 @@ package jyang;
  */
 import java.util.*;
 
-public class YANG_Rpc extends YANG_Body {
+public class YANG_Rpc extends YANG_DataDefInfo {
 
 	private String rpc = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 	private Vector<YANG_TypeDef> typedefs = new Vector<YANG_TypeDef>();
 	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
 	private YANG_Input input = null;
 	private YANG_Output output = null;
 
-	private boolean bracked = true;
 
-	private boolean b_status = false, b_description = false,
-			b_reference = false, b_input = false, b_output = false;
+	private boolean b_input = false, b_output = false;
 
 	public YANG_Rpc(int id) {
 		super(id);
@@ -56,48 +51,9 @@ public class YANG_Rpc extends YANG_Body {
 		return rpc;
 	}
 
-	public void setStatus(YANG_Status s) throws YangParserException {
-		if (b_status)
-			throw new YangParserException("Status already defined in rpc "
-					+ rpc, s.getLine(), s.getCol());
-		b_status = true;
-		status = s;
-		bracked = true;
-	}
-
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException("Description already defined in rpc "
-					+ rpc, d.getLine(), d.getCol());
-		b_description = true;
-		description = d;
-		bracked = true;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException("Reference already defined in rpc "
-					+ rpc, r.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-		bracked = true;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
+	
 	public void addTypeDef(YANG_TypeDef t) {
 		typedefs.add(t);
-		bracked = true;
 	}
 
 	public Vector<YANG_TypeDef> getTypeDefs() {
@@ -106,7 +62,6 @@ public class YANG_Rpc extends YANG_Body {
 
 	public void addGrouping(YANG_Grouping g) {
 		groupings.add(g);
-		bracked = true;
 	}
 
 	public Vector<YANG_Grouping> getGroupings() {
@@ -120,7 +75,6 @@ public class YANG_Rpc extends YANG_Body {
 							.getCol());
 		b_input = true;
 		input = i;
-		bracked = true;
 	}
 
 	public YANG_Input getInput() {
@@ -133,15 +87,14 @@ public class YANG_Rpc extends YANG_Body {
 					+ rpc, o.getLine(), o.getCol());
 		b_output = true;
 		output = o;
-		bracked = true;
 	}
 
 	public YANG_Output getOutput() {
 		return output;
 	}
 
-	public boolean isBracked() {
-		return bracked;
+	public boolean isBracked(){
+		return super.isBracked() || b_input || b_output || typedefs.size() != 0 || groupings.size() != 0;
 	}
 
 	public void check(YangContext context) throws YangParserException {
@@ -154,21 +107,18 @@ public class YANG_Rpc extends YANG_Body {
 	public String toString() {
 		String result = new String();
 		result += "rpc " + rpc;
-		if (bracked) {
+		if (isBracked()) {
 			result += "{\n";
-			if (status != null)
-				result += status.toString() + "\n";
-			if (description != null)
-				result += description.toString() + "\n";
+			result += super.toString() + "\n";
 			for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 					.hasMoreElements();)
 				result += et.nextElement().toString() + "\n";
 			for (Enumeration<YANG_Grouping> eg = groupings.elements(); eg
 					.hasMoreElements();)
 				result += eg.nextElement().toString() + "\n";
-			if (input != null)
+			if (b_input)
 				result += input.toString() + "\n";
-			if (output != null)
+			if (b_output)
 				result += output.toString() + "\n";
 			result += "}";
 		} else

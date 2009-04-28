@@ -20,24 +20,18 @@ package jyang;
  */
 import java.util.*;
 
-public class YANG_LeafList extends  YANG_DataDef
+public class YANG_LeafList extends  YANG_DataDefConfigMust
 		implements YANG_CaseDef, YANG_ShortCase {
 
 	private String leaflist = null;
 	private YANG_Type type = null;
 	private YANG_Units units = null;
-	private Vector<YANG_Must> musts = new Vector<YANG_Must>();
-	private YANG_Config config = null;
 	private YANG_MinElement min = null;
 	private YANG_MaxElement max = null;
 	private YANG_OrderedBy ordered = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 
-	private boolean b_type = false, b_units = false, b_config = false,
-			b_min = false, b_max = false, b_ordered = false, b_status = false,
-			b_description = false, b_reference = false;
+	private boolean b_type = false, b_units = false,
+			b_min = false, b_max = false, b_ordered = false;
 
 	public YANG_LeafList(int id) {
 		super(id);
@@ -83,26 +77,6 @@ public class YANG_LeafList extends  YANG_DataDef
 		return units;
 	}
 
-	public void addMust(YANG_Must m) {
-		musts.add(m);
-	}
-
-	public Vector<YANG_Must> getMusts() {
-		return musts;
-	}
-
-	public void setConfig(YANG_Config c) throws YangParserException {
-		if (b_config)
-			throw new YangParserException(
-					"Config already defined in leaf-list " + leaflist, c
-							.getLine(), c.getCol());
-		b_config = true;
-		config = c;
-	}
-
-	public YANG_Config getConfig() {
-		return config;
-	}
 
 	public void setMinElement(YANG_MinElement m) throws YangParserException {
 		if (b_min)
@@ -142,45 +116,12 @@ public class YANG_LeafList extends  YANG_DataDef
 	public YANG_OrderedBy getOrderedBy() {
 		return ordered;
 	}
-
-	public void setStatus(YANG_Status s) throws YangParserException {
-		if (b_status)
-			throw new YangParserException(
-					"Status already defined in leaf-list " + leaflist, s
-							.getLine(), s.getCol());
-		b_status = true;
-		status = s;
+	
+	public boolean isBracked(){
+		return super.isBracked() || b_ordered || b_min || b_max || b_type || b_units;
 	}
 
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException(
-					"Description already defined in leaf-list " + leaflist, d
-							.getLine(), d.getCol());
-		b_description = true;
-		description = d;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException(
-					"Reference already defined in leaf-list " + leaflist, r
-							.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
+	
 
 	public void check(YangContext context) throws YangParserException {
 		if (!b_type)
@@ -192,7 +133,7 @@ public class YANG_LeafList extends  YANG_DataDef
 		if (b_config){
 			YANG_Config parentConfig = getParentConfig();
 			if (parentConfig.getConfig().compareTo("false") == 0 &&
-					config.getConfig().compareTo("true") == 0)
+					getConfig().getConfig().compareTo("true") == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol() +
 						":config to true and parent config to false");
 		}
@@ -202,26 +143,17 @@ public class YANG_LeafList extends  YANG_DataDef
 	public String toString() {
 		String result = new String();
 		result += "leaf-list " + leaflist + "{\n";
-		if (type != null)
+		if (b_type)
 			result += type.toString() + "\n";
-		if (units != null)
+		if (b_units)
 			result += units.toString() + "\n";
-		for (Enumeration<YANG_Must> em = musts.elements(); em.hasMoreElements();)
-			result += em.nextElement().toString() + "\n";
-		if (config != null)
-			result += config.toString() + "\n";
 		if (min != null)
 			result += min.toString() + "\n";
 		if (max != null)
 			result += max.toString() + "\n";
 		if (ordered != null)
 			result += ordered.toString() + "\n";
-		if (status != null)
-			result += status.toString() + "\n";
-		if (description != null)
-			result += description.toString() + "\n";
-		if (reference != null)
-			result += reference.toString() + "\n";
+		result += super.toString() + "\n";
 		result += "}\n";
 
 		return result;

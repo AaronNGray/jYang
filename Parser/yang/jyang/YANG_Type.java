@@ -28,11 +28,40 @@ public class YANG_Type extends SimpleNode {
 
 	private String type = null;
 	private Vector<YANG_Enum> enums = new Vector<YANG_Enum>();
-	private YANG_KeyRefSpecification keyref = null;
+	private YANG_LeafRefSpecification keyref = null;
 	private YANG_BitSpecification bitspec = null;
 	private YANG_UnionSpecification yunion = null;
 	private YANG_NumericalRestriction numrest = null;
 	private YANG_StringRestriction strrest = null;
+	private YANG_Base base = null;
+	private YANG_Decimal64Spec dec64Spec = null;
+	private String instanceIdentifierSpec = null;
+
+	public String getInstanceIdentifierSpec() {
+		return instanceIdentifierSpec;
+	}
+
+	public void setInstanceIdentifierSpec(String instanceIdentifierSpec) {
+		this.instanceIdentifierSpec = instanceIdentifierSpec;
+	}
+
+	public YANG_Decimal64Spec getDec64Spec() {
+		return dec64Spec;
+	}
+
+	public void setDec64Spec(YANG_Decimal64Spec dec64Spec) {
+		this.dec64Spec = dec64Spec;
+		bracked = true;
+	}
+
+	public YANG_Base getIdentityRefSpec() {
+		return base;
+	}
+
+	public void setIdentityRefSpec(YANG_Base base) {
+		this.base = base;
+		bracked = true;
+	}
 
 	private boolean bracked = false;
 
@@ -61,12 +90,12 @@ public class YANG_Type extends SimpleNode {
 		return enums;
 	}
 
-	public void setKeyRef(YANG_KeyRefSpecification k) {
+	public void setLeafRef(YANG_LeafRefSpecification k) {
 		keyref = k;
 		bracked = true;
 	}
 
-	public YANG_KeyRefSpecification getKeyRef() {
+	public YANG_LeafRefSpecification getLeafRef() {
 		return keyref;
 	}
 
@@ -178,7 +207,7 @@ public class YANG_Type extends SimpleNode {
 						+ ":union type must have at least one type");
 
 		if (YangBuiltInTypes.keyref.compareTo(getType()) == 0)
-			if (getKeyRef() == null)
+			if (getLeafRef() == null)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":keyref type must have at one path");
 
@@ -212,7 +241,7 @@ public class YANG_Type extends SimpleNode {
 			if (getEnums().size() != 0)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":numeric type can not have enum specification");
-			if (getKeyRef() != null)
+			if (getLeafRef() != null)
 				throw new YangParserException(
 						"@"
 								+ getLine()
@@ -239,7 +268,7 @@ public class YANG_Type extends SimpleNode {
 			if (getEnums().size() != 0)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":string type can not have enum specification");
-			if (getKeyRef() != null)
+			if (getLeafRef() != null)
 				throw new YangParserException(
 						"@"
 								+ getLine()
@@ -270,7 +299,7 @@ public class YANG_Type extends SimpleNode {
 			if (getEnums().size() != 0)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":boolean type can not have enum specification");
-			if (getKeyRef() != null)
+			if (getLeafRef() != null)
 				throw new YangParserException(
 						"@"
 								+ getLine()
@@ -288,7 +317,7 @@ public class YANG_Type extends SimpleNode {
 			if (getBitSpec() != null)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":enumeration type can not have bit specification");
-			if (getKeyRef() != null)
+			if (getLeafRef() != null)
 				throw new YangParserException(
 						"@"
 								+ getLine()
@@ -317,7 +346,7 @@ public class YANG_Type extends SimpleNode {
 			if (getEnums().size() != 0)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":bits type can not have enum specification");
-			if (getKeyRef() != null)
+			if (getLeafRef() != null)
 				throw new YangParserException(
 						"@"
 								+ getLine()
@@ -339,7 +368,7 @@ public class YANG_Type extends SimpleNode {
 			if (getEnums().size() != 0)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":binary type can not have enum specification");
-			if (getKeyRef() != null)
+			if (getLeafRef() != null)
 				throw new YangParserException(
 						"@"
 								+ getLine()
@@ -395,7 +424,7 @@ public class YANG_Type extends SimpleNode {
 								+ "."
 								+ getCol()
 								+ ":empty type can not have length or pattern specification");
-			if (getKeyRef() != null)
+			if (getLeafRef() != null)
 				throw new YangParserException(
 						"@"
 								+ getLine()
@@ -420,7 +449,7 @@ public class YANG_Type extends SimpleNode {
 								+ "."
 								+ getCol()
 								+ ":union type can not have length or pattern specification");
-			if (getKeyRef() != null)
+			if (getLeafRef() != null)
 				throw new YangParserException(
 						"@"
 								+ getLine()
@@ -470,7 +499,7 @@ public class YANG_Type extends SimpleNode {
 								+ "."
 								+ getCol()
 								+ ":instance-identifier type can not have length or pattern specification");
-			if (getKeyRef() != null)
+			if (getLeafRef() != null)
 				throw new YangParserException(
 						"@"
 								+ getLine()

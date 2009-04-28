@@ -21,19 +21,12 @@ package jyang;
  */
 import java.util.*;
 
-public class YANG_Uses extends YANG_DataDef implements YANG_CaseDef {
+public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 
 	private String uses = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 	private Vector<YANG_Refinement> refinements = new Vector<YANG_Refinement>();
+	private Vector<YANG_UsesAugment> usesaugments = new Vector<YANG_UsesAugment>();
 
-	private boolean bracked = false;
-
-	private boolean b_status = false, b_description = false,
-			b_reference = false;
-	
 	private YANG_Grouping grouping = null;
 
 	public YANG_Grouping getGrouping() {
@@ -64,63 +57,26 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDef {
 		return uses;
 	}
 
-	public void setStatus(YANG_Status s) throws YangParserException {
-		if (b_status)
-			throw new YangParserException("Status already defined in uses "
-					+ uses, s.getLine(), s.getCol());
-		b_status = true;
-		status = s;
-		bracked = true;
-	}
-
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException(
-					"Description already defined in uses " + uses, d.getLine(),
-					d.getCol());
-		b_description = true;
-		description = d;
-		bracked = true;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException("Reference already defined in uses "
-					+ uses, r.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-		bracked = true;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
+	public boolean isBracked() {
+		return super.isBracked() || refinements.size() != 0
+				|| usesaugments.size() != 0;
 	}
 
 	public void addRefinement(YANG_Refinement r) throws YangParserException {
 
 		refinements.add(r);
-		bracked = true;
 	}
 
 	public Vector<YANG_Refinement> getRefinements() {
 		return refinements;
 	}
 
-	public boolean isBracked() {
-		return bracked;
+	public void addUsesAugment(YANG_UsesAugment ua) {
+		usesaugments.add(ua);
 	}
 
 	public void check(YangContext context) throws YangParserException {
-		
-		
+
 		if (!context.isGroupingDefined(this)) {
 			System.err
 					.println(context.getSpec().getName() + "@" + getLine()
@@ -156,15 +112,13 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDef {
 	public String toString() {
 		String result = new String();
 		result += "uses " + uses;
-		if (bracked) {
+		if (isBracked()) {
 			result += "{\n";
-			if (status != null)
-				result += status.toString() + "\n";
-			if (description != null)
-				result += description.toString() + "\n";
-			if (reference != null)
-				result += reference.toString() + "\n";
+			result += super.toString() + "\n";
 			for (Enumeration<YANG_Refinement> er = refinements.elements(); er
+					.hasMoreElements();)
+				result += er.nextElement().toString() + "\n";
+			for (Enumeration<YANG_UsesAugment> er = usesaugments.elements(); er
 					.hasMoreElements();)
 				result += er.nextElement().toString() + "\n";
 			result += "}";

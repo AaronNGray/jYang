@@ -21,18 +21,12 @@ package jyang;
 
 import java.util.*;
 
-public class YANG_Case extends YANG_DataDef {
+public class YANG_Case extends YANG_DataDefInfoWhen {
 
 	private String ycase = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 	private Vector<YANG_CaseDef> casedatadefs = new Vector<YANG_CaseDef>();
 
-	private boolean bracked = false;
 
-	private boolean b_status = false, b_description = false,
-			b_reference = false;
 
 	public YANG_Case(int id) {
 		super(id);
@@ -54,49 +48,9 @@ public class YANG_Case extends YANG_DataDef {
 		return getCase();
 	}
 
-	public void setStatus(YANG_Status s) throws YangParserException {
-		if (b_status)
-			throw new YangParserException("Status already defined in case "
-					+ ycase, s.getLine(), s.getCol());
-		b_status = true;
-		status = s;
-		bracked = true;
-	}
-
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException(
-					"Description already defined in case " + ycase,
-					d.getLine(), d.getCol());
-		b_description = true;
-		description = d;
-		bracked = true;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException("Reference already defined in case "
-					+ ycase, r.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-		bracked = true;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
+	
 	public void addCaseDef(YANG_CaseDef c) {
 		casedatadefs.add(c);
-		bracked = true;
 	}
 
 	public Vector<YANG_CaseDef> getCaseDefs() {
@@ -104,20 +58,15 @@ public class YANG_Case extends YANG_DataDef {
 	}
 
 	public boolean isBracked() {
-		return true;
+		return super.isBracked() || casedatadefs.size() != 0;
 	}
 
 	public String toString() {
 		String result = new String();
 		result += "case " + ycase;
-		if (bracked) {
+		if (isBracked()) {
 			result += " {\n";
-			if (status != null)
-				result += status.toString() + "\n";
-			if (description != null)
-				result += description.toString() + "\n";
-			if (reference != null)
-				result += reference.toString() + "\n";
+			result += super.toString() + "\n";
 			for (Enumeration<YANG_CaseDef> ec = casedatadefs.elements(); ec
 					.hasMoreElements();)
 				result += ec.nextElement().toString() + "\n";

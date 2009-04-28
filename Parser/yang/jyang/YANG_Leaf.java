@@ -20,23 +20,15 @@ package jyang;
  */
 import java.util.*;
 
-public class YANG_Leaf extends YANG_DataDef implements YANG_CaseDef,
+public class YANG_Leaf extends YANG_DataDefFullInfo implements YANG_CaseDef,
 		YANG_ShortCase {
 
 	private String leaf = null;
 	private YANG_Type type = null;
 	private YANG_Units units = null;
-	private Vector<YANG_Must> musts = new Vector<YANG_Must>();
 	private YANG_Default ydefault = null;
-	private YANG_Config config = null;
-	private YANG_Mandatory mandatory = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 
-	private boolean b_type = false, b_units = false, b_default = false,
-			b_config = false, b_mandatory = false, b_status = false,
-			b_description = false, b_reference = false;
+	private boolean b_type = false, b_units = false, b_default = false;
 
 	public YANG_Leaf(int id) {
 		super(id);
@@ -82,14 +74,7 @@ public class YANG_Leaf extends YANG_DataDef implements YANG_CaseDef,
 		return units;
 	}
 
-	public void addMust(YANG_Must m) {
-		musts.add(m);
-	}
-
-	public Vector<YANG_Must> getMusts() {
-		return musts;
-	}
-
+	
 	public void setDefault(YANG_Default d) throws YangParserException {
 		if (b_default)
 			throw new YangParserException("Default already defined in leaf "
@@ -101,67 +86,12 @@ public class YANG_Leaf extends YANG_DataDef implements YANG_CaseDef,
 	public YANG_Default getDefault() {
 		return ydefault;
 	}
-
-	public void setConfig(YANG_Config c) throws YangParserException {
-		if (b_config)
-			throw new YangParserException("Config already defined in leaf "
-					+ leaf, c.getLine(), c.getCol());
-		b_config = true;
-		config = c;
+	
+	public boolean isBracked(){
+		return super.isBracked() || b_default || b_type || b_units;
 	}
 
-	public YANG_Config getConfig() {
-		return config;
-	}
-
-	public void setMandatory(YANG_Mandatory m) throws YangParserException {
-		if (b_mandatory)
-			throw new YangParserException("Mandatory already defined in leaf "
-					+ leaf, m.getLine(), m.getCol());
-		b_mandatory = true;
-		mandatory = m;
-	}
-
-	public YANG_Mandatory getMandatory() {
-		return mandatory;
-	}
-
-	public void setStatus(YANG_Status s) throws YangParserException {
-		if (b_status)
-			throw new YangParserException("Status already defined in leaf "
-					+ leaf, s.getLine(), s.getCol());
-		b_status = true;
-		status = s;
-	}
-
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException(
-					"Description already defined in leaf " + leaf, d.getLine(),
-					d.getCol());
-		b_description = true;
-		description = d;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException("Reference already defined in leaf "
-					+ leaf, r.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
+	
 
 	public void check(YangContext context) throws YangParserException {
 		if (!b_type)
@@ -173,7 +103,7 @@ public class YANG_Leaf extends YANG_DataDef implements YANG_CaseDef,
 		if (b_config){
 			YANG_Config parentConfig = getParentConfig();
 			if (parentConfig.getConfig().compareTo("false") == 0 &&
-					config.getConfig().compareTo("true") == 0)
+					getConfig().getConfig().compareTo("true") == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol() +
 						":config to true and parent config to false");
 		}
@@ -215,20 +145,9 @@ public class YANG_Leaf extends YANG_DataDef implements YANG_CaseDef,
 			result += type.toString() + "\n";
 		if (units != null)
 			result += units.toString() + "\n";
-		for (Enumeration<YANG_Must> em = musts.elements(); em.hasMoreElements();)
-			result += em.nextElement().toString() + "\n";
 		if (ydefault != null)
 			result += ydefault.toString() + "\n";
-		if (config != null)
-			result += config.toString() + "\n";
-		if (mandatory != null)
-			result += mandatory.toString() + "\n";
-		if (status != null)
-			result += status.toString() + "\n";
-		if (description != null)
-			result += description.toString() + "\n";
-		if (reference != null)
-			result += reference.toString() + "\n";
+		result += super.toString() + "\n";
 		result += "}";
 
 		return result;

@@ -20,22 +20,15 @@ package jyang;
  */
 import java.util.*;
 
-public class YANG_Choice extends YANG_DataDef {
+public class YANG_Choice extends YANG_DataDefConfig {
 
 	private String choice = null;
 	private YANG_Default ydefault = null;
-	private YANG_Config config = null;
 	private YANG_Mandatory mandatory = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 	private Vector<YANG_ShortCase> shorts = new Vector<YANG_ShortCase>();
 	private Vector<YANG_Case> cases = new Vector<YANG_Case>();
 
-	private boolean b_default = false, b_config = false, b_mandatory = false, b_status = false,
-			b_description = false, b_reference = false;
-
-	private boolean bracked = false;
+	private boolean b_default = false,  b_mandatory = false;
 
 	public YANG_Choice(int id) {
 		super(id);
@@ -63,26 +56,13 @@ public class YANG_Choice extends YANG_DataDef {
 					+ choice, d.getLine(), d.getCol());
 		b_default = true;
 		ydefault = d;
-		bracked = true;
 	}
 
 	public YANG_Default getDefault() {
 		return ydefault;
 	}
 	
-	public void setConfig(YANG_Config c) throws YangParserException {
-		if (b_config)
-			throw new YangParserException("config already defined in Choice "
-					+ choice, c.getLine(), c.getCol());
-		b_config = true;
-		config = c;
-		bracked = true;
-	}
-
-	public YANG_Config getConfig() {
-		return config;
-	}
-
+	
 	public void setMandatory(YANG_Mandatory m) throws YangParserException {
 		if (b_mandatory)
 			throw new YangParserException(
@@ -90,58 +70,16 @@ public class YANG_Choice extends YANG_DataDef {
 							.getLine(), m.getCol());
 		b_mandatory = true;
 		mandatory = m;
-		bracked = true;
 	}
 
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
 
-	public void setStatus(YANG_Status s) throws YangParserException {
-		if (b_status)
-			throw new YangParserException("Status already defined in Choice "
-					+ choice, s.getLine(), s.getCol());
-		b_status = true;
-		status = s;
-		bracked = true;
-	}
-
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException(
-					"Description already defined in Choice " + choice, d
-							.getLine(), d.getCol());
-		b_description = true;
-		description = d;
-		bracked = true;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException(
-					"Reference already defined in Choice " + choice, r
-							.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-		bracked = true;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
+	
 	public void addShortCase(YANG_ShortCase s) throws YangParserException {
 
 		shorts.add(s);
-		bracked = true;
 	}
 
 	public Vector<YANG_ShortCase> getShortCases() {
@@ -150,7 +88,6 @@ public class YANG_Choice extends YANG_DataDef {
 
 	public void addCase(YANG_Case c) {
 		cases.add(c);
-		bracked = true;
 	}
 
 	public Vector<YANG_Case> getCases() {
@@ -158,7 +95,7 @@ public class YANG_Choice extends YANG_DataDef {
 	}
 
 	public boolean isBracked() {
-		return bracked;
+		return super.isBracked() || b_default || b_mandatory || cases.size() != 0 || shorts.size() != 0;
 	}
 
 	private void trackMandatory(YANG_Case c) throws YangParserException {
@@ -310,7 +247,7 @@ public class YANG_Choice extends YANG_DataDef {
 		if (b_config){
 			YANG_Config parentConfig = getParentConfig();
 			if (parentConfig.getConfig().compareTo("false") == 0 &&
-					config.getConfig().compareTo("true") == 0)
+					getConfig().getConfig().compareTo("true") == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol() +
 						":config to true and parent config to false");
 		}
@@ -336,20 +273,13 @@ public class YANG_Choice extends YANG_DataDef {
 	public String toString() {
 		String result = new String();
 		result += "choice " + choice;
-		if (bracked) {
+		if (isBracked()) {
 			result += " {\n";
 			if (ydefault != null)
 				result += ydefault.toString() + "\n";
-			if(config != null)
-				result += config.toString() + "\n";
 			if (mandatory != null)
 				result += mandatory.toString() + "\n";
-			if (status != null)
-				result += status.toString() + "\n";
-			if (description != null)
-				result += description.toString() + "\n";
-			if (reference != null)
-				result += reference.toString() + "\n";
+			result += super.toString();
 			for (Enumeration<YANG_ShortCase> es = shorts.elements(); es
 					.hasMoreElements();)
 				result += es.nextElement().toString() + "\n";

@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class YANG_Path extends SimpleNode implements YANG_KeyRefSpecification {
+public class YANG_Path extends SimpleNode  {
 
 	private String path = null;
 

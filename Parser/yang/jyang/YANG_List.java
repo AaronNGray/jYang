@@ -21,27 +21,21 @@ package jyang;
  */
 import java.util.*;
 
-public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
+public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 		YANG_ShortCase {
 
 	private String list = null;
-	private Vector<YANG_Must> musts = new Vector<YANG_Must>();
 	private YANG_Key key = null;
 	private Vector<YANG_Unique> uniques = new Vector<YANG_Unique>();
-	private YANG_Config config = null;
 	private YANG_MinElement min = null;
 	private YANG_MaxElement max = null;
 	private YANG_OrderedBy orderedby = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 	private Vector<YANG_TypeDef> typedefs = new Vector<YANG_TypeDef>();
 	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
 
-	private boolean b_key = false, b_config = false, b_min = false,
-			b_max = false, b_ordered = false, b_status = false,
-			b_description = false, b_reference = false;
+	private boolean b_key = false, b_min = false,
+			b_max = false, b_ordered = false;
 
 	public YANG_List(int id) {
 		super(id);
@@ -84,25 +78,6 @@ public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
 		return uniques;
 	}
 
-	public void addMust(YANG_Must m) {
-		musts.add(m);
-	}
-
-	public Vector<YANG_Must> getMusts() {
-		return musts;
-	}
-
-	public void setConfig(YANG_Config c) throws YangParserException {
-		if (b_config)
-			throw new YangParserException("Config already defined in list "
-					+ list, c.getLine(), c.getCol());
-		b_config = true;
-		config = c;
-	}
-
-	public YANG_Config getConfig() {
-		return config;
-	}
 
 	public void setMinElement(YANG_MinElement m) throws YangParserException {
 		if (b_min)
@@ -143,45 +118,6 @@ public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
 		return orderedby;
 	}
 
-	public void setStatus(YANG_Status s) throws YangParserException {
-		if (b_status)
-			throw new YangParserException(
-					"Status already defined in leaf-list " + list, s.getLine(),
-					s.getCol());
-		b_status = true;
-		status = s;
-	}
-
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException(
-					"Description already defined in leaf-list " + list, d
-							.getLine(), d.getCol());
-		b_description = true;
-		description = d;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException(
-					"Reference already defined in leaf-list " + list, r
-							.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
 	public void addTypeDef(YANG_TypeDef t) {
 		typedefs.add(t);
 	}
@@ -205,6 +141,10 @@ public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
 	public Vector<YANG_DataDef> getDataDefs() {
 		return datadefs;
 	}
+	
+	public boolean isBracked(){
+		return super.isBracked() || b_key || b_max || b_min || b_ordered || datadefs.size() != 0 || groupings.size() != 0;
+	}
 
 	public void check(YangContext context) throws YangParserException {
 		if (!b_key) {
@@ -225,7 +165,7 @@ public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
 			if (b_config) {
 				YANG_Config parentConfig = getParentConfig();
 				if (parentConfig.getConfig().compareTo("false") == 0
-						&& config.getConfig().compareTo("true") == 0)
+						&& getConfig().getConfig().compareTo("true") == 0)
 					throw new YangParserException("@" + getLine() + "."
 							+ getCol()
 							+ ":config to true and parent config to false");
@@ -346,27 +286,17 @@ public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
 	public String toString() {
 		String result = new String();
 		result += "list " + list + "{\n";
-		for (Enumeration<YANG_Must> em = musts.elements(); em.hasMoreElements();)
-			result += em.nextElement().toString() + "\n";
 		if (key != null)
 			result += key.toString() + "\n";
 		for (Enumeration<YANG_Unique> eu = uniques.elements(); eu
 				.hasMoreElements();)
 			result += eu.nextElement().toString() + "\n";
-		if (config != null)
-			result += config.toString() + "\n";
 		if (min != null)
 			result += min.toString() + "\n";
 		if (max != null)
 			result += max.toString() + "\n";
 		if (orderedby != null)
 			result += orderedby.toString() + "\n";
-		if (status != null)
-			result += status.toString() + "\n";
-		if (description != null)
-			result += description.toString() + "\n";
-		if (reference != null)
-			result += reference.toString() + "\n";
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 				.hasMoreElements();)
 			result += et.nextElement().toString() + "\n";
@@ -376,7 +306,7 @@ public class YANG_List extends YANG_DataDef implements YANG_CaseDef,
 		for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
 				.hasMoreElements();)
 			result += ed.nextElement().toString() + "\n";
-
+		result += super.toString() + "\n";
 		result += "}\n";
 
 		return result;

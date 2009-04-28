@@ -22,13 +22,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class YANG_Augment extends YANG_DataDef implements YANG_CaseDef {
+public class YANG_Augment extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 
 	private String augment = null;
-	private YANG_When when = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
 	private Vector<YANG_Case> cases = new Vector<YANG_Case>();
 	//private YANG_Input input = null;
@@ -36,8 +32,6 @@ public class YANG_Augment extends YANG_DataDef implements YANG_CaseDef {
 
 	private Pattern nid = null;
 
-	private boolean b_when = false, b_status = false, b_description = false,
-			b_reference = false, b_input = false, b_output = false;
 
 	public YANG_Augment(int id) {
 		super(id);
@@ -75,55 +69,7 @@ public class YANG_Augment extends YANG_DataDef implements YANG_CaseDef {
 		return augment.charAt(0) == '/';
 	}
 
-	public void setWhen(YANG_When w) throws YangParserException {
-		if (b_when)
-			throw new YangParserException("When already defined in augment "
-					+ augment, w.getLine(), w.getCol());
-		b_when = true;
-		when = w;
-	}
-
-	public YANG_When getWhen() {
-		return when;
-	}
-
-	public void setStatus(YANG_Status s) throws YangParserException {
-		if (b_status)
-			throw new YangParserException("Status already defined in augment "
-					+ augment, s.getLine(), s.getCol());
-		b_status = true;
-		status = s;
-	}
-
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException(
-					"Description already defined in augment " + augment, d
-							.getLine(), d.getCol());
-		b_description = true;
-		description = d;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException(
-					"Reference already defined in augment " + augment, r
-							.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
+	
 
 	public void addDataDef(YANG_DataDef d) {
 		datadefs.add(d);
@@ -139,6 +85,10 @@ public class YANG_Augment extends YANG_DataDef implements YANG_CaseDef {
 
 	public Vector<YANG_Case> getCases() {
 		return cases;
+	}
+	
+	public boolean isBracked(){
+		return super.isBracked() || datadefs.size() != 0 || cases.size() != 0;
 	}
 /*
 	public void setInput(YANG_Input i) throws YangParserException {
@@ -167,6 +117,7 @@ public class YANG_Augment extends YANG_DataDef implements YANG_CaseDef {
 	*/
 
 	public void check(YangContext context) throws YangParserException {
+		/*
 		if ((b_input || b_output)
 				&& (datadefs.size() != 0 || cases.size() != 0))
 			throw new YangParserException(
@@ -176,6 +127,7 @@ public class YANG_Augment extends YANG_DataDef implements YANG_CaseDef {
 			throw new YangParserException(
 					"Either input / output or datadef / case statements in augment "
 							+ augment, getLine(), getCol());
+			*/
 
 		String nids[] = getAugment().split("/");
 		int start = 0;
@@ -353,14 +305,7 @@ public class YANG_Augment extends YANG_DataDef implements YANG_CaseDef {
 	public String toString() {
 		String result = new String();
 		result += "augment " + augment + "{\n";
-		if (when != null)
-			result += when.toString() + "\n";
-		if (status != null)
-			result += status.toString() + "\n";
-		if (description != null)
-			result += description.toString() + "\n";
-		if (reference != null)
-			result += reference.toString() + "\n";
+		result += super.toString() + "\n";
 		for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
 				.hasMoreElements();)
 			result += ed.nextElement().toString() + "\n";

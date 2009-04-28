@@ -236,9 +236,9 @@ public class Yang2Yin {
 				for (Enumeration<YANG_Bit> eb = ytype.getBitSpec().getBits()
 						.elements(); eb.hasMoreElements();)
 					result += gBit(eb.nextElement(), prefix + "  ") + "\n";
-			if (ytype.getKeyRef() != null)
+			if (ytype.getLeafRef() != null)
 				result += prefix + "  <path value=\""
-						+ unquote(((YANG_Path) (ytype.getKeyRef())).getPath())
+						+ unquote(((YANG_Path) (ytype.getLeafRef())).getPath())
 						+ "\"/>\n";
 			result += prefix + "</type>";
 		} else
