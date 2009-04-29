@@ -3895,11 +3895,12 @@ YANG_Deviation deviationstmt()  #Deviation :
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
 			jjtThis.setDeviation(dev);
+		}
 	"{"
 		(
 			d = descriptionstmt()
 				{
-					jjtThis.setDescriptiond(d);
+					jjtThis.setDescription(d);
 				}
 			|
 			r = referencestmt()
@@ -3987,7 +3988,7 @@ YANG_DeviateAdd deviateaddstmt() #DeviateAdd :
 					|
 					m = muststmt()
 						{
-							jjtThis.addmust(m);
+							jjtThis.addMust(m);
 						}
 					|
 					uq = uniquestmt()

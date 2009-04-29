@@ -146,8 +146,8 @@ public class YangTreeNode {
 			YANG_Type type = leaf.getType();
 			if (type.getLeafRef() != null) {
 				YANG_LeafRefSpecification krs = type.getLeafRef();
-				if (krs instanceof YANG_Path) {
-					YANG_Path path = (YANG_Path) krs;
+				if (krs.getPath() != null) {
+					YANG_Path path = krs.getPath();
 					isInTree(module, root, importeds, path.getPath());
 				}
 			}

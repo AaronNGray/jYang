@@ -238,7 +238,7 @@ public class Yang2Yin {
 					result += gBit(eb.nextElement(), prefix + "  ") + "\n";
 			if (ytype.getLeafRef() != null)
 				result += prefix + "  <path value=\""
-						+ unquote(((YANG_Path) (ytype.getLeafRef())).getPath())
+						+ unquote(ytype.getLeafRef().getPath().getPath())
 						+ "\"/>\n";
 			result += prefix + "</type>";
 		} else
