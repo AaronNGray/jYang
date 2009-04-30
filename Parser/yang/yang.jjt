@@ -7,7 +7,7 @@ options {
 } 
 
 PARSER_BEGIN(yang)
-package jyang;
+package jyang.parser;
 public class yang {
 }
 PARSER_END(yang)
