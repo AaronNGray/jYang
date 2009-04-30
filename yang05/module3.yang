@@ -1,0 +1,509 @@
+
+
+module module3 {
+
+	toto:tit;
+	
+	namespace  "fr:loria:madynes:module3";
+	prefix "mod3" ;
+	
+	import module2 {prefix m2;}
+	include module5;
+	
+	
+	
+	
+	typedef m3int {
+		type m2:m2int;
+	}
+	
+	extension monExt {
+		argument name;
+	}
+	
+	leaf lllll { type m2:m2int2;}
+	container cont1 {
+		container cont1{
+		 container cont1 {}
+		}
+	}
+	
+	container fautype {
+	}
+	typedef fautype { type int8;}
+	leaf leafl1 { type fautype; }
+	
+	typedef i1 {
+		type int8 {range "4..127";}
+		default 4;
+	}
+	
+	typedef b {
+	   type boolean;
+	  }
+	
+	typedef f1 {
+		type float32{ range "min..10e2";}
+		default 4;
+	}
+		
+	
+	typedef f2 {
+		type f1;
+		default 1;
+	}
+	
+	typedef f3 {
+		type f2 { range "-INF..0| 8.2 ..1000" ;
+				 }
+				 default 0;
+	}
+	
+	typedef u1 {
+		type union {
+		     type uint8;
+		     type uint16;
+		     type union {
+		     		type string {length "1..4| 5..max";}
+		     		type float32 { range "-1.4..5.6e1";}
+		     }
+		}
+	}
+	
+	typedef u2 {
+		type u1;
+	}
+	
+	leaf lu1 {
+		type boolean;
+		default true;
+	}
+	
+	
+	
+	typedef cont1 {
+		type float32 { 
+			range  "min..12|14..INF";
+		}
+		
+	}
+	
+	
+	
+	typedef cont112 { type m2:count{
+				range "9..12";}
+				default 11;
+				}
+	
+	
+	list list1 {
+		key a;
+		container a {
+		   config true;
+		}
+		leaf b { type int8;}
+	}
+	
+	typedef lt1 {
+		type cont1 { range "10..11.5"; }
+		default 10.5;
+	}
+	
+	typedef ttttt {
+		type lt1 { range "10..11.5";}}
+	
+	grouping cont1 {
+	}
+	
+	typedef s1 {
+		type string ;
+		default "toto";
+	}
+	
+	typedef s12 {
+		type m2:m2int2 ;
+		//default "3";
+	}
+	
+	typedef s2 {
+		type s1 {length "min..7 | 8.. 19";}
+	}
+	
+	
+	typedef s3 {
+		type s2 {
+		  length "min..7 | 8.. 12";
+		 }
+	}
+	
+	typedef e1 {
+		type enumeration {
+		  enum monday {value 2;}
+		  enum tuesday { value 3;}
+		  enum wednesday;
+		  enum dimanche;
+		}
+		default monday;
+	}
+	
+	
+	leaf le1 {
+		type e2;
+		default tuesday;
+	}
+	
+	typedef e2 {type e22;}
+	
+	typedef e22 { type m2:e2;
+	    default dimanche;}
+	
+	typedef b1 {
+		type bits {
+			bit enable {position 1;}
+			bit on {position 3;}
+			bit off {position 2;}
+			bit disabled {position 4;}
+			bit trux { position 7;}
+		}
+		default 10000;
+	}
+	/*
+	typedef b11 { type b1;}
+	
+	typedef b111 {type m2:b11;}
+	
+	typedef b123 { type b111;
+				default 00111;}
+	
+	leaf lb1 {
+		type b11;
+		default 10111;
+	}
+	*/
+	typedef bin1 {
+		type string { length "min..9 | 11..max";}
+	}
+	
+	typedef bin2 {
+		type m2:bin122;
+ 		
+	}
+	
+	typedef bin3 {
+		type bin2 {length "min..6 | 7..9 | 16 .. max";}
+		default "rrrrr";
+		
+	}
+	
+//typedef bin4 {
+	//	type bin3 {length "18..20";}
+	//}
+	
+	leaf l0 { type bin2 { length "18..20";}
+			default "kkkkkkkkkkkkkkkkkh";}
+	
+	
+	typedef m3intr {
+		type union { 
+			type m3int;
+			type union {
+				type m3int;
+				type m2:m2int2;
+				type int64;
+			}
+		}
+		mod3:uneExt;
+	}
+	
+	typedef m3intt {
+		type mod3:m3intr;
+	}
+	
+	
+	grouping g1{
+	
+	    list l1 {
+	    	config false;
+	    	leaf l1 {type int8;}
+	    	uses g21 {
+	    	   leaf l2;
+	    	}
+	    }
+	    typedef cont12 {
+	    	type union {
+	    		type string {
+	    			pattern "[0-9]*";
+	    			pattern "to...";
+	    		   length "2..3";
+	    		}
+	    		type int8 {
+	    			range "-41..-35";
+	    			
+	    		}
+	    	}
+	    }
+	    
+	    
+	    
+	    uses g21 {
+	    	leaf l23 { default 0.252359;}
+	    	leaf-list llist126 { }
+	    	choice c21 {
+	    		case casb { 
+	    			leaf lc31 { default 13;}
+	    			leaf lc32 { default 5;}
+	    		} 
+	    		case casas {
+	    			
+	    		}
+	    		default casa;
+	    	}
+	    	container c1 {
+	    		leaf l1 {default 128;}
+	    		container c1 {
+	    			choice c {
+	    				case a {
+	    					leaf l { default 128;}
+	    					container g {
+	    						leaf l { default 126;}
+	    					}
+	    				}
+	    			}
+	    		}
+	    	}
+	    }
+	    grouping g21o {
+	    	grouping g213 {
+	    		typedef count12 {
+	    			type union {
+	    				type int8;
+	    				type int16;
+	    			}
+	    		}
+	   		} 
+	   		uses g21e;	
+	    }
+	    grouping g21e {
+	    	grouping g21ef {
+	    		typedef gnttm {
+	    			type union {
+	    				type int8;
+	    				type m3intt;
+	    			}
+	    		}
+	    	}	    
+		}
+	}
+	extension uneExt;
+	grouping g21 {
+		leaf-list llist12 { type int83;}
+		container c1 {
+			leaf l1 { type int8;}
+			container c1 {
+				leaf l1 { type int8;}
+				leaf l2 { type int8;}
+				choice c {
+	        		case a {
+	        			leaf l { type int8;}
+	        			container g {
+	        				leaf l  { type int8;}
+	        			}
+	        		}
+	        		case b {
+	        			container c {
+	        				leaf l { type int8;}
+	        			}
+	        		}
+	        	}
+			}
+			leaf l3 {type int8;}
+		}
+	    leaf l2 {type cont1 {range "min..11";}}
+	    leaf l3 {type int8;}
+	    choice c21 {
+	    		container c { leaf l3 {type int8;}}
+	    		leaf cs {type int8;}
+	        case casac {
+	        	leaf l{type int8;}
+	        }
+	        case casa {
+	        	leaf lc21d {type int32;}
+	        	leaf lc21 {type int32;}
+	        	
+	        }
+	        case casb {
+	        	leaf lc31 {type cont1; default 13;}
+	        	leaf lc32 {type float32;}
+	        	
+	        }
+	       }
+	    mod3:uneExt;
+	    uses g1;
+	    //uses m2:gm2;
+	}
+
+	leaf g1 {
+			type int8;
+			m2:monExt5 " c'est le bordel";
+	
+		}	
+	
+	
+	anyxml m3xml23 {
+	     description "un truc bizarre";
+	    }
+	
+	leaf-list m3xml {
+		type int8;
+	}
+	
+	typedef m3union {
+				type int8;
+			
+		}
+
+	
+	container c1 {
+	
+		grouping gp1 {
+		}
+		    typedef truc {
+		    	type trac;
+		    	
+		    } 
+		    typedef trac {
+		    	type tric {
+		    	  range "-2.3e4..22.2E36 | 24.001e36..0.5e100";
+		    	}
+		    }
+		    typedef tric {
+		    	type float32;
+		    }
+		
+		augment "/list1/a" {
+  
+		    anyxml a1 {
+		    	description "toto";
+		    }
+		    leaf l1 {type m3int;
+		    		default 12;}
+		    uses g1;
+			choice c1111 {
+			    config false;
+				default b;
+				case a {
+					list l2 {
+						leaf l1 {type tric { range "-6..2";}}
+						leaf l2 {type truc{
+									range "-2.29e4..10 | 24.002e36 .. 25e36";
+									}
+								}
+					}
+					container c1 {
+						leaf l1 {type int8; config false;}
+	        	         uses g21 {
+	        	         
+	        	             leaf l3;
+	        	         }
+	        	    }
+				}
+				leaf lll { type int8;}
+				
+				case b {
+					list l12 { 
+						key l1 l2;
+						unique "l1 cont1/l1" ;
+						leaf l1 {type int8;}
+						leaf l2 {type int8; }
+						container cont1 {
+							leaf l1 {type int8;}
+						}
+						config false;
+					}
+					leaf axx{ type int8;
+					  
+					}
+					list l22 {
+						leaf l1 {
+							type int8;
+							mandatory false;
+						}
+					}
+					list l3 {
+						leaf l1 {type int8;}}
+					
+				}
+			}
+		
+		}
+		leaf lll { type g2;}
+		
+	    typedef g2 {type g21;}
+	    
+	    typedef g21 { type empty;}
+	    
+	    container g1 {
+	       typedef g32 { type int8; }
+	    }
+	    
+	    container c2 {
+	        typedef tc21 { type int8;}
+	    	grouping c2 {
+	    	
+	    		choice c1 {
+	    		    container g2 {
+	    		    	leaf l1{ type m5int;}
+	    		    	choice c1 {
+	    		    	mandatory true;
+	    		    	  case a {
+	    		    	    leaf la1{ type m2:m2int;mandatory true;}
+	    		    	    leaf la2{ type m2:m2int;mandatory true;}
+	    		    	  }
+	    		    	  case ab {
+	    		    	  }
+	    		    	}
+	    		    }
+	    		}
+	    		choice c2 {
+	    		}
+	    	}
+	        list l1 {
+	        	container c2 {
+	           		grouping c3 {
+	           		   typedef g25 {type tc21;}
+	           		   leaf l1 {type m2:m2int;}
+	           		}
+	           		typedef g3 {type m5int;}
+	        	}
+	    	}
+	    }
+	}
+	
+	
+	grouping gconf {
+	
+		container c1q {
+			container c11 {config true;
+				list l1 {
+				    key l0;
+					leaf l0 {type int8;}
+					leaf l1 {type int8; }
+				}
+			}
+		}
+	}
+	
+	container c {
+	  config false;
+		uses gconf {
+		 container c1q {
+		 	container c11 {
+		 		list l1 {
+		 			leaf l0 { description "toto";}
+		 		}
+		 	}
+		 }
+		}
+	}
+	
+}

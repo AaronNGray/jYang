@@ -1,0 +1,7 @@
+submodule network {
+
+   belongs-to netconf { prefix nc; }
+   include interfaces;
+   ;
+   
+  }

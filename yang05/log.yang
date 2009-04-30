@@ -1,0 +1,12 @@
+module log {
+
+	namespace "urn:loria:madynes:ensuite:yencap:module:Log:1.0";
+	prefix log;
+	
+	leaf size {type uint32;}
+	list records {
+		config false;
+		leaf date {type uint16; }
+		leaf message {type string;}			
+	}
+}
