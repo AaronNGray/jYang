@@ -376,14 +376,14 @@ YANG_Unknown un = null;
 }
 {
 	(
-	h = yangversionstmt() (LOOKAHEAD(2) un = unknownstatement() {h.addUnknown(un);})*
+		h = yangversionstmt() (LOOKAHEAD(2) un = unknownstatement() {h.addUnknown(un);})*
 	|
         h = namespacestmt() (LOOKAHEAD(2) un = unknownstatement() {h.addUnknown(un);})*
 	|
         h = prefixstmt() (LOOKAHEAD(2) un = unknownstatement() {h.addUnknown(un);})*
 	)
 		{
-		return h;
+			return h;
 		}
 }
 	
@@ -396,12 +396,12 @@ YANG_Unknown un = null;
 }
 {
 	(
-	h = belongstostmt() (LOOKAHEAD(2) un = unknownstatement() {h.addUnknown(un);})*
+		h = belongstostmt() (LOOKAHEAD(2) un = unknownstatement() {h.addUnknown(un);})*
 	|
-	h = yangversionstmt() (LOOKAHEAD(2) un = unknownstatement() {h.addUnknown(un);})*
+		h = yangversionstmt() (LOOKAHEAD(2) un = unknownstatement() {h.addUnknown(un);})*
 	)
 		{
-		return h;
+			return h;
 		}
 }
 
@@ -421,7 +421,7 @@ YANG_Unknown un = null;
         n = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {n.addUnknown(un);})*
 	)
 		{
-		return (YANG_Meta) n;
+			return (YANG_Meta) n;
 		}
 }
 
@@ -434,12 +434,12 @@ YANG_Unknown un = null;
 {
  // these stmts can appear in any order
 	(
-	n = importstmt() (LOOKAHEAD(2) un = unknownstatement() {n.addUnknown(un);})*
+		n = importstmt() (LOOKAHEAD(2) un = unknownstatement() {n.addUnknown(un);})*
 	|
-	n = includestmt() (LOOKAHEAD(2) un = unknownstatement() {n.addUnknown(un);})*
+		n = includestmt() (LOOKAHEAD(2) un = unknownstatement() {n.addUnknown(un);})*
 	)
 		{
-		return (YANG_Linkage) n;
+			return (YANG_Linkage) n;
 		}
 }
 
@@ -569,9 +569,14 @@ YANG_Unknown un = null;
 					jjtThis.setRevision(r);
 				}
 			)*
+			
         
 		
 		"}"
+		{
+			
+			return jjtThis;
+		}
 }
 
 YANG_Include includestmt()       #Include    : 
@@ -583,7 +588,6 @@ YANG_Unknown un = null;
 }
 {
 	t = <includekeyword>  i = identifierstr()
-        (";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setIdentifier(i);
 		jjtThis.setLine(t.beginLine);
@@ -780,9 +784,11 @@ YANG_Unknown un = null;}
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		}
-        (
+    (
 	";" 
+	
 	|
+		(
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
          [d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*]
         "}"
@@ -790,6 +796,8 @@ YANG_Unknown un = null;}
 		if(d != null)
 			jjtThis.setDescription(d);
 		}
+		)
+		
 	)
 		{
 		return jjtThis;
@@ -1090,40 +1098,43 @@ YANG_Unknown un = null;
 {
 	t = <typedefkeyword>  i = identifierstr() 
 		{
-		jjtThis.setTypedef(i);
-		jjtThis.setLine(t.beginLine);
-		jjtThis.setCol(t.beginColumn);
+			jjtThis.setTypedef(i);
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
 		}
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-        (
-	 ty = typestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-		{
-		 jjtThis.setType(ty);
-		}
-	|
-         u = unitsstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
-		{
-		jjtThis.setUnits(u);
-		}  
-	|
-         df = defaultstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*  
-		{
-		jjtThis.setDefault(df);
-		}
-	|
-         s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
-		{
-		jjtThis.setStatus(s);
-		}  
-	|
-         d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-		{
-		jjtThis.setDescription(d);
-		} 
-	|
-         r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+    	(
+		 	ty = typestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+			{
+				 jjtThis.setType(ty);
+			}
+		 |
+        	 u = unitsstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+			{
+				jjtThis.setUnits(u);
+			}  
+		 |
+        	 df = defaultstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*  
+			{
+				jjtThis.setDefault(df);
+			}
+		 |
+			s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+			{
+				jjtThis.setStatus(s);
+			}  
+		 |
+			d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+			{
+				jjtThis.setDescription(d);
+			} 
+		 |
+			r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+			{
+				jjtThis.setReference(r);
+			} 
 
-	)*
+		)*
         "}"
 		{
 		return jjtThis;
@@ -1154,66 +1165,68 @@ YANG_Unknown un = null;
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		} 
-        ( 
-	 ";" 
+   ( 
+		";" 
 	|
+		(
           "{"  (LOOKAHEAD(2) un = unknownstatement(){jjtThis.addUnknown(un);})*
-          
-	   n = numericalrestrictions() 
-		{
-		jjtThis.setNumRest(n);
-		}
-	   |
-	   LOOKAHEAD(2) d = decimal64specification()
-	     {
-	     	jjtThis.setDec64Spec(d);
-	     }
-	   |
-        
-          ( 
-             (
-		  LOOKAHEAD(2) e = enumspecification()
+         ( 
+	 		n = numericalrestrictions() 
 			{
-			jjtThis.addEnum(e);
+				jjtThis.setNumRest(n);
 			}
-	     )+ 
+	  	 |
+	  		 LOOKAHEAD(2) d = decimal64specification()
+	     	{
+	     		jjtThis.setDec64Spec(d);
+	   		}
+	  	 |
+           ( 
+             (
+               LOOKAHEAD(2) e = enumspecification()
+				{
+					jjtThis.addEnum(e);
+				}
+	     	  )+
+	       ) 
+	   	|
+	   		LOOKAHEAD(2) k = leafrefspecification() 
+				{
+					jjtThis.setLeafRef(k);
+				}
 	   |
-	   LOOKAHEAD(2) k = leafrefspecification() 
-		{
-		jjtThis.setLeafRef(k);
-		}
-	   |
-	   i = identityrefspecification()
-	    {
-	    	jjtThis.setIdentityRefSpec(i);
-	    }
-	   
-	   |
-	   b = bitsspecification() 
-		{
-		jjtThis.setBitSpec(b);
-		}
-	   |
-          u = unionspecification()
-		{
-		jjtThis.setUnionSpec(u);
-		}
+          LOOKAHEAD(2) u = unionspecification()
+			{
+				jjtThis.setUnionSpec(u);
+			}
 		|
-		s = stringrestrictions()
-		{
-		jjtThis.setStringRest(s);
-		}
+ 			ii = instanceidentifierspecification()
+	    	{
+	    		jjtThis.setInstanceIdentifierSpec(ii);
+	   		}
+	   |
+	  		 i = identityrefspecification()
+	    	{
+	    		jjtThis.setIdentityRefSpec(i);
+	    	}
+	   |
+	   		b = bitsspecification() 
+			{
+				jjtThis.setBitSpec(b);
+			}
 		|
-	   ii = instanceidentifierspecification()
-	    {
-	    	jjtThis.setInstanceIdentifierSpec(ii);
-	    }
-	   
+			s = stringrestrictions()
+			{
+				jjtThis.setStringRest(s);
+			}
+	   	)
           )
           
           (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-          "}" 
-	)
+          
+          "}"
+         ) 
+	
 		{
 			jjtThis.checkTypeSyntax();
 			return jjtThis;
@@ -1603,12 +1616,13 @@ String instanceidentifierspecification()	:
 String s = null;
 }
 {
-	[
-		LOOKAHEAD(2) s = requireinstancestmt()
+	
+		//LOOKAHEAD(2) 
+		s = requireinstancestmt()
 		{
 			return s;
 		}
-	]
+	
 }	
 
 YANG_Base identityrefspecification() :
@@ -1628,15 +1642,16 @@ YANG_Type t = null;
 YANG_Unknown un = null;
 }
 {
-	(LOOKAHEAD(2)
-	 t = typestmt() 
-	 (LOOKAHEAD(2) un = unknownstatement(){jjtThis.addUnknown(un);})*
+	(
+		LOOKAHEAD(2)
+	 	t = typestmt() 
+		(LOOKAHEAD(2) un = unknownstatement(){jjtThis.addUnknown(un);})*
 		{
-		jjtThis.addType(t);
+			jjtThis.addType(t);
 		}
 	)+
 		{
-		return jjtThis;
+			return jjtThis;
 		}
 }
 
@@ -2731,6 +2746,7 @@ YANG_Unknown un = null;
         (
 	 ";" 
 	|
+	(
 	 "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	  (
 	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
@@ -2751,7 +2767,7 @@ YANG_Unknown un = null;
 	  |
 	    cf = configstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 		{
-		jjtThis.setConfig(cf);
+			jjtThis.setConfig(cf);
 		}
 	  |
             m = mandatorystmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
@@ -2774,19 +2790,19 @@ YANG_Unknown un = null;
 		jjtThis.setReference(r);
 		}
 	  |
-            (
-		sc =  shortcasestmt() 
-			{
-			jjtThis.addShortCase(sc);
-			}
+            
+		sc =  shortcasestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+				{
+					jjtThis.addShortCase(sc);
+				}
 		| 
-		 c = casestmt()
-			{
-			jjtThis.addCase(c);
-			}
-	    ) (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+		c = casestmt()(LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+				{
+					jjtThis.addCase(c); 
+				}
 	  )*
 	 "}"
+	 )
 	)
 		{
 		return jjtThis;
@@ -3025,7 +3041,7 @@ YANG_Refinement r = null;
 }
 {
 	(
-	r = refinecontainerstmt() 
+		r = refinecontainerstmt() 
 	|
         r = refineleafstmt() 
 	|

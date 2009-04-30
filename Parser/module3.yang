@@ -2,7 +2,7 @@
 
 module module3 {
 
-	toto:tit;
+	//toto:tit;
 	
 	namespace  "fr:loria:madynes:module3";
 	prefix "mod3" ;
@@ -12,8 +12,10 @@ module module3 {
 	
 	
 	
+	container fautype {
+	}
 	
-	typedef m3int {
+typedef m3int {
 		type m2:m2int;
 	}
 	
@@ -28,8 +30,6 @@ module module3 {
 		}
 	}
 	
-	container fautype {
-	}
 	typedef fautype { type int8;}
 	leaf leafl1 { type fautype; }
 	
