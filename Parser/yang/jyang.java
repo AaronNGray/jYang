@@ -24,6 +24,7 @@ import java.io.*;
 import jyang.parser.ParseException;
 import jyang.parser.YANG_Specification;
 import jyang.parser.yang;
+import jyang.tools.Yang2Ensuite;
 import jyang.tools.Yang2Yin;
 
 public class jyang {
@@ -221,8 +222,12 @@ public class jyang {
 				if (format != null) {
 					if (format.compareTo("yin") == 0) {
 						new Yang2Yin(yangspec, paths, out);
-					} else
-						System.err.println("only yin format enabled (now)");
+					} 
+					else if (format.compareTo("ensuite") == 0){
+						new Yang2Ensuite(yangspec, paths, out);
+					}
+					else
+						System.err.println("only yin, ensuite or dsdl formats enabled (now)");
 				}
 
 			} catch (ParseException pe) {
