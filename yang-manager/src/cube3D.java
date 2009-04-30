@@ -19,6 +19,7 @@ import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.vecmath.Point3d;
+import javax.vecmath.Vector3f;
 
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.geometry.ColorCube;
@@ -64,27 +65,58 @@ public class cube3D extends Applet implements MouseMotionListener, MouseListener
     public BranchGroup createSceneGraph()
     {
 
-        //on cr√©e le Bg principal
-        BranchGroup objRoot=new BranchGroup();
+    	//on crée le Bg principal
+    	BranchGroup objRoot=new BranchGroup();
 
+    	//------------ début de creation du premier cube ------------
 
-    
-        // on cr√©e un cube
-        
-        Transform3D rotate = new Transform3D();
-        rotate.rotX(Math.PI/3.0d);
-        TransformGroup objRotate = new TransformGroup(rotate);
-        
-        objRotate.addChild(new ColorCube(0.5));// de rayon 50 cm
-        
-        MouseRotate behavior = new MouseRotate();
-        behavior.setTransformGroup(objRotate);
-        objRotate.addChild(behavior);
-        behavior.setSchedulingBounds(new BoundingBox(new Point3d(0,0,0), new Point3d(200,200,200)));
+    	// on crée un vecteur de translation 30 cm suivant les Y
+    	Transform3D translate1 = new Transform3D(); 
+    	translate1.set(new Vector3f(0.5f, 0.3f, 0.0f));
 
-        objRoot.addChild(objRotate);
-        
-        return objRoot;
+    	// on crée une matrice de tranformation pour faire tourner notre cube
+    	Transform3D rotate = new Transform3D(); 
+    	//(X represente la vericale orientée vers le bas,Y represente l' horizontale orientée vers la gauche,Z) 
+    	rotate.rotX(Math.PI/3.0d);//rotation d'angle Pi/3
+
+    	// on combine les deux transformations: translation puis rotation 
+    	translate1.mul(rotate);
+    	// on crée un groupe de transformation rotate suivant la matrice de transformation translate1 
+    	TransformGroup TG1 = new TransformGroup(translate1);
+
+    	// on crée un cube qui herite de cette rotation
+    	TG1.addChild(new ColorCube(0.3));// de rayon 30 cm 
+    	objRoot.addChild(TG1);
+
+    	//------------ fin de creation du premier cube ------------
+    	//------------ début de creation du deuxieme cube ------------
+
+    	// on crée un vecteur de translation de 30 cm suivant les Y (dans l'autre sens) 
+    	Transform3D translate2 = new Transform3D();
+    	translate2.set(new Vector3f(-0.4f, 0.4f, 0.0f));
+
+    	// on crée une matrice de tranformation pour faire tourner notre cube 
+    	Transform3D rotate2 = new Transform3D();
+    	rotate2.rotZ(Math.PI/3.0d);//rotation d'angle Pi/3
+
+    	// on combine les deux transformations: translation puis rotation
+    	translate2.mul(rotate2);
+
+    	// on réduit la taille du cube par 2 (on la multiplie par 0.5)
+    	translate2.setScale(0.5f);
+
+    	// on crée un groupe de transformation rotate suivant la matrice de transformation translate1
+    	TransformGroup TG2 = new TransformGroup(translate2);
+
+    	// on crée un cube qui herite de cette rotation 
+    	TG2.addChild(new ColorCube(0.3));// de rayon 20 cm
+
+    	objRoot.addChild(TG2);
+
+    	//------------ fin de creation du deuxieme cube ------------
+
+    	return objRoot;
+       
 
     }
 
