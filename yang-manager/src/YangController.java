@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import jyang.*;
+import jyang.parser.*;
 
 import datatree.*;
 

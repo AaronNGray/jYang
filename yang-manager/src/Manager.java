@@ -19,8 +19,8 @@ import org.xml.sax.SAXException;
 
 import datatree.DataTree;
 
-import jyang.YANG_Specification;
-import jyang.jyang;
+import jyang.parser.YANG_Specification;
+
 
 
 public class Manager {

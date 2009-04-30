@@ -1,6 +1,6 @@
 package datatree;
 
-import jyang.YANG_Leaf;
+import jyang.parser.YANG_Leaf;
 
 public class LeafNode extends DataNode {
 	

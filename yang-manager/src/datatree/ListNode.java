@@ -4,7 +4,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import jyang.YANG_List;
+import jyang.parser.YANG_List;
 
 public class ListNode extends DataNode {
 

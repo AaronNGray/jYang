@@ -4,7 +4,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import jyang.YANG_Container;
+import jyang.parser.YANG_Container;
 
 public class ContainerNode extends DataNode {
 	

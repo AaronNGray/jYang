@@ -4,7 +4,7 @@ package datatree;
 import java.util.List;
 import java.util.Vector;
 
-import jyang.YANG_LeafList;
+import jyang.parser.YANG_LeafList;
 
 public class LeafListNode extends DataNode {
 	

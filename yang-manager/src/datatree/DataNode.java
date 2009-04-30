@@ -1,6 +1,6 @@
 package datatree;
 
-import jyang.YANG_DataDef;
+import jyang.parser.YANG_DataDef;
 
 public abstract class DataNode {
 	
