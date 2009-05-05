@@ -9,6 +9,8 @@
 
 PARSER_BEGIN(yang)
 package jyang.parser;
+import java.util.Enumeration;
+import java.util.Vector;
 public class yang/*@bgen(jjtree)*/implements yangTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
   protected static JJTyangState jjtree = new JJTyangState();
 
@@ -4791,27 +4793,27 @@ YANG_Unknown un = null;
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 	//(useAnyOrder())*
 	 (
-	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})* 
+	  		LOOKAHEAD(3) w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})* 
 	  		{
 	  			jjtn000.setWhen(w);
 	  		}
 	  	|
-	  	iff = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})* 
+	  		LOOKAHEAD(3) iff = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})* 
 	  		{
 	  			jjtn000.addIfFeature(iff);
 	  		}
 	  	|
-          s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})* 
+          LOOKAHEAD(3) s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})* 
 		{
 		jjtn000.setStatus(s);
 		}
 	 | 
-          d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
+          LOOKAHEAD(3) d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 		{
 		jjtn000.setDescription(d);
 		}
 	 |
-          r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*   
+          LOOKAHEAD(3) r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*   
 		{
 		jjtn000.setReference(r);
 		}
@@ -4858,29 +4860,75 @@ YANG_Unknown un = null;
 /*@egen*/
 }
 
-YANG_Refinement refinementstmt()        : 
-{
+YANG_Refinement refinementstmt()                  : 
+{/*@bgen(jjtree) Refinement */
+YANG_Refinement jjtn000 = new YANG_Refinement(JJTREFINEMENT);
+boolean jjtc000 = true;
+jjtree.openNodeScope(jjtn000);
+/*@egen*/
 YANG_Refinement r = null;
+Token t;
+String i = null;
+YANG_Unknown un = null;
 }
-{
-	(
-		r = refinecontainerstmt() 
-	|
-        r = refineleafstmt() 
-	|
-        r = refineleafliststmt() 
-	|
-        r = refineliststmt() 
-	|
-        r = refinechoicestmt() 
-    |
-    	r = refinecasestmt()
-	|
-        r = refineanyxmlstmt()
-	)
+{/*@bgen(jjtree) Refinement */
+        try {
+/*@egen*/
+	t = <refinekeyword> i = identifierstr()
+		
+     (
+	 ";" 
+	 |
+	  "{"(LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
+	  ( 
+			LOOKAHEAD(3) r = refinecontainerstmt()
+		|
+   	    	 LOOKAHEAD(3) r = refineleafstmt() 
+		|
+    	    LOOKAHEAD(3) r = refineleafliststmt() 
+		|
+        	LOOKAHEAD(3) r = refineliststmt() 
+		|
+        	LOOKAHEAD(3) r = refinechoicestmt() 
+    	|
+    		LOOKAHEAD(3) r = refinecasestmt()
+		|
+        	LOOKAHEAD(3) r = refineanyxmlstmt()
+	   )
+	   "}"
+	  )/*@bgen(jjtree)*/
+                {
+                  jjtree.closeNodeScope(jjtn000, true);
+                  jjtc000 = false;
+                }
+/*@egen*/
 		{
-		return r;
-		}
+			
+			jjtn000.setLine(t.beginLine);
+			jjtn000.setCol(t.beginColumn);
+			jjtn000.setRefineNodeId(i);
+			return jjtn000;
+		}/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
 }
 
 YANG_RefineContainer refinecontainerstmt()                  : 
@@ -4889,28 +4937,16 @@ YANG_RefineContainer jjtn000 = new YANG_RefineContainer(JJTREFINECONTAINER);
 boolean jjtc000 = true;
 jjtree.openNodeScope(jjtn000);
 /*@egen*/
-String i = null;
 YANG_Must m = null;
 YANG_Presence p = null;
 YANG_Config c = null;
 YANG_Description d = null;
 YANG_Reference r = null;
 YANG_Unknown un = null;
-Token t;
 }
 {/*@bgen(jjtree) RefineContainer */
-        try {
+         try {
 /*@egen*/
-	t = <containerkeyword>  i = identifierstr()
-		{
-		jjtn000.setLine(t.beginLine);
-		jjtn000.setCol(t.beginColumn);
-		jjtn000.setRefineContainer(i);
-		} 
-        (
-	 ";" 
-	|
-         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 	//(refinecontainerAnyOrder())*
 	 (
            m= muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*	
@@ -4937,9 +4973,7 @@ Token t;
 		{
 		jjtn000.setReference(r);
 		}
-	 )*
-	 "}"
-	)/*@bgen(jjtree)*/
+	 )/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
@@ -4948,25 +4982,25 @@ Token t;
 		{
 		return jjtn000;
 		}/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
+         } catch (Throwable jjte000) {
+           if (jjtc000) {
+             jjtree.clearNodeScope(jjtn000);
+             jjtc000 = false;
+           } else {
+             jjtree.popNode();
+           }
+           if (jjte000 instanceof RuntimeException) {
+             throw (RuntimeException)jjte000;
+           }
+           if (jjte000 instanceof ParseException) {
+             throw (ParseException)jjte000;
+           }
+           throw (Error)jjte000;
+         } finally {
+           if (jjtc000) {
+             jjtree.closeNodeScope(jjtn000, true);
+           }
+         }
 /*@egen*/
 }
 
@@ -4977,7 +5011,6 @@ YANG_RefineLeaf jjtn000 = new YANG_RefineLeaf(JJTREFINELEAF);
 boolean jjtc000 = true;
 jjtree.openNodeScope(jjtn000);
 /*@egen*/
-String i = null;
 YANG_Must m = null;
 YANG_Default d = null;
 YANG_Config c = null;
@@ -4985,54 +5018,40 @@ YANG_Mandatory ma = null;
 YANG_Description de = null;
 YANG_Reference r = null;
 YANG_Unknown un = null;
-Token t;
 }
 {/*@bgen(jjtree) RefineLeaf */
         try {
 /*@egen*/
-	t = <leafkeyword>  i = identifierstr()
-		{
-		jjtn000.setLine(t.beginLine);
-		jjtn000.setCol(t.beginColumn);
-		jjtn000.setRefineLeaf(i);
-		} 
-        (
-	";" 
-	|
-        "{" (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
-	//(refineleafAnyOrder())*
 	(
          m = muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})* 
 		{
-		jjtn000.addMust(m);
+			jjtn000.addMust(m);
 		}
 	|
          d = defaultstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})* 
 		{
-		jjtn000.setDefault(d);
+			jjtn000.setDefault(d);
 		}
 	|
          c = configstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})* 
 		{
-		jjtn000.setConfig(c);
+			jjtn000.setConfig(c);
 		}
 	|
          ma = mandatorystmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 		{
-		jjtn000.setMandatory(ma);
+			jjtn000.setMandatory(ma);
 		}
 	|
          de = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 		{
-		jjtn000.setDescription(de);
+			jjtn000.setDescription(de);
 		}
 	|
          r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 		{
-		jjtn000.setReference(r);
+			jjtn000.setReference(r);
 		}
-	)*
-	"}"
 	)/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
@@ -5082,18 +5101,8 @@ YANG_Unknown un = null;
 Token t;
 }
 {/*@bgen(jjtree) RefineLeafList */
-        try {
+          try {
 /*@egen*/
-	t = <leaflistkeyword>  i = identifierstr() 
-		{
-		jjtn000.setLine(t.beginLine);
-		jjtn000.setCol(t.beginColumn);
-		jjtn000.setRefineLeafList(i);
-		} 
-        (
-	 ";" 
-	|
-         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 	//(refineleaflistAnyOrder())*
 	  (
            m = muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*      
@@ -5125,9 +5134,7 @@ Token t;
 		{
 		jjtn000.setReference(r);
 		}
-	  )*
-	 "}"
-	)/*@bgen(jjtree)*/
+	  )/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
@@ -5136,25 +5143,25 @@ Token t;
 		{
 		return jjtn000;
 		}/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
+          } catch (Throwable jjte000) {
+            if (jjtc000) {
+              jjtree.clearNodeScope(jjtn000);
+              jjtc000 = false;
+            } else {
+              jjtree.popNode();
+            }
+            if (jjte000 instanceof RuntimeException) {
+              throw (RuntimeException)jjte000;
+            }
+            if (jjte000 instanceof ParseException) {
+              throw (ParseException)jjte000;
+            }
+            throw (Error)jjte000;
+          } finally {
+            if (jjtc000) {
+              jjtree.closeNodeScope(jjtn000, true);
+            }
           }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
 /*@egen*/
 }
 
@@ -5175,18 +5182,9 @@ YANG_Unknown un = null;
 Token t;
 }
 {/*@bgen(jjtree) RefineList */
-        try {
+         try {
 /*@egen*/
-	t = <listkeyword>  i = identifierstr() 
-		{
-		jjtn000.setLine(t.beginLine);
-		jjtn000.setCol(t.beginColumn);
-		jjtn000.setRefineList(i);
-		} 
-        (
-	 ";" 
-	|
-        "{" (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
+	
 	//(refinelistAnyOrder())*
 	 (
           m = muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*	     
@@ -5218,9 +5216,7 @@ Token t;
 		{
 		jjtn000.setReference(r);
 		}	
-	 )*
-	"}"
-	)/*@bgen(jjtree)*/
+	 )/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
@@ -5229,25 +5225,25 @@ Token t;
 		{
 		return jjtn000;
 		}/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
+         } catch (Throwable jjte000) {
+           if (jjtc000) {
+             jjtree.clearNodeScope(jjtn000);
+             jjtc000 = false;
+           } else {
+             jjtree.popNode();
+           }
+           if (jjte000 instanceof RuntimeException) {
+             throw (RuntimeException)jjte000;
+           }
+           if (jjte000 instanceof ParseException) {
+             throw (ParseException)jjte000;
+           }
+           throw (Error)jjte000;
+         } finally {
+           if (jjtc000) {
+             jjtree.closeNodeScope(jjtn000, true);
+           }
+         }
 /*@egen*/
 }
 
@@ -5267,18 +5263,9 @@ YANG_Unknown un = null;
 Token t;
 }
 {/*@bgen(jjtree) RefineChoice */
-        try {
+          try {
 /*@egen*/
-	t = <choicekeyword>  i = identifierstr()
-		{
-		jjtn000.setLine(t.beginLine);
-		jjtn000.setCol(t.beginColumn);
-		jjtn000.setRefineChoice(i);
-		} 
-        (
-	 ";" 
-	 |
-         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
+	
 	//(refinechoiceAnyOrder())*
 	 
 	  (
@@ -5306,9 +5293,7 @@ Token t;
 		{
 		jjtn000.setReference(r);
 		}	
-	  )*
-	"}"
-	 )/*@bgen(jjtree)*/
+	  )/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
@@ -5317,25 +5302,25 @@ Token t;
 		{
 		return jjtn000;
 		}/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
+          } catch (Throwable jjte000) {
+            if (jjtc000) {
+              jjtree.clearNodeScope(jjtn000);
+              jjtc000 = false;
+            } else {
+              jjtree.popNode();
+            }
+            if (jjte000 instanceof RuntimeException) {
+              throw (RuntimeException)jjte000;
+            }
+            if (jjte000 instanceof ParseException) {
+              throw (ParseException)jjte000;
+            }
+            throw (Error)jjte000;
+          } finally {
+            if (jjtc000) {
+              jjtree.closeNodeScope(jjtn000, true);
+            }
           }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
 /*@egen*/
 }
 
@@ -5351,18 +5336,8 @@ YANG_Reference r = null;YANG_Unknown un = null;
 Token t;
 }
 {/*@bgen(jjtree) RefineCase */
-        try {
+         try {
 /*@egen*/
-	t = <casekeyword>  i = identifierstr()
-		{
-		jjtn000.setLine(t.beginLine);
-		jjtn000.setCol(t.beginColumn);
-		jjtn000.setRefineCase(i);
-		} 
-        (
-	 ";" 
-	|
-         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 	//(refinecaseAnyOrder())*
 	 (
           d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
@@ -5374,9 +5349,7 @@ Token t;
 		{
 		jjtn000.setReference(r);
 		}
-	 )*
-	 "}"
-	)/*@bgen(jjtree)*/
+	 )/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
@@ -5385,25 +5358,25 @@ Token t;
 		{
 		return jjtn000;
 		}/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
+         } catch (Throwable jjte000) {
+           if (jjtc000) {
+             jjtree.clearNodeScope(jjtn000);
+             jjtc000 = false;
+           } else {
+             jjtree.popNode();
+           }
+           if (jjte000 instanceof RuntimeException) {
+             throw (RuntimeException)jjte000;
+           }
+           if (jjte000 instanceof ParseException) {
+             throw (ParseException)jjte000;
+           }
+           throw (Error)jjte000;
+         } finally {
+           if (jjtc000) {
+             jjtree.closeNodeScope(jjtn000, true);
+           }
+         }
 /*@egen*/
 }
 
@@ -5426,18 +5399,8 @@ YANG_Unknown un = null;
 Token t;
 }
 {/*@bgen(jjtree) RefineAnyXml */
-        try {
+         try {
 /*@egen*/
-	t = <anyxmlkeyword>  i = identifierstr() 
-		{
-		jjtn000.setLine(t.beginLine);
-		jjtn000.setCol(t.beginColumn);
-		jjtn000.setRefineAnyXml(i);
-		}
-        (
-	";" 
-	|
-         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 	//(refineanyxmlAnyOrder())*
 	 (
           c = configstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
@@ -5459,9 +5422,7 @@ Token t;
 		{
 		jjtn000.setReference(r);
 		}
-	 )*
-	 "}"
-	)/*@bgen(jjtree)*/
+	 )/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
@@ -5470,25 +5431,25 @@ Token t;
 		{
 		return jjtn000;
 		}/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
+         } catch (Throwable jjte000) {
+           if (jjtc000) {
+             jjtree.clearNodeScope(jjtn000);
+             jjtc000 = false;
+           } else {
+             jjtree.popNode();
+           }
+           if (jjte000 instanceof RuntimeException) {
+             throw (RuntimeException)jjte000;
+           }
+           if (jjte000 instanceof ParseException) {
+             throw (ParseException)jjte000;
+           }
+           throw (Error)jjte000;
+         } finally {
+           if (jjtc000) {
+             jjtree.closeNodeScope(jjtn000, true);
+           }
+         }
 /*@egen*/
 }
 
@@ -5513,13 +5474,6 @@ YANG_Unknown un = null;
 {/*@bgen(jjtree) UsesAugment */
         try {
 /*@egen*/
-	t = <augmentkeyword> ds = descendantschemanodeid()
-		{
-			jjtn000.setLine(t.beginLine);
-			jjtn000.setCol(t.beginColumn);
-			jjtn000.setUsesAugment(ds);
-		}
-	"{" (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 	//(augmentAnyOrder())*
 	(
          
@@ -5559,8 +5513,15 @@ YANG_Unknown un = null;
 			jjtn000.addCase(c);
 			}			
 	 )
-	 )*
-	"}"/*@bgen(jjtree)*/
+	 )/*@bgen(jjtree)*/
+         {
+           jjtree.closeNodeScope(jjtn000, true);
+           jjtc000 = false;
+         }
+/*@egen*/
+	 {
+	 	return jjtn000;
+	 }/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);

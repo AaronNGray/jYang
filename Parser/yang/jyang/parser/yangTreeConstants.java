@@ -62,26 +62,27 @@ public interface yangTreeConstants
   public int JJTCASE = 56;
   public int JJTANYXML = 57;
   public int JJTUSES = 58;
-  public int JJTREFINECONTAINER = 59;
-  public int JJTREFINELEAF = 60;
-  public int JJTREFINELEAFLIST = 61;
-  public int JJTREFINELIST = 62;
-  public int JJTREFINECHOICE = 63;
-  public int JJTREFINECASE = 64;
-  public int JJTREFINEANYXML = 65;
-  public int JJTUSESAUGMENT = 66;
-  public int JJTAUGMENT = 67;
-  public int JJTUNKNOWN = 68;
-  public int JJTWHEN = 69;
-  public int JJTRPC = 70;
-  public int JJTINPUT = 71;
-  public int JJTOUTPUT = 72;
-  public int JJTNOTIFICATION = 73;
-  public int JJTDEVIATION = 74;
-  public int JJTDEVIATENOTSUPPORTED = 75;
-  public int JJTDEVIATEADD = 76;
-  public int JJTDEVIATEDELETE = 77;
-  public int JJTDEVIATEREPLACE = 78;
+  public int JJTREFINEMENT = 59;
+  public int JJTREFINECONTAINER = 60;
+  public int JJTREFINELEAF = 61;
+  public int JJTREFINELEAFLIST = 62;
+  public int JJTREFINELIST = 63;
+  public int JJTREFINECHOICE = 64;
+  public int JJTREFINECASE = 65;
+  public int JJTREFINEANYXML = 66;
+  public int JJTUSESAUGMENT = 67;
+  public int JJTAUGMENT = 68;
+  public int JJTUNKNOWN = 69;
+  public int JJTWHEN = 70;
+  public int JJTRPC = 71;
+  public int JJTINPUT = 72;
+  public int JJTOUTPUT = 73;
+  public int JJTNOTIFICATION = 74;
+  public int JJTDEVIATION = 75;
+  public int JJTDEVIATENOTSUPPORTED = 76;
+  public int JJTDEVIATEADD = 77;
+  public int JJTDEVIATEDELETE = 78;
+  public int JJTDEVIATEREPLACE = 79;
 
 
   public String[] jjtNodeName = {
@@ -144,6 +145,7 @@ public interface yangTreeConstants
     "Case",
     "AnyXml",
     "Uses",
+    "Refinement",
     "RefineContainer",
     "RefineLeaf",
     "RefineLeafList",
@@ -166,4 +168,4 @@ public interface yangTreeConstants
     "DeviateReplace",
   };
 }
-/* JavaCC - OriginalChecksum=880bc4e334b2711f183006987335e229 (do not edit this line) */
+/* JavaCC - OriginalChecksum=f07a761a3136bf4367d97e4fe021a8b3 (do not edit this line) */

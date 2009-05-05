@@ -8,6 +8,8 @@ options {
 
 PARSER_BEGIN(yang)
 package jyang.parser;
+import java.util.Enumeration;
+import java.util.Vector;
 public class yang {
 }
 PARSER_END(yang)
@@ -2993,27 +2995,27 @@ YANG_Unknown un = null;
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(useAnyOrder())*
 	 (
-	  	w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		LOOKAHEAD(3) w = whenstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 	  		{
 	  			jjtThis.setWhen(w);
 	  		}
 	  	|
-	  	iff = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+	  		LOOKAHEAD(3) iff = iffeaturestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 	  		{
 	  			jjtThis.addIfFeature(iff);
 	  		}
 	  	|
-          s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
+          LOOKAHEAD(3) s = statusstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 		{
 		jjtThis.setStatus(s);
 		}
 	 | 
-          d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+          LOOKAHEAD(3) d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 		{
 		jjtThis.setDescription(d);
 		}
 	 |
-          r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*   
+          LOOKAHEAD(3) r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*   
 		{
 		jjtThis.setReference(r);
 		}
@@ -3035,53 +3037,56 @@ YANG_Unknown un = null;
 		}
 }
 
-YANG_Refinement refinementstmt()        : 
+YANG_Refinement refinementstmt()       #Refinement: 
 {
 YANG_Refinement r = null;
+Token t;
+String i = null;
+YANG_Unknown un = null;
 }
 {
-	(
-		r = refinecontainerstmt() 
-	|
-        r = refineleafstmt() 
-	|
-        r = refineleafliststmt() 
-	|
-        r = refineliststmt() 
-	|
-        r = refinechoicestmt() 
-    |
-    	r = refinecasestmt()
-	|
-        r = refineanyxmlstmt()
-	)
+	t = <refinekeyword> i = identifierstr()
+		
+     (
+	 ";" 
+	 |
+	  "{"(LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+	  ( 
+			LOOKAHEAD(3) r = refinecontainerstmt()
+		|
+   	    	 LOOKAHEAD(3) r = refineleafstmt() 
+		|
+    	    LOOKAHEAD(3) r = refineleafliststmt() 
+		|
+        	LOOKAHEAD(3) r = refineliststmt() 
+		|
+        	LOOKAHEAD(3) r = refinechoicestmt() 
+    	|
+    		LOOKAHEAD(3) r = refinecasestmt()
+		|
+        	LOOKAHEAD(3) r = refineanyxmlstmt()
+	   )
+	   "}"
+	  )
 		{
-		return r;
+			
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
+			jjtThis.setRefineNodeId(i);
+			return jjtThis;
 		}
 }
 
 YANG_RefineContainer refinecontainerstmt() #RefineContainer : 
 {
-String i = null;
 YANG_Must m = null;
 YANG_Presence p = null;
 YANG_Config c = null;
 YANG_Description d = null;
 YANG_Reference r = null;
 YANG_Unknown un = null;
-Token t;
 }
 {
-	t = <containerkeyword>  i = identifierstr()
-		{
-		jjtThis.setLine(t.beginLine);
-		jjtThis.setCol(t.beginColumn);
-		jjtThis.setRefineContainer(i);
-		} 
-        (
-	 ";" 
-	|
-         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(refinecontainerAnyOrder())*
 	 (
            m= muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	
@@ -3108,9 +3113,7 @@ Token t;
 		{
 		jjtThis.setReference(r);
 		}
-	 )*
-	 "}"
-	)
+	 )
 		{
 		return jjtThis;
 		}
@@ -3119,7 +3122,6 @@ Token t;
 
 YANG_RefineLeaf refineleafstmt()    #RefineLeaf   : 
 {
-String i = null;
 YANG_Must m = null;
 YANG_Default d = null;
 YANG_Config c = null;
@@ -3127,52 +3129,38 @@ YANG_Mandatory ma = null;
 YANG_Description de = null;
 YANG_Reference r = null;
 YANG_Unknown un = null;
-Token t;
 }
 {
-	t = <leafkeyword>  i = identifierstr()
-		{
-		jjtThis.setLine(t.beginLine);
-		jjtThis.setCol(t.beginColumn);
-		jjtThis.setRefineLeaf(i);
-		} 
-        (
-	";" 
-	|
-        "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-	//(refineleafAnyOrder())*
 	(
          m = muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 		{
-		jjtThis.addMust(m);
+			jjtThis.addMust(m);
 		}
 	|
          d = defaultstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 		{
-		jjtThis.setDefault(d);
+			jjtThis.setDefault(d);
 		}
 	|
          c = configstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})* 
 		{
-		jjtThis.setConfig(c);
+			jjtThis.setConfig(c);
 		}
 	|
          ma = mandatorystmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 		{
-		jjtThis.setMandatory(ma);
+			jjtThis.setMandatory(ma);
 		}
 	|
          de = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 		{
-		jjtThis.setDescription(de);
+			jjtThis.setDescription(de);
 		}
 	|
          r = referencestmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 		{
-		jjtThis.setReference(r);
+			jjtThis.setReference(r);
 		}
-	)*
-	"}"
 	)
 		{
 		return jjtThis;
@@ -3193,16 +3181,6 @@ YANG_Unknown un = null;
 Token t;
 }
 {
-	t = <leaflistkeyword>  i = identifierstr() 
-		{
-		jjtThis.setLine(t.beginLine);
-		jjtThis.setCol(t.beginColumn);
-		jjtThis.setRefineLeafList(i);
-		} 
-        (
-	 ";" 
-	|
-         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(refineleaflistAnyOrder())*
 	  (
            m = muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*      
@@ -3234,9 +3212,7 @@ Token t;
 		{
 		jjtThis.setReference(r);
 		}
-	  )*
-	 "}"
-	)
+	  )
 		{
 		return jjtThis;
 		}
@@ -3255,16 +3231,7 @@ YANG_Unknown un = null;
 Token t;
 }
 {
-	t = <listkeyword>  i = identifierstr() 
-		{
-		jjtThis.setLine(t.beginLine);
-		jjtThis.setCol(t.beginColumn);
-		jjtThis.setRefineList(i);
-		} 
-        (
-	 ";" 
-	|
-        "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+	
 	//(refinelistAnyOrder())*
 	 (
           m = muststmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*	     
@@ -3296,9 +3263,7 @@ Token t;
 		{
 		jjtThis.setReference(r);
 		}	
-	 )*
-	"}"
-	)
+	 )
 		{
 		return jjtThis;
 		}
@@ -3316,16 +3281,7 @@ YANG_Unknown un = null;
 Token t;
 }
 {
-	t = <choicekeyword>  i = identifierstr()
-		{
-		jjtThis.setLine(t.beginLine);
-		jjtThis.setCol(t.beginColumn);
-		jjtThis.setRefineChoice(i);
-		} 
-        (
-	 ";" 
-	 |
-         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+	
 	//(refinechoiceAnyOrder())*
 	 
 	  (
@@ -3353,9 +3309,7 @@ Token t;
 		{
 		jjtThis.setReference(r);
 		}	
-	  )*
-	"}"
-	 )
+	  )
 		{
 		return jjtThis;
 		}
@@ -3369,16 +3323,6 @@ YANG_Reference r = null;YANG_Unknown un = null;
 Token t;
 }
 {
-	t = <casekeyword>  i = identifierstr()
-		{
-		jjtThis.setLine(t.beginLine);
-		jjtThis.setCol(t.beginColumn);
-		jjtThis.setRefineCase(i);
-		} 
-        (
-	 ";" 
-	|
-         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(refinecaseAnyOrder())*
 	 (
           d = descriptionstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
@@ -3390,9 +3334,7 @@ Token t;
 		{
 		jjtThis.setReference(r);
 		}
-	 )*
-	 "}"
-	)
+	 )
 		{
 		return jjtThis;
 		}
@@ -3413,16 +3355,6 @@ YANG_Unknown un = null;
 Token t;
 }
 {
-	t = <anyxmlkeyword>  i = identifierstr() 
-		{
-		jjtThis.setLine(t.beginLine);
-		jjtThis.setCol(t.beginColumn);
-		jjtThis.setRefineAnyXml(i);
-		}
-        (
-	";" 
-	|
-         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(refineanyxmlAnyOrder())*
 	 (
           c = configstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
@@ -3444,9 +3376,7 @@ Token t;
 		{
 		jjtThis.setReference(r);
 		}
-	 )*
-	 "}"
-	)
+	 )
 		{
 		return jjtThis;
 		}
@@ -3467,13 +3397,6 @@ YANG_Unknown un = null;
 	
 }
 {
-	t = <augmentkeyword> ds = descendantschemanodeid()
-		{
-			jjtThis.setLine(t.beginLine);
-			jjtThis.setCol(t.beginColumn);
-			jjtThis.setUsesAugment(ds);
-		}
-	"{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(augmentAnyOrder())*
 	(
          
@@ -3513,8 +3436,10 @@ YANG_Unknown un = null;
 			jjtThis.addCase(c);
 			}			
 	 )
-	 )*
-	"}"
+	 )
+	 {
+	 	return jjtThis;
+	 }
 }
 
 YANG_Augment augmentstmt()         #Augment  : 

@@ -114,7 +114,7 @@ public abstract class YANG_Specification extends SimpleNode {
 			return;
 		}
 		checkeds.add(getName());
-		try {
+		//try {
 			checkHeader(p);
 			checkLinkage(p);
 
@@ -140,6 +140,8 @@ public abstract class YANG_Specification extends SimpleNode {
 					Vector<String> cks = (Vector<String>) checkeds.clone();
 					module.check(p, cks);
 				}
+				else 
+					throw new YangParserException(importedmodulename + " and " + getName() + " have circular import chain");
 			}
 			for (Enumeration<YANG_SubModule> es = includeds.elements(); es
 					.hasMoreElements();) {
@@ -149,10 +151,12 @@ public abstract class YANG_Specification extends SimpleNode {
 					Vector<String> cks = (Vector<String>) checkeds.clone();
 					submodule.check(p, cks);
 				}
+				else 
+					throw new YangParserException(includedsubmodulename + " and " + getName() + " have circular include chain");
 			}
-		} catch (YangParserException e) {
-			System.err.println(getName() + e.getMessage());
-		}
+//		} catch (YangParserException e) {
+//			throw new YangParserException("In " + getName() + " : " + e.getMessage());
+//		}
 	}
 
 	private void checkBodies(String[] p, Vector<String> ckd, YangContext context)

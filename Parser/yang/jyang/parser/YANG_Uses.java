@@ -34,8 +34,8 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 		return grouping;
 	}
 
-	public void setGrouping(YANG_Grouping grouping) {
-		this.grouping = grouping;
+	public void setGrouping(YANG_Grouping g) {
+		this.grouping = g;
 	}
 
 	public YANG_Uses(int id) {
@@ -75,6 +75,7 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 	public void addUsesAugment(YANG_UsesAugment ua) {
 		usesaugments.add(ua);
 	}
+	
 
 	public void check(YangContext context) throws YangParserException {
 

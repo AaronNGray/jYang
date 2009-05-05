@@ -21,10 +21,13 @@ package jyang.parser;
 import java.util.Enumeration;
 
 
-public abstract class YANG_Refinement extends YANG_Body {
+public  class YANG_Refinement extends YANG_Body {
 	
 	protected String usedgrouping = null;
+	protected String refineNodeId = null;
 	
+	
+
 	public YANG_Refinement(int id) {
 		super(id);
 	}
@@ -33,13 +36,21 @@ public abstract class YANG_Refinement extends YANG_Body {
 		super(p, id);
 	}
 
-	public abstract String getBody();
+	public  String getBody(){return "";}
 
-	public abstract void check(YangContext context, YANG_Grouping g)
-			throws YangParserException;
+	public  void check(YangContext context, YANG_Grouping g)
+			throws YangParserException{}
 
 	public void setUsedGrouping(String g){
 		usedgrouping = g;
+	}
+	
+	public String getRefineNodeId() {
+		return refineNodeId;
+	}
+
+	public void setRefineNodeId(String nodeId) {
+		this.refineNodeId = nodeId;
 	}
 	
 	public void check(YangContext context, YANG_Container container)
@@ -238,6 +249,12 @@ public abstract class YANG_Refinement extends YANG_Body {
 			System.err.println(context.getModuleSpecName() + 
 					"@" + getLine() + "." + getCol() + " and " + ye.getMessage() + usedgrouping);
 		}
+	}
+
+	@Override
+	public void check(YangContext context) throws YangParserException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

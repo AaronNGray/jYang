@@ -2,16 +2,16 @@
 package jyang.parser;
 
 public class JJTyangState {
-  private java.util.List nodes;
-  private java.util.List marks;
+  private java.util.List<Node> nodes;
+  private java.util.List<Integer> marks;
 
   private int sp;        // number of nodes on stack
   private int mk;        // current mark
   private boolean node_created;
 
   public JJTyangState() {
-    nodes = new java.util.ArrayList();
-    marks = new java.util.ArrayList();
+    nodes = new java.util.ArrayList<Node>();
+    marks = new java.util.ArrayList<Integer>();
     sp = 0;
     mk = 0;
   }
@@ -35,7 +35,7 @@ public class JJTyangState {
   /* Returns the root node of the AST.  It only makes sense to call
      this after a successful parse. */
   public Node rootNode() {
-    return (Node)nodes.get(0);
+    return nodes.get(0);
   }
 
   /* Pushes a node on to the stack. */
@@ -48,14 +48,14 @@ public class JJTyangState {
      stack.  */
   public Node popNode() {
     if (--sp < mk) {
-      mk = ((Integer)marks.remove(marks.size()-1)).intValue();
+      mk = marks.remove(marks.size()-1);
     }
-    return (Node)nodes.remove(nodes.size()-1);
+    return nodes.remove(nodes.size()-1);
   }
 
   /* Returns the node currently on the top of the stack. */
   public Node peekNode() {
-    return (Node)nodes.get(nodes.size()-1);
+    return nodes.get(nodes.size()-1);
   }
 
   /* Returns the number of children on the stack in the current node
@@ -69,12 +69,12 @@ public class JJTyangState {
     while (sp > mk) {
       popNode();
     }
-    mk = ((Integer)marks.remove(marks.size()-1)).intValue();
+    mk = marks.remove(marks.size()-1);
   }
 
 
   public void openNodeScope(Node n) {
-    marks.add(new Integer(mk));
+    marks.add(mk);
     mk = sp;
     n.jjtOpen();
   }
@@ -85,7 +85,7 @@ public class JJTyangState {
      made the children of the definite node.  Then the definite node
      is pushed on to the stack. */
   public void closeNodeScope(Node n, int num) {
-    mk = ((Integer)marks.remove(marks.size()-1)).intValue();
+    mk = marks.remove(marks.size()-1);
     while (num-- > 0) {
       Node c = popNode();
       c.jjtSetParent(n);
@@ -105,7 +105,7 @@ public class JJTyangState {
   public void closeNodeScope(Node n, boolean condition) {
     if (condition) {
       int a = nodeArity();
-      mk = ((Integer)marks.remove(marks.size()-1)).intValue();
+      mk = marks.remove(marks.size()-1);
       while (a-- > 0) {
         Node c = popNode();
         c.jjtSetParent(n);
@@ -115,9 +115,9 @@ public class JJTyangState {
       pushNode(n);
       node_created = true;
     } else {
-      mk = ((Integer)marks.remove(marks.size()-1)).intValue();
+      mk = marks.remove(marks.size()-1);
       node_created = false;
     }
   }
 }
-/* JavaCC - OriginalChecksum=219d2e8336ad43e367f41c00ddc08b71 (do not edit this line) */
+/* JavaCC - OriginalChecksum=5f5556063d3bd4568f246c13f94f065e (do not edit this line) */

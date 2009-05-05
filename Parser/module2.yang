@@ -11,15 +11,15 @@ module module2 {
 		default 1;
 	}
 	
-	extension monExt5 {}
+	extension monExt5 {argument " c'est le bordel";}
 	typedef m3int{
 		type int8;
-		default 321;
+		default 31;
 	}
 	
 	typedef m2int2 {
 		//type m3:m3int;
-		type m4:madynesInt2 { range "2..5";}
+		type m4:madynesInt2 { range "1..5";}
 	}
 	
 	grouping gm2 {

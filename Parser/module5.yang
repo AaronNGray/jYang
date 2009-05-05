@@ -1,6 +1,6 @@
 submodule module5 {
 
-	belongs-to module3;
+	belongs-to module3{ prefix m3; }
 	//import module3 { prefix m3; }
 	
 	typedef m5int {
