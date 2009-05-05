@@ -254,7 +254,7 @@ typedef m3int {
 	    
 	    
 	    uses g21 {
-	    	leaf l23 { default 0.252359;}
+	    	refine leaf l23 { default 0.252359;}
 	    	leaf-list llist126 { }
 	    	choice c21 {
 	    		case casb { 
