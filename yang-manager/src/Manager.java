@@ -37,7 +37,7 @@ public class Manager {
 		
 	}
 	
-	public YangView getView(String resp){
+	public YangView getView(String resp){ 
 		XMLStreamReader xsr = null;
 		
 		try {
