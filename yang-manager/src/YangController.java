@@ -17,12 +17,10 @@ public class YangController {
 
 	Pattern empty = Pattern.compile("\\s*");
 
-	private Hashtable<String, DataTree> models = new Hashtable<String, DataTree>();
+	private DataNode model = null;
 
 	public YangView createView(Document doc,
 			Hashtable<String, YANG_Specification> specs) {
-		YangView view = new YangView();
-		DataNode rootnode = null;
 		// YangModel model = new YangModel();
 
 		Element docelt = doc.getDocumentElement();
@@ -37,32 +35,17 @@ public class YangController {
 				YANG_Body b = eb.nextElement();
 				if (b instanceof YANG_Container && b.getBody().equals(root)) {
 					found = true;
-					rootnode = walk("", docelt, b);
-					System.out.println(rootnode);
+					model = walk("", docelt, b);
+					System.out.println(model);
 				}
 			}
 		}
 		if (!found)
 			System.out.println("No spec found " + root);
+		
+		YangView view = new YangView(model);
 
 		return view;
-	}
-
-	private DataNode walk2(Node node, YANG_Body b) {
-		System.out.println(node.getNodeName());
-		NodeList nl = node.getChildNodes();
-		for (int i = 0; i < nl.getLength(); i++) {
-			Node n = nl.item(i);
-			if (!(n instanceof Element)) {
-				Matcher m = empty.matcher(n.getTextContent());
-				if (!m.matches()) {
-					System.out.println(n.getTextContent());
-				}
-			} else
-				walk2(n, b);
-		}
-		return null;
-
 	}
 
 	private DataNode walk(String p, Node node, YANG_Body b) {
@@ -213,28 +196,5 @@ public class YangController {
 		return null;
 	}
 
-	public YangView createView(XMLStreamReader xsr) {
-		YangView view = new YangView();
-		try {
-			if (xsr.getEventType() == XMLStreamReader.START_DOCUMENT) {
-				xsr.nextTag();
-				while (xsr.getEventType() != XMLStreamReader.END_DOCUMENT) {
-					if (xsr.getEventType() == XMLStreamReader.START_ELEMENT) {
-						System.out.println(xsr.getLocalName());
-						xsr.next();
-						System.out.println(xsr.getLocalName());
-						xsr.next();
-						System.out.println(xsr.getLocalName());
-					}
-					if (xsr.getEventType() == XMLStreamReader.END_ELEMENT)
-						xsr.nextTag();
-				}
-			}
-		} catch (XMLStreamException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-
-		}
-		return view;
-	}
+	
 }
