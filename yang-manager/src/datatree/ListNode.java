@@ -6,9 +6,8 @@ import java.util.Vector;
 
 import jyang.parser.YANG_List;
 
-public class ListNode extends DataNode {
+public class ListNode extends DataTree {
 
-	private Vector<DataNode> entry = new Vector<DataNode>();
 	private String keyvalue;
 	
 	public ListNode(YANG_List d) {
@@ -16,12 +15,15 @@ public class ListNode extends DataNode {
 	}
 
 	public void setEntry(Vector<DataNode> e) {
-		entry = e;
+		for (Enumeration<DataNode> en = e.elements(); en.hasMoreElements();){
+			DataNode n = en.nextElement();
+			nodes.put(n.getName(), n);
+		}
 	}
 
 	public String toString() {
 		String result = "list " + definition.getBody() + " key : " + keyvalue + "\n";
-		for (Enumeration<DataNode> es = entry.elements(); es.hasMoreElements();)
+		for (Enumeration<DataNode> es = nodes.elements(); es.hasMoreElements();)
 			result += es.nextElement().toString() + "\n";
 		return result;
 	}

@@ -41,18 +41,17 @@ public class Manager extends Applet{
 	
 	 private  YangController controller = new YangController();
 	 private  YangView view = null;
+	 private Canvas3D canvas3D  = null;
 	
 	
 	public Manager(){
 		
 		super();
-	}
-	
-	private void go(){
-
         setLayout(new BorderLayout());
-        Canvas3D canvas3D = new Canvas3D(SimpleUniverse.getPreferredConfiguration());
+        canvas3D = new Canvas3D(SimpleUniverse.getPreferredConfiguration());
         add("Center", canvas3D);
+        loadSpecification("netconf.yang");
+        setView("response");
         BranchGroup scene = view.createSceneGraph();
         scene.compile();
         SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
@@ -60,7 +59,7 @@ public class Manager extends Applet{
         simpleU.addBranchGraph(scene);
 	}
 	
-	
+
 	
 	 public void setView(String resp){ 
 		
@@ -83,9 +82,7 @@ public class Manager extends Applet{
 	
 	public static void init (String[] args){
 		Manager m = new Manager();
-		m.loadSpecification(args[0]);
-		m.setView(args[1]);
-		m.go();
+		m.setVisible(true);
 		
 	}
 	

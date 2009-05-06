@@ -6,15 +6,14 @@ import java.util.Vector;
 
 import jyang.parser.YANG_LeafList;
 
-public class LeafListNode extends DataNode {
+public class LeafListNode extends DataTree {
 	
-	private Vector<LeafNode> leaves = new Vector<LeafNode>();
 	
 	public LeafListNode(YANG_LeafList d){
 		definition = d;
 	}
 	
 	public void addLeaf(LeafNode l){
-		leaves.add(l);
+		nodes.put(l.getName(), l);
 	}
 }

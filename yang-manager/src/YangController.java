@@ -36,7 +36,6 @@ public class YangController {
 				if (b instanceof YANG_Container && b.getBody().equals(root)) {
 					found = true;
 					model = walk("", docelt, b);
-					System.out.println(model);
 				}
 			}
 		}

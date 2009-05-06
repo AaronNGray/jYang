@@ -6,21 +6,20 @@ import java.util.Vector;
 
 import jyang.parser.YANG_Container;
 
-public class ContainerNode extends DataNode {
+public class ContainerNode extends DataTree {
 	
-	private Vector<DataNode> containeds = new Vector<DataNode>();
 	
 	public ContainerNode(YANG_Container c){
 		definition = c;
 	}
 	
 	public void addContent(DataNode d){
-		containeds.add(d);
+		nodes.put(d.getName(), d);
 	}
 	
 	public String toString(){
 		String result = "container " + definition.getBody() + "\n";
-		for(Enumeration<DataNode> es = containeds.elements(); es.hasMoreElements();)
+		for(Enumeration<DataNode> es = nodes.elements(); es.hasMoreElements();)
 			result += es.nextElement().toString() + " | ";
 		return result;
 	}
