@@ -1,5 +1,7 @@
 import java.applet.Applet;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,9 +11,11 @@ import java.text.ParseException;
 import java.util.Hashtable;
 
 import javax.media.j3d.Appearance;
+import javax.media.j3d.Background;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.ColoringAttributes;
+import javax.media.j3d.GraphicsContext3D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.vecmath.Vector3f;
@@ -26,6 +30,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.sun.j3d.utils.applet.MainFrame;
 import com.sun.j3d.utils.geometry.Box;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
@@ -52,10 +57,10 @@ public class Manager extends Applet{
         add("Center", canvas3D);
         loadSpecification("netconf.yang");
         setView("response");
-        BranchGroup scene = view.createSceneGraph();
-        scene.compile();
         SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
         simpleU.getViewingPlatform().setNominalViewingTransform();
+        BranchGroup scene = view.createSceneGraph(simpleU.getCanvas());
+        scene.compile();
         simpleU.addBranchGraph(scene);
 	}
 	
@@ -82,7 +87,6 @@ public class Manager extends Applet{
 	
 	public static void init (String[] args){
 		Manager m = new Manager();
-		m.setVisible(true);
 		
 	}
 	
