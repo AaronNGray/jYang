@@ -190,10 +190,10 @@ public class YangController {
 					}
 				}
 			}
-			if (nbcol == 0) {
+			//if (nbcol == 0) {
 				ln.setEntry(lentry);
 				nbcol = ylist.getDataDefs().size();
-			}
+			//}
 			return ln;
 		}
 		return null;
