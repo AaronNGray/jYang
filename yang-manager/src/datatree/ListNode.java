@@ -13,6 +13,10 @@ public class ListNode extends DataTree {
 	public ListNode(YANG_List d) {
 		definition = d;
 	}
+	
+	public String getName(){
+		return super.getName() + ":" + keyvalue;
+	}
 
 	public void setEntry(Vector<DataNode> e) {
 		for (Enumeration<DataNode> en = e.elements(); en.hasMoreElements();){

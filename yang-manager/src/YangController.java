@@ -108,6 +108,7 @@ public class YangController {
 							}
 						} else if (n.getNodeName().equals(ddef.getBody())) {
 							cn.addContent(walk(p + " ", n, ddef));
+							
 						}
 					}
 

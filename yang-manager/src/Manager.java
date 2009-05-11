@@ -2,6 +2,8 @@ import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -40,7 +42,7 @@ import jyang.parser.YANG_Specification;
 
 
 
-public class Manager extends Applet{
+public class Manager extends Applet implements MouseListener{
 	
 	 private  Hashtable<String, YANG_Specification> specs = new Hashtable<String, YANG_Specification>();
 	
@@ -55,6 +57,7 @@ public class Manager extends Applet{
         setLayout(new BorderLayout());
         canvas3D = new Canvas3D(SimpleUniverse.getPreferredConfiguration());
         add("Center", canvas3D);
+        canvas3D.addMouseListener(this);
         loadSpecification("netconf.yang");
         setView("response");
         SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
@@ -100,5 +103,46 @@ public class Manager extends Applet{
 		   specs = parser.getYangsSpecs();
 		
 	}
+
+
+
+	public void mouseClicked(MouseEvent e) {
+		int x = e.getX();
+		int y = e.getY();
+		int h = getHeight();
+		int w = getWidth();
+		
+		float x0 = (float)(x - (w/2));
+		System.out.println(x0/w);
+	view.clickEvent(e);
+	}
+
+
+
+	public void mouseEntered(MouseEvent e) {
+		
+	}
+
+
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

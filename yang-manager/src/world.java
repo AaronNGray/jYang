@@ -1,27 +1,7 @@
-/*
-écrit par:Roswell
-email:philgauthier_@hotmail.com
 
-Maintenant que nous savons construire un comportement assez évolué, nous pouvons construire
-un comportement nous permettant de déplacer la caméra dans notre monde virtuel. 
-L'essentiel du travail est ici de récupérer le TG de la caméra. Pour cela, 
-il convient de modifier légerement la méthode qui construit la scene pour lui ajouter 
-en argument l'univers dans lequel on travaille car c'est lui qui contient la camera et le TG associé.
-Jusqu'à présent nous éludions la classe "simpleUniverse" du schéma d'organisation 
-car il ne servait peu dans la construction de notre monde et nous le configérions pas 
-( nous ommettons encore certains éléments de SimpleUniverse). 
-On obtient la caméra grâce à la méthode "getViewingPlatform()" 
-de l'univers utilisé, puis on récupère le TG de la caméra 
-grâce à la méthode "getViewPlatformTransform()". 
-Pour que vous puissiez aller partout dans votre monde, il faut également 
-que vous définissiez une zone d'influence le couvrant complètement, 
-c'est pour cela que nous n'utilisons plus le constructeur par défaut. 
-La classe de comportement ne nécessite que peu de transformation 
-il faut juste remplacer certaines des rotations en translations.
-
-*/
 
 // classes Java standard
+
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;

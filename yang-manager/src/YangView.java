@@ -3,7 +3,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.event.MouseEvent;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.media.j3d.Appearance;
 import javax.media.j3d.Background;
@@ -34,6 +36,8 @@ import datatree.*;
 public class YangView {
 
 	private DataNode model = null;
+	
+	private Vector<GraphicalNode> nodes = new Vector<GraphicalNode>();
 
 	public YangView(DataNode r) {
 		model = r;
@@ -86,8 +90,7 @@ public class YangView {
 
 		draw(model, 0, 0, 0);
 
-		Background background = new Background((float) 0.5, (float) 0.5,
-				(float) 0.5);
+		Background background = new Background( 0.5f, 0.5f, 0.5f);
 		background.setApplicationBounds(new BoundingBox());
 
 		objRoot.addChild(background);
@@ -102,7 +105,7 @@ public class YangView {
 	private void draw(DataNode n, float x0, float y0, float z0, float x,
 			float y, float z) {
 
-
+		nodes.add(new GraphicalNode(n, x, y, z));
 		Transform3D translate1 = new Transform3D();
 		translate1.set(new Vector3f(x, y, z));
 		TransformGroup TG1 = new TransformGroup(translate1);
@@ -119,7 +122,6 @@ public class YangView {
 		s3d.setAppearance(blk);
 
 		Transform3D translate2 = new Transform3D();
-		// translate2.set(new Vector3f(x, y, z));
 
 		Transform3D scale = new Transform3D();
 		scale.setScale(0.05);
@@ -136,6 +138,7 @@ public class YangView {
 			orang.setShadeModel(ColoringAttributes.NICEST);
 			app_orang.setColoringAttributes(orang);
 			Sphere sphere = new Sphere((float) 0.02, app_orang);
+			
 
 			TG1.addChild(sphere);
 		} else {
@@ -162,7 +165,7 @@ public class YangView {
 		double teta = Math.acos((double) (y - y0) / r);
 		double phy = Math.acos((double) (x - x0) / (r * Math.sin(teta)));
 
-		Cylinder cy = new Cylinder(0.01f, (float) r);
+		Cylinder cy = new Cylinder(0.005f, (float) r);
 
 		// System.out.println(teta + " " + phy);
 
@@ -204,12 +207,27 @@ public class YangView {
 				DataNode dn = edn.nextElement();
 				draw(dn, x, y, z, xc, y - (1 / (float) (high))// * (float) 2
 						, z + list);
-				//draw(dn, x, y, z, xc, y - (1 / (float) (high))// * (float) 2
-				//		, z + list);
 				xc = xc + (float)1 / (float) (width);
 			}
 		}
 
+	}
+
+	public void clickEvent(MouseEvent e) {
+		int x = e.getX();
+		int y = e.getY();
+		float xf = 1f/(float)x;
+		float yf = 1f/(float)y;
+		boolean found = false;
+		GraphicalNode n = null;
+		for (Enumeration<GraphicalNode> egn = nodes.elements(); egn.hasMoreElements() && !found;){
+			n = egn.nextElement();
+			found = xf == n.getX() && yf == n.getY();
+			//System.out.println(n.getNode().getName() + " at " + n.getX() + ", " + n.getY());
+		}
+		if (found) 
+			System.out.println(n.getNode().getName());
+		
 	}
 
 }
