@@ -16,11 +16,18 @@ import javax.media.j3d.Canvas3D;
 import javax.media.j3d.ColoringAttributes;
 import javax.media.j3d.Font3D;
 import javax.media.j3d.FontExtrusion;
+import javax.media.j3d.GeometryArray;
+import javax.media.j3d.PointArray;
+import javax.media.j3d.QuadArray;
 import javax.media.j3d.Shape3D;
 import javax.media.j3d.Text3D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
+import javax.vecmath.Color3f;
+import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
+
+import sun.font.Font2D;
 
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
@@ -28,7 +35,10 @@ import com.sun.j3d.utils.behaviors.mouse.MouseZoom;
 import com.sun.j3d.utils.geometry.Box;
 import com.sun.j3d.utils.geometry.ColorCube;
 import com.sun.j3d.utils.geometry.Cylinder;
+import com.sun.j3d.utils.geometry.Primitive;
 import com.sun.j3d.utils.geometry.Sphere;
+import com.sun.j3d.utils.geometry.Text2D;
+import com.sun.j3d.utils.picking.PickTool;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
 import datatree.*;
@@ -36,8 +46,12 @@ import datatree.*;
 public class YangView {
 
 	private DataNode model = null;
-	
+
 	private Vector<GraphicalNode> nodes = new Vector<GraphicalNode>();
+	
+	private final float NODE_SIZE = 0.02f;
+	private final float EDGE_SECT = 0.005f;
+	
 
 	public YangView(DataNode r) {
 		model = r;
@@ -62,15 +76,15 @@ public class YangView {
 	private int high;
 	BranchGroup objRoot = null;
 	private TransformGroup mouseTransform = null;
+	BoundingSphere bounds = null;
+	private Canvas3D canvas = null;
 
 	public BranchGroup createSceneGraph(Canvas3D canvas3d) {
+		canvas = canvas3d;
 		high = getHigh(model);
 		objRoot = new BranchGroup();
 
 		mouseTransform = new TransformGroup();
-
-		// Le groupe de transformation sera modifie par le comportement de la
-		// souris
 		mouseTransform.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
 		mouseTransform.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 
@@ -90,7 +104,7 @@ public class YangView {
 
 		draw(model, 0, 0, 0);
 
-		Background background = new Background( 0.5f, 0.5f, 0.5f);
+		Background background = new Background(0.5f, 0.5f, 0.5f);
 		background.setApplicationBounds(new BoundingBox());
 
 		objRoot.addChild(background);
@@ -106,14 +120,18 @@ public class YangView {
 			float y, float z) {
 
 		nodes.add(new GraphicalNode(n, x, y, z));
+
 		Transform3D translate1 = new Transform3D();
 		translate1.set(new Vector3f(x, y, z));
+
 		TransformGroup TG1 = new TransformGroup(translate1);
-		
-		Text3D t3d = new Text3D(new Font3D(new Font("Helvetica",
-				Font.PLAIN, 1), new FontExtrusion()), n.getName());
+
+		Text3D t3d = new Text3D(new Font3D(
+				new Font("Helvetica", Font.PLAIN, 1), new FontExtrusion()), n
+				.getName());
 
 		t3d.setAlignment(Text3D.ALIGN_CENTER);
+
 		Shape3D s3d = new Shape3D(t3d);
 		Appearance blk = new Appearance();
 		ColoringAttributes black = new ColoringAttributes();
@@ -121,13 +139,15 @@ public class YangView {
 		blk.setColoringAttributes(black);
 		s3d.setAppearance(blk);
 
+		
 		Transform3D translate2 = new Transform3D();
-
+		translate2.set(new Vector3f(0,0.025f,0));
 		Transform3D scale = new Transform3D();
 		scale.setScale(0.05);
 		translate2.mul(scale);
 
 		TransformGroup TG2 = new TransformGroup(translate2);
+
 		TG2.addChild(s3d);
 		TG1.addChild(TG2);
 
@@ -137,9 +157,7 @@ public class YangView {
 			orang.setColor(0.8f, 0.4f, 0.2f);
 			orang.setShadeModel(ColoringAttributes.NICEST);
 			app_orang.setColoringAttributes(orang);
-			Sphere sphere = new Sphere((float) 0.02, app_orang);
-			
-
+			Sphere sphere = new Sphere(NODE_SIZE, app_orang);
 			TG1.addChild(sphere);
 		} else {
 			Appearance app_blue = new Appearance();
@@ -147,12 +165,10 @@ public class YangView {
 			blue.setColor(0.0f, 0.4f, 0.8f);
 			blue.setShadeModel(ColoringAttributes.NICEST);
 			app_blue.setColoringAttributes(blue);
-			ColorCube cc = new ColorCube(0.02);
+			ColorCube cc = new ColorCube(NODE_SIZE);
 			cc.setAppearance(app_blue);
-
 			TG1.addChild(cc);
 		}
-		// if (x0 != 0 || y0 != 0 || z0 != 0){
 		float dX = x0 - x;
 		dX = dX * dX;
 		float dY = y0 - y;
@@ -165,22 +181,17 @@ public class YangView {
 		double teta = Math.acos((double) (y - y0) / r);
 		double phy = Math.acos((double) (x - x0) / (r * Math.sin(teta)));
 
-		Cylinder cy = new Cylinder(0.005f, (float) r);
-
-		// System.out.println(teta + " " + phy);
+		Cylinder cy = new Cylinder(EDGE_SECT, (float) r);
 
 		Transform3D transedge = new Transform3D();
 		transedge.set(new Vector3f(
-				
-				-(float) (Math.sqrt(dX) / 2),
-				(float) Math.sqrt(dY) / 2, 
-				(float) Math.sqrt(dZ) / 2));
+		-(float) (Math.sqrt(dX) / 2), (float) Math.sqrt(dY) / 2, (float) Math
+				.sqrt(dZ) / 2));
 		Transform3D rotate = new Transform3D();
 
-		rotate.rotZ(-teta);// rotation d'angle Pi/3
+		rotate.rotZ(-teta);
 		Transform3D rotateY = new Transform3D();
 		rotateY.rotY(phy);
-		// on combine les deux transformations: translation puis rotation
 		transedge.mul(rotateY);
 		transedge.mul(rotate);
 
@@ -189,9 +200,10 @@ public class YangView {
 
 		TG1.addChild(placeEdge);
 
-		// }
+		
 
 		mouseTransform.addChild(TG1);
+		// objRoot.addChild(mouseTransform);
 
 		if (n instanceof DataTree) {
 			DataTree dt = (DataTree) n;
@@ -202,12 +214,18 @@ public class YangView {
 				list = -0.001f;
 			int width = dt.getNodes().size();
 			float xc = x;
+			float zc = z;
 			for (Enumeration<DataNode> edn = dt.getNodes().elements(); edn
 					.hasMoreElements();) {
 				DataNode dn = edn.nextElement();
-				draw(dn, x, y, z, xc, y - (1 / (float) (high))// * (float) 2
-						, z + list);
-				xc = xc + (float)1 / (float) (width);
+				if (n instanceof ListNode)
+					draw(dn, x, y, z, x, y - (1 / (float) (high)) * (float) 2,
+							zc);
+				else
+					draw(dn, x, y, z, xc, y - (1 / (float) (high)) * (float) 2,
+							z + list);
+				xc = xc + (float) 1 / (float) (width);
+				zc = zc - (float) 1 / (float) (width);
 			}
 		}
 
@@ -216,18 +234,21 @@ public class YangView {
 	public void clickEvent(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();
-		float xf = 1f/(float)x;
-		float yf = 1f/(float)y;
+		float xf = 1f / (float) x;
+		float yf = 1f / (float) y;
 		boolean found = false;
 		GraphicalNode n = null;
-		for (Enumeration<GraphicalNode> egn = nodes.elements(); egn.hasMoreElements() && !found;){
+		for (Enumeration<GraphicalNode> egn = nodes.elements(); egn
+				.hasMoreElements()
+				&& !found;) {
 			n = egn.nextElement();
 			found = xf == n.getX() && yf == n.getY();
-			//System.out.println(n.getNode().getName() + " at " + n.getX() + ", " + n.getY());
+			// System.out.println(n.getNode().getName() + " at " + n.getX() +
+			// ", " + n.getY());
 		}
-		if (found) 
+		if (found)
 			System.out.println(n.getNode().getName());
-		
+
 	}
 
 }
