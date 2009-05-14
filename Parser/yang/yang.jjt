@@ -2134,12 +2134,12 @@ Token t;
 String p = null;
 }
 {
-	 t = <unboundedkeyword> 
+	 LOOKAHEAD(2) t =  <unboundedkeyword> 
 		{
 		return t.image;
 		}
 	| 
-	 p = positiveintegervalue()
+	 LOOKAHEAD(2) p = positiveintegervalue()
 		{
 		return p;
 		}
@@ -4231,9 +4231,9 @@ void predicate()              :
 {
 		"[" 
 			(
-				predicateexpr() 
+				LOOKAHEAD(2) predicateexpr() 
 				|
-				pos()
+				LOOKAHEAD(2) pos()
 			)
 		"]"
 }
@@ -4368,7 +4368,7 @@ String rp = new String(), d = null, r = null;}
 
 String descendantpatharg()    :
 {
-String n  = null, p = null,a = null,dp = new String();
+String n  = null, p = null,a = null,dp = new String();;
 }
 { 
 	n = nodeidentifier() 
@@ -4488,7 +4488,7 @@ String identifierstr()         :
 {Token t;
 String s;}
 {
-		// < a string which matches the rule
+		// < a string which matches the rule;
                 //   identifier >
 
 		s = string() 
@@ -4753,12 +4753,12 @@ String integervalue()          :
 Token t;}
 {
 	//("-" n = nonnegativedecimalvalue())  
-	t = <NEGDECVALUE>
+	LOOKAHEAD(2) t = <NEGDECVALUE>
 		{
 		return  t.image;
 		}
 	|
-        n = nonnegativeintegervalue()
+      LOOKAHEAD(2) n = nonnegativeintegervalue()
 		{
 		return n;
 		}
@@ -4774,22 +4774,35 @@ String nonnegativeintegervalue() :
 }
 
 String positiveintegervalue() : 
-{Token t;}
 {
-	 t = <DECVALUE>
+Token t;
+String v = null;
+}
+{
+	 LOOKAHEAD(2) t = <DECVALUE>
 		{
 		return t.image;
 		}
+	|
+	LOOKAHEAD(2) v = string()
+		{ return v;}
+		
+		
 }
 
 String zerointegervalue() : 
 {
-Token t;}
+Token t;
+String v = null;
+}	
 {
-	t = <DECVALUE>
+	LOOKAHEAD(2) t = <DECVALUE>
 		{
 		return t.image;
 		}
+	|
+	LOOKAHEAD(2) v = string()
+		{ return v;}
 }
 
 String floatvalue()            :

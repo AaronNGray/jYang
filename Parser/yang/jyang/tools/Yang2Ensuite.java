@@ -1,6 +1,8 @@
 package jyang.tools;
 
 import java.io.PrintStream;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
@@ -11,7 +13,16 @@ import jyang.parser.*;
 
 public class Yang2Ensuite {
 
+	private Hashtable<String, YANG_DataDef> datadefs = new Hashtable<String, YANG_DataDef>();
+
 	public Yang2Ensuite(YANG_Specification n, String[] paths, PrintStream out) {
+
+		setDataDefRoots(n, paths);
+
+		//setModule(n, paths, out);
+	}
+
+	private void setModule(YANG_Specification n, String[] paths, PrintStream out) {
 
 		XMLStreamWriter xmlout;
 		try {
@@ -36,7 +47,7 @@ public class Yang2Ensuite {
 			xmlout.writeAttribute("pref", prefix);
 			xmlout.writeCharacters(namespace);
 			xmlout.writeEndElement();
-			
+
 			xmlout.writeCharacters("\n");
 			xmlout.writeEndElement();
 			out.flush();
@@ -48,6 +59,24 @@ public class Yang2Ensuite {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void setDataDefRoots(YANG_Specification s, String[] paths) {
+		try {
+			for (Enumeration<YANG_Specification> es = s.getIncludedSubModules(paths).elements(); es.hasMoreElements();)
+				setDataDefRoots(es.nextElement(), paths);
+			for (Enumeration<YANG_Body> ed = s.getBodies().elements(); ed
+					.hasMoreElements();) {
+				YANG_Body body = ed.nextElement();
+				if (body instanceof YANG_DataDef) {
+					datadefs.put(body.getBody(), (YANG_DataDef) body);
+					System.out.println(body.getBody());
+				}
+			}
+		} catch (YangParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

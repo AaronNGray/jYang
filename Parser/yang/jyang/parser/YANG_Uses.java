@@ -76,9 +76,11 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 		usesaugments.add(ua);
 	}
 	
-
+	private boolean checked = false;
+	    
 	public void check(YangContext context) throws YangParserException {
-
+		if (checked)
+			return;
 		if (!context.isGroupingDefined(this)) {
 			System.err
 					.println(context.getSpec().getName() + "@" + getLine()
@@ -109,6 +111,7 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 						+ ye.getMessage());
 			}
 		}
+		checked = true;
 	}
 
 	public String toString() {

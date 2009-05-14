@@ -1,26 +1,25 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
-
-
 
 public class YANG_SubModule extends YANG_Specification {
 
@@ -153,8 +152,7 @@ public class YANG_SubModule extends YANG_Specification {
 	 * Check if included submodule belong to the same module than this submodule
 	 */
 
-	protected void checkInclude(String[] paths)
-			throws YangParserException {
+	protected void checkInclude(String[] paths) throws YangParserException {
 		Vector<YANG_Specification> included = getIncludedSubModules(paths);
 		for (Enumeration<YANG_Specification> es = included.elements(); es
 				.hasMoreElements();) {
@@ -174,7 +172,8 @@ public class YANG_SubModule extends YANG_Specification {
 							+ getSubModule()
 							+ " does not belongs to the same module "
 							+ getBelong().getBelong());
-				includeds.add(submod);
+				if (!includeds.contains(submod))
+					includeds.add(submod);
 			}
 		}
 	}

@@ -1,8 +1,7 @@
-module rbac {
+submodule rbac {
 	
-  namespace "urn:loria:madynes:ensuite:yencap:module:RBAC:1.0";
-  prefix ac;
- 
+	belongs-to netconf { prefix rabc;}
+	
  	typedef user_id {
  		type int16 {
  			range "1..max";
@@ -33,12 +32,6 @@ module rbac {
  		type string;
  	}
  	
- 	grouping user_base {
- 		leaf id { type user_id;}
- 		leaf login { type login;}
- 		leaf password { type user_password;}
- 	}
- 	
  	grouping user_localization {
  		leaf firstname { type name;}
  		leaf lastname { type name;}
@@ -46,19 +39,29 @@ module rbac {
  		leaf publickey {type public_key;} 
  	}
  	
- 	
- 	list users {
- 		key "id";
- 		choice  c {
- 			case minimal {
- 				uses user_base;
- 			}
- 			case full {
- 				uses user_base;
- 				uses user_localization;
+ 	grouping rbac {
+ 		container rbac {
+ 		list users {
+ 			key "id";
+ 		
+ 			leaf id {type user_id;}
+ 			leaf login { type login;}
+ 			leaf password { type user_password;}
+ 			choice  c {
+ 				case user_localization{
+ 					uses user_localization;
+ 				}
+ 				case nolocation {
+ 					leaf nolocation {
+ 						type empty;
+ 					}
+ 				}
  			}
  		}
+ 	 }
  	}
+ 	
+ 	
  	typedef role_id {
  		type int16 {
  			range "1..max";
@@ -73,16 +76,28 @@ module rbac {
  		key "id";
  		
  		choice c {
- 		 case root {
- 		 	leaf id { type role_id;}
- 		 }
- 		 case junior {
- 		 	leaf id { type role_id;}
- 		 	leaf-list juniors {
- 		 		type junior_role;
- 		 	}
+ 		   case root {
+ 		 	 leaf id { type role_id;}
+ 		   }
+ 		   case junior {
+ 		 	  leaf id2 { type role_id;}
+ 		 	  leaf-list juniors {
+ 		 	        type junior_role;
+ 		 	   }
  		 }
  		}
- 	}}}
+ 	}
  		
+ 		
+ 		choice CC {
+ 			case a {
+ 				uses rbac;
+ 			}
+ 			case b {
+ 				uses rbac;
+ 				leaf l1 {type int8;}
+ 				leaf l2 { type int8;}
+ 			}
+ 		}
+}
 }

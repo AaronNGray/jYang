@@ -1,21 +1,22 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.io.File;
@@ -23,10 +24,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-
-
-
 public abstract class YANG_Specification extends SimpleNode {
+	
+	static protected Vector<YANG_Specification> checkedSpecs = new Vector<YANG_Specification>();
 
 	protected Vector<YANG_Header> headers = new Vector<YANG_Header>();
 	protected YANG_YangVersion yangversion = null;
@@ -114,49 +114,46 @@ public abstract class YANG_Specification extends SimpleNode {
 			return;
 		}
 		checkeds.add(getName());
-		//try {
-			checkHeader(p);
-			checkLinkage(p);
+		checkHeader(p);
+		checkLinkage(p);
 
-			YangContext context = buildSpecContext(p, null,
-					(Vector<String>) checkeds.clone());
+		YangContext context = buildSpecContext(p, null,
+				(Vector<String>) checkeds.clone());
 
-			context.pendingUnions();
+		context.pendingUnions();
 
-			context.checkTypes();
+		context.checkTypes();
 
-			checkBodies(p, checkeds, context);
+		checkBodies(p, checkeds, context);
 
-			if (c != null) {
-				c.merge(context);
-				context = c;
-			}
+		if (c != null) {
+			c.merge(context);
+			context = c;
+		}
 
-			for (Enumeration<YANG_Module> es = importeds.elements(); es
-					.hasMoreElements();) {
-				YANG_Module module = es.nextElement();
-				String importedmodulename = module.getName();
-				if (!checkeds.contains(importedmodulename)) {
-					Vector<String> cks = (Vector<String>) checkeds.clone();
-					module.check(p, cks);
-				}
-				else 
-					throw new YangParserException(importedmodulename + " and " + getName() + " have circular import chain");
-			}
-			for (Enumeration<YANG_SubModule> es = includeds.elements(); es
-					.hasMoreElements();) {
-				YANG_SubModule submodule = es.nextElement();
-				String includedsubmodulename = submodule.getName();
-				if (!checkeds.contains(includedsubmodulename)) {
-					Vector<String> cks = (Vector<String>) checkeds.clone();
-					submodule.check(p, cks);
-				}
-				else 
-					throw new YangParserException(includedsubmodulename + " and " + getName() + " have circular include chain");
-			}
-//		} catch (YangParserException e) {
-//			throw new YangParserException("In " + getName() + " : " + e.getMessage());
-//		}
+		for (Enumeration<YANG_Module> es = importeds.elements(); es
+				.hasMoreElements();) {
+			YANG_Module module = es.nextElement();
+			String importedmodulename = module.getName();
+			if (!checkeds.contains(importedmodulename)) {
+				Vector<String> cks = (Vector<String>) checkeds.clone();
+				module.check(p, cks);
+			} else
+				throw new YangParserException(importedmodulename + " and "
+						+ getName() + " have circular import chain");
+		}
+		for (Enumeration<YANG_SubModule> es = includeds.elements(); es
+				.hasMoreElements();) {
+			YANG_SubModule submodule = es.nextElement();
+			String includedsubmodulename = submodule.getName();
+			if (!checkeds.contains(includedsubmodulename)) {
+				Vector<String> cks = (Vector<String>) checkeds.clone();
+
+				submodule.check(p, cks);
+			} else
+				throw new YangParserException(includedsubmodulename + " and "
+						+ getName() + " have circular include chain");
+		}
 	}
 
 	private void checkBodies(String[] p, Vector<String> ckd, YangContext context)
@@ -170,6 +167,7 @@ public abstract class YANG_Specification extends SimpleNode {
 				body.setRootNode(true);
 				body.checkBody(bodycontext);
 			} catch (YangParserException ye) {
+				System.out.println("error");
 				System.err.println(ye.getMessage());
 			}
 		}
@@ -358,7 +356,7 @@ public abstract class YANG_Specification extends SimpleNode {
 				try {
 					externalspec = yang.Start();
 				} catch (ParseException p) {
-					throw new YangParserException(" -> " + externalmodulename
+					throw new YangParserException(externalmodulename + " : "
 							+ p.getMessage());
 
 				}

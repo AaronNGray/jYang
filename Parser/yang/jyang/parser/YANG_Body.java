@@ -65,9 +65,8 @@ public abstract class YANG_Body extends SimpleNode {
 			datadefs = list.getDataDefs();
 		} else if (this instanceof YANG_Choice) {
 			YANG_Choice choice = (YANG_Choice) this;
+			
 			Vector<YANG_Case> cases = choice.getCases();
-			Vector<YANG_ShortCase> scases = choice.getShortCases();
-
 			for (Enumeration<YANG_Case> ec = cases.elements(); ec
 					.hasMoreElements();) {
 				YANG_Case ycase = ec.nextElement();
@@ -75,16 +74,32 @@ public abstract class YANG_Body extends SimpleNode {
 				for (Enumeration<YANG_CaseDef> ecd = vcases.elements(); ecd
 						.hasMoreElements();) {
 					YANG_CaseDef cdef = ecd.nextElement();
+					if (cdef instanceof YANG_Uses){
+						YANG_Uses uses = (YANG_Uses) cdef;
+						uses.check(context);
+						YANG_Grouping g = uses.getGrouping();
+						typedefs = g.getTypeDefs();
+						groupings = g.getGroupings();
+						datadefs.addAll(g.getDataDefs());
+					}
 					YANG_DataDef ddef = (YANG_DataDef) cdef;
 					datadefs.add(ddef);
 				}
 			}
+			Vector<YANG_ShortCase> scases = choice.getShortCases();
 			for (Enumeration<YANG_ShortCase> esc = scases.elements(); esc
 					.hasMoreElements();) {
 				YANG_ShortCase ysc = esc.nextElement();
 				YANG_DataDef ddef = (YANG_DataDef) ysc;
 				datadefs.add(ddef);
 			}
+		} else if (this instanceof YANG_Uses){
+			YANG_Uses uses = (YANG_Uses) this;
+			uses.check(context);
+			YANG_Grouping g = uses.getGrouping();
+			typedefs = g.getTypeDefs();
+			groupings = g.getGroupings();
+			datadefs = g.getDataDefs();
 		} else if (this instanceof YANG_Augment) {
 			YANG_Augment augment = (YANG_Augment) this;
 			datadefs = augment.getDataDefs();
@@ -109,6 +124,8 @@ public abstract class YANG_Body extends SimpleNode {
 			groupings = notif.getGroupings();
 			datadefs = notif.getDataDefs();
 		}
+		
+		
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 				.hasMoreElements();) {
 			YANG_TypeDef typedef = (YANG_TypeDef) et.nextElement();

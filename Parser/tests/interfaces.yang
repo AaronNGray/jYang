@@ -11,7 +11,8 @@ submodule interfaces {
 	    leaf errs {type uint64;}
 	}
 		
-		list interfaces {
+	grouping interface {
+		list interface {
 			key name;
 			leaf name { type string;}
 			leaf mac-address { type string;}
@@ -25,6 +26,7 @@ submodule interfaces {
 				container received { uses generic-state;}
 				container transmit { uses generic-state;}
 			}
-	
+		}
+		  
 	}
 }
