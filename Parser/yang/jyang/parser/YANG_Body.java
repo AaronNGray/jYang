@@ -78,7 +78,20 @@ public abstract class YANG_Body extends SimpleNode {
 						YANG_Grouping g = uses.getGrouping();
 						typedefs = g.getTypeDefs();
 						groupings = g.getGroupings();
-						datadefs.addAll(g.getDataDefs());
+						for(Enumeration<YANG_DataDef> ed = g.getDataDefs().elements(); ed.hasMoreElements();){
+							YANG_DataDef yd = ed.nextElement();
+							YANG_DataDef cl = null;
+							try {
+								cl = (YANG_DataDef)yd.clone();
+							} catch (CloneNotSupportedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							cl.setLine(uses.getLine());
+							cl.setCol(uses.getCol());
+							datadefs.add(cl);
+						}
+						//datadefs.addAll(g.getDataDefs());
 					} else {
 						YANG_DataDef ddef = (YANG_DataDef) cdef;
 						datadefs.add(ddef);

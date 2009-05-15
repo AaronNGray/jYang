@@ -131,5 +131,14 @@ public class YANG_Container extends YANG_DataDefConfigMust implements
 
 		return result;
 	}
+	
+	public YANG_Container clone() {
+		YANG_Container cc = new YANG_Container( parser, id);
+		cc.setContainer(getContainer());
+		cc.setLine(getLine());
+		cc.setCol(getCol());
+		return cc;
+		
+	}
 
 }

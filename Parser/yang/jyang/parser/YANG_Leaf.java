@@ -154,5 +154,11 @@ public class YANG_Leaf extends YANG_DataDefFullInfo implements YANG_CaseDef,
 
 		return result;
 	}
+	
+	public YANG_Leaf clone() {
+		YANG_Leaf cl = new YANG_Leaf(parser, id);
+		cl.setLeaf(getLeaf());
+		return cl;
+	}
 
 }

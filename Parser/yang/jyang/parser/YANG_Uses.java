@@ -132,5 +132,6 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 
 		return result;
 	}
+	
 
 }
