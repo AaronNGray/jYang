@@ -87,11 +87,18 @@ submodule rbac {
  		 }
  		}
  	}
+ 	
+ 	container monContainer {
+ 		uses rbac;
+ 	}
+ 	
+ 	uses rbac;
  		
  		
  		choice CC {
  			case a {
  				uses rbac;
+ 				leaf l3{ type int8;}
  			}
  			case b {
  				uses rbac;

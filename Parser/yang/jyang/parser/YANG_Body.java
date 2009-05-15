@@ -1,27 +1,25 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
-
-
-
 
 public abstract class YANG_Body extends SimpleNode {
 
@@ -65,7 +63,7 @@ public abstract class YANG_Body extends SimpleNode {
 			datadefs = list.getDataDefs();
 		} else if (this instanceof YANG_Choice) {
 			YANG_Choice choice = (YANG_Choice) this;
-			
+
 			Vector<YANG_Case> cases = choice.getCases();
 			for (Enumeration<YANG_Case> ec = cases.elements(); ec
 					.hasMoreElements();) {
@@ -74,16 +72,17 @@ public abstract class YANG_Body extends SimpleNode {
 				for (Enumeration<YANG_CaseDef> ecd = vcases.elements(); ecd
 						.hasMoreElements();) {
 					YANG_CaseDef cdef = ecd.nextElement();
-					if (cdef instanceof YANG_Uses){
+					if (cdef instanceof YANG_Uses) {
 						YANG_Uses uses = (YANG_Uses) cdef;
 						uses.check(context);
 						YANG_Grouping g = uses.getGrouping();
 						typedefs = g.getTypeDefs();
 						groupings = g.getGroupings();
 						datadefs.addAll(g.getDataDefs());
+					} else {
+						YANG_DataDef ddef = (YANG_DataDef) cdef;
+						datadefs.add(ddef);
 					}
-					YANG_DataDef ddef = (YANG_DataDef) cdef;
-					datadefs.add(ddef);
 				}
 			}
 			Vector<YANG_ShortCase> scases = choice.getShortCases();
@@ -93,7 +92,7 @@ public abstract class YANG_Body extends SimpleNode {
 				YANG_DataDef ddef = (YANG_DataDef) ysc;
 				datadefs.add(ddef);
 			}
-		} else if (this instanceof YANG_Uses){
+		} else if (this instanceof YANG_Uses) {
 			YANG_Uses uses = (YANG_Uses) this;
 			uses.check(context);
 			YANG_Grouping g = uses.getGrouping();
@@ -124,8 +123,7 @@ public abstract class YANG_Body extends SimpleNode {
 			groupings = notif.getGroupings();
 			datadefs = notif.getDataDefs();
 		}
-		
-		
+
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 				.hasMoreElements();) {
 			YANG_TypeDef typedef = (YANG_TypeDef) et.nextElement();
@@ -223,10 +221,11 @@ public abstract class YANG_Body extends SimpleNode {
 				YANG_DataDef ddef = (YANG_DataDef) cdef;
 				datadefs.add(ddef);
 			}
-		} else if (this instanceof YANG_Uses){
+		} else if (this instanceof YANG_Uses) {
 			YANG_Uses uses = (YANG_Uses) this;
 			YANG_Grouping g = uses.getGrouping();
-			for (Enumeration<YANG_DataDef> eddef = g.getDataDefs().elements(); eddef.hasMoreElements();){
+			for (Enumeration<YANG_DataDef> eddef = g.getDataDefs().elements(); eddef
+					.hasMoreElements();) {
 				datadefs.add(eddef.nextElement());
 			}
 		} else if (this instanceof YANG_Augment) {

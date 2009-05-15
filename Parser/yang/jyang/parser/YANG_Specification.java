@@ -26,7 +26,7 @@ import java.util.*;
 
 public abstract class YANG_Specification extends SimpleNode {
 	
-	static protected Vector<YANG_Specification> checkedSpecs = new Vector<YANG_Specification>();
+	static protected Hashtable<String, YANG_Specification> checkedSpecs = new Hashtable<String, YANG_Specification>();
 
 	protected Vector<YANG_Header> headers = new Vector<YANG_Header>();
 	protected YANG_YangVersion yangversion = null;
@@ -167,8 +167,7 @@ public abstract class YANG_Specification extends SimpleNode {
 				body.setRootNode(true);
 				body.checkBody(bodycontext);
 			} catch (YangParserException ye) {
-				System.out.println("error");
-				System.err.println(ye.getMessage());
+				System.err.println(getName() + ye.getMessage());
 			}
 		}
 
@@ -349,6 +348,8 @@ public abstract class YANG_Specification extends SimpleNode {
 			String directory = paths[i++];
 			String yangspecfilename = directory + File.separator
 					+ externalmodulename + ".yang";
+			if (checkedSpecs.containsKey(externalmodulename))
+				return checkedSpecs.get(externalmodulename);
 			try {
 				File externalfile = new File(yangspecfilename);
 				yang.ReInit(new FileInputStream(externalfile));
@@ -373,6 +374,7 @@ public abstract class YANG_Specification extends SimpleNode {
 		if (!found)
 			throw new YangParserException("@external yang specification "
 					+ externalmodulename + " not found");
+		checkedSpecs.put(externalmodulename, externalspec);
 		return externalspec;
 	}
 
