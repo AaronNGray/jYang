@@ -5459,8 +5459,9 @@ YANG_UsesAugment jjtn000 = new YANG_UsesAugment(JJTUSESAUGMENT);
 boolean jjtc000 = true;
 jjtree.openNodeScope(jjtn000);
 /*@egen*/
-Token t;
+Token aug;
 String ds = null;
+String a = null;
 YANG_When w = null;
 YANG_IfFeature iff = null;
 YANG_Status s = null;
@@ -5474,6 +5475,12 @@ YANG_Unknown un = null;
 {/*@bgen(jjtree) UsesAugment */
         try {
 /*@egen*/
+	aug = <augmentkeyword>  a = usesaugmentargstr() 
+		{
+		jjtn000.setLine(aug.beginLine);
+		jjtn000.setCol(aug.beginColumn);
+		jjtn000.setUsesAugment(a);
+		}
 	//(augmentAnyOrder())*
 	(
          
@@ -5542,6 +5549,17 @@ YANG_Unknown un = null;
           }
         }
 /*@egen*/
+}
+
+String usesaugmentargstr() :
+{
+String s = null;
+}
+{
+	s = descendantschemanodeid()
+	{
+		return s;
+	}
 }
 
 YANG_Augment augmentstmt()                   : 

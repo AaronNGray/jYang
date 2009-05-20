@@ -3384,8 +3384,9 @@ Token t;
 
 YANG_UsesAugment usesaugmentstmt()	 #UsesAugment:
 {
-Token t;
+Token aug;
 String ds = null;
+String a = null;
 YANG_When w = null;
 YANG_IfFeature iff = null;
 YANG_Status s = null;
@@ -3397,7 +3398,7 @@ YANG_Unknown un = null;
 	
 }
 {
-	aug = <augmentkeyword>  a = useaugmentargstr() 
+	aug = <augmentkeyword>  a = usesaugmentargstr() 
 		{
 		jjtThis.setLine(aug.beginLine);
 		jjtThis.setCol(aug.beginColumn);
