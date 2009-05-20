@@ -39,7 +39,9 @@ public  class YANG_Refinement extends YANG_Body {
 	public  String getBody(){return "";}
 
 	public  void check(YangContext context, YANG_Grouping g)
-			throws YangParserException{}
+			throws YangParserException{
+		
+	}
 
 	public void setUsedGrouping(String g){
 		usedgrouping = g;

@@ -177,7 +177,6 @@ public abstract class YANG_Specification extends SimpleNode {
 
 	public YangContext buildSpecContext(String[] paths, YangContext c,
 			Vector<String> builded) throws YangParserException {
-		System.out.println(getName());
 
 		if (c == null)
 			c = new YangContext(getImports(), this);

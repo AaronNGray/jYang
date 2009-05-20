@@ -3397,6 +3397,12 @@ YANG_Unknown un = null;
 	
 }
 {
+	aug = <augmentkeyword>  a = useaugmentargstr() 
+		{
+		jjtThis.setLine(aug.beginLine);
+		jjtThis.setCol(aug.beginColumn);
+		jjtThis.setUsesAugment(a);
+		}
 	//(augmentAnyOrder())*
 	(
          
@@ -3440,6 +3446,17 @@ YANG_Unknown un = null;
 	 {
 	 	return jjtThis;
 	 }
+}
+
+String usesaugmentargstr() :
+{
+String s = null;
+}
+{
+	s = descendantschemanodeid()
+	{
+		return s;
+	}
 }
 
 YANG_Augment augmentstmt()         #Augment  : 

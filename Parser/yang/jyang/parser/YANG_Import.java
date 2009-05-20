@@ -39,7 +39,12 @@ public class YANG_Import extends SimpleNode implements YANG_Linkage {
 	}
 
 	public String toString() {
-		return " import " + importstr + " {" + prefix.toString() + "}";
+		String result =  " import " + importstr + " {" + prefix.toString();
+		if (b_revision)
+			result += "\n" + revision.toString();
+		result += "}";
+		return result;
+		
 	}
 
 	public YANG_Revision getRevision() {

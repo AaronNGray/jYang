@@ -21,7 +21,6 @@ package jyang.parser;
  */
 import java.util.*;
 
-
 public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 
 	private String uses = null;
@@ -75,9 +74,9 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 	public void addUsesAugment(YANG_UsesAugment ua) {
 		usesaugments.add(ua);
 	}
-	
+
 	private boolean checked = false;
-	    
+
 	public void check(YangContext context) throws YangParserException {
 		if (checked)
 			return;
@@ -86,14 +85,17 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 					.println(context.getSpec().getName() + "@" + getLine()
 							+ "." + getCol() + ":grouping " + uses
 							+ " cannot be found");
+			return;
 		} else {
 			setGrouping(context.getUsedGrouping(this));
 			String gping = getGrouping().getGrouping();
 
-			if (YangBuiltInTypes.isBuiltIn(gping))
+			if (YangBuiltInTypes.isBuiltIn(gping)) {
 				System.err.println(context.getSpec().getName() + "@"
 						+ getLine() + "." + getCol()
 						+ ":a built-in type cannot be used : " + uses);
+				return;
+			}
 
 		}
 
@@ -132,6 +134,5 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 
 		return result;
 	}
-	
 
 }

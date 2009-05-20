@@ -1,9 +1,9 @@
-
 package jyang.parser;
 
 import java.util.Enumeration;
 import java.util.Vector;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class YANG_UsesAugment extends YANG_DataDefInfoWhen {
 
@@ -11,16 +11,30 @@ public class YANG_UsesAugment extends YANG_DataDefInfoWhen {
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
 	private Vector<YANG_Case> cases = new Vector<YANG_Case>();
 
+	private Pattern dsni = null;
+
 	public YANG_UsesAugment(int id) {
 		super(id);
+		try {
+			dsni = Pattern
+					.compile("([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*((/([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*)+)?");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public YANG_UsesAugment(yang p, int id) {
 		super(p, id);
 	}
 
-	public void setUsesAugment(String ua) {
-		usesaugment = ua;
+	public void setUsesAugment(String ua) throws YangParserException {
+		String aa = YangBuiltInTypes.removeQuotesAndTrim(ua);
+		Matcher m = dsni.matcher(aa);
+		if (m.matches())
+			usesaugment = aa;
+		else
+			throw new YangParserException("@" + getLine() + "." + getCol()
+					+ ":incorrect descendant schema node identifier expression :" + ua);
 	}
 
 	public String getUsesAugment() {
