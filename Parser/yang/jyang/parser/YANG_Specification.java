@@ -25,9 +25,9 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public abstract class YANG_Specification extends SimpleNode {
-	
-	static protected Hashtable<String, YANG_Specification> checkedSpecs = new Hashtable<String, YANG_Specification>();
 
+	static protected Hashtable<String, YANG_Specification> checkedSpecs = new Hashtable<String, YANG_Specification>();
+	static protected boolean isCheckOk = true;
 	protected Vector<YANG_Header> headers = new Vector<YANG_Header>();
 	protected YANG_YangVersion yangversion = null;
 	protected YANG_NameSpace namespace = null;
@@ -98,20 +98,44 @@ public abstract class YANG_Specification extends SimpleNode {
 		Vector<String> cked = new Vector<String>();
 		check(path, cked);
 	}
+	
+	public static boolean isCheckOk(){
+		return isCheckOk;
+	}
 
+	/**
+	 * Initial check of this specification. It starts the checking with an empty
+	 * context
+	 * 
+	 * @param p
+	 *            path for yang files
+	 * @param checked
+	 *            vector of checked specification name (must be empty)
+	 * @throws YangParserException
+	 *             if a semantical error occurs
+	 */
 	public void check(String[] p, Vector<String> checked)
 			throws YangParserException {
 		check(p, checked, null);
-		checkTreeNode(p);
+		if (isCheckOk)
+			checkTreeNode(p);
 
 	}
 
+	protected YangContext checkAsExternal(String[] p, Vector<String> checked)
+			throws YangParserException {
+		YangContext c = check(p, checked, null);
+		if (isCheckOk)
+			checkTreeNode(p);
+		return c;
+	}
+
 	@SuppressWarnings("unchecked")
-	public void check(String[] p, Vector<String> checkeds, YangContext c)
+	public YangContext check(String[] p, Vector<String> checkeds, YangContext c)
 			throws YangParserException {
 
 		if (checkeds.contains(getName())) {
-			return;
+			return c;
 		}
 		checkeds.add(getName());
 		checkHeader(p);
@@ -121,39 +145,17 @@ public abstract class YANG_Specification extends SimpleNode {
 				(Vector<String>) checkeds.clone());
 
 		context.pendingUnions();
-
 		context.checkTypes();
 
 		checkBodies(p, checkeds, context);
 
-		if (c != null) {
+		if (c != null)
 			c.merge(context);
-			context = c;
-		}
+		else
+			c = context;
 
-		for (Enumeration<YANG_Module> es = importeds.elements(); es
-				.hasMoreElements();) {
-			YANG_Module module = es.nextElement();
-			String importedmodulename = module.getName();
-			if (!checkeds.contains(importedmodulename)) {
-				Vector<String> cks = (Vector<String>) checkeds.clone();
-				module.check(p, cks);
-			} else
-				throw new YangParserException(importedmodulename + " and "
-						+ getName() + " have circular import chain");
-		}
-		for (Enumeration<YANG_SubModule> es = includeds.elements(); es
-				.hasMoreElements();) {
-			YANG_SubModule submodule = es.nextElement();
-			String includedsubmodulename = submodule.getName();
-			if (!checkeds.contains(includedsubmodulename)) {
-				Vector<String> cks = (Vector<String>) checkeds.clone();
+		return c;
 
-				submodule.check(p, cks);
-			} else
-				throw new YangParserException(includedsubmodulename + " and "
-						+ getName() + " have circular include chain");
-		}
 	}
 
 	private void checkBodies(String[] p, Vector<String> ckd, YangContext context)
@@ -175,8 +177,63 @@ public abstract class YANG_Specification extends SimpleNode {
 
 	public YangContext buildSpecContext(String[] paths, YangContext c,
 			Vector<String> builded) throws YangParserException {
+		System.out.println(getName());
 
-		YangContext specontext = getThisSpecContext();
+		if (c == null)
+			c = new YangContext(getImports(), this);
+
+		if (importeds.size() == 0)
+			checkImport(paths);
+		for (Enumeration<YANG_Module> es = importeds.elements(); es
+				.hasMoreElements();) {
+			YANG_Module module = es.nextElement();
+			String importedmodulename = module.getName();
+			if (!builded.contains(importedmodulename)) {
+				Vector<String> cks = (Vector<String>) builded.clone();
+				// module.check(paths, cks);
+				YangContext clc = c.clone();
+				try {
+					YangContext importedcontexts = module.buildSpecContext(
+							paths, clc, builded);
+					c.merge(importedcontexts);
+				} catch (YangParserException ye) {
+					throw new YangParserException(getName()
+							+ " has an error in imported module : "
+							+ module.getName() + "\n\t" + ye.getMessage());
+				}
+			} else
+				throw new YangParserException(importedmodulename + " and "
+						+ getName() + " have circular import chain");
+		}
+
+		if (includeds.size() == 0)
+			checkInclude(paths);
+		for (Enumeration<YANG_SubModule> es = includeds.elements(); es
+				.hasMoreElements();) {
+			YANG_SubModule submodule = es.nextElement();
+			String includedsubmodulename = submodule.getName();
+			if (!builded.contains(includedsubmodulename)) {
+				try {
+					Vector<String> cks = (Vector<String>) builded.clone();
+					// submodule.check(paths, cks);
+					// YangContext clc = c.clone();
+					// YangContext includedcontexts =
+					// submodule.buildSpecContext(paths,
+					// clc, builded);
+					YangContext includedcontexts = submodule.checkAsExternal(
+							paths, cks);
+					c.merge(includedcontexts);
+				} catch (YangParserException ye) {
+					throw new YangParserException(getName()
+							+ " has an error in included submodule : "
+							+ submodule.getName() + "\n\t" + ye.getMessage());
+				}
+			} else
+				throw new YangParserException(includedsubmodulename + " and "
+						+ getName() + " have circular include chain");
+		}
+
+		YangContext specontext = getThisSpecContext(c);
 		builded.add(getName());
 
 		if (c != null) {
@@ -188,56 +245,75 @@ public abstract class YANG_Specification extends SimpleNode {
 		} else {
 			c = specontext;
 		}
-		if (importeds.size() == 0)
-			checkImport(paths);
-		for (Enumeration<YANG_Module> em = importeds.elements(); em
-				.hasMoreElements();) {
-			YANG_Module mod = em.nextElement();
-			// if (!builded.contains(mod.getName())) {
-			YangContext clc = c.clone();
-			try {
-				YangContext importedcontexts = mod.buildSpecContext(paths, clc,
-						builded);
-				c.merge(importedcontexts);
-			} catch (YangParserException ye) {
-				System.err.println(ye.getMessage());
-			}
-			// }
-		}
-		if (includeds.size() == 0)
-			checkInclude(paths);
-		for (Enumeration<YANG_SubModule> es = includeds.elements(); es
-				.hasMoreElements();) {
-			YANG_SubModule smod = es.nextElement();
-			// if (!builded.contains(smod.getName())) {
-			YangContext clc = c.clone();
-			try {
-				YangContext includedcontexts = smod.buildSpecContext(paths,
-						clc, builded);
-				c.merge(includedcontexts);
-			} catch (YangParserException ye) {
-				System.err.println(ye.getMessage());
-			}
-			// }
-		}
 
 		return c;
 
 	}
 
-	public YangContext getThisSpecContext() throws YangParserException {
+	public YangContext getThisSpecContext(YangContext context)
+			throws YangParserException {
 
-		YangContext context = new YangContext(getImports(), this);
+		// YangContext context = new YangContext(getImports(), this);
 
 		for (Enumeration<YANG_Body> eb = getBodies().elements(); eb
 				.hasMoreElements();) {
 			YANG_Body body = eb.nextElement();
-			try {
-				context.addNode(body);
-			} catch (YangParserException ye) {
-				System.err.println(getName() + ye.getMessage());
-			}
+			if (!(body instanceof YANG_Uses))
+				try {
+					context.addNode(body);
+				} catch (YangParserException ye) {
+					System.err.println(getName() + ye.getMessage());
+				}
 		}
+
+		YANG_Body body = null;
+
+		try {
+			for (Enumeration<YANG_Body> eb = getBodies().elements(); eb
+					.hasMoreElements();) {
+				body = eb.nextElement();
+				if (body instanceof YANG_Uses) {
+					YANG_Uses uses = (YANG_Uses) body;
+					uses.check(context);
+					YANG_Grouping g = uses.getGrouping();
+					Vector<YANG_Grouping> usedgroupings = g.getGroupings();
+					Vector<YANG_TypeDef> usedtypedefs = g.getTypeDefs();
+					Vector<YANG_DataDef> useddatadefs = g.getDataDefs();
+					for (Enumeration<YANG_TypeDef> et = usedtypedefs.elements(); et
+							.hasMoreElements();) {
+						YANG_TypeDef typedef = (YANG_TypeDef) et.nextElement();
+						context.addNode(typedef);
+					}
+					for (Enumeration<YANG_Grouping> eg = usedgroupings
+							.elements(); eg.hasMoreElements();) {
+						YANG_Grouping ug = (YANG_Grouping) eg.nextElement();
+						context.addNode(ug);
+					}
+					for (Enumeration<YANG_DataDef> ued = useddatadefs
+							.elements(); ued.hasMoreElements();) {
+						YANG_DataDef ddef = (YANG_DataDef) ued.nextElement();
+						context.addNode(ddef);
+					}
+				}
+			}
+		} catch (YangParserException ye) {
+			String mes = ye.getMessage();
+			mes = mes.substring(mes.indexOf(":") + 1, mes.length());
+			mes = mes.substring(0, mes.indexOf("defined"));
+			mes = "@" + body.getLine() + "." + body.getCol() + ":grouping "
+					+ body.getBody() + " used " + mes + " used elsewhere";
+			// System.err.println(getName() + mes);
+			throw new YangParserException(getName() + mes);
+		}
+		/*
+		 * Vector<YANG_Body> cleanedbodies = new Vector<YANG_Body>();
+		 * 
+		 * for (Enumeration<YANG_Body> eb = bodies.elements();
+		 * eb.hasMoreElements();){ YANG_Body b = eb.nextElement(); if (!(b
+		 * instanceof YANG_Uses)) cleanedbodies.add(b); }
+		 * 
+		 * bodies = cleanedbodies; bodies.addAll(usedbodies);
+		 */
 		return context;
 	}
 
@@ -304,6 +380,13 @@ public abstract class YANG_Specification extends SimpleNode {
 
 	}
 
+	/**
+	 * check correctness of include and import statements but do not a check of
+	 * these included or imported specifications
+	 * 
+	 * @param p
+	 * @throws YangParserException
+	 */
 	protected void checkLinkage(String[] paths) throws YangParserException {
 		checkImport(paths);
 		checkInclude(paths);

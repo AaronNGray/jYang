@@ -1,21 +1,20 @@
-
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
@@ -28,14 +27,12 @@ import jyang.tools.Yang2Ensuite;
 import jyang.tools.Yang2Yin;
 
 public class jyang {
-	
+
 	private Hashtable<String, YANG_Specification> yangsSpecs = new Hashtable<String, YANG_Specification>();
-	
+
 	public static void main(String args[]) {
 		new jyang(args);
 	}
-	
-
 
 	public jyang(String args[]) {
 		// Parsing arguments
@@ -216,18 +213,18 @@ public class jyang {
 				YANG_Specification yangspec = yang.Start();
 				Vector<String> checkeds = new Vector<String>();
 				yangspec.check(paths, checkeds);
-				
-				yangsSpecs.put(yangspec.getName(), yangspec);
-				
-				if (format != null) {
-					if (format.compareTo("yin") == 0) {
-						new Yang2Yin(yangspec, paths, out);
-					} 
-					else if (format.compareTo("ensuite") == 0){
-						new Yang2Ensuite(yangspec, paths, out);
+				if (YANG_Specification.isCheckOk()) {
+					yangsSpecs.put(yangspec.getName(), yangspec);
+
+					if (format != null) {
+						if (format.compareTo("yin") == 0) {
+							new Yang2Yin(yangspec, paths, out);
+						} else if (format.compareTo("ensuite") == 0) {
+							new Yang2Ensuite(yangspec, paths, out);
+						} else
+							System.err
+									.println("only yin, ensuite or dsdl formats enabled (now)");
 					}
-					else
-						System.err.println("only yin, ensuite or dsdl formats enabled (now)");
 				}
 
 			} catch (ParseException pe) {

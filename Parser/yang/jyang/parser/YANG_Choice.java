@@ -269,6 +269,7 @@ public class YANG_Choice extends YANG_DataDefConfig {
 			else
 				caseids.add(ycase.getCase());
 		}
+		
 	}
 
 	public String toString() {

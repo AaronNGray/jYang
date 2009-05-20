@@ -155,5 +155,16 @@ public class YANG_TypeDef extends YANG_Body {
 		result += "}";
 		return result;
 	}
+	
+	public YANG_TypeDef clone(){
+		YANG_TypeDef ctd = new YANG_TypeDef(parser, id);
+		try {
+			ctd.setType(getType());
+		} catch (YangParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ctd;
+	}
 
 }

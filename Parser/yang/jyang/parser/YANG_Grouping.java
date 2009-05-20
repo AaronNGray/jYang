@@ -159,4 +159,27 @@ public class YANG_Grouping extends YANG_Body {
 
 		return result;
 	}
+	
+	public YANG_Grouping clone(){
+		YANG_Grouping cg = new YANG_Grouping(parser, id);
+		cg.setTypeDefs(getTypeDefs());
+		cg.setGroupings(getGroupings());
+		cg.setDataDefs(getDataDefs());
+		return cg;
+	}
+
+	private void setDataDefs(Vector<YANG_DataDef> dataDefs2) {
+		datadefs = dataDefs2;
+		
+	}
+
+	private void setGroupings(Vector<YANG_Grouping> groupings2) {
+		groupings = groupings2;
+		
+	}
+
+	private void setTypeDefs(Vector<YANG_TypeDef> typeDefs2) {
+		typedefs = typeDefs2;
+		
+	}
 }

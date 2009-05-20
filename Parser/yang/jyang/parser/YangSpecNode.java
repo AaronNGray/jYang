@@ -156,7 +156,6 @@ public class YangSpecNode {
 				what = "container ";
 		}
 		if (found) {
-			
 			throw new YangParserException("@" + b.getLine() + "." + b.getCol()
 					+ ":" + what + name + " is already defined at line "
 					+ existingb.getLine() + ", col " + existingb.getCol());

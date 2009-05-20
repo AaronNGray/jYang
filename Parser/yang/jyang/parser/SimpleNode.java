@@ -130,5 +130,7 @@ public class SimpleNode implements Node {
     	    s = s.substring(0, s.length()-1);
     	return s;
     }
+    
+  
 }
 

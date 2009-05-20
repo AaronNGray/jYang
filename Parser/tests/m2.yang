@@ -3,9 +3,16 @@ module m2 {
 	namespace "fr:loria:madynes:module2";
 	prefix p2;
 
-	import m1 { prefix "mp1";}
-	
-	//typedef t12 { type mp1:t1;}
-	
+
+  grouping G {
+  	leaf l { type int8;}
+  }
+  
+  uses G;
+  uses G;
+  
+  container a {}
+  container a {}
+  
 
 }

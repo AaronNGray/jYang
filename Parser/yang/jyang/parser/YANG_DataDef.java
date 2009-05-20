@@ -12,4 +12,5 @@ public abstract class YANG_DataDef extends YANG_Body{
 		super(p, id);
 	}
 	
+	
 }

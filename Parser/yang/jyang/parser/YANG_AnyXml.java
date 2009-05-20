@@ -57,4 +57,10 @@ public class YANG_AnyXml extends  YANG_DataDefFullInfo implements
 
 		return result;
 	}
+	
+	public YANG_AnyXml clone() {
+		YANG_AnyXml ca = new YANG_AnyXml(parser, id);
+		ca.setAnyXml(getAnyXml());
+		return ca;
+	}
 }

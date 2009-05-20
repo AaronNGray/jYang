@@ -158,6 +158,13 @@ public class YANG_Leaf extends YANG_DataDefFullInfo implements YANG_CaseDef,
 	public YANG_Leaf clone() {
 		YANG_Leaf cl = new YANG_Leaf(parser, id);
 		cl.setLeaf(getLeaf());
+		
+		try {
+			cl.setType(getType());
+			cl.setUnits(getUnits());
+		} catch (YangParserException e) {
+			e.printStackTrace();
+		}
 		return cl;
 	}
 

@@ -2,11 +2,14 @@ submodule rbac {
 	
 	belongs-to netconf { prefix rabc;}
 	
+	
  	typedef user_id {
  		type int16 {
  			range "1..max";
  		}
  	}
+ 	
+ 	
  	typedef name {
  		type string {
  			length "3..30";
@@ -53,7 +56,7 @@ submodule rbac {
  				}
  				case nolocation {
  					leaf nolocation {
- 						type empty;
+ 						type emptya;
  					}
  				}
  			}
@@ -84,27 +87,33 @@ submodule rbac {
  		 	  leaf-list juniors {
  		 	        type junior_role;
  		 	   }
- 		 }
+ 		 	}
  		}
  	}
  	
  	container monContainer {
  		uses rbac;
+ 		container rbaca{}
+ 		uses rbac;
  	}
  	
+ 	//container monContainer {
+ 	//}
+ 	
+ 	//uses rbac;
  	uses rbac;
  		
  		
  		choice CC {
  			case a {
  				uses rbac;
- 				leaf l3{ type int8;}
+ 				leaf l3{ type int87;}
  			}
  			case b {
  				uses rbac;
- 				leaf l1 {type int8;}
- 				leaf l2 { type int8;}
+ 				leaf l1 {type int89;}
+ 				leaf l2 { type int83;}
  			}
  		}
-}
+
 }
