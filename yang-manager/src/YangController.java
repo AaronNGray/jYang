@@ -1,6 +1,3 @@
-
-
-
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 
@@ -25,7 +22,6 @@ public class YangController {
 
 	public YangView createView(Document doc,
 			Hashtable<String, YANG_Specification> specs) {
-		// YangModel model = new YangModel();
 
 		Element docelt = doc.getDocumentElement();
 		String root = docelt.getNodeName();
@@ -37,7 +33,8 @@ public class YangController {
 					.hasMoreElements()
 					&& !found;) {
 				YANG_Body b = eb.nextElement();
-				if (b instanceof YANG_Container && b.getBody().equals(root)) {
+				if ((b instanceof YANG_Container || b instanceof YANG_List || b instanceof YANG_LeafList)
+						&& b.getBody().equals(root)) {
 					found = true;
 					model = walk("", docelt, b);
 				}
@@ -45,14 +42,17 @@ public class YangController {
 		}
 		if (!found)
 			System.out.println("No spec found " + root);
-		
+
 		YangView view = new YangView(model);
 
 		return view;
 	}
 
 	private DataNode walk(String p, Node node, YANG_Body b) {
-
+		
+		/**
+		 * Leaf node
+		 */
 		if (b instanceof YANG_Leaf) {
 			LeafNode ln = null;
 			NodeList nl = node.getChildNodes();
@@ -73,9 +73,11 @@ public class YangController {
 			}
 			if (nl.getLength() == 0)
 				return new LeafNode((YANG_Leaf) b, "");
-
+			/**
+			 * Container node
+			 */
 		} else if (b instanceof YANG_Container) {
-
+			
 			YANG_Container ycont = (YANG_Container) b;
 			ContainerNode cn = new ContainerNode(ycont);
 
@@ -87,15 +89,17 @@ public class YangController {
 			 * System.out.println(n.getNodeName() + "=" + n.getTextContent()); }
 			 */
 
+			/**
+			 * First check if each node in the response has a yang definition
+			 */
 			NodeList nl = node.getChildNodes();
 			for (int i = 0; i < nl.getLength(); i++) {
 				Node n = nl.item(i);
+				boolean found = false;
 				if (n instanceof Element) {
 					for (Enumeration<YANG_DataDef> eb = ycont.getDataDefs()
 							.elements(); eb.hasMoreElements();) {
-
 						YANG_DataDef ddef = eb.nextElement();
-
 						if (ddef instanceof YANG_Uses) {
 							YANG_Grouping g = ((YANG_Uses) ddef).getGrouping();
 							for (Enumeration<YANG_DataDef> eddef = g
@@ -103,18 +107,26 @@ public class YangController {
 									.hasMoreElements();) {
 								YANG_DataDef ddefused = eddef.nextElement();
 								if (ddefused.getBody().equals(n.getNodeName())) {
+									found = true;
 									cn.addContent(walk(p + " ", n, ddefused));
 								}
 							}
 						} else if (n.getNodeName().equals(ddef.getBody())) {
+							found = true;
 							cn.addContent(walk(p + " ", n, ddef));
-							
 						}
 					}
 
 				}
 			}
+			for(Enumeration<DataNode> edn = lookForDefaultLeaf(nl, ycont.getDataDefs()
+							.elements()); edn.hasMoreElements();)
+				cn.addContent(edn.nextElement());
+	
 			return cn;
+			/**
+			 * List node
+			 */
 		} else if (b instanceof YANG_List) {
 			YANG_List ylist = (YANG_List) b;
 			int index;
@@ -147,8 +159,7 @@ public class YangController {
 									.getDataDefs().elements(); eddef
 									.hasMoreElements();) {
 								YANG_DataDef ddefused = eddef.nextElement();
-								lentry.add(walk(p + " ", n,
-										ddefused));
+								lentry.add(walk(p + " ", n, ddefused));
 							}
 						}
 						if (ddef.getBody().equals(n.getNodeName())) {
@@ -160,8 +171,7 @@ public class YangController {
 								lentry.add(dn);
 
 							} else if (ddef instanceof YANG_Leaf) {
-								lentry.add( walk(p + " ", n,
-										ddef));
+								lentry.add(walk(p + " ", n, ddef));
 							}
 
 							if (ddef.getBody().equals(keyname)) {
@@ -191,14 +201,75 @@ public class YangController {
 					}
 				}
 			}
-			//if (nbcol == 0) {
-				ln.setEntry(lentry);
-				nbcol = ylist.getDataDefs().size();
-			//}
+			for(Enumeration<DataNode> edn = lookForDefaultLeaf(nl, ylist.getDataDefs()
+					.elements()); edn.hasMoreElements();)
+				lentry.add(edn.nextElement());
+
+			ln.setEntry(lentry);
+			nbcol = ylist.getDataDefs().size();
 			return ln;
 		}
 		return null;
 	}
+		
+		/**
+		 * Check if a leaf is not present and put its
+		 * default value (or the default value of the type of the leaf)
+		 * if there is such value, else the leaf is omitted
+		 */
+	private Enumeration<DataNode> lookForDefaultLeaf(NodeList nl, Enumeration<YANG_DataDef> eddef){
+		
+		Vector<DataNode> result = new Vector<DataNode>();
+		boolean leafmandatory = false;
+		while (eddef.hasMoreElements()) {
 
-	
+			YANG_DataDef ddef = eddef.nextElement();
+
+			if (ddef instanceof YANG_Leaf) {
+				
+				YANG_Leaf leaf = (YANG_Leaf) ddef;
+				
+				if (leaf.getMandatory() == null)
+					leafmandatory = false;
+				else if (leaf.getMandatory().getMandatory()
+						.equals("false"))
+					leafmandatory = false;
+				else
+					leafmandatory = true;
+				
+				String leafdefault = null;					
+				if (leaf.getDefault() != null)
+					leafdefault = leaf.getDefault().getDefault();
+				
+				String typeleafdefault = null;
+				if (leaf.getType().getTypedef() != null)
+					if (leaf.getType().getTypedef().getDefault() != null)
+						typeleafdefault = leaf.getType().getTypedef().getDefault().getDefault();
+				
+				boolean found = false;
+				for (int i = 0; i < nl.getLength(); i++) {
+					Node n = nl.item(i);
+					if (n instanceof Element) {
+						if (n.getNodeName().equals(ddef.getBody())) {
+							found = true;
+						}
+					}
+				}
+				if (!found)  // we don't find a node with the name of the leaf
+					if (leafmandatory) {
+						System.err.println("Error : a mandatory leaf is not present");
+					} else {
+						if (leafdefault != null){
+							LeafNode ln = new LeafNode(leaf, leafdefault);
+							result.add(ln);
+						} else if (typeleafdefault != null){
+							LeafNode ln = new LeafNode(leaf, typeleafdefault);
+							result.add(ln);
+						}
+					}
+			}
+		}
+		return result.elements();
+	}
+
 }
