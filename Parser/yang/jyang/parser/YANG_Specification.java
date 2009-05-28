@@ -141,18 +141,18 @@ public abstract class YANG_Specification extends SimpleNode {
 		checkHeader(p);
 		checkLinkage(p);
 
-		YangContext context = buildSpecContext(p, null,
+		YangContext localcontext = buildSpecContext(p, null,
 				(Vector<String>) checkeds.clone());
 
-		context.pendingUnions();
-		context.checkTypes();
-
-		checkBodies(p, checkeds, context);
+		localcontext.pendingUnions();
+		localcontext.checkTypes();
 
 		if (c != null)
-			c.merge(context);
+			c.merge(localcontext);
 		else
-			c = context;
+			c = localcontext;
+		checkBodies(p, checkeds, c);
+
 
 		return c;
 
@@ -193,7 +193,7 @@ public abstract class YANG_Specification extends SimpleNode {
 				YangContext clc = c.clone();
 				try {
 					YangContext importedcontexts = module.buildSpecContext(
-							paths, clc, builded);
+							paths, null, builded);
 					c.merge(importedcontexts);
 				} catch (YangParserException ye) {
 					throw new YangParserException(getName()

@@ -152,6 +152,8 @@ public class jyang {
 
 		int numpaths = 0;
 		byte[] bpath = pathstr.getBytes();
+		if (bpath.length != 0)
+			numpaths++;
 		for (int ib = 0; ib < bpath.length; ib++)
 			if (bpath[ib] == File.pathSeparatorChar)
 				numpaths++;

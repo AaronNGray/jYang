@@ -1403,15 +1403,17 @@ public class YANG_Type extends SimpleNode {
 			value = YangBuiltInTypes.removeQuotes(value);
 			String[][] ranges = null;
 			boolean isStringRestricted = false;
-
+			Enumeration<YANG_Pattern> patterns = null;
 			if (getStringRest() != null) {
 				if (getStringRest().getLength() != null)
 					isStringRestricted = true;
 				else
 					isStringRestricted = false;
+				patterns = getStringRest().getPatterns().elements();
+					
 			} else
 				isStringRestricted = false;
-
+			
 			if (isStringRestricted) {
 				ranges = getLength(context);
 			} else {
@@ -1426,6 +1428,7 @@ public class YANG_Type extends SimpleNode {
 					ranges = getLength(context);
 				}
 			}
+			
 
 			BigInteger bi = new BigInteger(new Integer(value.length())
 					.toString());
@@ -1454,6 +1457,12 @@ public class YANG_Type extends SimpleNode {
 			if (!inside)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ": " + value + " has not correct length");
+			
+			while (patterns.hasMoreElements()){
+				YANG_Pattern pattern = patterns.nextElement();
+				pattern.checkExp(value);
+			}
+			
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			value = YangBuiltInTypes.removeQuotesAndTrim(value);

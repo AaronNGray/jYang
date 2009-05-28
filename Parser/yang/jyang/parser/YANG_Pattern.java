@@ -1,5 +1,8 @@
 package jyang.parser;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class YANG_Pattern extends SimpleNode {
 
@@ -8,6 +11,8 @@ public class YANG_Pattern extends SimpleNode {
 	private YANG_ErrorAppt errapptag = null;
 	private YANG_Description description = null;
 	private YANG_Reference reference = null;
+
+	private Pattern regexp = null;
 
 	private boolean bracked = false;
 
@@ -19,8 +24,13 @@ public class YANG_Pattern extends SimpleNode {
 		super(p, id);
 	}
 
-	public void setPattern(String p) {
+	public void setPattern(String p) throws YangParserException {
 		pattern = p;
+		try {
+			regexp = Pattern.compile(YangBuiltInTypes.removeQuotesAndTrim(p));
+		} catch (PatternSyntaxException pse) {
+			throw new YangParserException("Incorrect regular expression");
+		}
 	}
 
 	public String getPattern() {
@@ -65,6 +75,14 @@ public class YANG_Pattern extends SimpleNode {
 
 	public boolean isBracked() {
 		return bracked;
+	}
+	
+	public void checkExp(String exp) throws YangParserException{
+		Matcher m = regexp.matcher(exp);
+		if (!m.matches())
+			
+			throw new YangParserException("@" + getLine() + "." + getCol()
+					+ ":incorrect expression : \"" + exp + "\" does not match with  regular expression " + pattern);
 	}
 
 	public String toString() {
