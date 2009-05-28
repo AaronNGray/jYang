@@ -204,7 +204,7 @@ public class YangView {
 		TG1.addChild(placeEdge);
 
 		mouseTransform.addChild(TG1);
-
+		
 		if (n instanceof DataTree) {
 			DataTree dt = (DataTree) n;
 			float list = 0;
