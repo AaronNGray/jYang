@@ -38,6 +38,12 @@ public class YANG_Type extends SimpleNode {
 	private YANG_Base base = null;
 	private YANG_Decimal64Spec dec64Spec = null;
 	private String instanceIdentifierSpec = null;
+	
+	private YANG_TypeDef typedef = null;
+
+	public YANG_TypeDef getTypedef() {
+		return typedef;
+	}
 
 	public String getInstanceIdentifierSpec() {
 		return instanceIdentifierSpec;
@@ -235,6 +241,7 @@ public class YANG_Type extends SimpleNode {
 			throw new YangParserException("@" + getLine() + "." + getCol()
 					+ ":type " + getType() + " is not defined");
 		}
+		typedef = context.getBaseType(this);
 
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			if (getBitSpec() != null)

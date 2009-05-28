@@ -15,7 +15,9 @@ submodule interfaces {
 		list interface {
 			key name;
 			leaf name { type string;}
-			leaf mac-address { type string;}
+			leaf mac-address { type string;
+								default "000000000000";
+								mandatory false;}
 			leaf mtu { type uint32;}
 			container ipv4 {
 				leaf netmask { type string;}

@@ -1,0 +1,42 @@
+	<netconf xmlns="urn:loria:madynes:ensuite:yencap:1.0">
+      <network>
+        <interfaces xmlns="urn:loria:madynes:ensuite:yencap:1.0:module:Interfaces:1.0">
+          <interface>
+            <name>lo</name>
+            <mtu>16436</mtu>
+            <flags broadcast="false" running="true" multicast="false" up="true" loopback="true"/>
+            <ipv4>
+              <netmask>255.0.0.0</netmask>
+              <broadcast>0.0.0.0</broadcast>
+              <address-v4>127.0.0.1</address-v4>
+            </ipv4>
+            <ipv6>
+              <address-v6 scope="node-local" prefix="80">00000000000000000000000000000001</address-v6>
+            </ipv6>
+            <stats>
+              <received>
+                <bytes>4641562</bytes>
+                <frame>0</frame>
+                <drop>0</drop>
+                <packets>16307</packets>
+                <fifo>0</fifo>
+                <multicast>0</multicast>
+                <compressed>0</compressed>
+                <errs>0</errs>
+              </received>
+              <transmit>
+                <bytes>4641562</bytes>
+                <drop>0</drop>
+                <packets>16307</packets>
+                <fifo>0</fifo>
+                <carrier>0</carrier>
+                <colls>0</colls>
+                <compressed>0</compressed>
+                <errs>0</errs>
+              </transmit>
+            </stats>
+          </interface>
+        </interfaces>
+      </network>
+    </netconf>
+	
