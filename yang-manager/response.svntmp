@@ -1,0 +1,324 @@
+
+    <netconf xmlns="urn:loria:madynes:ensuite:yencap:1.0">
+      <network>
+        <interfaces xmlns="urn:loria:madynes:ensuite:yencap:1.0:module:Interfaces:1.0">
+          <interface>
+            <name>lo</name>
+            <mac-address>00:00:00:00:00:00</mac-address>
+            <mtu>16436</mtu>
+            <flags broadcast="false" running="true" multicast="false" up="true" loopback="true"/>
+            <ipv4>
+              <netmask>255.0.0.0</netmask>
+              <broadcast>0.0.0.0</broadcast>
+              <address-v4>127.0.0.1</address-v4>
+            </ipv4>
+            <ipv6>
+              <address-v6 scope="node-local" prefix="80">00000000000000000000000000000001</address-v6>
+            </ipv6>
+            <stats>
+              <received>
+                <bytes>22476858</bytes>
+                <frame>0</frame>
+                <drop>0</drop>
+                <packets>237796</packets>
+                <fifo>0</fifo>
+                <multicast>0</multicast>
+                <compressed>0</compressed>
+                <errs>0</errs>
+              </received>
+              <transmit>
+                <bytes>22476858</bytes>
+                <drop>0</drop>
+                <packets>237796</packets>
+                <fifo>0</fifo>
+                <carrier>0</carrier>
+                <colls>0</colls>
+                <compressed>0</compressed>
+                <errs>0</errs>
+              </transmit>
+            </stats>
+          </interface>
+          <interface>
+            <name>pan0</name>
+            <mac-address></mac-address>
+            <mtu></mtu>
+            <flags broadcast="false" running="false" multicast="false" up="false" loopback="false"/>
+            <ipv4>
+              <netmask></netmask>
+              <broadcast></broadcast>
+              <address-v4></address-v4>
+            </ipv4>
+            <ipv6/>
+            <stats>
+              <received>
+                <bytes>0</bytes>
+                <frame>0</frame>
+                <drop>0</drop>
+                <packets>0</packets>
+                <fifo>0</fifo>
+                <multicast>0</multicast>
+                <compressed>0</compressed>
+                <errs>0</errs>
+              </received>
+              <transmit>
+                <bytes>0</bytes>
+                <drop>0</drop>
+                <packets>0</packets>
+                <fifo>0</fifo>
+                <carrier>0</carrier>
+                <colls>0</colls>
+                <compressed>0</compressed>
+                <errs>0</errs>
+              </transmit>
+            </stats>
+          </interface>
+          <interface>
+            <name>eth0</name>
+            <mac-address>00:13:72:14:c3:89</mac-address>
+            <mtu>1500</mtu>
+            <flags broadcast="true" running="true" multicast="true" up="true" loopback="false"/>
+            <ipv4>
+              <netmask>255.255.240.0</netmask>
+              <broadcast>152.81.15.255</broadcast>
+              <address-v4>152.81.6.24</address-v4>
+            </ipv4>
+            <ipv6>
+              <address-v6 scope="global" prefix="40">2002985172730004021372fffe14c389</address-v6>
+              <address-v6 scope="40" prefix="40">fec0000000000004021372fffe14c389</address-v6>
+              <address-v6 scope="global" prefix="40">2001066045010001021372fffe14c389</address-v6>
+              <address-v6 scope="link-local" prefix="40">fe80000000000000021372fffe14c389</address-v6>
+            </ipv6>
+            <stats>
+              <received>
+                <bytes>425558488</bytes>
+                <frame>0</frame>
+                <drop>0</drop>
+                <packets>3382978</packets>
+                <fifo>0</fifo>
+                <multicast>438514</multicast>
+                <compressed>0</compressed>
+                <errs>0</errs>
+              </received>
+              <transmit>
+                <bytes>6921901</bytes>
+                <drop>0</drop>
+                <packets>21135</packets>
+                <fifo>0</fifo>
+                <carrier>0</carrier>
+                <colls>0</colls>
+                <compressed>0</compressed>
+                <errs>0</errs>
+              </transmit>
+            </stats>
+          </interface>
+        </interfaces>
+      </network>
+      <security>
+        <rbac xmlns="urn:loria:madynes:ensuite:yencap:module:RBAC:1.0">
+	<prefixes>
+		<prefix name="ycp" value="urn:loria:madynes:ensuite:yencap:1.0"/>
+		<prefix name="ifs" value="urn:loria:madynes:ensuite:yencap:module:Interfaces:1.0"/>
+		<prefix name="bgp" value="urn:loria:madynes:ensuite:yencap:module:BGP:1.0"/>
+		<prefix name="rip" value="urn:loria:madynes:ensuite:yencap:module:RIP:1.0"/>
+		<prefix name="ac" value="urn:loria:madynes:ensuite:yencap:module:RBAC:1.0"/>
+		<prefix name="f" value="urn:loria:madynes:ensuite:yencap:module:Foo:1.0"/>
+		<prefix name="rt" value="urn:loria:madynes:ensuite:yencap:module:Route:1.0"/>
+		<prefix name="sy" value="urn:loria:madynes:ensuite:yencap:module:System:1.0"/>
+		<prefix name="lg" value="urn:loria:madynes:ensuite:yencap:module:Log:1.0"/>
+		<prefix name="mon" value="urn:company:yencap:module:vermont:1.0"/>
+	</prefixes>
+
+  <users>
+    <user id="1">
+      <login>neuf</login>
+      <password>telecom</password>
+    </user>
+    <user id="2">
+      <login>cridligv</login>
+      <password>a</password>
+      <firstname>Vincent</firstname>
+      <lastname>Cridlig</lastname>
+      <room>B213</room>
+    </user>
+    <user id="3">
+      <login>alice</login>
+      <password>b</password>
+      <firstname>Alice</firstname>
+      <lastname>Blub</lastname>
+      <room>B213</room>
+    </user>
+    <user id="4">
+      <login>netconf</login>
+      <password>netconf</password>
+      <public-key keytype="rsa">AAAAB3NzaC1yc2EAAAABIwAAAIEAqSmp0ibI/kvv92aVz8A40GZA8hXomqcuwn9adOnuT5Sms9yaXwa2dFErOe6aghK550PvlSMNrMFw0caM2erD3xDM5B8XxQ7+RMZL6mSUndBN8/yIU3T/Ep4PLlL8wZ3B6SyfGbqVUj4v+taX7RtzupSpblQbP0CDbc350RfDJ6M=</public-key>
+      <room>B213</room>
+    </user>
+  </users>
+
+  <roles>
+    <role id="1">
+      <name>RoutingManager</name>
+    </role>
+    <role id="2">
+      <name>InternalRoutingManager</name>
+      <junior-roles>
+        <junior-role roleRef="1"/>
+      </junior-roles>
+    </role>
+    <role id="3">
+      <name>ExternalRoutingManager</name>
+      <junior-roles>
+        <junior-role roleRef="1"/>
+      </junior-roles>
+    </role>
+    <role id="4">
+      <name>SecurityManager</name>
+      <junior-roles>
+        <junior-role roleRef="1"/>
+      </junior-roles>
+    </role>
+    <role id="5">
+      <name>SuperRoutingManager</name>
+      <junior-roles>
+        <junior-role roleRef="2"/>
+        <junior-role roleRef="3"/>
+        <junior-role roleRef="4"/>
+      </junior-roles>
+    </role>
+    <role id="6">
+      <name>SuperManager</name>
+      <junior-roles>
+        <junior-role roleRef="5"/>
+      </junior-roles>
+    </role>
+  </roles>
+
+  <permissions>
+    <permission id="1" op="r">
+      <scope>/ycp:netconf/ycp:routing</scope>
+    </permission>
+    <permission id="2" op="w">
+      <scope>/ycp:netconf/ycp:routing/bgp:bgp</scope>
+    </permission>
+    <permission id="3" op="w">
+      <scope>/ycp:netconf/ycp:routing/rip:rip</scope>
+    </permission>
+    <permission id="4" op="w">
+      <scope>/ycp:netconf/ycp:routing/sec:acl</scope>
+    </permission>
+    <permission id="5" op="w">
+      <scope>/ycp:netconf/ycp:routing</scope>
+    </permission>
+    <permission id="6" op="rw">
+      <scope>/ycp:netconf</scope>
+    </permission>
+  </permissions>
+
+  <user-assignements>
+    <user-assignement roleRef="5" userRef="4" id="1"/>
+    <user-assignement roleRef="6" userRef="4" id="2"/>
+  </user-assignements>
+
+  <permission-assignements>
+    <permission-assignement roleRef="1" permRef="1" id="1"/>
+    <permission-assignement roleRef="2" permRef="3" id="2"/>
+    <permission-assignement roleRef="3" permRef="2" id="3"/>
+    <permission-assignement roleRef="4" permRef="4" id="4"/>
+    <permission-assignement roleRef="5" permRef="5" id="5"/>
+    <permission-assignement roleRef="6" permRef="6" id="6"/>
+  </permission-assignements>
+</rbac>
+      </security>
+      <lg:log>
+<lg:size>
+12
+</lg:size>
+</lg:log>
+      <system xmlns="urn:loria:madynes:ensuite:yencap:module:System:1.0">
+        <sysname>Linux</sysname>
+        <nodename>marge</nodename>
+        <release>2.6.27-7-generic</release>
+        <version>#1 SMP Fri Oct 24 06:42:44 UTC 2008</version>
+        <machine>i686</machine>
+        <rpm-list/>
+      </system>
+      <olsr xmlns="urn:loria:madynes:ensuite:yencap:module:OLSR:1.0">
+        <debugLevel>0</debugLevel>
+        <interfaces>
+          <interface>
+            <name>"ath0"</name>
+            <ip4Broadcast>255.255.255.255</ip4Broadcast>
+            <ip6AddrType>site-local</ip6AddrType>
+            <ip6MulticastSite>ff05::11</ip6MulticastSite>
+            <ip6MulticastGlobal>ff0e::1</ip6MulticastGlobal>
+            <helloInterval>6.0</helloInterval>
+            <helloValidityTime>600.0</helloValidityTime>
+            <tcInterval>0.5</tcInterval>
+            <tcValidityTime>300.0</tcValidityTime>
+            <midInterval>10.0</midInterval>
+            <midValidityTime>300.0</midValidityTime>
+            <hnaInterval>10.0</hnaInterval>
+            <hnaValidityTime>300.0</hnaValidityTime>
+            <weight>0</weight>
+            <linkQualityMult>
+              <linkTo>default</linkTo>
+              <multiplier>0.8</multiplier>
+            </linkQualityMult>
+          </interface>
+          <interface>
+            <name>"eth1"</name>
+            <helloInterval>6.0</helloInterval>
+            <helloValidityTime>600.0</helloValidityTime>
+            <tcValidityTime>300.0</tcValidityTime>
+          </interface>
+        </interfaces>
+        <linkQualityFishEye>1</linkQualityFishEye>
+        <linkQualityDijkstraLimit>
+          <maxHops>3</maxHops>
+          <updatePeriod>3.0</updatePeriod>
+        </linkQualityDijkstraLimit>
+        <ipVersion>4</ipVersion>
+        <clearScreen>yes</clearScreen>
+        <hna4>
+          <networks>
+            <network>
+              <address>192.168.2.0</address>
+              <mask>255.255.255.0</mask>
+            </network>
+            <network>
+              <address>93.186.13.0</address>
+              <mask>255.255.255.0</mask>
+            </network>
+          </networks>
+        </hna4>
+        <allowNoInt>yes</allowNoInt>
+        <willingness>7</willingness>
+        <ipcConnect>
+          <maxConnections>0</maxConnections>
+          <hosts>
+            <host>
+              <address>127.0.0.1</address>
+            </host>
+            <host>
+              <address>10.0.0.5</address>
+            </host>
+          </hosts>
+          <networks>
+            <network>
+              <address>192.168.1.0</address>
+              <mask>255.255.255.0</mask>
+            </network>
+            <network>
+              <address>10.10.0.0</address>
+              <mask>255.255.0.0</mask>
+            </network>
+          </networks>
+        </ipcConnect>
+        <useHysteresis>no</useHysteresis>
+        <linkQualityLevel>2</linkQualityLevel>
+        <linkQualityWinSize>100</linkQualityWinSize>
+        <pollrate>0.1</pollrate>
+        <tcRedundancy>2</tcRedundancy>
+        <mprCoverage>5</mprCoverage>
+      </olsr>
+    </netconf>

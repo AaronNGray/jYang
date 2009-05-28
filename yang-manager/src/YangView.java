@@ -184,11 +184,13 @@ public class YangView {
 		Cylinder cy = new Cylinder(EDGE_SECT, (float) r);
 
 		Transform3D transedge = new Transform3D();
+		
 		transedge.set(new Vector3f(
 		-(float) (Math.sqrt(dX) / 2), (float) Math.sqrt(dY) / 2, (float) Math
 				.sqrt(dZ) / 2));
+		
+		
 		Transform3D rotate = new Transform3D();
-
 		rotate.rotZ(-teta);
 		Transform3D rotateY = new Transform3D();
 		rotateY.rotY(phy);
@@ -196,14 +198,12 @@ public class YangView {
 		transedge.mul(rotate);
 
 		TransformGroup placeEdge = new TransformGroup(transedge);
+		
 		placeEdge.addChild(cy);
 
 		TG1.addChild(placeEdge);
 
-		
-
 		mouseTransform.addChild(TG1);
-		// objRoot.addChild(mouseTransform);
 
 		if (n instanceof DataTree) {
 			DataTree dt = (DataTree) n;

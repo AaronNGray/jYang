@@ -1,0 +1,14 @@
+expériences sur la modélisation avec Yang :
+
+La structure de fichiers de configuration est arborescente et donc peut facilement être traduite en xml, 
+et d'une manière automatisable en yang.
+Yang permet de formaliser certaines contraintes qui ne sont exprimées que informellement dans les 
+documentations de configuration
+Par exemple :  les intervalles de valeur, leur types (entier, réels,...)
+
+La spécification en Yang de données obligatoires (mandatory) ou non associée à la possiblité de définir 
+des valeur par défaut permet de gagner sur le trafic résau, 
+l'absence de valeur signifiant la valeur par défaut.
+
+Tout n'es pas modélisable, par exemple une contrainte sur une valeur par défaut, mais on peut définir 
+une contrainte sur plusieurs valeurs

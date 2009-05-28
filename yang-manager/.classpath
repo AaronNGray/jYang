@@ -2,7 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/manu/Downloads/java3d-1_5_1-macosx/j3d-jre.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Parser"/>
+	<classpathentry kind="lib" path="/home/manu/Bureau/j3d-1_5_2-linux-i586/j3d-jre.zip"/>
+	<classpathentry kind="lib" path="/home/manu/Bureau/lib/ext/j3dcore.jar"/>
+	<classpathentry kind="lib" path="/home/manu/Bureau/lib/ext/vecmath.jar"/>
+	<classpathentry kind="lib" path="/home/manu/Bureau/lib/ext/j3dutils.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
