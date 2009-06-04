@@ -98,8 +98,8 @@ public abstract class YANG_Specification extends SimpleNode {
 		Vector<String> cked = new Vector<String>();
 		check(path, cked);
 	}
-	
-	public static boolean isCheckOk(){
+
+	public static boolean isCheckOk() {
 		return isCheckOk;
 	}
 
@@ -125,8 +125,8 @@ public abstract class YANG_Specification extends SimpleNode {
 	protected YangContext checkAsExternal(String[] p, Vector<String> checked)
 			throws YangParserException {
 		YangContext c = check(p, checked, null);
-		if (isCheckOk)
-			checkTreeNode(p);
+		//if (isCheckOk)
+			//checkTreeNode(p);
 		return c;
 	}
 
@@ -152,7 +152,6 @@ public abstract class YANG_Specification extends SimpleNode {
 		else
 			c = localcontext;
 		checkBodies(p, checkeds, c);
-
 
 		return c;
 
@@ -189,7 +188,6 @@ public abstract class YANG_Specification extends SimpleNode {
 			String importedmodulename = module.getName();
 			if (!builded.contains(importedmodulename)) {
 				Vector<String> cks = (Vector<String>) builded.clone();
-				// module.check(paths, cks);
 				YangContext clc = c.clone();
 				try {
 					YangContext importedcontexts = module.buildSpecContext(
@@ -214,11 +212,6 @@ public abstract class YANG_Specification extends SimpleNode {
 			if (!builded.contains(includedsubmodulename)) {
 				try {
 					Vector<String> cks = (Vector<String>) builded.clone();
-					// submodule.check(paths, cks);
-					// YangContext clc = c.clone();
-					// YangContext includedcontexts =
-					// submodule.buildSpecContext(paths,
-					// clc, builded);
 					YangContext includedcontexts = submodule.checkAsExternal(
 							paths, cks);
 					c.merge(includedcontexts);
@@ -469,14 +462,17 @@ public abstract class YANG_Specification extends SimpleNode {
 		tn.check(this, tn, tn, importedtreenodes);
 	}
 
-	protected YangTreeNode buildTreeNode(String[] p, Vector<String> builded,
+	public YangTreeNode buildTreeNode(String[] p, Vector<String> builded,
 			Hashtable<String, YangTreeNode> importedtreenodes) {
 
 		YangTreeNode ytn = new YangTreeNode();
 		for (Enumeration<YANG_Body> eb = bodies.elements(); eb
 				.hasMoreElements();) {
 			YANG_Body body = eb.nextElement();
-			body.builtTreeNode(ytn, ytn);
+			if (body instanceof YANG_DataDef) {
+				ytn.setNode(body);
+				body.builtTreeNode(ytn);
+			}
 		}
 		try {
 			for (Enumeration<YANG_Specification> ei = getImportedModules(p)

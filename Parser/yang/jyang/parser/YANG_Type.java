@@ -1,21 +1,22 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.math.BigDecimal;
@@ -23,8 +24,6 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-
 
 public class YANG_Type extends SimpleNode {
 
@@ -38,7 +37,7 @@ public class YANG_Type extends SimpleNode {
 	private YANG_Base base = null;
 	private YANG_Decimal64Spec dec64Spec = null;
 	private String instanceIdentifierSpec = null;
-	
+
 	private YANG_TypeDef typedef = null;
 
 	public YANG_TypeDef getTypedef() {
@@ -1417,10 +1416,10 @@ public class YANG_Type extends SimpleNode {
 				else
 					isStringRestricted = false;
 				patterns = getStringRest().getPatterns().elements();
-					
+
 			} else
 				isStringRestricted = false;
-			
+
 			if (isStringRestricted) {
 				ranges = getLength(context);
 			} else {
@@ -1435,7 +1434,6 @@ public class YANG_Type extends SimpleNode {
 					ranges = getLength(context);
 				}
 			}
-			
 
 			BigInteger bi = new BigInteger(new Integer(value.length())
 					.toString());
@@ -1464,12 +1462,12 @@ public class YANG_Type extends SimpleNode {
 			if (!inside)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ": " + value + " has not correct length");
-			
-			while (patterns.hasMoreElements()){
-				YANG_Pattern pattern = patterns.nextElement();
-				pattern.checkExp(value);
-			}
-			
+			if (patterns != null)
+				while (patterns.hasMoreElements()) {
+					YANG_Pattern pattern = patterns.nextElement();
+					pattern.checkExp(value);
+				}
+
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			value = YangBuiltInTypes.removeQuotesAndTrim(value);

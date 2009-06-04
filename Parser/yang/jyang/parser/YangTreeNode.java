@@ -1,28 +1,28 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-
 
 public class YangTreeNode {
 
@@ -131,7 +131,8 @@ public class YangTreeNode {
 					.getAugment());
 			if (body == null) {
 				System.err.println(module.getName() + "@" + node.getLine()
-						+ "." + node.getCol() + ":augmented data node not found :"
+						+ "." + node.getCol()
+						+ ":augmented data node not found :"
 						+ augment.getAugment());
 			} else {
 				try {
@@ -174,16 +175,15 @@ public class YangTreeNode {
 
 	public String toString() {
 		String result = "";
-		if (node instanceof YANG_Body)
-			result += ((YANG_Body) node).getBody();
+		result += node.getBody();
 		if (childs.size() != 0)
-			result += "\n";
+			result += "\n   ";
 		for (Enumeration<YangTreeNode> ey = childs.elements(); ey
 				.hasMoreElements();)
-			result += ey.nextElement().toString() + " ";
-
+			result += ", " + ey.nextElement().toString();
 		if (childs.size() != 0)
-			result += "\n";
+			result += "\n   ";
+
 		return result;
 	}
 

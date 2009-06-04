@@ -84,10 +84,9 @@ public abstract class YANG_Body extends SimpleNode {
 			}
 		} else if (this instanceof YANG_Uses) {
 			/**
-			 * There is nothing to do for uses statement
-			 * The enclosing statement of this uses has already
-			 * expanded the used grouping and check if no overlapping
-			 * exists
+			 * There is nothing to do for uses statement The enclosing statement
+			 * of this uses has already expanded the used grouping and check if
+			 * no overlapping exists
 			 */
 		} else if (this instanceof YANG_Augment) {
 			YANG_Augment augment = (YANG_Augment) this;
@@ -221,9 +220,8 @@ public abstract class YANG_Body extends SimpleNode {
 		}
 	}
 
-	public void builtTreeNode(YangTreeNode root, YangTreeNode subroot) {
+	public void builtTreeNode(YangTreeNode root) {
 		Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
-
 		if (this instanceof YANG_Container) {
 			YANG_Container container = (YANG_Container) this;
 			datadefs = container.getDataDefs();
@@ -277,17 +275,35 @@ public abstract class YANG_Body extends SimpleNode {
 			datadefs = notif.getDataDefs();
 		}
 
-		YangTreeNode n = new YangTreeNode();
-		n.setNode(this);
-		n.setParent(subroot);
-		subroot.addChild(n);
-
-		for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
-				.hasMoreElements();) {
-			YANG_Body body = (YANG_Body) ed.nextElement();
-			body.builtTreeNode(root, n);
+		if (!(this instanceof YANG_Uses)) {
+			for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
+					.hasMoreElements();) {
+				YANG_Body body = (YANG_Body) ed.nextElement();
+				if (!(body instanceof YANG_Uses)) {
+					YangTreeNode n = new YangTreeNode();
+					n.setNode(body);
+					n.setParent(root);
+					root.addChild(n);
+					body.builtTreeNode(n);
+				} else {
+					body.builtTreeNode(root);
+				}
+			}
+		} else {
+			for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
+					.hasMoreElements();) {
+				YANG_Body body = (YANG_Body) ed.nextElement();
+				if (!(body instanceof YANG_Uses)) {
+					YangTreeNode n = new YangTreeNode();
+					n.setNode(body);
+					n.setParent(root);
+					root.addChild(n);
+					body.builtTreeNode(n);
+				} else {
+					body.builtTreeNode(root);
+				}
+			}
 		}
-
 	}
 
 	public void setRootNode(boolean b) {

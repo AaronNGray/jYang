@@ -40,7 +40,7 @@ public class YANG_Key extends SimpleNode {
 	}
 
 	public String getKey() {
-		return key;
+		return YangBuiltInTypes.removeQuotesAndTrim(key);
 	}
 
 	public String[] getKeyLeaves() {
