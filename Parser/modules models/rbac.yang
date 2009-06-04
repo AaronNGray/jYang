@@ -44,8 +44,7 @@ submodule rbac {
  	
  	grouping rbac {
  		container rbac {
- 		container users {
- 		list user {
+ 		list users {
  			key "id";
  		
  			leaf id {type user_id;}
@@ -61,7 +60,6 @@ submodule rbac {
  					}
  				}
  			}
- 		}
  		}
  	 }
  	}
@@ -95,8 +93,8 @@ submodule rbac {
  	
  	container monContainer {
  		uses rbac;
- 		//container rbac{}
- 		//uses rbac;
+ 		container rbac{}
+ 		uses rbac;
  	}
  	
  	//container monContainer {
@@ -109,12 +107,12 @@ submodule rbac {
  		choice CC {
  			case a {
  				uses rbac;
- 				leaf l3{ type int8;}
+ 				leaf l3{ type int87;}
  			}
  			case b {
- 				//uses rbac;
- 				leaf l1 {type int8;}
- 				leaf l2 { type int8;}
+ 				uses rbac;
+ 				leaf l1 {type int89;}
+ 				leaf l2 { type int83;}
  			}
  		}
 
