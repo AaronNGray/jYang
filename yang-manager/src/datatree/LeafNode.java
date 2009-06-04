@@ -15,8 +15,12 @@ public class LeafNode extends DataNode {
 		return value;
 	}
 	
-	public String toString(){
-		return "leaf " + definition.getBody() + "; value : " + value;
+	public String toString(String prefix){
+		return prefix + "leaf " + definition.getBody() + "; value : " + value;
+	}
+	
+	public String toString() {
+		return "leaf " + definition.getBody() + " : " + value;
 	}
 
 }

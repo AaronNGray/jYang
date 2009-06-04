@@ -4,11 +4,12 @@ module netconf {
 	prefix ycp;
 	
 	include network;
-	//include security;
+	include security;
+	
 	
 	container netconf {
 		container network { uses network; }
-		//container security { uses security;}
+		container security { uses security;}
 	}
 	
 }

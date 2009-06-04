@@ -43,7 +43,7 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 
 import datatree.*;
 
-public class YangView {
+public class YangView3D {
 
 	private DataNode model = null;
 
@@ -53,7 +53,7 @@ public class YangView {
 	private final float EDGE_SECT = 0.005f;
 	
 
-	public YangView(DataNode r) {
+	public YangView3D(DataNode r) {
 		model = r;
 	}
 
@@ -215,17 +215,19 @@ public class YangView {
 			int width = dt.getNodes().size();
 			float xc = x;
 			float zc = z;
+			float coef = 1.07f;
 			for (Enumeration<DataNode> edn = dt.getNodes().elements(); edn
 					.hasMoreElements();) {
 				DataNode dn = edn.nextElement();
-				if (n instanceof ListNode)
-					draw(dn, x, y, z, x, y - (1 / (float) (high)) * (float) 2,
+				if (dn instanceof ListNode)
+					draw(dn, x, y, z, x, (y - (1 / (float) (high)) * (float) 2),
 							zc);
 				else
-					draw(dn, x, y, z, xc, y - (1 / (float) (high)) * (float) 2,
-							z + list);
+					draw(dn, x, y, z, xc * coef, (y - (1 / (float) (high)) * (float) 2)*coef,
+							(z + list)*coef);
 				xc = xc + (float) 1 / (float) (width);
 				zc = zc - (float) 1 / (float) (width);
+				//coef *= coef;
 			}
 		}
 

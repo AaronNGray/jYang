@@ -42,27 +42,39 @@ submodule rbac {
  		leaf publickey {type public_key;} 
  	}
  	
- 	grouping rbac {
- 		container rbac {
- 		list users {
- 			key "id";
- 		
- 			leaf id {type user_id;}
- 			leaf login { type login;}
- 			leaf password { type user_password;}
- 			choice  c {
- 				case user_localization{
- 					uses user_localization;
- 				}
- 				case nolocation {
- 					leaf nolocation {
- 						type empty;
- 					}
- 				}
- 			}
- 		}
- 	 }
- 	}
+grouping rbac {
+	container rbac {
+		container users {
+			list user {
+				key "login";		
+				leaf id {type user_id;}
+				leaf login { type login;}
+				leaf password { type user_password;}
+				choice  c {
+					case user_localization{
+						uses user_localization;
+					}
+					case nolocation {
+						leaf nolocation {
+							type empty;
+						}
+					}
+				}
+			}
+		}
+		container roles {
+			list role {
+				key "id";	
+				leaf id { type role_id;}
+				container junior-roles {
+						leaf-list junior-role {
+							type junior_role;
+						}
+				}
+			}
+		}
+	}
+}
  	
  	
  	typedef role_id {
@@ -75,45 +87,10 @@ submodule rbac {
  		type role_id;
  	}
  	
- 	list roles {
- 		key "id";
- 		
- 		choice c {
- 		   case root {
- 		 	 leaf id { type role_id;}
- 		   }
- 		   case junior {
- 		 	  leaf id2 { type role_id;}
- 		 	  leaf-list juniors {
- 		 	        type junior_role;
- 		 	   }
- 		 	}
- 		}
+ 	
+   
  	}
  	
- 	container monContainer {
- 		uses rbac;
- 		container rbac{}
- 		uses rbac;
- 	}
- 	
- 	//container monContainer {
- 	//}
- 	
- 	//uses rbac;
- 	uses rbac;
- 		
- 		
- 		choice CC {
- 			case a {
- 				uses rbac;
- 				leaf l3{ type int87;}
- 			}
- 			case b {
- 				uses rbac;
- 				leaf l1 {type int89;}
- 				leaf l2 { type int83;}
- 			}
- 		}
+ 
 
 }

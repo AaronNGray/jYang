@@ -10,4 +10,6 @@ public abstract class DataNode {
 		return definition.getBody();
 	}
 	
+	abstract public String toString(String p);
+	
 }

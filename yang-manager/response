@@ -3,9 +3,8 @@
       <network>
         <interfaces xmlns="urn:loria:madynes:ensuite:yencap:1.0:module:Interfaces:1.0">
           <interface>
-            <name>lo</name>
-            <mac-address>00:00:00:00:00:00</mac-address>
             <mtu>16436</mtu>
+            <name>lo</name>
             <flags broadcast="false" running="true" multicast="false" up="true" loopback="true"/>
             <ipv4>
               <netmask>255.0.0.0</netmask>
@@ -156,39 +155,45 @@
   </users>
 
   <roles>
-    <role id="1">
+    <role>
+      <id>1</id>
       <name>RoutingManager</name>
     </role>
-    <role id="2">
+    <role>
+     <id>2</id>
       <name>InternalRoutingManager</name>
       <junior-roles>
-        <junior-role roleRef="1"/>
-      </junior-roles>
+        <junior-role>1</junior-role>
+       </junior-roles>
     </role>
-    <role id="3">
+    <role>
+      <id>3</id>
       <name>ExternalRoutingManager</name>
       <junior-roles>
-        <junior-role roleRef="1"/>
-      </junior-roles>
+        <junior-role>1</junior-role>
+       </junior-roles>
     </role>
-    <role id="4">
+    <role>
+      <id>4</id>
       <name>SecurityManager</name>
       <junior-roles>
-        <junior-role roleRef="1"/>
+        <junior-role>1</junior-role>
       </junior-roles>
     </role>
-    <role id="5">
+    <role>
+      <id>5</id>
       <name>SuperRoutingManager</name>
       <junior-roles>
-        <junior-role roleRef="2"/>
-        <junior-role roleRef="3"/>
-        <junior-role roleRef="4"/>
+        <junior-role>2</junior-role>
+        <junior-role>3</junior-role>
+        <junior-role>4</junior-role>
       </junior-roles>
     </role>
-    <role id="6">
+    <role>
+      <id>6</id>
       <name>SuperManager</name>
       <junior-roles>
-        <junior-role roleRef="5"/>
+        <junior-role>5</junior-role>
       </junior-roles>
     </role>
   </roles>

@@ -18,11 +18,14 @@ public class ContainerNode extends DataTree {
 	}
 	
 	public String toString(){
-		String result = "container " + definition.getBody() + "\n";
+		return "container " + definition.getBody();
+	}
+	
+	public String toString(String prefix){
+		String result = prefix + "container " + definition.getBody() + "\n";
 		for(Enumeration<DataNode> es = nodes.elements(); es.hasMoreElements();)
-			result += es.nextElement().toString() + " | ";
+			result += es.nextElement().toString(prefix + " ") + " | ";
 		return result;
 	}
 	
-
 }

@@ -25,16 +25,20 @@ public class ListNode extends DataTree {
 		}
 	}
 
-	public String toString() {
-		String result = "list " + definition.getBody() + " key : " + keyvalue + "\n";
+	public String toString(String prefix) {
+		String result = prefix + "list " + definition.getBody() + " key : " + keyvalue + "\n";
 		for (Enumeration<DataNode> es = nodes.elements(); es.hasMoreElements();)
-			result += es.nextElement().toString() + "\n";
+			result += es.nextElement().toString(prefix + "  ") + "\n";
 		return result;
 	}
 
 	public void setKey(String kv) {
 		keyvalue = kv;
 		
+	}
+	
+	public String toString(){
+		return "list " + definition.getBody();
 	}
 
 }
