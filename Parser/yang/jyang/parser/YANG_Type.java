@@ -1462,11 +1462,13 @@ public class YANG_Type extends SimpleNode {
 			if (!inside)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ": " + value + " has not correct length");
+
 			if (patterns != null)
 				while (patterns.hasMoreElements()) {
 					YANG_Pattern pattern = patterns.nextElement();
 					pattern.checkExp(value);
 				}
+
 
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
 				.getBuiltInType(this)) == 0) {
