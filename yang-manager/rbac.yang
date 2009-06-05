@@ -39,7 +39,7 @@ submodule rbac {
  		leaf firstname { type name;}
  		leaf lastname { type name;}
  		leaf room {type user_room;}
- 		leaf publickey {type public_key;} 
+ 		leaf public-key {type public_key;} 
  	}
  	
 grouping rbac {

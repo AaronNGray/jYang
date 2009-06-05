@@ -9,6 +9,7 @@ import jyang.parser.YANG_List;
 public class ListNode extends DataTree {
 
 	private String keyvalue;
+	private int keyleaflist = 0;
 	
 	public ListNode(YANG_List d) {
 		definition = d;
@@ -21,6 +22,10 @@ public class ListNode extends DataTree {
 	public void setEntry(Vector<DataNode> e) {
 		for (Enumeration<DataNode> en = e.elements(); en.hasMoreElements();){
 			DataNode n = en.nextElement();
+			if (n instanceof LeafListNode) {
+				nodes.put(n.getName() + ":" + keyleaflist, n);
+				keyleaflist++;
+			} else
 			nodes.put(n.getName(), n);
 		}
 	}

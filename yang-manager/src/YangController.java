@@ -96,7 +96,6 @@ public class YangController {
 			 * First check if each node in the response has a yang definition
 			 */
 			NodeList nl = node.getChildNodes();
-			boolean found = false;
 			for (int i = 0; i < nl.getLength(); i++) {
 				Node n = nl.item(i);
 				if (n instanceof Element) {
@@ -160,51 +159,61 @@ public class YangController {
 					.getDataDefs().elements()); edn.hasMoreElements();) {
 				lentry.add(edn.nextElement());
 			}
+			for (Enumeration<DataNode> edn = lookForChoiceNode(nl, ylist
+					.getDataDefs().elements(), tn); edn.hasMoreElements();) {
+				lentry.add(edn.nextElement());
+			}
 			ln.setEntry(lentry);
 			return ln;
 		} else if (b instanceof YANG_LeafList) {
 			System.out.println("LeafList " + b.getBody());
+			System.out.println(node.getTextContent());
 			YANG_LeafList yll = (YANG_LeafList) b;
 			LeafListNode lln = new LeafListNode(yll);
-			NodeList nl = node.getChildNodes();
-			for (int i = 0; i < nl.getLength(); i++) {
-				Node n = nl.item(i);
-				if (n instanceof Element) {
-					for (Enumeration<YangTreeNode> eytn = tn.getChilds()
-							.elements(); eytn.hasMoreElements();) {
+			lln.setValue(node.getTextContent());
 
-						YangTreeNode ytn = eytn.nextElement();
-						YANG_Body b2 = ytn.getNode();
-						if (b2.getBody().equals(n.getNodeName())) {
-							lln.addLeaf((LeafNode) walk(n, ytn));
-						}
-					}
-				}
-			}
 			return lln;
 
-		} else if (b instanceof YANG_Choice) {
-			YANG_Choice ychoice = (YANG_Choice) b;
-			boolean foundcase = false;
-			YANG_Case ycase = null;
-			for (Enumeration<YANG_Case> ec = ychoice.getCases().elements(); ec
-					.hasMoreElements()
-					&& !foundcase;) {
-				ycase = ec.nextElement();
-				for (Enumeration<YANG_CaseDef> ecdef = ycase.getCaseDefs()
-						.elements(); ecdef.hasMoreElements() && !foundcase;) {
-					YANG_CaseDef cdef = ecdef.nextElement();
-					if (cdef.getBody().equals(node.getNodeName()))
-						foundcase = true;
-				}
-			}
-			if (foundcase)
-				for (Enumeration<YANG_CaseDef> ecdef = ycase.getCaseDefs()
-						.elements(); ecdef.hasMoreElements();)
-					;
 		}
 
 		return null;
+	}
+
+	private Enumeration<DataNode> lookForChoiceNode(NodeList nl,
+			Enumeration<YANG_DataDef> eddef, YangTreeNode tn) {
+
+		Vector<DataNode> result = new Vector<DataNode>();
+
+		while (eddef.hasMoreElements()) {
+
+			YANG_DataDef ddef = eddef.nextElement();
+			if (ddef instanceof YANG_Choice) {
+				YANG_Choice choice = (YANG_Choice) ddef;
+				boolean foundcase = false;
+				for (Enumeration<YangTreeNode> eytn = tn.getChilds().elements(); eytn
+						.hasMoreElements();) {
+					YangTreeNode ytn = eytn.nextElement();
+					if (ytn.getNode().getBody().equals(choice.getBody()))
+						for (int i = 0; i < nl.getLength(); i++) {
+							Node n = nl.item(i);
+							if (n instanceof Element)
+								for (Enumeration<YangTreeNode> ceytn = ytn
+										.getChilds().elements(); ceytn
+										.hasMoreElements();) {
+									YangTreeNode cytn = ceytn.nextElement();
+									if (n.getNodeName().equals(
+											cytn.getNode().getBody())) {
+										result.add(walk(n, cytn));
+									}
+								}
+
+						}
+
+				}
+			}
+		}
+
+		return result.elements();
 	}
 
 	/**

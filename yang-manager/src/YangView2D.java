@@ -1,6 +1,7 @@
 import java.awt.Dimension;
 import java.util.Enumeration;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -15,6 +16,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
@@ -31,16 +33,33 @@ public class YangView2D extends JPanel implements TreeSelectionListener,
 	}
 
 	public JScrollPane createSceneGraph() {
-		
+
 		tree = new JTree(model);
 		tree.setAutoscrolls(true);
 		tree.addTreeSelectionListener(this);
 		tree.addTreeExpansionListener(this);
+		ImageIcon leafIcon = createImageIcon("images/leaf.png");
+		if (leafIcon != null) {
+		    DefaultTreeCellRenderer renderer = 
+			new DefaultTreeCellRenderer();
+		    renderer.setLeafIcon(leafIcon);
+		    tree.setCellRenderer(renderer);
+		}
 
 		tree.setEditable(true);
 		JScrollPane jsp = new JScrollPane(tree);
 		return jsp;
 	}
+	/** Returns an ImageIcon, or null if the path was invalid. */
+    protected static ImageIcon createImageIcon(String path) {
+        java.net.URL imgURL = YangView2D.class.getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
+    }
 
 	public void valueChanged(TreeSelectionEvent e) {
 		// TODO Auto-generated method stub
@@ -69,9 +88,7 @@ public class YangView2D extends JPanel implements TreeSelectionListener,
 			} else if (parent instanceof ListNode) {
 				ListNode ln = (ListNode) parent;
 				edn = ln.getNodes().elements();
-			} else if (parent instanceof LeafListNode) {
-				LeafListNode ll = (LeafListNode) parent;
-				edn = ll.getNodes().elements();
+
 			} else
 				return null;
 
@@ -89,9 +106,6 @@ public class YangView2D extends JPanel implements TreeSelectionListener,
 			} else if (parent instanceof ListNode) {
 				ListNode ln = (ListNode) parent;
 				return ln.getNodes().size();
-			} else if (parent instanceof LeafListNode) {
-				LeafListNode ll = (LeafListNode) parent;
-				return ll.getNodes().size();
 			} else
 				return 0;
 		}
@@ -107,7 +121,7 @@ public class YangView2D extends JPanel implements TreeSelectionListener,
 		}
 
 		public boolean isLeaf(Object node) {
-			return node instanceof LeafNode;
+			return node instanceof LeafNode || node instanceof LeafListNode;
 		}
 
 		public void removeTreeModelListener(TreeModelListener l) {

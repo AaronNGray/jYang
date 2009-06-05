@@ -7,25 +7,30 @@ import java.util.Vector;
 import jyang.parser.YANG_Container;
 
 public class ContainerNode extends DataTree {
-	
-	
-	public ContainerNode(YANG_Container c){
+
+	private int keyleaflist = 0;
+
+	public ContainerNode(YANG_Container c) {
 		definition = c;
 	}
-	
-	public void addContent(DataNode d){
-		nodes.put(d.getName(), d);
+
+	public void addContent(DataNode d) {
+		if (d instanceof LeafListNode) {
+			nodes.put(d.getName() + ":" + keyleaflist, d);
+			keyleaflist++;
+		} else
+			nodes.put(d.getName(), d);
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return "container " + definition.getBody();
 	}
-	
-	public String toString(String prefix){
+
+	public String toString(String prefix) {
 		String result = prefix + "container " + definition.getBody() + "\n";
-		for(Enumeration<DataNode> es = nodes.elements(); es.hasMoreElements();)
+		for (Enumeration<DataNode> es = nodes.elements(); es.hasMoreElements();)
 			result += es.nextElement().toString(prefix + " ") + " | ";
 		return result;
 	}
-	
+
 }

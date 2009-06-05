@@ -7,30 +7,32 @@ import java.util.Vector;
 
 import jyang.parser.YANG_LeafList;
 
-public class LeafListNode extends DataTree {
+public class LeafListNode extends DataNode {
 	
-	private int localkey = 0;
+	private String 		value;
 	
+	public String getValue() {
+		return value;
+	}
+
+
 	public LeafListNode(YANG_LeafList d){
 		definition = d;
 	}
 	
-	public void addLeaf(LeafNode l){
-		nodes.put(localkey + ":" + l.getName(), l);
-		localkey++;
-	}
-
-	
 	
 	public String toString(String prefix) {
 		String result = prefix + "leaf-list " + definition.getBody() + "\n";
-		for(Enumeration<DataNode> es = nodes.elements(); es.hasMoreElements();)
-			result += es.nextElement().toString(prefix + " ") + " | ";
+		
 		return result;
 		
 	}
 	
 	public String toString(){
-		return "leaf-list " + definition.getBody();
+		return "leaf-list " + definition.getBody() + " " + value;
+	}
+
+	public void setValue(String v) {
+		value = v;
 	}
 }
