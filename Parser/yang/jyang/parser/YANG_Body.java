@@ -232,15 +232,21 @@ public abstract class YANG_Body extends SimpleNode {
 			YANG_Choice choice = (YANG_Choice) this;
 			for (Enumeration<YANG_Case> ec = choice.getCases().elements(); ec
 					.hasMoreElements();) {
-				YANG_DataDef ddef = (YANG_DataDef) ec.nextElement();
-				datadefs.add(ddef);
+				//datadefs.add(ec.nextElement());
+				
+				for (Enumeration<YANG_CaseDef> ecdefs = (ec.nextElement())
+						.getCaseDefs().elements(); ecdefs.hasMoreElements();) {
+					YANG_DataDef ddef = (YANG_DataDef) ecdefs.nextElement();
+					datadefs.add(ddef);
+				}
+				
 			}
 			for (Enumeration<YANG_ShortCase> es = choice.getShortCases()
 					.elements(); es.hasMoreElements();) {
 				YANG_DataDef ddef = (YANG_DataDef) es.nextElement();
 				datadefs.add(ddef);
 			}
-		} else if (this instanceof YANG_Case) {
+		} /*else if (this instanceof YANG_Case) {
 			YANG_Case ycase = (YANG_Case) this;
 			Vector<YANG_CaseDef> vcases = ycase.getCaseDefs();
 			for (Enumeration<YANG_CaseDef> ecd = vcases.elements(); ecd
@@ -249,7 +255,7 @@ public abstract class YANG_Body extends SimpleNode {
 				YANG_DataDef ddef = (YANG_DataDef) cdef;
 				datadefs.add(ddef);
 			}
-		} else if (this instanceof YANG_Uses) {
+		}*/ else if (this instanceof YANG_Uses) {
 			YANG_Uses uses = (YANG_Uses) this;
 			YANG_Grouping g = uses.getGrouping();
 			for (Enumeration<YANG_DataDef> eddef = g.getDataDefs().elements(); eddef
