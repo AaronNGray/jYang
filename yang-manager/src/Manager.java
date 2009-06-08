@@ -96,7 +96,9 @@ public class Manager extends Applet implements MouseListener, MouseMotionListene
 		}
 		setView(2, "response");
 		
-		add(view2D.createSceneGraph());
+		//add(view2D.createSceneGraph());
+		JPanel jp = view2D.createManagerInterface();
+		add(jp);
 	
 		showStatus("YANG Manager");
 		setVisible(true);
@@ -108,10 +110,16 @@ public class Manager extends Applet implements MouseListener, MouseMotionListene
 		try {
 			Document doc = DocumentBuilderFactory.newInstance()
 					.newDocumentBuilder().parse(new FileInputStream(resp));
-			if (d == 3)
+			if (d == 3){
 				view3D = controller.createView3D(doc, specs);
-			else
+				//view3D.setController(controller);
+			}
+			else {
 				view2D = controller.createView2D(doc, specs);
+				view2D.setController(controller);
+			}
+			
+			
 
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
@@ -127,7 +135,6 @@ public class Manager extends Applet implements MouseListener, MouseMotionListene
 	}
 
 	public void init() {
-		System.out.println("fini");
 		String dim = getParameter("dimensions");
 		if (dim != null)
 			if (dim.equals("2"))

@@ -1,7 +1,10 @@
-import java.awt.Dimension;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Enumeration;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -19,17 +22,46 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import datatree.*;
 
 public class YangView2D extends JPanel implements TreeSelectionListener,
-		TreeExpansionListener {
+		TreeExpansionListener, ActionListener {
 
 	private JTree tree;
 	private YangJavaTreeModel model;
+	private YangController controller;
 
 	public YangView2D(DataNode m) {
 		model = new YangJavaTreeModel(m);
+	}
+
+	public JPanel createManagerInterface() {
+		JPanel jp = new JPanel();
+		jp.setLayout(new BorderLayout());
+		jp.add("Center", createSceneGraph());
+		Container c = new Container();
+		c.setLayout(new GridLayout());
+		JButton get = new JButton("Get-Config");
+		get.setActionCommand("get-config");
+		c.add(get);
+		JButton edit = new JButton("Edit-Config");
+		edit.setActionCommand("edit-config");
+		c.add(edit);
+
+		get.addActionListener(this);
+		edit.addActionListener(this);
+
+		jp.add("South", c);
+		return jp;
 	}
 
 	public JScrollPane createSceneGraph() {
@@ -40,31 +72,69 @@ public class YangView2D extends JPanel implements TreeSelectionListener,
 		tree.addTreeExpansionListener(this);
 		ImageIcon leafIcon = createImageIcon("images/leaf.png");
 		if (leafIcon != null) {
-		    DefaultTreeCellRenderer renderer = 
-			new DefaultTreeCellRenderer();
-		    renderer.setLeafIcon(leafIcon);
-		    tree.setCellRenderer(renderer);
+			ImageIcon dirCloseIcon = createImageIcon("images/close.gif");
+			if (dirCloseIcon != null) {
+				ImageIcon dirOpenIcon = createImageIcon("images/open.gif");
+				if (dirOpenIcon != null) {
+					DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+					renderer.setLeafIcon(leafIcon);
+					renderer.setOpenIcon(dirOpenIcon);
+					renderer.setClosedIcon(dirCloseIcon);
+					tree.setCellRenderer(renderer);
+				}
+
+			}
 		}
 
 		tree.setEditable(true);
 		JScrollPane jsp = new JScrollPane(tree);
 		return jsp;
 	}
+
 	/** Returns an ImageIcon, or null if the path was invalid. */
-    protected static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = YangView2D.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
-    }
+	protected static ImageIcon createImageIcon(String path) {
+		java.net.URL imgURL = YangView2D.class.getResource(path);
+		if (imgURL != null) {
+			return new ImageIcon(imgURL);
+		} else {
+			System.err.println("Couldn't find file: " + path);
+			return null;
+		}
+	}
+
+	TreePath tp = null;
 
 	public void valueChanged(TreeSelectionEvent e) {
-		// TODO Auto-generated method stub
-		System.out.println(e.getPath());
+		tp = e.getPath();
+		System.out.println(tp);
 
+	}
+
+	public void treeCollapsed(TreeExpansionEvent event) {
+	}
+
+	public void treeExpanded(TreeExpansionEvent event) {
+	}
+
+	public void setController(YangController controller) {
+
+		this.controller = controller;
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		String com = e.getActionCommand();
+		if (com.equals("get-config")) {
+			if (tp != null) {
+
+				Object[] ps = tp.getPath();
+
+				controller.request(ps);
+
+			} else if (com.equals("edit-config")) {
+
+			}
+
+		}
 	}
 
 	private class YangJavaTreeModel implements TreeModel {
@@ -116,7 +186,6 @@ public class YangView2D extends JPanel implements TreeSelectionListener,
 		}
 
 		public Object getRoot() {
-			// TODO Auto-generated method stub
 			return model;
 		}
 
@@ -133,17 +202,6 @@ public class YangView2D extends JPanel implements TreeSelectionListener,
 			// TODO Auto-generated method stub
 
 		}
-
-	}
-
-	public void treeCollapsed(TreeExpansionEvent event) {
-		// TODO Auto-generated method stub
-		System.out.println("collapsed " + event.getPath());
-	}
-
-	public void treeExpanded(TreeExpansionEvent event) {
-		// TODO Auto-generated method stub
-		System.out.println("expanded");
 
 	}
 

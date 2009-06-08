@@ -7,6 +7,12 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import jyang.parser.*;
 
 public class YangController {
@@ -276,6 +282,62 @@ public class YangController {
 			}
 		}
 		return result.elements();
+	}
+
+	public void request(Object[] paths) {
+
+		XMLStreamWriter xsw;
+		try {
+			xsw = XMLOutputFactory.newInstance().createXMLStreamWriter(
+					System.out);
+
+			int nbCont = 0;
+			int nbList = 0;
+			int nbLeafList = 0;
+			int nbLeaf = 0;
+			
+			xsw.writeStartDocument();
+			xsw.writeCharacters("\n");
+			for (int i = 0; i < paths.length; i++) {
+				Object n = paths[i];
+				if (n instanceof ContainerNode) {
+					nbCont++;
+					ContainerNode cn = (ContainerNode) n;
+					xsw.writeStartElement(cn.getName());
+					xsw.writeCharacters("\n");
+				} else if (n instanceof ListNode){
+					nbList++;
+					ListNode ln = (ListNode)n;
+					xsw.writeStartElement(ln.getName());
+					xsw.writeCharacters("\n");
+				} else if (n instanceof LeafListNode) {
+					nbLeafList++;
+					LeafListNode lln = (LeafListNode)n;
+					xsw.writeStartElement(lln.getName());
+					xsw.writeCharacters("\n");
+				} else if (n instanceof LeafNode) {
+					LeafNode lf = (LeafNode) n;
+					nbLeaf++;
+					xsw.writeStartElement(lf.getName());
+					xsw.writeCharacters("\n");
+				}
+			}
+			for (int f = 0; f < nbCont + nbList + nbLeafList + nbLeaf; f++){
+				xsw.writeEndElement();
+				xsw.writeCharacters("\n");
+			}
+			xsw.flush();
+		} catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FactoryConfigurationError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void oneLevel(XMLStreamWriter xsw){
+		
 	}
 
 }
