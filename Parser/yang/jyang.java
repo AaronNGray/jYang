@@ -23,6 +23,7 @@ import java.io.*;
 import jyang.parser.ParseException;
 import jyang.parser.YANG_Specification;
 import jyang.parser.yang;
+import jyang.tools.Yang2Applet;
 import jyang.tools.Yang2Ensuite;
 import jyang.tools.Yang2Yin;
 
@@ -202,6 +203,7 @@ public class jyang {
 		}
 
 		// Parse yang specs
+		
 		boolean reinit = false;
 		for (Enumeration<InputStream> ei = specs.elements(); ei
 				.hasMoreElements();) {
@@ -221,11 +223,12 @@ public class jyang {
 					if (format != null) {
 						if (format.compareTo("yin") == 0) {
 							new Yang2Yin(yangspec, paths, out);
-						} else if (format.compareTo("ensuite") == 0) {
+						} /*else if (format.compareTo("ensuite") == 0) {
 							new Yang2Ensuite(yangspec, paths, out);
-						} else
+						}  */ 
+						else
 							System.err
-									.println("only yin, ensuite or dsdl formats enabled (now)");
+									.println("only yin (incomplete),  dsdl format will be possible");
 					}
 				}
 
@@ -233,7 +236,10 @@ public class jyang {
 				System.err.println(pe.getMessage());
 				System.exit(-1);
 			}
-		}
+		}/*
+		if (format.compareTo("applet") == 0) {
+			new Yang2Applet(yangsSpecs, paths, out);
+		}*/
 	}
 
 	public Hashtable<String, YANG_Specification> getYangsSpecs() {
