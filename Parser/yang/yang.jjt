@@ -978,7 +978,7 @@ YANG_Unknown un = null;
 		{
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
-			jjtThis.setIdentitiy(i);
+			jjtThis.setIdentity(i);
 		}
 		( 
 			";"
