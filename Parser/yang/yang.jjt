@@ -523,7 +523,7 @@ YANG_CaseDef d = null;}
         d = usesstmt() 
 	)
 		{
-		return d;
+			return d;
 		}
 }
 
