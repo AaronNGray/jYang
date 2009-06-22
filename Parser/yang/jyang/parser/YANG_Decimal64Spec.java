@@ -5,8 +5,17 @@ package jyang.parser;
 public class YANG_Decimal64Spec extends SimpleNode {
 	
 	private String fractionDigit = null;
+	private YANG_Range range = null;
 	
-  public String getFractionDigit() {
+  public YANG_Range getRange() {
+		return range;
+	}
+
+	public void setRange(YANG_Range range) {
+		this.range = range;
+	}
+
+public String getFractionDigit() {
 		return fractionDigit;
 	}
 

@@ -261,13 +261,15 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 		if (dd.getBody().compareTo(k) == 0)
 			return true;
 		if (dd instanceof YANG_Uses) {
-			YANG_Uses uses = (YANG_Uses) dd;
+			YANG_Uses uses = (YANG_Uses) dd;			
 			YANG_Grouping grouping = context.getUsedGrouping(uses);
 			for (Enumeration<YANG_DataDef> edd = grouping.getDataDefs()
 					.elements(); edd.hasMoreElements();) {
 				YANG_DataDef gdd = edd.nextElement();
-					return findKey(context, k, gdd);
+				if (findKey(context, k, gdd))
+					return true;
 			}
+			return false;
 		}
 		if (dd instanceof YANG_Choice) {
 			YANG_Choice c = (YANG_Choice) dd;
@@ -278,9 +280,11 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 						.elements(); ecdef.hasMoreElements();) {
 					YANG_CaseDef cdef = ecdef.nextElement();
 					if (cdef instanceof YANG_DataDef)
-						return findKey(context, k, (YANG_DataDef)cdef);
+						if(findKey(context, k, (YANG_DataDef)cdef))
+							return true;
 				}
 			}
+			return false;
 		}
 		return false;
 	}

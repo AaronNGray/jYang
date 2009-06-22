@@ -96,9 +96,8 @@ public class YangTreeNode {
 				startnode = root;
 		}
 
-		boolean goodpath = true;
-		for (int i = starting; i < nids.length && goodpath; i++) {
-			boolean foundchild = false;
+		boolean foundchild = false;
+		for (int i = starting; i < nids.length && !foundchild; i++) {
 			YangTreeNode child = null;
 			for (Enumeration<YangTreeNode> et = startnode.getChilds()
 					.elements(); et.hasMoreElements() && !foundchild;) {
@@ -111,12 +110,12 @@ public class YangTreeNode {
 				}
 
 			}
+			
 			if (foundchild) {
 				startnode = child;
-			} else
-				goodpath = false;
+			} 
 		}
-		if (goodpath)
+		if (foundchild)
 			return startnode.getNode();
 		else
 			return null;

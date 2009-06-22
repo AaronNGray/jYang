@@ -48,7 +48,7 @@ module test {
     container test1 {
       leaf a { 
          type string {
-           length 1..max;
+           length "1..max";
          }
          default "1";
       }
@@ -72,7 +72,7 @@ module test {
           // min-elements 2;
           max-elements 5;
           type string {
-            pattern [a-e][1-9]+;
+            pattern "[a-e][1-9]+";
           }
         }
         leaf eee { 
@@ -114,7 +114,7 @@ module test {
       }
       leaf a2 { 
         type string {
-          length 1..5 {
+          length "1..5" {
             // error-app-tag some-new-tag;
             error-message 'some new message';
           }

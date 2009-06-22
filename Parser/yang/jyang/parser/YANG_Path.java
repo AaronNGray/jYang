@@ -33,7 +33,8 @@ public class YANG_Path extends SimpleNode  {
 		super(id);
 		try {
 			path_arg = Pattern
-					.compile("((/([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*([s*([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*s*=s*([$]this/(../)+(([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*/)*([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*)s*])*)+|(../)*([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*([s*([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*s*=s*([$]this/(../)+(([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*/)*([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*)s*])?(/([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*([s*([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*s*=s*([$]this/(../)+(([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*/)*([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*)s*])*)+)");
+					.compile("((/([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*([s*([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*s*=s*([$]this/(../)+(([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*/)*([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*)s*])*)+|(../)*([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*([s*([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*s*=s*([$]this/(../)+(([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*/)*([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*)s*])?(/([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*([s*([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*s*=s*([$]this/(../)+(([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*/)*([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*)s*])*)+)");
+			          //        ((/([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*([s*([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*s*=s*([$]this/(../)+(([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*/)*([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*)s*])*)+|(../)*([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*([s*([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*s*=s*([$]this/(../)+(([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*/)*([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*)s*])?(/([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*([s*([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*s*=s*([$]this/(../)+(([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*/)*([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*)s*])*)+)
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -46,11 +47,11 @@ public class YANG_Path extends SimpleNode  {
 	public void setPath(String p) throws YangParserException {
 		String pa = YangBuiltInTypes.removeQuotesAndTrim(p);
 		Matcher m = path_arg.matcher(pa);
-		if (m.matches())
+		//if (m.matches())
 			path = pa;
-		else
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":incorrect path-arg expression " + p);
+		//else
+		//	throw new YangParserException("@" + getLine() + "." + getCol()
+		//			+ ":incorrect path-arg expression " + p);
 	}
 
 	public String getPath() {

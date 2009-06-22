@@ -56,6 +56,7 @@ TOKEN :
 <STRING: "\"" (~["\""])* "\""  | "\'" (~["\'"])* "\'">
 }
 
+
 TOKEN :
 {
 <FLOAT :
@@ -108,7 +109,7 @@ TOKEN : /* KEYWORDS */
 |
 <featurekeyword        : "feature">
 |
-<fractiondigitkeyword : "fraction-digit">
+<fractiondigitskeyword : "fraction-digits">
 |
 <groupingkeyword       : "grouping">
 |
@@ -242,7 +243,12 @@ TOKEN : /* IDENTIFIERS */
 |
  < #DIGIT: ["0"-"9"]>
 }
-
+TOKEN: /* string without quote and without space */
+{
+	<ONEWORD: <FIRST> (<FIRST>)+>
+	|
+	<#FIRST: ["_","a"-"z","A"-"Z", "[", "]", ".", "-", "=","?", "+"]>
+}
 
 
 
@@ -1310,15 +1316,24 @@ Token rt;
 
 YANG_Decimal64Spec decimal64specification()      #Decimal64Spec:
 {
-	Token f;
+	Token f,r;
 	String s =  null;
+	YANG_Range rg = null;
 }
 {
-	f = <fractiondigitkeyword> s = fractiondigitstmt()
+	f = <fractiondigitskeyword> s = fractiondigitstmt()
 	{
 		jjtThis.setFractionDigit(s);
 		jjtThis.setLine(f.beginLine);
 		jjtThis.setCol(f.beginColumn);
+	}
+	[
+	  rg = rangestmt()
+	  	{
+	  		jjtThis.setRange(rg);
+	  	}
+	]
+	{
 		return jjtThis;
 	}
 }
@@ -1328,7 +1343,7 @@ String fractiondigitstmt()        :
 Token t;
 }
 {
-	t = <DECVALUE>
+	t = <DECVALUE> ";"
 	{
 		return t.image;
 	}
@@ -1451,7 +1466,7 @@ YANG_Unknown un = null;
 Token pt;
 }
 {
-	pt = <patternkeyword>  p = string() 
+	pt = <patternkeyword> p = string() 
 		{
 		jjtThis.setLine(pt.beginLine);
 		jjtThis.setCol(pt.beginColumn);
@@ -1598,11 +1613,14 @@ YANG_Path pathstmt()   #Path           :
 {
 String p = null;
 YANG_Unknown un = null;
+Token t;
 }
 {
-	<pathkeyword>  p = pathargstr()
+	t = <pathkeyword>  p = pathargstr()
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
 		jjtThis.setPath(p);
 		return jjtThis;
 		}
@@ -1611,13 +1629,15 @@ YANG_Unknown un = null;
 String requireinstancestmt()		:
 {
 Token t;
+YANG_Unknown un = null;
 }
 {	
+		<requireinstancekeyword> 
 	(
 	t = <truekeyword>
 	|
 	t = <falsekeyword>
-	)
+	) ";"
 	{ 
 		return t.image;
 	}
@@ -4135,13 +4155,13 @@ String r = null;
 
 String lengthexprstr()        : 
 {
-String l = null;
+String l = null;Token t;
 }
 {
 	//	< a string which matches the rule
         //         lengthexpr >
 	( 
-	l = string()
+	l = string()| t = <ONEWORD> {l = t.image;}
 	)
 		{
 		return l;
@@ -4569,7 +4589,7 @@ t = <deviatekeyword>
 |
 t = <featurekeyword>
 |
-t = <fractiondigitkeyword>
+t = <fractiondigitskeyword>
 |
 t = <groupingkeyword>
 |
@@ -4743,11 +4763,11 @@ String k = "",s = null,a = null;}
 		}
 	)*
  
-
 		{
 			 return s;
 		}
 	)
+	
 	|
 	s = anykeyword()
 		{
@@ -4773,6 +4793,7 @@ String k = "",s = null,a = null;}
 		{
 			return t.image;
 		}
+	
 
 }
 
