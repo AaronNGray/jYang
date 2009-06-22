@@ -22,25 +22,30 @@ import java.math.*;
 
 public class YangBuiltInTypes {
 
+	public static final String binary = "binary";
+	public static final String bits = "bits";
+	public static final String yboolean = "boolean";
+	public static final String decimal64 = "decimal64";
+	public static final String empty = "empty";
+	public static final String enumeration = "enumeration";
+	public static final String identityref = "identityref";
+	public static final String instanceidentifier = "instance-identifier";
 	public static final String int8 = "int8";
 	public static final String int16 = "int16";
 	public static final String int32 = "int32";
 	public static final String int64 = "int64";
+	public static final String leafref = "leafref";
+	public static final String string = "string";
 	public static final String uint8 = "uint8";
 	public static final String uint16 = "uint16";
 	public static final String uint32 = "uint32";
 	public static final String uint64 = "uint64";
-	public static final String float32 = "float32";
-	public static final String float64 = "float64";
-	public static final String string = "string";
-	public static final String yboolean = "boolean";
-	public static final String enumeration = "enumeration";
-	public static final String bits = "bits";
-	public static final String binary = "binary";
-	public static final String keyref = "keyref";
-	public static final String empty = "empty";
 	public static final String union = "union";
-	public static final String instanceidentifier = "instance-identifier";
+	
+	// Removed build-in type
+	//public static final String float32 = "float32";
+	//public static final String float64 = "float64";
+	//public static final String keyref = "keyref";
 
 	public static final int int8lb = -128;
 	public static final int int8ub = 127;
@@ -92,7 +97,8 @@ public class YangBuiltInTypes {
 	public static boolean isFloat(String t) {
 		if (t == null)
 			return false;
-		if (t.compareTo(float32) == 0 || t.compareTo(float64) == 0)
+		//if (t.compareTo(float32) == 0 || t.compareTo(float64) == 0)
+		if (t.compareTo(decimal64) == 0)
 			return true;
 		else
 			return false;
@@ -105,12 +111,15 @@ public class YangBuiltInTypes {
 				|| t.compareTo(int32) == 0 || t.compareTo(int64) == 0
 				|| t.compareTo(uint8) == 0 || t.compareTo(uint16) == 0
 				|| t.compareTo(uint32) == 0 || t.compareTo(uint64) == 0
-				|| t.compareTo(float32) == 0 || t.compareTo(float64) == 0
+				//|| t.compareTo(float32) == 0 || t.compareTo(float64) == 0
 				|| t.compareTo(string) == 0 || t.compareTo(yboolean) == 0
 				|| t.compareTo(enumeration) == 0 || t.compareTo(bits) == 0
-				|| t.compareTo(binary) == 0 || t.compareTo(keyref) == 0
+				|| t.compareTo(binary) == 0 
+				//|| t.compareTo(keyref) == 0
 				|| t.compareTo(empty) == 0 || t.compareTo(union) == 0
-				|| t.compareTo(instanceidentifier) == 0)
+				|| t.compareTo(decimal64) == 0 || t.compareTo(identityref) == 0
+				|| t.compareTo(instanceidentifier) == 0
+				|| t.compareTo(leafref) == 0)
 			return true;
 		else
 			return false;

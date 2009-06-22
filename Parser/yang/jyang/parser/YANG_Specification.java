@@ -191,7 +191,7 @@ public abstract class YANG_Specification extends SimpleNode {
 				YangContext clc = c.clone();
 				try {
 					YangContext importedcontexts = module.buildSpecContext(
-							paths, null, builded);
+							paths, null, cks);
 					c.merge(importedcontexts);
 				} catch (YangParserException ye) {
 					throw new YangParserException(getName()

@@ -213,7 +213,7 @@ public class YANG_Type extends SimpleNode {
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":union type must have at least one type");
 
-		if (YangBuiltInTypes.keyref.compareTo(getType()) == 0)
+		if (YangBuiltInTypes.leafref.compareTo(getType()) == 0)
 			if (getLeafRef() == null)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":keyref type must have at one path");
@@ -390,7 +390,7 @@ public class YANG_Type extends SimpleNode {
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":binary type can not have numeric restriction");
 			checkStringLength(context);
-		} else if (YangBuiltInTypes.keyref.compareTo(context
+		} else if (YangBuiltInTypes.leafref.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
 				throw new YangParserException("@" + getLine() + "." + getCol()
@@ -899,10 +899,10 @@ public class YANG_Type extends SimpleNode {
 			else if (YangBuiltInTypes.binary.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return "0";
-			else if (YangBuiltInTypes.float32.compareTo(context
-					.getBuiltInType(this)) == 0)
-				return ("-INF");
-			else if (YangBuiltInTypes.float64.compareTo(context
+			//else if (YangBuiltInTypes.float32.compareTo(context
+			//		.getBuiltInType(this)) == 0)
+			//	return ("-INF");
+			else if (YangBuiltInTypes.decimal64.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return ("-INF");
 			else
@@ -938,10 +938,10 @@ public class YANG_Type extends SimpleNode {
 			else if (YangBuiltInTypes.binary.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return YangBuiltInTypes.uint64ub.toString();
-			else if (YangBuiltInTypes.float32.compareTo(context
-					.getBuiltInType(this)) == 0)
-				return ("INF");
-			else if (YangBuiltInTypes.float64.compareTo(context
+			//else if (YangBuiltInTypes.float32.compareTo(context
+			//		.getBuiltInType(this)) == 0)
+			//	return ("INF");
+			else if (YangBuiltInTypes.decimal64.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return ("INF");
 			else
@@ -1143,10 +1143,10 @@ public class YANG_Type extends SimpleNode {
 		} else if (YangBuiltInTypes.uint64.compareTo(getType()) == 0) {
 			birange[0][0] = YangBuiltInTypes.uint64lb.toString();
 			birange[0][1] = YangBuiltInTypes.uint64ub.toString();
-		} else if (YangBuiltInTypes.float32.compareTo(getType()) == 0) {
-			birange[0][0] = "-INF";
-			birange[0][1] = "INF";
-		} else if (YangBuiltInTypes.float64.compareTo(getType()) == 0) {
+		//} else if (YangBuiltInTypes.float32.compareTo(getType()) == 0) {
+		//	birange[0][0] = "-INF";
+		//	birange[0][1] = "INF";
+		} else if (YangBuiltInTypes.decimal64.compareTo(getType()) == 0) {
 			birange[0][0] = "-INF";
 			birange[0][1] = "INF";
 		} else if (YangBuiltInTypes.string.compareTo(getType()) == 0) {

@@ -976,7 +976,9 @@ YANG_Unknown un = null;
 {
 	t = <identitykeyword> i = identifierstr()	
 		{
-			
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
+			jjtThis.setIdentitiy(i);
 		}
 		( 
 			";"
@@ -1006,6 +1008,9 @@ YANG_Unknown un = null;
 			)*
 			"}"
 			)
+			{
+				return jjtThis;
+			}
 }
 
 YANG_Base basestmt()	#Base :
@@ -1020,6 +1025,7 @@ YANG_Base basestmt()	#Base :
 		jjtThis.setBase(i);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
+		return jjtThis;
 		}
 }
 
@@ -1067,6 +1073,9 @@ YANG_Feature featurestmt()	#Feature	:
 		)*
 		"}"
 	)
+	{
+		return jjtThis;
+	}
 }	
 
 YANG_IfFeature iffeaturestmt() #IfFeature	:
@@ -1081,6 +1090,7 @@ YANG_IfFeature iffeaturestmt() #IfFeature	:
 			jjtThis.setIfFeature(i);
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
+			return jjtThis;
 		}
 }
 			

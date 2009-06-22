@@ -25,11 +25,15 @@ public class YANG_Pattern extends SimpleNode {
 	}
 
 	public void setPattern(String p) throws YangParserException {
+		
 		pattern = p;
+		String canopattern = pattern.replaceAll("IsBasicLatin",
+		"InBasicLatin");
+		pattern = canopattern;
 		try {
-			regexp = Pattern.compile(YangBuiltInTypes.removeQuotesAndTrim(p));
+			regexp = Pattern.compile(YangBuiltInTypes.removeQuotesAndTrim(pattern));
 		} catch (PatternSyntaxException pse) {
-			throw new YangParserException("Incorrect regular expression");
+			throw new YangParserException("@" + getLine() + "." + getCol() + "Incorrect regular expression");
 		}
 	}
 
