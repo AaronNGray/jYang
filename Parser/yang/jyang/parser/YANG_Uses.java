@@ -89,7 +89,8 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 		} else {
 			setGrouping(context.getUsedGrouping(this));
 			String gping = getGrouping().getGrouping();
-
+			
+			
 			if (YangBuiltInTypes.isBuiltIn(gping)) {
 				System.err.println(context.getSpec().getName() + "@"
 						+ getLine() + "." + getCol()

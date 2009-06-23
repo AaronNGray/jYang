@@ -88,6 +88,7 @@ public abstract class YANG_Body extends SimpleNode {
 			 * of this uses has already expanded the used grouping and check if
 			 * no overlapping exists
 			 */
+			
 		} else if (this instanceof YANG_Augment) {
 			YANG_Augment augment = (YANG_Augment) this;
 			datadefs = augment.getDataDefs();
@@ -173,7 +174,6 @@ public abstract class YANG_Body extends SimpleNode {
 							.elements(); ued.hasMoreElements();) {
 						YANG_DataDef ddef = ued.nextElement();
 						lcontext.addNode(ddef);
-
 					}
 				} catch (YangParserException e) {
 					System.err

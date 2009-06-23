@@ -247,7 +247,17 @@ TOKEN: /* string without quote and without space */
 {
 	<ONEWORD: <FIRST> (<FIRST>)+>
 	|
-	<#FIRST: ["_","a"-"z","A"-"Z", "[", "]", ".", "-", "=","?", "+"]>
+	<#FIRST: ["/", "\\", "(", ")","~","0"-"9","_","a"-"z","A"-"Z", "[", "]", ".", "-", "=","?", "+"]>
+	|
+	<ABSNODEID: "/" (<FIRST>)+>
+	|
+	<NAMESPACE: <FIRST> (<SEC>)+>
+	|
+	<#SEC:  ["/", "\\", "(", ")","~","0"-"9","_","a"-"z","A"-"Z", "[", "]", ".", "-", "=","?", "+",":"]>
+	|
+	<COL: ":">
+	|
+	<PREFIXEDID: <IDENTIFIER> <COL> <IDENTIFIER>>
 }
 
 
@@ -621,11 +631,11 @@ YANG_Unknown un = null;
 YANG_NameSpace namespacestmt()   #NameSpace      : 
 {
 String uri;
-Token t;
+Token t, tn;
 YANG_Unknown un = null;
 }
 {
-	t = <namespacekeyword>  uri = uristr()  
+	t = <namespacekeyword>  (uri = uristr() | tn = <NAMESPACE> { uri = tn.image;})  
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		
 		{
@@ -763,12 +773,21 @@ YANG_Unknown un = null;
 
 YANG_Units unitsstmt()      #Units       : 
 {
-Token t;
+Token t,ut;
 String u = null;
 YANG_Unknown un = null;
 }
 {
-	t = <unitskeyword>  u = string()  
+	t = <unitskeyword>  
+	
+	 ( u = string()
+	  |
+	   ut = <ONEWORD>
+	   	{
+	   		u = ut.image;
+	   	}
+	  )  
+	
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setUnits(u);
@@ -898,11 +917,14 @@ YANG_Argument argumentstmt()      #Argument    :
 YANG_Yin y = null;
 String i = null;
 YANG_Unknown un = null;
+Token t, a;
 }
 {
-	<argumentkeyword>  i = identifierstr() 
+	t = <argumentkeyword>   i = identifierstr()
 		{
-		jjtThis.setArgument(i);
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
+			jjtThis.setArgument(i);
 		}
         (
 	 ";" 
@@ -1187,7 +1209,7 @@ YANG_Unknown un = null;
 		";" 
 	|
 		(
-          "{"  (LOOKAHEAD(2) un = unknownstatement(){jjtThis.addUnknown(un);})*
+          "{"  (LOOKAHEAD(3) un = unknownstatement(){jjtThis.addUnknown(un);})*
          ( 
 	 		n = numericalrestrictions() 
 			{
@@ -1201,7 +1223,7 @@ YANG_Unknown un = null;
 	  	 |
            ( 
              (
-               LOOKAHEAD(2) e = enumspecification()
+               LOOKAHEAD(2) e = enumstmt()
 				{
 					jjtThis.addEnum(e);
 				}
@@ -1327,7 +1349,7 @@ YANG_Decimal64Spec decimal64specification()      #Decimal64Spec:
 		jjtThis.setLine(f.beginLine);
 		jjtThis.setCol(f.beginColumn);
 	}
-	[
+	[LOOKAHEAD(2)
 	  rg = rangestmt()
 	  	{
 	  		jjtThis.setRange(rg);
@@ -1463,13 +1485,21 @@ YANG_ErrorAppt eat = null;
 YANG_Description d = null;
 YANG_Reference r = null;
 YANG_Unknown un = null;
-Token pt;
+Token t, pt;
 }
 {
-	pt = <patternkeyword> p = string() 
+	t = <patternkeyword> 
+	(
+		p = string()
+	|
+		pt = <ONEWORD>
 		{
-		jjtThis.setLine(pt.beginLine);
-		jjtThis.setCol(pt.beginColumn);
+			p = pt.image;
+		}
+	) 
+		{
+		jjtThis.setLine(t.beginLine);
+		jjtThis.setCol(t.beginColumn);
 		jjtThis.setPattern(p);
 		}
         (
@@ -1508,12 +1538,20 @@ Token pt;
 
 YANG_Default defaultstmt()      #Default     : 
 {
-Token t;
+Token t, dt;
 String d = null;
 YANG_Unknown un = null;
 }
 {
-	t = <defaultkeyword>  d = string() 
+	t = <defaultkeyword>  
+	(
+		d = string()
+	|
+		dt = <ONEWORD>
+		{
+			d = dt.image;
+		}
+	) 
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setDefault(d);
@@ -1522,7 +1560,7 @@ YANG_Unknown un = null;
 		return jjtThis;
 		}
 }
-
+/*
 YANG_Enum enumspecification()     : 
 {
 YANG_Enum e = null;
@@ -1536,7 +1574,7 @@ YANG_Unknown un = null;
 		return e;
 		}
 }
-
+*/
 YANG_Enum enumstmt()       #Enum       : 
 {
 String e = null;
@@ -1545,11 +1583,14 @@ YANG_Status s = null;
 YANG_Description d = null;
 YANG_Reference r = null;
 YANG_Unknown un = null;
+Token t,te;
 }
 {
-	<enumkeyword>  e = identifierstr() 
+	t = <enumkeyword>  	 e = identifierstr() 
 		{
-		jjtThis.setEnum(e);
+			jjtThis.setLine(t.beginLine);
+			jjtThis.setCol(t.beginColumn);
+			jjtThis.setEnum(e);
 		}
         (
 	";" 
@@ -3492,7 +3533,7 @@ String s = null;
 
 YANG_Augment augmentstmt()         #Augment  : 
 {
-Token aug;
+Token aug, aa;
 String a = null;
 YANG_When w = null;
 YANG_IfFeature iff = null;
@@ -3506,7 +3547,7 @@ YANG_Output o = null;
 YANG_Unknown un = null;
 }
 {
-	aug = <augmentkeyword>  a = augmentargstr() 
+	aug = <augmentkeyword> ( a = augmentargstr() | aa = <ONEWORD> { a = aa.image;})
 		{
 		jjtThis.setLine(aug.beginLine);
 		jjtThis.setCol(aug.beginColumn);
@@ -3564,7 +3605,12 @@ String augmentargstr()	:
 	String a = null;
 }
 {
-	a = schemanodeid()
+	(LOOKAHEAD(2)
+	  a = string()
+	 |
+	  a = schemanodeid()
+	
+	)
 	{
 		return a;
 	}
@@ -3574,28 +3620,28 @@ String augmentargstr()	:
 
 YANG_Unknown unknownstatement()     #Unknown : 
 {
-String p = null;
 String kw = null;
 String str = null;
-Token i,j,l;
+Token i,j;
 YANG_Unknown unknown = null;
 }
 {
-	 p = prefix() l = ":" (
-				i = <IDENTIFIER>
+//	 p = prefix() l = ":" 
+	 		(
+				i = <PREFIXEDID>
 				{
 					jjtThis.setExtension(i.image);
 					jjtThis.setLine(i.beginLine);
 					jjtThis.setCol(i.beginColumn);
 				}
-				|
-				kw = anykeyword()
-				{
-					jjtThis.setExtension(kw);
-					jjtThis.setLine(l.beginLine);
-					jjtThis.setCol(l.beginColumn);
-				}
-			  ) 
+			//|
+			//	kw = anykeyword()
+			//	{
+			//		jjtThis.setExtension(kw);
+				//	jjtThis.setLine(l.beginLine);
+				//	jjtThis.setCol(l.beginColumn);
+			//	}
+		    ) 
 				[ 
 				str = string()
 				{
@@ -3614,7 +3660,7 @@ YANG_Unknown unknown = null;
 				"}"
 			  )
 				{
-					jjtThis.setPrefix(p);
+					
 					return jjtThis;
 				}
 }
@@ -4139,12 +4185,18 @@ YANG_DeviateReplace deviatereplacestmt() #DeviateReplace :
 String rangeexprstr()         : 
 {
 String r = null;
+Token t;
 }
 {
 	//	< a string which matches the rule
         //         rangeexpr >
 	(
 	 r = string() 
+	 |
+	 t = <ONEWORD>
+	 {
+	 	r = t.image;
+	 }
 	)
 		{
 		return r;
@@ -4203,6 +4255,7 @@ String schemanodeid()          :
 String s = null;
 }
 {
+	
 	 s = absoluteschemanodeid() 
 		{
 		return s;
@@ -4212,20 +4265,22 @@ String s = null;
 		{
 		return s;
 		}
-			
+	
 }
 
 String absoluteschemanodeid()    : 
 {
 String n = null,a = new String();
+Token t;
 }
 {
-	(
-	 "/" n = nodeidentifier()
-		{
-		a += "/" + n;
-		}
-	)+
+	
+		(
+	        "/" n = nodeidentifier()
+		      {
+				a += "/" + n;
+			  }
+		)+
 		{
 		return a;
 		}
@@ -4253,6 +4308,7 @@ String p = null,n = new String(), m = null;
 {
 	[LOOKAHEAD(2) p = prefix() ":"]( t = <IDENTIFIER> | m = anykeyword())
 		{
+			
 		if(p != null)
 			n += p + ":";
 		if(m == null)
@@ -4539,7 +4595,17 @@ String s;}
 		// < a string which matches the rule;
                 //   identifier >
 
-		s = string() 
+	(LOOKAHEAD(2)
+		s = string()
+	|
+		
+		s = anykeyword()
+	|
+		t =  <ONEWORD>
+		{
+			s = t.image;
+		}
+	)
 			{
 			return s;
 			}
@@ -4684,6 +4750,8 @@ t = <currentkeyword>
 t = <deprecatedkeyword>
 |
 t = <falsekeyword>
+|
+t = <deletekeyword>
 |
 t = <maxkeyword>
 |

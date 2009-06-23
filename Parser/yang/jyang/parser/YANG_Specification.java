@@ -431,16 +431,16 @@ public abstract class YANG_Specification extends SimpleNode {
 				found = true;
 				try {
 					externalspec = yang.Start();
+					externalspec.check();
 				} catch (ParseException p) {
-					throw new YangParserException(externalmodulename + " : "
+					throw new YangParserException(externalmodulename + ":"
 							+ p.getMessage());
-
 				}
 			} catch (NullPointerException np) {
 				// Must not occurs
-				np.printStackTrace();
-				System.err.println("Panic, abort");
-				System.exit(-3);
+				//np.printStackTrace();
+				//System.err.println("Panic, abort");
+				//System.exit(-3);
 			} catch (FileNotFoundException fnf) {
 				// nothing to do
 				// pass to the next path
