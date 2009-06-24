@@ -437,10 +437,39 @@ public abstract class YANG_Specification extends SimpleNode {
 							+ p.getMessage());
 				}
 			} catch (NullPointerException np) {
-				// Must not occurs
-				//np.printStackTrace();
-				//System.err.println("Panic, abort");
-				//System.exit(-3);
+			} catch (FileNotFoundException fnf) {
+				// nothing to do
+				// pass to the next path
+			}
+		}
+		if (!found)
+			throw new YangParserException("@external yang specification "
+					+ externalmodulename + " not found");
+		checkedSpecs.put(externalmodulename, externalspec);
+		return externalspec;
+	}
+	protected YANG_Specification getExternal(String[] paths,
+			String externalmodulename, boolean b) throws YangParserException {
+		int i = 0;
+		boolean found = false;
+		YANG_Specification externalspec = null;
+		while (i < paths.length && !found) {
+			String directory = paths[i++];
+			String yangspecfilename = directory + File.separator
+					+ externalmodulename + ".yang";
+			if (checkedSpecs.containsKey(externalmodulename))
+				return checkedSpecs.get(externalmodulename);
+			try {
+				File externalfile = new File(yangspecfilename);
+				yang.ReInit(new FileInputStream(externalfile));
+				found = true;
+				try {
+					externalspec = yang.Start();
+				} catch (ParseException p) {
+					throw new YangParserException(externalmodulename + ":"
+							+ p.getMessage());
+				}
+			} catch (NullPointerException np) {
 			} catch (FileNotFoundException fnf) {
 				// nothing to do
 				// pass to the next path

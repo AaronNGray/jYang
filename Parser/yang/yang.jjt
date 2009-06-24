@@ -53,7 +53,7 @@ TOKEN : /* DATE */
 
 TOKEN :
 {
-<STRING: "\"" (~["\""])* "\""  | "\'" (~["\'"])* "\'">
+<STRING: "\"" ((~["\""])|"\\""\"")* "\""  | "\'" (~["\'"])* "\'">
 }
 
 
@@ -268,7 +268,7 @@ YANG_Specification Start():
 YANG_Specification n = null;
 }
 {
-	(LOOKAHEAD(2)
+	(
 	n = module() 
 	| 
 	n = submodule()
@@ -287,14 +287,21 @@ YANG_Meta m = null;
 YANG_Revision r = null;
 YANG_Body b = null;
 YANG_Unknown un = null;
+String mname = null;
 }                
 {
- 	<modulekeyword>  t = <IDENTIFIER>  
+ 	<modulekeyword>  (t = <IDENTIFIER>  
 		{
 		jjtThis.setName(t.image);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		}
+		|
+		mname = anykeyword()
+		{
+			jjtThis.setName(mname);
+		}
+		)
                 "{"   (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 		(
 		h = moduleheaderstmts()
@@ -1209,7 +1216,7 @@ YANG_Unknown un = null;
 		";" 
 	|
 		(
-          "{"  (LOOKAHEAD(3) un = unknownstatement(){jjtThis.addUnknown(un);})*
+          "{"  (LOOKAHEAD(2) un = unknownstatement(){jjtThis.addUnknown(un);})*
          ( 
 	 		n = numericalrestrictions() 
 			{
@@ -3455,7 +3462,7 @@ Token t;
 
 YANG_UsesAugment usesaugmentstmt()	 #UsesAugment:
 {
-Token aug;
+Token aug, aa;
 String ds = null;
 String a = null;
 YANG_When w = null;
@@ -3469,12 +3476,13 @@ YANG_Unknown un = null;
 	
 }
 {
-	aug = <augmentkeyword>  a = usesaugmentargstr() 
+	aug = <augmentkeyword>  (LOOKAHEAD(2) a = usesaugmentargstr()  | aa = <IDENTIFIER> { a = aa.image;})
 		{
 		jjtThis.setLine(aug.beginLine);
 		jjtThis.setCol(aug.beginColumn);
 		jjtThis.setUsesAugment(a);
 		}
+        "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	//(augmentAnyOrder())*
 	(
          
@@ -3514,7 +3522,8 @@ YANG_Unknown un = null;
 			jjtThis.addCase(c);
 			}			
 	 )
-	 )
+	 )*
+	 "}"
 	 {
 	 	return jjtThis;
 	 }
@@ -3628,7 +3637,7 @@ YANG_Unknown unknown = null;
 {
 //	 p = prefix() l = ":" 
 	 		(
-				i = <PREFIXEDID>
+				i = <NAMESPACE>
 				{
 					jjtThis.setExtension(i.image);
 					jjtThis.setLine(i.beginLine);
@@ -4799,20 +4808,26 @@ String i = null;
 
 String identifierref()         :
 {
-Token t;
+Token t,s;
 String p = null;
 String i = null;}
 {
-	 [
-	  LOOKAHEAD(2)p = prefix() ":"
-	 ] t = <IDENTIFIER>
+	// [
+	 // LOOKAHEAD(2)p = prefix() ":"
+	 //] 
+	 (
+	 s = <NAMESPACE>
+	 {
+	 	i = s.image;
+	 	return i;
+	 }
+	 |
+	 t = <IDENTIFIER>
 		{
-		i = new String();
-		if(p != null)
-			i += p + ":";
-		i += t.image;
+		i = t.image;
 		return i;
 		}
+		)
 }
 
 String string()                 :

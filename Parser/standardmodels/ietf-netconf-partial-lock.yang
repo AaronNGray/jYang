@@ -32,7 +32,7 @@ module ietf-netconf-partial-lock {
       It is allocated by the system, and SHOULD be used in the
       partial-unlock operation.";
   }
-
+  
   rpc partial-lock {
     description
      "A NETCONF operation that locks part of one or more datastores.";

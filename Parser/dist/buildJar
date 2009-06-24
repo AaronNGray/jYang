@@ -1,0 +1,4 @@
+#/bin/bash
+
+cd ../yang
+jar cvfm ../dist/jYang.jar MANIFEST.MF *.class jyang/parser/*.class jyang/tools/*.class

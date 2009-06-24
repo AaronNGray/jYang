@@ -64,6 +64,7 @@ public class YANG_Input extends YANG_DataDef {
 		if (datadefs.size() == 0)
 			throw new YangParserException("@" + getLine() + "." + getCol()
 					+ ":there must be at least one datadef in input ");
+		/*
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 				.hasMoreElements();)
 			context.addNode(et.nextElement());
@@ -89,6 +90,7 @@ public class YANG_Input extends YANG_DataDef {
 			YangContext cl = context.clone();
 			ed.nextElement().checkBody(cl);
 		}
+		*/
 
 	}
 

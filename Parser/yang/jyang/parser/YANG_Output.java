@@ -65,7 +65,8 @@ public class YANG_Output extends YANG_DataDef {
 			throw new YangParserException(
 					"There must be at least one datadef in output "
 							+ "\nat line " + getLine() + ", column " + getCol());
-
+		
+/*
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 				.hasMoreElements();)
 			context.addNode(et.nextElement());
@@ -90,6 +91,8 @@ public class YANG_Output extends YANG_DataDef {
 			YangContext cl = context.clone();
 			ed.nextElement().checkBody(cl);
 		}
+		*/
+		
 	}
 
 	public String toString() {

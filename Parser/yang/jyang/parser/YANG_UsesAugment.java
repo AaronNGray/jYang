@@ -15,12 +15,14 @@ public class YANG_UsesAugment extends YANG_DataDefInfoWhen {
 
 	public YANG_UsesAugment(int id) {
 		super(id);
+		
 		try {
 			dsni = Pattern
-					.compile("([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*((/([_A-Za-z][._-A-Za-z0-9]*:)?[_A-Za-z][._-A-Za-z0-9]*)+)?");
+					.compile("([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*((/([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*)+)?");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 	public YANG_UsesAugment(yang p, int id) {

@@ -33,7 +33,8 @@ public class YANG_Pattern extends SimpleNode {
 		try {
 			regexp = Pattern.compile(YangBuiltInTypes.removeQuotesAndTrim(pattern));
 		} catch (PatternSyntaxException pse) {
-			throw new YangParserException("@" + getLine() + "." + getCol() + "Incorrect regular expression");
+			throw new YangParserException("@" + getLine() + "." + getCol() + ":"+
+					pse.getMessage());
 		}
 	}
 

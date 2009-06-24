@@ -142,7 +142,7 @@ public class YANG_SubModule extends YANG_Specification {
 			throw new YangParserException(
 					"Belonging module must be defined in submodule "
 							+ submodule);
-		YANG_Specification belonged = getExternal(p, belong.getBelong());
+		YANG_Specification belonged = getExternal(p, belong.getBelong(), true);
 		if (!(belonged instanceof YANG_Module))
 			throw new YangParserException(belonged.getName()
 					+ " is not a module", belonged.getLine(), belonged.getCol());

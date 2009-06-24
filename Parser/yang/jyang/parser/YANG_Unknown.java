@@ -37,8 +37,22 @@ public class YANG_Unknown extends YANG_Body {
 		super(p, id);
 	}
 
-	public void setExtension(String p) {
-		extension = p;
+	public void setExtension(String p) throws YangParserException {
+		String[]  splitted =  p.split(":");
+		if (splitted != null){
+			if (splitted.length == 2){
+				setPrefix(splitted[0]);
+				extension = splitted[1];
+			}
+			else
+				throw new YangParserException("@" + getLine() + "." + getCol()
+							+ ":extension syntax error " + p);
+		}
+		else {
+			throw new YangParserException("@" + getLine() + "." + getCol()
+					+ ":extension syntax error " + p);
+			
+		}
 	}
 
 	public String getExtension() {
