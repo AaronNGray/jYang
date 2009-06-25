@@ -206,8 +206,9 @@ public class YANG_Type extends SimpleNode {
 
 	}
 
-	public void checkTypeSyntax() throws YangParserException {
+	public void checkTypeSyntax2() throws YangParserException {
 
+		
 		if (YangBuiltInTypes.union.compareTo(getType()) == 0)
 			if (getUnionSpec() == null)
 				throw new YangParserException("@" + getLine() + "." + getCol()
@@ -222,6 +223,7 @@ public class YANG_Type extends SimpleNode {
 			if (getEnums().size() == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":enumeration must have at least one enum");
+			
 			checkEnum();
 		}
 
@@ -230,6 +232,45 @@ public class YANG_Type extends SimpleNode {
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":bits  must have at least one bit");
 			checkBits();
+		}
+
+	}
+	
+	public void checkTypeSyntax()  {
+
+		
+		if (YangBuiltInTypes.union.compareTo(getType()) == 0)
+			if (getUnionSpec() == null)
+				System.err.println("@" + getLine() + "." + getCol()
+						+ ":union type must have at least one type");
+
+		if (YangBuiltInTypes.leafref.compareTo(getType()) == 0)
+			if (getLeafRef() == null)
+				System.err.println("@" + getLine() + "." + getCol()
+						+ ":keyref type must have at one path");
+
+		if (YangBuiltInTypes.enumeration.compareTo(getType()) == 0) {
+			if (getEnums().size() == 0)
+				System.err.println("@" + getLine() + "." + getCol()
+						+ ":enumeration must have at least one enum");
+			try{
+			checkEnum();
+			}
+			catch(YangParserException e){
+				System.err.println(e.getMessage());
+			}
+		}
+
+		if (YangBuiltInTypes.bits.compareTo(getType()) == 0) {
+			if (getBitSpec() == null)
+				System.err.println("@" + getLine() + "." + getCol()
+						+ ":bits  must have at least one bit");
+			try{
+			checkBits();
+			}
+			catch(YangParserException e){
+				System.err.println(e.getMessage());
+			}
 		}
 
 	}
@@ -609,8 +650,8 @@ public class YANG_Type extends SimpleNode {
 				try {
 					integer = Integer.parseInt(strenum);
 				} catch (NumberFormatException n) {
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":enum value is not an integer");
+					throw new YangParserException("@" + yenum.getLine() + "."
+							+ yenum.getCol() + ":enum value is not an integer");
 				}
 				if (integer.compareTo(new Integer(highest)) >= 0) {
 					highest = integer.intValue();
@@ -618,28 +659,32 @@ public class YANG_Type extends SimpleNode {
 				} else if (integer.compareTo(new Integer(highest)) == -1) {
 					enumvalues[i++] = integer.intValue();
 				} else if (integer.compareTo(new Integer(highest)) == 0) {
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + highest
+					throw new YangParserException("@" + yenum.getLine() + "."
+							+ yenum.getCol() + highest
 							+ ":ambigous; a value must be specified");
 				}
 			}
 		}
 		boolean duplicate = false;
+		int dupvalue = 0;
+		String dupname = "";
 		for (int j = 0; j < enumvalues.length && !duplicate; j++)
 			for (int k = j + 1; k < enumvalues.length && !duplicate; k++) {
 				duplicate = enumvalues[j] == enumvalues[k];
+				dupvalue = enumvalues[j];
 			}
 		if (duplicate)
 			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":duplicate enum value");
+					+ ":duplicate enum value " + dupvalue);
 
 		for (int j = 0; j < enumnames.length && !duplicate; j++)
 			for (int k = j + 1; k < enumnames.length && !duplicate; k++) {
 				duplicate = enumnames[j].compareTo(enumnames[k]) == 0;
+				dupname = enumnames[j];
 			}
 		if (duplicate)
 			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":duplicate enum name");
+					+ ":duplicate enum name " + dupname);
 
 	}
 
