@@ -206,9 +206,8 @@ public class YANG_Type extends SimpleNode {
 
 	}
 
-	public void checkTypeSyntax2() throws YangParserException {
+	public void checkTypeSyntax() throws YangParserException {
 
-		
 		if (YangBuiltInTypes.union.compareTo(getType()) == 0)
 			if (getUnionSpec() == null)
 				throw new YangParserException("@" + getLine() + "." + getCol()
@@ -223,7 +222,7 @@ public class YANG_Type extends SimpleNode {
 			if (getEnums().size() == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":enumeration must have at least one enum");
-			
+
 			checkEnum();
 		}
 
@@ -235,10 +234,9 @@ public class YANG_Type extends SimpleNode {
 		}
 
 	}
-	
-	public void checkTypeSyntax()  {
 
-		
+	public void checkTypeSyntax2() {
+
 		if (YangBuiltInTypes.union.compareTo(getType()) == 0)
 			if (getUnionSpec() == null)
 				System.err.println("@" + getLine() + "." + getCol()
@@ -253,10 +251,9 @@ public class YANG_Type extends SimpleNode {
 			if (getEnums().size() == 0)
 				System.err.println("@" + getLine() + "." + getCol()
 						+ ":enumeration must have at least one enum");
-			try{
-			checkEnum();
-			}
-			catch(YangParserException e){
+			try {
+				checkEnum();
+			} catch (YangParserException e) {
 				System.err.println(e.getMessage());
 			}
 		}
@@ -265,10 +262,9 @@ public class YANG_Type extends SimpleNode {
 			if (getBitSpec() == null)
 				System.err.println("@" + getLine() + "." + getCol()
 						+ ":bits  must have at least one bit");
-			try{
-			checkBits();
-			}
-			catch(YangParserException e){
+			try {
+				checkBits();
+			} catch (YangParserException e) {
 				System.err.println(e.getMessage());
 			}
 		}
@@ -276,6 +272,8 @@ public class YANG_Type extends SimpleNode {
 	}
 
 	public void check(YangContext context) throws YangParserException {
+
+		checkTypeSyntax();
 
 		if (context.getBuiltInType(this) == null) {
 			throw new YangParserException("@" + getLine() + "." + getCol()
@@ -679,7 +677,10 @@ public class YANG_Type extends SimpleNode {
 
 		for (int j = 0; j < enumnames.length && !duplicate; j++)
 			for (int k = j + 1; k < enumnames.length && !duplicate; k++) {
-				duplicate = enumnames[j].compareTo(enumnames[k]) == 0;
+				duplicate = YangBuiltInTypes.removeQuotesAndTrim(enumnames[j])
+						.compareTo(
+								YangBuiltInTypes
+										.removeQuotesAndTrim(enumnames[k])) == 0;
 				dupname = enumnames[j];
 			}
 		if (duplicate)
@@ -944,9 +945,9 @@ public class YANG_Type extends SimpleNode {
 			else if (YangBuiltInTypes.binary.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return "0";
-			//else if (YangBuiltInTypes.float32.compareTo(context
-			//		.getBuiltInType(this)) == 0)
-			//	return ("-INF");
+			// else if (YangBuiltInTypes.float32.compareTo(context
+			// .getBuiltInType(this)) == 0)
+			// return ("-INF");
 			else if (YangBuiltInTypes.decimal64.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return ("-INF");
@@ -983,9 +984,9 @@ public class YANG_Type extends SimpleNode {
 			else if (YangBuiltInTypes.binary.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return YangBuiltInTypes.uint64ub.toString();
-			//else if (YangBuiltInTypes.float32.compareTo(context
-			//		.getBuiltInType(this)) == 0)
-			//	return ("INF");
+			// else if (YangBuiltInTypes.float32.compareTo(context
+			// .getBuiltInType(this)) == 0)
+			// return ("INF");
 			else if (YangBuiltInTypes.decimal64.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return ("INF");
@@ -1188,9 +1189,9 @@ public class YANG_Type extends SimpleNode {
 		} else if (YangBuiltInTypes.uint64.compareTo(getType()) == 0) {
 			birange[0][0] = YangBuiltInTypes.uint64lb.toString();
 			birange[0][1] = YangBuiltInTypes.uint64ub.toString();
-		//} else if (YangBuiltInTypes.float32.compareTo(getType()) == 0) {
-		//	birange[0][0] = "-INF";
-		//	birange[0][1] = "INF";
+			// } else if (YangBuiltInTypes.float32.compareTo(getType()) == 0) {
+			// birange[0][0] = "-INF";
+			// birange[0][1] = "INF";
 		} else if (YangBuiltInTypes.decimal64.compareTo(getType()) == 0) {
 			birange[0][0] = "-INF";
 			birange[0][1] = "INF";
@@ -1513,7 +1514,6 @@ public class YANG_Type extends SimpleNode {
 					YANG_Pattern pattern = patterns.nextElement();
 					pattern.checkExp(value);
 				}
-
 
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
 				.getBuiltInType(this)) == 0) {
