@@ -2885,7 +2885,7 @@ YANG_Unknown un = null;
       }
                   jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
-                        jjtn000.checkTypeSyntax();
+                        //jjtThis.checkTypeSyntax();
                         {if (true) return jjtn000;}
     } catch (Throwable jjte000) {
           if (jjtc000) {

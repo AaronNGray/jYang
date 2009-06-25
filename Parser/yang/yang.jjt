@@ -1275,7 +1275,7 @@ YANG_Unknown un = null;
          ) 
 	
 		{
-			jjtThis.checkTypeSyntax();
+			//jjtThis.checkTypeSyntax();
 			return jjtThis;
 		}
 		

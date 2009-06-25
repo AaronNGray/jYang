@@ -57,8 +57,9 @@ TOKEN : /* DATE */
 
 TOKEN :
 {
-<STRING: "\"" (~["\""])* "\""  | "\'" (~["\'"])* "\'">
+<STRING: "\"" ((~["\""])|"\\""\"")* "\""  | "\'" (~["\'"])* "\'">
 }
+
 
 TOKEN :
 {
@@ -112,7 +113,7 @@ TOKEN : /* KEYWORDS */
 |
 <featurekeyword        : "feature">
 |
-<fractiondigitkeyword : "fraction-digit">
+<fractiondigitskeyword : "fraction-digits">
 |
 <groupingkeyword       : "grouping">
 |
@@ -246,7 +247,22 @@ TOKEN : /* IDENTIFIERS */
 |
  < #DIGIT: ["0"-"9"]>
 }
-
+TOKEN: /* string without quote and without space */
+{
+	<ONEWORD: <FIRST> (<FIRST>)+>
+	|
+	<#FIRST: ["/", "\\", "(", ")","~","0"-"9","_","a"-"z","A"-"Z", "[", "]", ".", "-", "=","?", "+"]>
+	|
+	<ABSNODEID: "/" (<FIRST>)+>
+	|
+	<NAMESPACE: <FIRST> (<SEC>)+>
+	|
+	<#SEC:  ["/", "\\", "(", ")","~","0"-"9","_","a"-"z","A"-"Z", "[", "]", ".", "-", "=","?", "+",":"]>
+	|
+	<COL: ":">
+	|
+	<PREFIXEDID: <IDENTIFIER> <COL> <IDENTIFIER>>
+}
 
 
 
@@ -256,7 +272,7 @@ YANG_Specification Start():
 YANG_Specification n = null;
 }
 {
-	(LOOKAHEAD(2)
+	(
 	n = module() 
 	| 
 	n = submodule()
@@ -279,16 +295,23 @@ YANG_Meta m = null;
 YANG_Revision r = null;
 YANG_Body b = null;
 YANG_Unknown un = null;
+String mname = null;
 }                
 {/*@bgen(jjtree) Module */
         try {
 /*@egen*/
- 	<modulekeyword>  t = <IDENTIFIER>  
+ 	<modulekeyword>  (t = <IDENTIFIER>  
 		{
 		jjtn000.setName(t.image);
 		jjtn000.setLine(t.beginLine);
 		jjtn000.setCol(t.beginColumn);
 		}
+		|
+		mname = anykeyword()
+		{
+			jjtn000.setName(mname);
+		}
+		)
                 "{"   (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 		(
 		h = moduleheaderstmts()
@@ -589,7 +612,7 @@ YANG_CaseDef d = null;}
         d = usesstmt() 
 	)
 		{
-		return d;
+			return d;
 		}
 }
 
@@ -778,13 +801,13 @@ boolean jjtc000 = true;
 jjtree.openNodeScope(jjtn000);
 /*@egen*/
 String uri;
-Token t;
+Token t, tn;
 YANG_Unknown un = null;
 }
 {/*@bgen(jjtree) NameSpace */
         try {
 /*@egen*/
-	t = <namespacekeyword>  uri = uristr()  
+	t = <namespacekeyword>  (uri = uristr() | tn = <NAMESPACE> { uri = tn.image;})  
 	(";" | "{" (un = unknownstatement() {jjtn000.addUnknown(un);})* "}")/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
@@ -1137,14 +1160,23 @@ YANG_Units jjtn000 = new YANG_Units(JJTUNITS);
 boolean jjtc000 = true;
 jjtree.openNodeScope(jjtn000);
 /*@egen*/
-Token t;
+Token t,ut;
 String u = null;
 YANG_Unknown un = null;
 }
 {/*@bgen(jjtree) Units */
         try {
 /*@egen*/
-	t = <unitskeyword>  u = string()  
+	t = <unitskeyword>  
+	
+	 ( u = string()
+	  |
+	   ut = <ONEWORD>
+	   	{
+	   		u = ut.image;
+	   	}
+	  )  
+	
 	(";" | "{" (un = unknownstatement() {jjtn000.addUnknown(un);})* "}")/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
@@ -1396,13 +1428,16 @@ jjtree.openNodeScope(jjtn000);
 YANG_Yin y = null;
 String i = null;
 YANG_Unknown un = null;
+Token t, a;
 }
 {/*@bgen(jjtree) Argument */
         try {
 /*@egen*/
-	<argumentkeyword>  i = identifierstr() 
+	t = <argumentkeyword>   i = identifierstr()
 		{
-		jjtn000.setArgument(i);
+			jjtn000.setLine(t.beginLine);
+			jjtn000.setCol(t.beginColumn);
+			jjtn000.setArgument(i);
 		}
         (
 	 ";" 
@@ -1544,7 +1579,9 @@ YANG_Unknown un = null;
 /*@egen*/
 	t = <identitykeyword> i = identifierstr()	
 		{
-			
+			jjtn000.setLine(t.beginLine);
+			jjtn000.setCol(t.beginColumn);
+			jjtn000.setIdentity(i);
 		}
 		( 
 			";"
@@ -1574,6 +1611,14 @@ YANG_Unknown un = null;
 			)*
 			"}"
 			)/*@bgen(jjtree)*/
+                        {
+                          jjtree.closeNodeScope(jjtn000, true);
+                          jjtc000 = false;
+                        }
+/*@egen*/
+			{
+				return jjtn000;
+			}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1619,6 +1664,7 @@ YANG_Base basestmt()	      :
 		jjtn000.setBase(i);
 		jjtn000.setLine(t.beginLine);
 		jjtn000.setCol(t.beginColumn);
+		return jjtn000;
 		}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -1692,6 +1738,14 @@ YANG_Feature featurestmt()	        	:
 		)*
 		"}"
 	)/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{
+		return jjtn000;
+	}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1737,6 +1791,7 @@ YANG_IfFeature iffeaturestmt()           	:
 			jjtn000.setIfFeature(i);
 			jjtn000.setLine(t.beginLine);
 			jjtn000.setCol(t.beginColumn);
+			return jjtn000;
 		}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -1898,7 +1953,7 @@ YANG_Unknown un = null;
 	  	 |
            ( 
              (
-               LOOKAHEAD(2) e = enumspecification()
+               LOOKAHEAD(2) e = enumstmt()
 				{
 					jjtn000.addEnum(e);
 				}
@@ -1948,7 +2003,7 @@ YANG_Unknown un = null;
 /*@egen*/ 
 	
 		{
-			jjtn000.checkTypeSyntax();
+			//jjtThis.checkTypeSyntax();
 			return jjtn000;
 		}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
@@ -2073,22 +2128,31 @@ YANG_Decimal64Spec decimal64specification()                    :
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);
 /*@egen*/
-	Token f;
+	Token f,r;
 	String s =  null;
+	YANG_Range rg = null;
 }
 {/*@bgen(jjtree) Decimal64Spec */
         try {
 /*@egen*/
-	f = <fractiondigitkeyword> s = fractiondigitstmt()/*@bgen(jjtree)*/
+	f = <fractiondigitskeyword> s = fractiondigitstmt()
+	{
+		jjtn000.setFractionDigit(s);
+		jjtn000.setLine(f.beginLine);
+		jjtn000.setCol(f.beginColumn);
+	}
+	[LOOKAHEAD(2)
+	  rg = rangestmt()
+	  	{
+	  		jjtn000.setRange(rg);
+	  	}
+	]/*@bgen(jjtree)*/
         {
           jjtree.closeNodeScope(jjtn000, true);
           jjtc000 = false;
         }
 /*@egen*/
 	{
-		jjtn000.setFractionDigit(s);
-		jjtn000.setLine(f.beginLine);
-		jjtn000.setCol(f.beginColumn);
 		return jjtn000;
 	}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
@@ -2118,7 +2182,7 @@ String fractiondigitstmt()        :
 Token t;
 }
 {
-	t = <DECVALUE>
+	t = <DECVALUE> ";"
 	{
 		return t.image;
 	}
@@ -2304,15 +2368,23 @@ YANG_ErrorAppt eat = null;
 YANG_Description d = null;
 YANG_Reference r = null;
 YANG_Unknown un = null;
-Token pt;
+Token t, pt;
 }
 {/*@bgen(jjtree) Pattern */
         try {
 /*@egen*/
-	pt = <patternkeyword>  p = string() 
+	t = <patternkeyword> 
+	(
+		p = string()
+	|
+		pt = <ONEWORD>
 		{
-		jjtn000.setLine(pt.beginLine);
-		jjtn000.setCol(pt.beginColumn);
+			p = pt.image;
+		}
+	) 
+		{
+		jjtn000.setLine(t.beginLine);
+		jjtn000.setCol(t.beginColumn);
 		jjtn000.setPattern(p);
 		}
         (
@@ -2380,14 +2452,22 @@ YANG_Default jjtn000 = new YANG_Default(JJTDEFAULT);
 boolean jjtc000 = true;
 jjtree.openNodeScope(jjtn000);
 /*@egen*/
-Token t;
+Token t, dt;
 String d = null;
 YANG_Unknown un = null;
 }
 {/*@bgen(jjtree) Default */
         try {
 /*@egen*/
-	t = <defaultkeyword>  d = string() 
+	t = <defaultkeyword>  
+	(
+		d = string()
+	|
+		dt = <ONEWORD>
+		{
+			d = dt.image;
+		}
+	) 
 	(";" | "{" (un = unknownstatement() {jjtn000.addUnknown(un);})* "}")/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
@@ -2421,7 +2501,7 @@ YANG_Unknown un = null;
         }
 /*@egen*/
 }
-
+/*
 YANG_Enum enumspecification()     : 
 {
 YANG_Enum e = null;
@@ -2435,7 +2515,7 @@ YANG_Unknown un = null;
 		return e;
 		}
 }
-
+*/
 YANG_Enum enumstmt()                   : 
 {/*@bgen(jjtree) Enum */
 YANG_Enum jjtn000 = new YANG_Enum(JJTENUM);
@@ -2448,13 +2528,16 @@ YANG_Status s = null;
 YANG_Description d = null;
 YANG_Reference r = null;
 YANG_Unknown un = null;
+Token t,te;
 }
 {/*@bgen(jjtree) Enum */
         try {
 /*@egen*/
-	<enumkeyword>  e = identifierstr() 
+	t = <enumkeyword>  	 e = identifierstr() 
 		{
-		jjtn000.setEnum(e);
+			jjtn000.setLine(t.beginLine);
+			jjtn000.setCol(t.beginColumn);
+			jjtn000.setEnum(e);
 		}
         (
 	";" 
@@ -2578,11 +2661,12 @@ jjtree.openNodeScope(jjtn000);
 /*@egen*/
 String p = null;
 YANG_Unknown un = null;
+Token t;
 }
 {/*@bgen(jjtree) Path */
         try {
 /*@egen*/
-	<pathkeyword>  p = pathargstr()
+	t = <pathkeyword>  p = pathargstr()
 	(";" | "{" (un = unknownstatement() {jjtn000.addUnknown(un);})* "}")/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
@@ -2590,6 +2674,8 @@ YANG_Unknown un = null;
                 }
 /*@egen*/
 		{
+			jjtn000.setLine(t.beginLine);
+			jjtn000.setCol(t.beginColumn);
 		jjtn000.setPath(p);
 		return jjtn000;
 		}/*@bgen(jjtree)*/
@@ -2618,13 +2704,15 @@ YANG_Unknown un = null;
 String requireinstancestmt()		:
 {
 Token t;
+YANG_Unknown un = null;
 }
 {	
+		<requireinstancekeyword> 
 	(
 	t = <truekeyword>
 	|
 	t = <falsekeyword>
-	)
+	) ";"
 	{ 
 		return t.image;
 	}
@@ -5459,7 +5547,7 @@ YANG_UsesAugment jjtn000 = new YANG_UsesAugment(JJTUSESAUGMENT);
 boolean jjtc000 = true;
 jjtree.openNodeScope(jjtn000);
 /*@egen*/
-Token aug;
+Token aug, aa;
 String ds = null;
 String a = null;
 YANG_When w = null;
@@ -5475,12 +5563,13 @@ YANG_Unknown un = null;
 {/*@bgen(jjtree) UsesAugment */
         try {
 /*@egen*/
-	aug = <augmentkeyword>  a = usesaugmentargstr() 
+	aug = <augmentkeyword>  (LOOKAHEAD(2) a = usesaugmentargstr()  | aa = <IDENTIFIER> { a = aa.image;})
 		{
 		jjtn000.setLine(aug.beginLine);
 		jjtn000.setCol(aug.beginColumn);
 		jjtn000.setUsesAugment(a);
 		}
+        "{" (LOOKAHEAD(2) un = unknownstatement() {jjtn000.addUnknown(un);})*
 	//(augmentAnyOrder())*
 	(
          
@@ -5520,7 +5609,8 @@ YANG_Unknown un = null;
 			jjtn000.addCase(c);
 			}			
 	 )
-	 )/*@bgen(jjtree)*/
+	 )*
+	 "}"/*@bgen(jjtree)*/
          {
            jjtree.closeNodeScope(jjtn000, true);
            jjtc000 = false;
@@ -5568,7 +5658,7 @@ YANG_Augment jjtn000 = new YANG_Augment(JJTAUGMENT);
 boolean jjtc000 = true;
 jjtree.openNodeScope(jjtn000);
 /*@egen*/
-Token aug;
+Token aug, aa;
 String a = null;
 YANG_When w = null;
 YANG_IfFeature iff = null;
@@ -5584,7 +5674,7 @@ YANG_Unknown un = null;
 {/*@bgen(jjtree) Augment */
         try {
 /*@egen*/
-	aug = <augmentkeyword>  a = augmentargstr() 
+	aug = <augmentkeyword> ( a = augmentargstr() | aa = <ONEWORD> { a = aa.image;})
 		{
 		jjtn000.setLine(aug.beginLine);
 		jjtn000.setCol(aug.beginColumn);
@@ -5667,7 +5757,12 @@ String augmentargstr()	:
 	String a = null;
 }
 {
-	a = schemanodeid()
+	(LOOKAHEAD(2)
+	  a = string()
+	 |
+	  a = schemanodeid()
+	
+	)
 	{
 		return a;
 	}
@@ -5681,30 +5776,30 @@ YANG_Unknown jjtn000 = new YANG_Unknown(JJTUNKNOWN);
 boolean jjtc000 = true;
 jjtree.openNodeScope(jjtn000);
 /*@egen*/
-String p = null;
 String kw = null;
 String str = null;
-Token i,j,l;
+Token i,j;
 YANG_Unknown unknown = null;
 }
 {/*@bgen(jjtree) Unknown */
-         try {
+                        try {
 /*@egen*/
-	 p = prefix() l = ":" (
-				i = <IDENTIFIER>
+//	 p = prefix() l = ":" 
+	 		(
+				i = <NAMESPACE>
 				{
 					jjtn000.setExtension(i.image);
 					jjtn000.setLine(i.beginLine);
 					jjtn000.setCol(i.beginColumn);
 				}
-				|
-				kw = anykeyword()
-				{
-					jjtn000.setExtension(kw);
-					jjtn000.setLine(l.beginLine);
-					jjtn000.setCol(l.beginColumn);
-				}
-			  ) 
+			//|
+			//	kw = anykeyword()
+			//	{
+			//		jjtThis.setExtension(kw);
+				//	jjtThis.setLine(l.beginLine);
+				//	jjtThis.setCol(l.beginColumn);
+			//	}
+		    ) 
 				[ 
 				str = string()
 				{
@@ -5728,28 +5823,28 @@ YANG_Unknown unknown = null;
                                 }
 /*@egen*/
 				{
-					jjtn000.setPrefix(p);
+					
 					return jjtn000;
 				}/*@bgen(jjtree)*/
-         } catch (Throwable jjte000) {
-           if (jjtc000) {
-             jjtree.clearNodeScope(jjtn000);
-             jjtc000 = false;
-           } else {
-             jjtree.popNode();
-           }
-           if (jjte000 instanceof RuntimeException) {
-             throw (RuntimeException)jjte000;
-           }
-           if (jjte000 instanceof ParseException) {
-             throw (ParseException)jjte000;
-           }
-           throw (Error)jjte000;
-         } finally {
-           if (jjtc000) {
-             jjtree.closeNodeScope(jjtn000, true);
-           }
-         }
+                        } catch (Throwable jjte000) {
+                          if (jjtc000) {
+                            jjtree.clearNodeScope(jjtn000);
+                            jjtc000 = false;
+                          } else {
+                            jjtree.popNode();
+                          }
+                          if (jjte000 instanceof RuntimeException) {
+                            throw (RuntimeException)jjte000;
+                          }
+                          if (jjte000 instanceof ParseException) {
+                            throw (ParseException)jjte000;
+                          }
+                          throw (Error)jjte000;
+                        } finally {
+                          if (jjtc000) {
+                            jjtree.closeNodeScope(jjtn000, true);
+                          }
+                        }
 /*@egen*/
 }
 
@@ -6583,12 +6678,18 @@ YANG_DeviateReplace deviatereplacestmt()                 :
 String rangeexprstr()         : 
 {
 String r = null;
+Token t;
 }
 {
 	//	< a string which matches the rule
         //         rangeexpr >
 	(
 	 r = string() 
+	 |
+	 t = <ONEWORD>
+	 {
+	 	r = t.image;
+	 }
 	)
 		{
 		return r;
@@ -6599,13 +6700,13 @@ String r = null;
 
 String lengthexprstr()        : 
 {
-String l = null;
+String l = null;Token t;
 }
 {
 	//	< a string which matches the rule
         //         lengthexpr >
 	( 
-	l = string()
+	l = string()| t = <ONEWORD> {l = t.image;}
 	)
 		{
 		return l;
@@ -6647,6 +6748,7 @@ String schemanodeid()          :
 String s = null;
 }
 {
+	
 	 s = absoluteschemanodeid() 
 		{
 		return s;
@@ -6656,20 +6758,22 @@ String s = null;
 		{
 		return s;
 		}
-			
+	
 }
 
 String absoluteschemanodeid()    : 
 {
 String n = null,a = new String();
+Token t;
 }
 {
-	(
-	 "/" n = nodeidentifier()
-		{
-		a += "/" + n;
-		}
-	)+
+	
+		(
+	        "/" n = nodeidentifier()
+		      {
+				a += "/" + n;
+			  }
+		)+
 		{
 		return a;
 		}
@@ -6697,6 +6801,7 @@ String p = null,n = new String(), m = null;
 {
 	[LOOKAHEAD(2) p = prefix() ":"]( t = <IDENTIFIER> | m = anykeyword())
 		{
+			
 		if(p != null)
 			n += p + ":";
 		if(m == null)
@@ -6983,7 +7088,17 @@ String s;}
 		// < a string which matches the rule;
                 //   identifier >
 
-		s = string() 
+	(LOOKAHEAD(2)
+		s = string()
+	|
+		
+		s = anykeyword()
+	|
+		t =  <ONEWORD>
+		{
+			s = t.image;
+		}
+	)
 			{
 			return s;
 			}
@@ -7033,7 +7148,7 @@ t = <deviatekeyword>
 |
 t = <featurekeyword>
 |
-t = <fractiondigitkeyword>
+t = <fractiondigitskeyword>
 |
 t = <groupingkeyword>
 |
@@ -7129,6 +7244,8 @@ t = <deprecatedkeyword>
 |
 t = <falsekeyword>
 |
+t = <deletekeyword>
+|
 t = <maxkeyword>
 |
 t = <minkeyword>
@@ -7175,20 +7292,26 @@ String i = null;
 
 String identifierref()         :
 {
-Token t;
+Token t,s;
 String p = null;
 String i = null;}
 {
-	 [
-	  LOOKAHEAD(2)p = prefix() ":"
-	 ] t = <IDENTIFIER>
+	// [
+	 // LOOKAHEAD(2)p = prefix() ":"
+	 //] 
+	 (
+	 s = <NAMESPACE>
+	 {
+	 	i = s.image;
+	 	return i;
+	 }
+	 |
+	 t = <IDENTIFIER>
 		{
-		i = new String();
-		if(p != null)
-			i += p + ":";
-		i += t.image;
+		i = t.image;
 		return i;
 		}
+		)
 }
 
 String string()                 :
@@ -7207,11 +7330,11 @@ String k = "",s = null,a = null;}
 		}
 	)*
  
-
 		{
 			 return s;
 		}
 	)
+	
 	|
 	s = anykeyword()
 		{
@@ -7237,6 +7360,7 @@ String k = "",s = null,a = null;}
 		{
 			return t.image;
 		}
+	
 
 }
 
