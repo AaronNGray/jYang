@@ -125,8 +125,8 @@ public abstract class YANG_Specification extends SimpleNode {
 	protected YangContext checkAsExternal(String[] p, Vector<String> checked)
 			throws YangParserException {
 		YangContext c = check(p, checked, null);
-		//if (isCheckOk)
-			//checkTreeNode(p);
+		// if (isCheckOk)
+		// checkTreeNode(p);
 		return c;
 	}
 
@@ -145,8 +145,12 @@ public abstract class YANG_Specification extends SimpleNode {
 				(Vector<String>) checkeds.clone());
 
 		localcontext.pendingUnions();
-		localcontext.checkTypes();
-
+		try {
+			localcontext.checkTypes();
+		} catch (YangParserException e) {
+			throw new YangParserException(getName() + e.getMessage()
+					+ "  stop checking");
+		}
 		if (c != null)
 			c.merge(localcontext);
 		else
@@ -448,6 +452,7 @@ public abstract class YANG_Specification extends SimpleNode {
 		checkedSpecs.put(externalmodulename, externalspec);
 		return externalspec;
 	}
+
 	protected YANG_Specification getExternal(String[] paths,
 			String externalmodulename, boolean b) throws YangParserException {
 		int i = 0;
