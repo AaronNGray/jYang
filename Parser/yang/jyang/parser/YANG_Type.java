@@ -572,8 +572,8 @@ public class YANG_Type extends SimpleNode {
 			if (bit.getPosition() == null) {
 				if (highest.compareTo(YangBuiltInTypes.uint32ub
 						.add(new BigInteger("1"))) == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol()
+					throw new YangParserException("@" + bit.getLine() + "."
+							+ bit.getCol()
 							+ ":position must be given because max is given");
 				bitspos.add(highest);
 				highest = highest.add(new BigInteger("1"));
@@ -584,12 +584,12 @@ public class YANG_Type extends SimpleNode {
 				try {
 					biginteger = new BigInteger(strpos);
 				} catch (NumberFormatException e) {
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":bit position is not an integer");
+					throw new YangParserException("@" + bit.getLine() + "."
+							+ bit.getCol() + ":bit position is not an integer");
 				}
 				if (biginteger.compareTo(YangBuiltInTypes.uint32ub) == 1)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":" + biginteger
+					throw new YangParserException("@" + bit.getLine() + "."
+							+ bit.getCol() + ":" + biginteger
 							+ " is a too much higher position");
 				if (biginteger.compareTo(highest) >= 0) {
 					highest = biginteger;
@@ -598,8 +598,8 @@ public class YANG_Type extends SimpleNode {
 				} else if (biginteger.compareTo(highest) == -1) {
 					bitspos.add(biginteger);
 				} else if (biginteger.compareTo(highest) == 0) {
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol()
+					throw new YangParserException("@" + bit.getLine() + "."
+							+ bit.getCol()
 							+ ":ambigous; a position must be specified");
 				}
 			}
