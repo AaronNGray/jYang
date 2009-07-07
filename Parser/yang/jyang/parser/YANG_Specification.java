@@ -254,14 +254,14 @@ public abstract class YANG_Specification extends SimpleNode {
 		for (Enumeration<YANG_Body> eb = getBodies().elements(); eb
 				.hasMoreElements();) {
 			YANG_Body body = eb.nextElement();
-			if (!(body instanceof YANG_Uses))
+			if (!(body instanceof YANG_Uses || body instanceof YANG_Augment))
 				try {
 					context.addNode(body);
 				} catch (YangParserException ye) {
 					System.err.println(getName() + ye.getMessage());
 				}
 		}
-
+/*
 		YANG_Body body = null;
 
 		try {
@@ -275,6 +275,7 @@ public abstract class YANG_Specification extends SimpleNode {
 					Vector<YANG_Grouping> usedgroupings = g.getGroupings();
 					Vector<YANG_TypeDef> usedtypedefs = g.getTypeDefs();
 					Vector<YANG_DataDef> useddatadefs = g.getDataDefs();
+					
 					for (Enumeration<YANG_TypeDef> et = usedtypedefs.elements(); et
 							.hasMoreElements();) {
 						YANG_TypeDef typedef = (YANG_TypeDef) et.nextElement();
@@ -298,9 +299,10 @@ public abstract class YANG_Specification extends SimpleNode {
 			mes = mes.substring(0, mes.indexOf("defined"));
 			mes = "@" + body.getLine() + "." + body.getCol() + ":grouping "
 					+ body.getBody() + " used " + mes + " used elsewhere";
-			// System.err.println(getName() + mes);
+			
 			throw new YangParserException(getName() + mes);
 		}
+		*/
 		/*
 		 * Vector<YANG_Body> cleanedbodies = new Vector<YANG_Body>();
 		 * 

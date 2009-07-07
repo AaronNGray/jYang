@@ -21,8 +21,6 @@ package jyang.parser;
  */
 import java.util.*;
 
-
-
 public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 		YANG_ShortCase {
 
@@ -36,8 +34,8 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
 
-	private boolean b_key = false, b_min = false,
-			b_max = false, b_ordered = false;
+	private boolean b_key = false, b_min = false, b_max = false,
+			b_ordered = false;
 
 	public YANG_List(int id) {
 		super(id);
@@ -79,7 +77,6 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 	public Vector<YANG_Unique> getUniques() {
 		return uniques;
 	}
-
 
 	public void setMinElement(YANG_MinElement m) throws YangParserException {
 		if (b_min)
@@ -143,9 +140,10 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 	public Vector<YANG_DataDef> getDataDefs() {
 		return datadefs;
 	}
-	
-	public boolean isBracked(){
-		return super.isBracked() || b_key || b_max || b_min || b_ordered || datadefs.size() != 0 || groupings.size() != 0;
+
+	public boolean isBracked() {
+		return super.isBracked() || b_key || b_max || b_min || b_ordered
+				|| datadefs.size() != 0 || groupings.size() != 0;
 	}
 
 	public void check(YangContext context) throws YangParserException {
@@ -157,20 +155,22 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 							+ getList() + " with config true");
 			} else {
 				YANG_Config parentConfig = getParentConfig();
-				if (parentConfig.getConfig().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":key not present in list "
-							+ getList() + " with parent config true");
+				if (parentConfig != null)
+					if (parentConfig.getConfig().compareTo("true") == 0)
+						throw new YangParserException("@" + getLine() + "."
+								+ getCol() + ":key not present in list "
+								+ getList() + " with parent config true");
 			}
 		} else {
 
 			if (b_config) {
 				YANG_Config parentConfig = getParentConfig();
-				if (parentConfig.getConfig().compareTo("false") == 0
-						&& getConfig().getConfig().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol()
-							+ ":config to true and parent config to false");
+				if (parentConfig != null)
+					if (parentConfig.getConfig().compareTo("false") == 0
+							&& getConfig().getConfig().compareTo("true") == 0)
+						throw new YangParserException("@" + getLine() + "."
+								+ getCol()
+								+ ":config to true and parent config to false");
 			}
 
 			String[] kleafs = getKey().getKeyLeaves();
@@ -186,46 +186,50 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 					configlist = getParentConfig().getConfig();
 				} else
 					configlist = getConfig().getConfig();
-				for (Enumeration<YANG_DataDef> ed = getDataDefs().elements(); !found
-						&& ed.hasMoreElements();) {
-					YANG_DataDef dd = ed.nextElement();
-					found = findKey(context, kleafs[i], dd);
-					if(found){
-						if (dd instanceof YANG_Leaf) {
-							YANG_Leaf leaf = (YANG_Leaf) dd;
-							if (context.getBuiltInType(leaf.getType()) != null) {
-								if (YangBuiltInTypes.empty.compareTo(context
-										.getBuiltInType(leaf.getType())) == 0)
-									throw new YangParserException(
-											"@"
-													+ getLine()
-													+ "."
-													+ getCol()
-													+ ":key leaf "
-													+ kleafs[i]
-													+ " can not be of the empty type in list "
-													+ getList());
-								String configkeyleaf = null;
-								if (leaf.getConfig() == null)
-									configkeyleaf = configlist;
-								else
-									configkeyleaf = YangBuiltInTypes
-											.removeQuotesAndTrim(leaf
-													.getConfig().getConfig());
-								if (configlist.compareTo(configkeyleaf) != 0)
-									throw new YangParserException(
-											"@"
-													+ getLine()
-													+ "."
-													+ getCol()
-													+ ":key leaf "
-													+ kleafs[i]
-													+ " has not the same config of the list "
-													+ getList());
+				if (configlist != null)
+					for (Enumeration<YANG_DataDef> ed = getDataDefs()
+							.elements(); !found && ed.hasMoreElements();) {
+						YANG_DataDef dd = ed.nextElement();
+						found = findKey(context, kleafs[i], dd);
+						if (found) {
+							if (dd instanceof YANG_Leaf) {
+								YANG_Leaf leaf = (YANG_Leaf) dd;
+								if (context.getBuiltInType(leaf.getType()) != null) {
+									if (YangBuiltInTypes.empty
+											.compareTo(context
+													.getBuiltInType(leaf
+															.getType())) == 0)
+										throw new YangParserException(
+												"@"
+														+ getLine()
+														+ "."
+														+ getCol()
+														+ ":key leaf "
+														+ kleafs[i]
+														+ " can not be of the empty type in list "
+														+ getList());
+									String configkeyleaf = null;
+									if (leaf.getConfig() == null)
+										configkeyleaf = configlist;
+									else
+										configkeyleaf = YangBuiltInTypes
+												.removeQuotesAndTrim(leaf
+														.getConfig()
+														.getConfig());
+									if (configlist.compareTo(configkeyleaf) != 0)
+										throw new YangParserException(
+												"@"
+														+ getLine()
+														+ "."
+														+ getCol()
+														+ ":key leaf "
+														+ kleafs[i]
+														+ " has not the same config of the list "
+														+ getList());
+								}
 							}
 						}
 					}
-				}
 				if (!found)
 					throw new YangParserException("@" + getLine() + "."
 							+ getCol() + ":key leaf " + kleafs[i]
@@ -257,11 +261,11 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 	}
 
 	private boolean findKey(YangContext context, String k, YANG_DataDef dd) {
-		
+
 		if (dd.getBody().compareTo(k) == 0)
 			return true;
 		if (dd instanceof YANG_Uses) {
-			YANG_Uses uses = (YANG_Uses) dd;			
+			YANG_Uses uses = (YANG_Uses) dd;
 			YANG_Grouping grouping = context.getUsedGrouping(uses);
 			for (Enumeration<YANG_DataDef> edd = grouping.getDataDefs()
 					.elements(); edd.hasMoreElements();) {
@@ -280,7 +284,7 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 						.elements(); ecdef.hasMoreElements();) {
 					YANG_CaseDef cdef = ecdef.nextElement();
 					if (cdef instanceof YANG_DataDef)
-						if(findKey(context, k, (YANG_DataDef)cdef))
+						if (findKey(context, k, (YANG_DataDef) cdef))
 							return true;
 				}
 			}

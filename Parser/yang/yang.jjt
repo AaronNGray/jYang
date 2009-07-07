@@ -4611,9 +4611,24 @@ String s;}
 		s = anykeyword()
 	|
 		t =  <ONEWORD>
-		{
-			s = t.image;
-		}
+			{
+				s = t.image;
+			}
+	|
+		t = <DDOT>
+			{
+				s = t.image;
+			}
+	|
+		t = "."
+			{
+				s = t.image;
+			}
+	|
+		t = "+"
+			{
+				s = t.image;
+			}
 	)
 			{
 			return s;

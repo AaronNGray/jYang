@@ -28,6 +28,9 @@ public class YANG_Grouping extends YANG_Body {
 	private YANG_Status status = null;
 	private YANG_Description description = null;
 	private YANG_Reference reference = null;
+	private boolean checked = false;
+	
+
 	private Vector<YANG_TypeDef> typedefs = new Vector<YANG_TypeDef>();
 	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
@@ -128,9 +131,18 @@ public class YANG_Grouping extends YANG_Body {
 	public boolean isBracked() {
 		return bracked;
 	}
+	
 
 	public void check(YangContext context) throws YangParserException {
 
+	}
+	
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
 	}
 
 	public String toString() {
