@@ -1,7 +1,7 @@
 submodule network {
  
-   belongs-to netconf { prefix nc;}
    
+   belongs-to netconf { prefix net;}
    include interfaces;
    
    grouping network {

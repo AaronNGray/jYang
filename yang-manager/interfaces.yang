@@ -2,6 +2,7 @@ submodule interfaces {
 
 	belongs-to netconf { prefix net;}
 	
+
 	grouping generic-state {
 	    leaf bytes {type uint64;}
 	    leaf packets { type uint64;}

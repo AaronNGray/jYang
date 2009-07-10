@@ -295,7 +295,7 @@ public class YangController {
 			int nbList = 0;
 			int nbLeafList = 0;
 			int nbLeaf = 0;
-			
+
 			xsw.writeStartDocument();
 			xsw.writeCharacters("\n");
 			for (int i = 0; i < paths.length; i++) {
@@ -305,14 +305,14 @@ public class YangController {
 					ContainerNode cn = (ContainerNode) n;
 					xsw.writeStartElement(cn.getName());
 					xsw.writeCharacters("\n");
-				} else if (n instanceof ListNode){
+				} else if (n instanceof ListNode) {
 					nbList++;
-					ListNode ln = (ListNode)n;
+					ListNode ln = (ListNode) n;
 					xsw.writeStartElement(ln.getName());
 					xsw.writeCharacters("\n");
 				} else if (n instanceof LeafListNode) {
 					nbLeafList++;
-					LeafListNode lln = (LeafListNode)n;
+					LeafListNode lln = (LeafListNode) n;
 					xsw.writeStartElement(lln.getName());
 					xsw.writeCharacters("\n");
 				} else if (n instanceof LeafNode) {
@@ -322,7 +322,7 @@ public class YangController {
 					xsw.writeCharacters("\n");
 				}
 			}
-			for (int f = 0; f < nbCont + nbList + nbLeafList + nbLeaf; f++){
+			for (int f = 0; f < nbCont + nbList + nbLeafList + nbLeaf; f++) {
 				xsw.writeEndElement();
 				xsw.writeCharacters("\n");
 			}
@@ -335,9 +335,27 @@ public class YangController {
 			e.printStackTrace();
 		}
 	}
-	
-	private void oneLevel(XMLStreamWriter xsw){
-		
+
+	public void createSchemaTree(Hashtable<String, YANG_Specification> specs) {
+
+		for (Enumeration<String> es = specs.keys(); es.hasMoreElements();) {
+			YANG_Specification s = specs.get(es.nextElement());
+			for (Enumeration<YANG_Body> eb = s.getBodies().elements(); eb
+					.hasMoreElements();) {
+				YANG_Body b = eb.nextElement();
+				if ((b instanceof YANG_Container || b instanceof YANG_List
+						|| b instanceof YANG_LeafList || b instanceof YANG_Leaf)) {
+					Vector<String> builded = new Vector<String>();
+					Hashtable<String, YangTreeNode> importedtreenodes = new Hashtable<String, YangTreeNode>();
+					builded.add(b.getBody());
+
+					YangTreeNode tn = s.buildTreeNode(new String[0], builded,
+							importedtreenodes);
+					System.out.println(tn);
+
+				}
+			}
+		}
 	}
 
 }
