@@ -44,7 +44,6 @@ public class MgmtApplet extends Applet implements ActionListener, TreeSelectionL
 	public void init() {
 		JPanel jp = createManagerInterface();
 		response = getParameter("reply");
-		System.out.println(response);
 		add(jp);
 		setVisible(true);
 	}
@@ -177,7 +176,10 @@ public class MgmtApplet extends Applet implements ActionListener, TreeSelectionL
 	public void actionPerformed(ActionEvent e) {
 		String c = e.getActionCommand();
 		if (c.equals("get-config")){
-			System.out.println("hello");
+			System.out.println("GET");
+		}
+		if (c.equals("edit-config")){
+			System.out.println("EDIT");
 		}
 		
 		
