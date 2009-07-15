@@ -28,7 +28,7 @@ import java.util.Vector;
    machinery for constructing the parent and child relationships
    between nodes. */
 
-public interface Node {
+public interface Node extends java.io.Serializable {
 
 	public void addUnknown(YANG_Unknown u);
 	public Vector<YANG_Unknown> getUnknowns();

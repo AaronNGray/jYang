@@ -1,5 +1,7 @@
 package jyang.parser;
 
+import java.util.Enumeration;
+import java.util.Vector;
 
 public class YANG_TypeDef extends YANG_Body {
 
@@ -112,29 +114,61 @@ public class YANG_TypeDef extends YANG_Body {
 		if (!b_type)
 			throw new YangParserException("Type statement expected in typedef "
 					+ typedef, getLine(), getCol());
+
+		
 		
 		getType().check(context);
-		if(b_default)
+
+		Vector<YANG_TypeDef> me = new Vector<YANG_TypeDef>();
+		chainUnions(this, me, context);
+
+		if (b_default)
 			getDefault().check(context, getType());
-		
+
 		else {
 			YANG_TypeDef defining = context.getBaseTypeDef(this);
-			
-			while(defining != null){
-				if (defining.getDefault() != null){
+
+			while (defining != null) {
+				if (defining.getDefault() != null) {
 					try {
-						getType().checkValue(context, defining.getDefault().getDefault());
+						getType().checkValue(context,
+								defining.getDefault().getDefault());
 						defining = null;
-					} catch (YangParserException ye){
-						throw new YangParserException("@" + getLine() + "." + getCol()
-								+ ":default value " +defining.getDefault().getDefault()+
-								" does no more match with current typedef "+ getTypeDef());
+					} catch (YangParserException ye) {
+						throw new YangParserException("@" + getLine() + "."
+								+ getCol() + ":default value "
+								+ defining.getDefault().getDefault()
+								+ " does no more match with current typedef "
+								+ getTypeDef());
 					}
-				} else 
+				} else
 					defining = context.getBaseTypeDef(defining);
 			}
 		}
-			
+
+	}
+
+	private void chainUnions(YANG_TypeDef zis, Vector<YANG_TypeDef> tds,
+			YangContext context) throws YangParserException {
+		if (zis == null)
+			return;
+		if (tds.contains(zis))
+			throw new YangParserException("@" + getLine() + "." + getCol()
+					+ ":recursive union from " + zis.getTypeDef());
+		
+		if (YangBuiltInTypes.union.compareTo(context.getBuiltInType(zis
+				.getType())) == 0) {
+			YANG_Type ut = zis.getType();
+			if (ut.getUnionSpec() != null) {
+				for (Enumeration<YANG_Type> eus = ut.getUnionSpec().getTypes()
+						.elements(); eus.hasMoreElements();) {
+					YANG_Type utt = eus.nextElement();
+					tds.add(zis);
+					chainUnions(context.getTypeDef(utt), tds, context);
+				}
+			}
+		}
+
 	}
 
 	public String toString() {
@@ -155,8 +189,8 @@ public class YANG_TypeDef extends YANG_Body {
 		result += "}";
 		return result;
 	}
-	
-	public YANG_TypeDef clone(){
+
+	public YANG_TypeDef clone() {
 		YANG_TypeDef ctd = new YANG_TypeDef(parser, id);
 		try {
 			ctd.setType(getType());

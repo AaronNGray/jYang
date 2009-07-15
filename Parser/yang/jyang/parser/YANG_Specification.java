@@ -39,6 +39,19 @@ public abstract class YANG_Specification extends SimpleNode {
 
 	protected Vector<YANG_Module> importeds = new Vector<YANG_Module>();
 	protected Vector<YANG_SubModule> includeds = new Vector<YANG_SubModule>();
+	
+	
+	
+	
+	
+	
+	
+	
+	private YangTreeNode schemaTree = null;
+
+	public YangTreeNode getSchemaTree() {
+		return schemaTree;
+	}
 
 	public YANG_Specification(int i) {
 		super(i);
@@ -148,8 +161,10 @@ public abstract class YANG_Specification extends SimpleNode {
 		try {
 			localcontext.checkTypes();
 		} catch (YangParserException e) {
-			throw new YangParserException(getName() + e.getMessage()
-					+ "  stop checking");
+			System.err.println(e.getMessage());
+			
+			//throw new YangParserException(getName() + e.getMessage()
+			//		+ "  stop checking");
 		}
 		if (c != null)
 			c.merge(localcontext);
@@ -493,9 +508,9 @@ public abstract class YANG_Specification extends SimpleNode {
 		Vector<String> builded = new Vector<String>();
 		Hashtable<String, YangTreeNode> importedtreenodes = new Hashtable<String, YangTreeNode>();
 		builded.add(getName());
-		YangTreeNode tn = buildTreeNode(p, builded, importedtreenodes);
+		schemaTree = buildTreeNode(p, builded, importedtreenodes);
 
-		tn.check(this, tn, tn, importedtreenodes);
+		schemaTree.check(this, schemaTree, schemaTree, importedtreenodes);
 	}
 
 	public YangTreeNode buildTreeNode(String[] p, Vector<String> builded,

@@ -1,25 +1,25 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
-
 
 public class YangContext {
 
@@ -94,15 +94,15 @@ public class YangContext {
 	 *             uses a built-in type.
 	 */
 	public void addNode(YANG_Body b) throws YangParserException {
-		
-			if (b instanceof YANG_TypeDef)
-				addTypeDef((YANG_TypeDef) b);
-			else if (b instanceof YANG_Grouping)
-				addGrouping((YANG_Grouping) b);
-			else if (b instanceof YANG_Extension)
-				addExtension((YANG_Extension) b);
-			else
-				specnodes.put(getModuleSpecName() + ":" + b.getBody(), b);
+
+		if (b instanceof YANG_TypeDef)
+			addTypeDef((YANG_TypeDef) b);
+		else if (b instanceof YANG_Grouping)
+			addGrouping((YANG_Grouping) b);
+		else if (b instanceof YANG_Extension)
+			addExtension((YANG_Extension) b);
+		else
+			specnodes.put(getModuleSpecName() + ":" + b.getBody(), b);
 	}
 
 	/**
@@ -154,9 +154,9 @@ public class YangContext {
 				new Hashtable<String, YANG_Type>());
 		return specnodes.isDefinedAsExtension(fakenametype);
 	}
-	
+
 	public YANG_Extension getExtension(YANG_Unknown u)
-	throws YangParserException {
+			throws YangParserException {
 
 		String prefix = u.getPrefix();
 		String suffix = u.getExtension();
@@ -217,8 +217,9 @@ public class YangContext {
 				System.err.println("Panic in used grouping");
 			}
 			return specnodes.getUsedGrouping(cn);
-		} else{
-			return specnodes.getUsedGrouping(getModuleSpecName() + ":" + uses);}
+		} else {
+			return specnodes.getUsedGrouping(getModuleSpecName() + ":" + uses);
+		}
 
 	}
 
@@ -367,7 +368,11 @@ public class YangContext {
 
 		if (YangBuiltInTypes.union.compareTo(suffix) == 0) {
 			YANG_UnionSpecification unionspec = type.getUnionSpec();
-			pendingUnionTypes(unionspec, pendinguniontype, imports, spec);
+			if (unionspec != null)
+				pendingUnionTypes(unionspec, pendinguniontype, imports, spec);
+			else
+				throw new YangParserException("@" + type.getLine() + "."
+						+ type.getCol() + ":union type must have type(s)");
 		}
 		return cn;
 
@@ -404,7 +409,7 @@ public class YangContext {
 						result = spec.getName() + ":" + suffix;
 					}
 				}
-				if (!found){
+				if (!found) {
 					throw new YangParserException("the prefix " + prefix
 							+ " is not a prefix of an imported module");
 				}

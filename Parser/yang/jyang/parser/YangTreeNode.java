@@ -24,7 +24,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-public class YangTreeNode {
+public class YangTreeNode implements java.io.Serializable{
 
 	private YangTreeNode parent = null;
 	private Vector<YangTreeNode> childs = new Vector<YangTreeNode>();

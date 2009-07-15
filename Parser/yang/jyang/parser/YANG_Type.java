@@ -283,7 +283,8 @@ public class YANG_Type extends SimpleNode {
 
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
+				throw new YangParserException("@" + getBitSpec().getLine()
+						+ "." + getBitSpec().getCol()
 						+ ":numeric type can not have bit specification");
 			if (getEnums().size() != 0)
 				throw new YangParserException("@" + getLine() + "." + getCol()
@@ -291,16 +292,16 @@ public class YANG_Type extends SimpleNode {
 			if (getLeafRef() != null)
 				throw new YangParserException(
 						"@"
-								+ getLine()
+								+ getLeafRef().getLine()
 								+ "."
-								+ getCol()
+								+ getLeafRef().getCol()
 								+ ":numeric type can not have key reference specification");
 			if (getStringRest() != null)
 				throw new YangParserException(
 						"@"
-								+ getLine()
+								+ getStringRest().getLine()
 								+ "."
-								+ getCol()
+								+ getStringRest().getCol()
 								+ ":numeric type can not have length or pattern specification");
 			if (getUnionSpec() != null)
 				throw new YangParserException("@" + getLine() + "." + getCol()
@@ -310,7 +311,8 @@ public class YANG_Type extends SimpleNode {
 		} else if (YangBuiltInTypes.string.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
+				throw new YangParserException("@" + getBitSpec().getLine()
+						+ "." + getBitSpec().getCol()
 						+ ":string type can not have bit specification");
 			if (getEnums().size() != 0)
 				throw new YangParserException("@" + getLine() + "." + getCol()
@@ -318,12 +320,13 @@ public class YANG_Type extends SimpleNode {
 			if (getLeafRef() != null)
 				throw new YangParserException(
 						"@"
-								+ getLine()
+								+ getLeafRef().getLine()
 								+ "."
-								+ getCol()
+								+ getLeafRef().getCol()
 								+ ":string type can not have key reference specification");
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
+				throw new YangParserException("@" + getUnionSpec().getLine()
+						+ "." + getUnionSpec().getCol()
 						+ ":string type can not have type specification");
 			if (getNumRest() != null)
 				throw new YangParserException("@" + getLine() + "." + getCol()
@@ -503,12 +506,19 @@ public class YANG_Type extends SimpleNode {
 								+ "."
 								+ getCol()
 								+ ":union type can not have key reference specification");
-			if (YangBuiltInTypes.union.compareTo(getType()) == 0)
-				for (Enumeration<YANG_Type> et = getUnionSpec().getTypes()
-						.elements(); et.hasMoreElements();) {
-					YANG_Type utype = et.nextElement();
-					utype.check(context);
-				}
+
+			
+
+			for (Enumeration<YANG_Type> et = getUnionSpec().getTypes()
+					.elements(); et.hasMoreElements();) {
+				YANG_Type utype = et.nextElement();
+				if (context.getBuiltInType(utype).compareTo(
+						YangBuiltInTypes.empty) == 0)
+					throw new YangParserException("@" + getLine() + "."
+							+ getCol() + ":union type can not have empty type");
+				
+			}
+
 		} else if (YangBuiltInTypes.instanceidentifier.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)

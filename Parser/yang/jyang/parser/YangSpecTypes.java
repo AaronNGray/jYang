@@ -1,25 +1,25 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
-
 
 public class YangSpecTypes {
 
@@ -113,36 +113,36 @@ public class YangSpecTypes {
 			String basetype = et.nextElement();
 			if (!YangBuiltInTypes.isBuiltIn(basetype)) {
 				String s = null;
-				//if (basetype.substring(0, basetype.indexOf(':')).compareTo(
-					//	module) == 0) {
-					if (!deriveds.containsKey(basetype)) {
-						YANG_TypeDef td = null;
-						boolean found = false;
-						for (Enumeration<String> ek = deriveds.keys(); ek
-								.hasMoreElements()
-								&& !found;) {
-							s = ek.nextElement();
-							if (deriveds.get(s).compareTo(basetype) == 0) {
-								found = true;
-								td = typedefs.get(s);
-							}
+				// if (basetype.substring(0, basetype.indexOf(':')).compareTo(
+				// module) == 0) {
+				if (!deriveds.containsKey(basetype)) {
+					YANG_TypeDef td = null;
+					boolean found = false;
+					for (Enumeration<String> ek = deriveds.keys(); ek
+							.hasMoreElements()
+							&& !found;) {
+						s = ek.nextElement();
+						if (deriveds.get(s).compareTo(basetype) == 0) {
+							found = true;
+							td = typedefs.get(s);
 						}
-						if (td != null) {
-							throw new YangParserException("@:type " + basetype
-									+ " used by the typedef " + s + " at line "
-									+ td.getLine() + " is not defined");
-						}
-					//}
+					}
+					if (td != null) {
+						throw new YangParserException("@:type " + basetype
+								+ " used by the typedef " + s + " at line "
+								+ td.getLine() + " is not defined");
+					}
+					// }
 				}
 			}
 		}
 		for (Enumeration<String> et = deriveds.elements(); et.hasMoreElements();) {
 			String basetype = et.nextElement();
 			if (!YangBuiltInTypes.isBuiltIn(basetype)) {
-					Vector<String> chain = new Vector<String>();
-					chain.add(basetype);
-					checkChain(module, chain, deriveds.get(basetype));
-				}
+				Vector<String> chain = new Vector<String>();
+				chain.add(basetype);
+				checkChain(module, chain, deriveds.get(basetype));
+			}
 		}
 	}
 
@@ -155,8 +155,8 @@ public class YangSpecTypes {
 					+ "\"");
 		}
 		if (!YangBuiltInTypes.isBuiltIn(d)) {
-				b.add(d);
-				checkChain(module, b, deriveds.get(d));
+			b.add(d);
+			checkChain(module, b, deriveds.get(d));
 		}
 	}
 
@@ -165,7 +165,7 @@ public class YangSpecTypes {
 			return t;
 		else if (YangBuiltInTypes.isBuiltIn(t))
 			return t;
-		else
+		else 
 			return getBuiltInType(deriveds.get(t));
 	}
 
