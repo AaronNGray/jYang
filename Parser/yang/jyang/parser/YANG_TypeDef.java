@@ -15,6 +15,8 @@ public class YANG_TypeDef extends YANG_Body {
 
 	private boolean b_type = false, b_units = false, b_default = false,
 			b_status = false, b_description = false, b_reference = false;
+	
+	private boolean used = false, correct = true;
 
 	public YANG_TypeDef(int id) {
 		super(id);
@@ -111,11 +113,14 @@ public class YANG_TypeDef extends YANG_Body {
 	}
 
 	public void check(YangContext context) throws YangParserException {
+		
+		if (!isCorrect())
+			return;
+		
 		if (!b_type)
 			throw new YangParserException("Type statement expected in typedef "
 					+ typedef, getLine(), getCol());
 
-		
 		
 		getType().check(context);
 
@@ -152,10 +157,12 @@ public class YANG_TypeDef extends YANG_Body {
 			YangContext context) throws YangParserException {
 		if (zis == null)
 			return;
-		if (tds.contains(zis))
+		if (tds.contains(zis)){
+			setCorrect(false);
 			throw new YangParserException("@" + getLine() + "." + getCol()
 					+ ":recursive union from " + zis.getTypeDef());
-		
+		}
+
 		if (YangBuiltInTypes.union.compareTo(context.getBuiltInType(zis
 				.getType())) == 0) {
 			YANG_Type ut = zis.getType();
@@ -168,7 +175,6 @@ public class YANG_TypeDef extends YANG_Body {
 				}
 			}
 		}
-
 	}
 
 	public String toString() {
@@ -199,6 +205,22 @@ public class YANG_TypeDef extends YANG_Body {
 			e.printStackTrace();
 		}
 		return ctd;
+	}
+
+	public void setCorrect(boolean correct) {
+		this.correct = correct;
+	}
+
+	public boolean isCorrect() {
+		return correct;
+	}
+
+	public void setUsed(boolean used) {
+		this.used = used;
+	}
+
+	public boolean isUsed() {
+		return used;
 	}
 
 }

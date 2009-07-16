@@ -507,17 +507,7 @@ public class YANG_Type extends SimpleNode {
 								+ getCol()
 								+ ":union type can not have key reference specification");
 
-			
-
-			for (Enumeration<YANG_Type> et = getUnionSpec().getTypes()
-					.elements(); et.hasMoreElements();) {
-				YANG_Type utype = et.nextElement();
-				if (context.getBuiltInType(utype).compareTo(
-						YangBuiltInTypes.empty) == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":union type can not have empty type");
-				
-			}
+			checkEmptyUnion(context, new Vector<YANG_Type>(), getUnionSpec().getTypes());
 
 		} else if (YangBuiltInTypes.instanceidentifier.compareTo(context
 				.getBuiltInType(this)) == 0) {
@@ -1659,6 +1649,38 @@ public class YANG_Type extends SimpleNode {
 			enumsv[i++] = YangBuiltInTypes.removeQuotesAndTrim(ee.nextElement()
 					.getEnum());
 		return enumsv;
+
+	}
+
+	private void checkEmptyUnion(YangContext context, Vector<YANG_Type> chain, Vector<YANG_Type> unions)
+			throws YangParserException {
+
+		for (Enumeration<YANG_Type> et = unions.elements(); et
+				.hasMoreElements();) {
+			YANG_Type utype = et.nextElement();
+			if (context.getBuiltInType(utype).compareTo(YangBuiltInTypes.empty) == 0)
+				throw new YangParserException("@" + getLine() + "." + getCol()
+						+ ":union type " + getType() + " can not have empty type");
+			else if (context.getBuiltInType(utype).compareTo(
+					YangBuiltInTypes.union) == 0) {
+				if (utype.getUnionSpec() != null){
+					chain.add(utype);
+					checkEmptyUnion(context, chain, utype.getUnionSpec().getTypes());
+				}
+				else {
+					while (utype.getUnionSpec() == null) {
+						YANG_TypeDef suptype = context.getTypeDef(utype);
+						if (!suptype.isCorrect())
+							return;
+						utype = suptype.getType();
+					}
+					if (!chain.contains(utype)){
+						chain.add(utype);
+						checkEmptyUnion(context, chain, utype.getUnionSpec().getTypes());
+					}
+				}
+			}
+		}
 
 	}
 

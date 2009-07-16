@@ -128,11 +128,24 @@ public class YangSpecTypes {
 						}
 					}
 					if (td != null) {
-						throw new YangParserException("@:type " + basetype
+						td.setCorrect(false);
+						//throw new YangParserException
+						System.err.println(module + "@:type " + basetype
 								+ " used by the typedef " + s + " at line "
 								+ td.getLine() + " is not defined");
 					}
 					// }
+				} else {
+					String der = deriveds.get(basetype);
+					if (der.compareTo(basetype) == 0) {
+						YANG_TypeDef td = typedefs.get(basetype);
+						td.setCorrect(false);
+						//throw new YangParserException(
+								System.err.println(
+								module + "@" + td.getLine() + "."
+								+ td.getCol() + ":typedef " + td.getBody()
+								+ " is self defining");
+					}
 				}
 			}
 		}
@@ -141,23 +154,32 @@ public class YangSpecTypes {
 			if (!YangBuiltInTypes.isBuiltIn(basetype)) {
 				Vector<String> chain = new Vector<String>();
 				chain.add(basetype);
-				checkChain(module, chain, deriveds.get(basetype));
+					checkChain(module, chain, deriveds.get(basetype));
 			}
 		}
 	}
 
-	protected void checkChain(String module, Vector<String> b, String d)
+	protected boolean checkChain(String module, Vector<String> b, String d)
 			throws YangParserException {
 		if (b.contains(d)) {
 			YANG_TypeDef bt = typedefs.get(d);
-			throw new YangParserException("@" + bt.getLine() + "."
+			bt.setCorrect(false);
+			for (Enumeration<String> es = b.elements();es.hasMoreElements();){
+				String tn = es.nextElement();
+				YANG_TypeDef td = typedefs.get(tn);
+				td.setCorrect(false);
+			}
+			//throw new YangParserException
+			System.err.println(module + "@" + bt.getLine() + "."
 					+ bt.getCol() + ":circular dependency for type \"" + d
 					+ "\"");
+			return false;
 		}
 		if (!YangBuiltInTypes.isBuiltIn(d)) {
 			b.add(d);
-			checkChain(module, b, deriveds.get(d));
+			return checkChain(module, b, deriveds.get(d));
 		}
+		return true;
 	}
 
 	public String getBuiltInType(String t) {
@@ -165,7 +187,7 @@ public class YangSpecTypes {
 			return t;
 		else if (YangBuiltInTypes.isBuiltIn(t))
 			return t;
-		else 
+		else
 			return getBuiltInType(deriveds.get(t));
 	}
 

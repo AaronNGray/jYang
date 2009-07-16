@@ -47,16 +47,15 @@ public abstract class YANG_Body extends SimpleNode {
 				.getSpec());
 
 		if (this instanceof YANG_Grouping) {
-			
+
 			YANG_Grouping grouping = (YANG_Grouping) this;
-			
+
 			/*
-			grouping.setChecked(true);
-			typedefs = grouping.getTypeDefs();
-			groupings = grouping.getGroupings();
-			datadefs = grouping.getDataDefs();
-			*/
-			
+			 * grouping.setChecked(true); typedefs = grouping.getTypeDefs();
+			 * groupings = grouping.getGroupings(); datadefs =
+			 * grouping.getDataDefs();
+			 */
+
 		} else if (this instanceof YANG_Container) {
 			YANG_Container container = (YANG_Container) this;
 			typedefs = container.getTypeDefs();
@@ -133,30 +132,24 @@ public abstract class YANG_Body extends SimpleNode {
 			groupings = notif.getGroupings();
 			datadefs = notif.getDataDefs();
 		}
-		
-		
-		
+
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 				.hasMoreElements();) {
 			YANG_TypeDef typedef = (YANG_TypeDef) et.nextElement();
 			lcontext.addNode(typedef);
 		}
-		
-		
+
 		for (Enumeration<YANG_Grouping> eg = groupings.elements(); eg
 				.hasMoreElements();) {
 			YANG_Grouping g = (YANG_Grouping) eg.nextElement();
 			lcontext.addNode(g);
 		}
-		
-		
+
 		for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
 				.hasMoreElements();)
 			lcontext.addNode(ed.nextElement());
 
-		
 		context.addSubContext(lcontext);
-		
 
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 				.hasMoreElements();) {
@@ -170,7 +163,7 @@ public abstract class YANG_Body extends SimpleNode {
 						.println(context.getSpec().getName() + e.getMessage());
 			}
 		}
-		
+
 		for (Enumeration<YANG_Grouping> eg = groupings.elements(); eg
 				.hasMoreElements();) {
 			YANG_Body body = (YANG_Body) eg.nextElement();
@@ -178,12 +171,11 @@ public abstract class YANG_Body extends SimpleNode {
 			YangContext clcts = context.clone();
 			body.checkBody(clcts);
 		}
-		
-		
+
 		for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
 				.hasMoreElements();) {
 			YANG_Body body = (YANG_Body) ed.nextElement();
-			
+
 			if (body instanceof YANG_Uses) {
 				body.setParent(this);
 				YANG_Uses uses = (YANG_Uses) body;
@@ -236,7 +228,7 @@ public abstract class YANG_Body extends SimpleNode {
 				}
 			}
 		}
-		
+
 		for (Enumeration<YANG_Unknown> eu = getUnknowns().elements(); eu
 				.hasMoreElements();) {
 			YANG_Body body = (YANG_Body) eu.nextElement();
@@ -249,8 +241,7 @@ public abstract class YANG_Body extends SimpleNode {
 						.println(context.getSpec().getName() + e.getMessage());
 			}
 		}
-		
-		
+
 		try {
 			check(context);
 		} catch (YangParserException e) {
@@ -279,13 +270,27 @@ public abstract class YANG_Body extends SimpleNode {
 				for (Enumeration<YANG_CaseDef> ecdefs = (ec.nextElement())
 						.getCaseDefs().elements(); ecdefs.hasMoreElements();) {
 					YANG_DataDef ddef = (YANG_DataDef) ecdefs.nextElement();
-					datadefs.add(ddef);
+					if (ddef instanceof YANG_Uses) {
+						YANG_Uses uses = (YANG_Uses) ddef;
+						YANG_Grouping g = uses.getGrouping();
+						for (Enumeration<YANG_DataDef> eddef = g.getDataDefs()
+								.elements(); eddef.hasMoreElements();)
+							datadefs.add(eddef.nextElement());
+					} else
+						datadefs.add(ddef);
 				}
 
 			}
 			for (Enumeration<YANG_ShortCase> es = choice.getShortCases()
 					.elements(); es.hasMoreElements();) {
 				YANG_DataDef ddef = (YANG_DataDef) es.nextElement();
+				if (ddef instanceof YANG_Uses) {
+					YANG_Uses uses = (YANG_Uses) ddef;
+					YANG_Grouping g = uses.getGrouping();
+					for (Enumeration<YANG_DataDef> eddef = g.getDataDefs()
+							.elements(); eddef.hasMoreElements();)
+						datadefs.add(eddef.nextElement());
+				} else
 				datadefs.add(ddef);
 			}
 		} else if (this instanceof YANG_Uses) {
