@@ -251,48 +251,40 @@ public abstract class YANG_Body extends SimpleNode {
 
 	public void builtTreeNode(YangTreeNode root) {
 		Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
+
 		if (this instanceof YANG_Container) {
 			YANG_Container container = (YANG_Container) this;
 			datadefs = container.getDataDefs();
+
 		} else if (this instanceof YANG_List) {
 			YANG_List list = (YANG_List) this;
 			datadefs = list.getDataDefs();
+
 		} else if (this instanceof YANG_Rpc) {
 			YANG_Rpc rpc = (YANG_Rpc) this;
 			if (rpc.getInput() != null)
 				datadefs.add(rpc.getInput());
 			if (rpc.getOutput() != null)
 				datadefs.add(rpc.getOutput());
+
 		} else if (this instanceof YANG_Choice) {
 			YANG_Choice choice = (YANG_Choice) this;
 			for (Enumeration<YANG_Case> ec = choice.getCases().elements(); ec
 					.hasMoreElements();) {
-				for (Enumeration<YANG_CaseDef> ecdefs = (ec.nextElement())
-						.getCaseDefs().elements(); ecdefs.hasMoreElements();) {
-					YANG_DataDef ddef = (YANG_DataDef) ecdefs.nextElement();
-					if (ddef instanceof YANG_Uses) {
-						YANG_Uses uses = (YANG_Uses) ddef;
-						YANG_Grouping g = uses.getGrouping();
-						for (Enumeration<YANG_DataDef> eddef = g.getDataDefs()
-								.elements(); eddef.hasMoreElements();)
-							datadefs.add(eddef.nextElement());
-					} else
-						datadefs.add(ddef);
-				}
+				datadefs.add(ec.nextElement());
+			}
+			for (Enumeration<YANG_ShortCase> ec = choice.getShortCases()
+					.elements(); ec.hasMoreElements();) {
+				datadefs.add((YANG_DataDef) ec.nextElement());
+			}
 
+		} else if (this instanceof YANG_Case) {
+			YANG_Case ycase = (YANG_Case) this;
+			for (Enumeration<YANG_CaseDef> ecdef = ycase.getCaseDefs()
+					.elements(); ecdef.hasMoreElements();) {
+				datadefs.add((YANG_DataDef) ecdef.nextElement());
 			}
-			for (Enumeration<YANG_ShortCase> es = choice.getShortCases()
-					.elements(); es.hasMoreElements();) {
-				YANG_DataDef ddef = (YANG_DataDef) es.nextElement();
-				if (ddef instanceof YANG_Uses) {
-					YANG_Uses uses = (YANG_Uses) ddef;
-					YANG_Grouping g = uses.getGrouping();
-					for (Enumeration<YANG_DataDef> eddef = g.getDataDefs()
-							.elements(); eddef.hasMoreElements();)
-						datadefs.add(eddef.nextElement());
-				} else
-				datadefs.add(ddef);
-			}
+
 		} else if (this instanceof YANG_Uses) {
 			YANG_Uses uses = (YANG_Uses) this;
 			YANG_Grouping g = uses.getGrouping();

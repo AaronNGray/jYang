@@ -24,7 +24,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-public class YangTreeNode implements java.io.Serializable{
+public class YangTreeNode implements java.io.Serializable {
 
 	private YangTreeNode parent = null;
 	private Vector<YangTreeNode> childs = new Vector<YangTreeNode>();
@@ -110,10 +110,10 @@ public class YangTreeNode implements java.io.Serializable{
 				}
 
 			}
-			
+
 			if (foundchild) {
 				startnode = child;
-			} 
+			}
 		}
 		if (foundchild)
 			return startnode.getNode();
@@ -174,7 +174,8 @@ public class YangTreeNode implements java.io.Serializable{
 
 	public String toString() {
 		String result = "";
-		result += node.getBody();
+		if (getParent() != null)
+			result += node.getBody();
 		if (childs.size() != 0)
 			result += "\n   ";
 		for (Enumeration<YangTreeNode> ey = childs.elements(); ey

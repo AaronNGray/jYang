@@ -516,12 +516,17 @@ public abstract class YANG_Specification extends SimpleNode {
 	public YangTreeNode buildTreeNode(String[] p, Vector<String> builded,
 			Hashtable<String, YangTreeNode> importedtreenodes) {
 
-		YangTreeNode ytn = new YangTreeNode();
+		YangTreeNode root = new YangTreeNode();
+		
 		for (Enumeration<YANG_Body> eb = bodies.elements(); eb
 				.hasMoreElements();) {
 			YANG_Body body = eb.nextElement();
 			if (body instanceof YANG_DataDef) {
+				YangTreeNode ytn = new YangTreeNode();
 				ytn.setNode(body);
+				ytn.setParent(root);
+				root.addChild(ytn);
+				
 				body.builtTreeNode(ytn);
 			}
 		}
@@ -542,6 +547,6 @@ public abstract class YANG_Specification extends SimpleNode {
 					.println("panic could not happen in buildTreeNode in YANG_Specification");
 			System.exit(-1);
 		}
-		return ytn;
+		return root;
 	}
 }
