@@ -27,9 +27,9 @@ public class InfoPanel extends JPanel {
 
 	public InfoPanel(boolean isTreeFilled) {
 		super();
+		this.isTreeFilled = isTreeFilled;
 		setLayout(new GridBagLayout());
 		setHelpInfo();
-		this.isTreeFilled = isTreeFilled;
 	}
 
 	private void clean() {
@@ -46,10 +46,15 @@ public class InfoPanel extends JPanel {
 
 	private void setHelpInfo() {
 		clean();
-		titre.setText("Select a node to display more informations about it ;");
+		titre.setText("Select a node to display more information about it ;");
 
-		JLabel label = new JLabel(
-				"Click on \"Get Values\" button to retrieve leaves values.");
+		String helpText;
+		if (isTreeFilled){
+			helpText = "Click on \"Return to specifications\" button to empty the tree of its values.";
+		} else {
+			helpText = "Click on \"Retrieve Values\" button to retrieve leaves values.";
+		}
+		JLabel label = new JLabel(helpText);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 1;
@@ -82,12 +87,11 @@ public class InfoPanel extends JPanel {
 		titre.setText(node.getNodeType() + " : " + node.getName());
 
 		buildTextField(1, "Type", type, false);
-		if (!isTreeFilled){
-			value = "(No value retrieved yet)";
-		} else if (value == null) {
+		
+		if (value == null) {
 			value = "(No defined value)";
 		}
-		buildTextField(2, "Value", value, false);
+		if (isTreeFilled) buildTextField(2, "Value", value, false);
 		
 		if (node instanceof LeafNode){
 			int row = 3;

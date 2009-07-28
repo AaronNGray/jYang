@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JApplet;
 import javax.swing.JButton;
@@ -34,6 +33,7 @@ import yangTree.nodes.RootNode;
 public class YangApplet extends JApplet implements TreeSelectionListener {
 
 	private boolean isTreeFilled ;
+	private String agentIP;
 	
 	private RootNode tree;
 	private YangTreeViewer treeViewer;
@@ -44,22 +44,27 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	private InfoPanel infoPanel;
 	public int height;
 	public int width;
+	
 
 	public void init() {
 		height = getSize().height;
 		width = getSize().width;
-		getSpecTree(getParameter("agentIP"));
-		buildDisplay();
+		agentIP = getParameter("agentIP");
+		displaySpecTree();
+	}
+	
+	public boolean isTreeFilled(){
+		return isTreeFilled;
 	}
 
-	public void buildDisplay() {
+	private void buildDisplay() {
 		
 		mainPanel = new JPanel();
 		setContentPane(mainPanel);
 
 		mainPanel.setLayout(new BorderLayout());
 
-		JButton button = new ButtonGetValues(this);
+		JButton button = new BottomButton(this);
 		mainPanel.add(button, BorderLayout.PAGE_END);
 
 		treeViewer = new YangTreeViewer(tree);
@@ -82,24 +87,6 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		
 		validate();
 		
-	}
-
-	public void getSpecTree(String agentIP) {
-		try {
-			URL url = new URL("https://localhost:8888/" + agentIP
-					+ ".yang.byte");
-			HttpsURLConnection connexion = (HttpsURLConnection) url
-					.openConnection();
-			ObjectInputStream ois = new ObjectInputStream(connexion
-					.getInputStream());
-			Object inputObject = ois.readObject();
-			ois.close();
-			tree = (RootNode) inputObject;
-			isTreeFilled = false;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	private InputStream sendRequestToServer(String requete) {
@@ -147,7 +134,26 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		return sendRequestToServer(requeteAvecPOST);
 	}
 
-	public void getTreeValues() {
+	public void displaySpecTree() {
+		try {
+			URL url = new URL("https://localhost:8888/" + agentIP
+					+ ".yang.byte");
+			HttpsURLConnection connexion = (HttpsURLConnection) url
+					.openConnection();
+			ObjectInputStream ois = new ObjectInputStream(connexion
+					.getInputStream());
+			Object inputObject = ois.readObject();
+			ois.close();
+			tree = (RootNode) inputObject;
+			isTreeFilled = false;
+			buildDisplay();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void displayTreeValues() {
 		RootNode treeFilled = new RootNode("Yang Data");
 		for (DataNode node : tree.getNodes()) {
 			try {

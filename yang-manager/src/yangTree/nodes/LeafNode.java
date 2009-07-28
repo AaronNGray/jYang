@@ -1,9 +1,16 @@
 package yangTree.nodes;
 
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.swing.ImageIcon;
+
 import jyang.parser.YANG_Leaf;
 
 public class LeafNode extends DataNode {
+	
+	private static ImageIcon icon = null;
 	
 	private String value;
 	private String type;
@@ -80,9 +87,24 @@ public class LeafNode extends DataNode {
 		}
 	}
 
-	@Override
 	public String getNodeType() {
 		return "Leaf";
+	}
+	
+	public ImageIcon getIcon(){
+		if (icon==null){
+			InputStream is = getClass().getResourceAsStream("/icons/leaf.png");
+			try {
+				int lenght = is.available();
+				byte[] buffer = new byte[lenght];
+				is.read(buffer);
+				icon = new ImageIcon(buffer);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return icon;
 	}
 
 }

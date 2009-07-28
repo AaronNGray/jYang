@@ -1,13 +1,18 @@
 package yangTree.nodes;
 
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
+
+import javax.swing.ImageIcon;
 
 import jyang.parser.YANG_Container;
 
 public class ContainerNode extends DataTree {
+	
+	private static ImageIcon icon = null;
 
-	private int keyleaflist = 0;
 
 	public ContainerNode(YANG_Container c) {
 		definition = c;
@@ -31,9 +36,24 @@ public class ContainerNode extends DataTree {
 		return getName();
 	}
 
-	@Override
 	public String getNodeType() {
 		return "Container";
+	}
+	
+	public ImageIcon getIcon(){
+		if (icon==null){
+			InputStream is = getClass().getResourceAsStream("/icons/container.png");
+			try {
+				int lenght = is.available();
+				byte[] buffer = new byte[lenght];
+				is.read(buffer);
+				icon = new ImageIcon(buffer);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return icon;
 	}
 
 }

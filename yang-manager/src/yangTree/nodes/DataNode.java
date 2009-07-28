@@ -3,6 +3,8 @@ package yangTree.nodes;
 
 import java.io.Serializable;
 
+import javax.swing.ImageIcon;
+
 import jyang.parser.YANG_DataDef;
 
 public abstract class DataNode implements Serializable{
@@ -33,6 +35,8 @@ public abstract class DataNode implements Serializable{
 	
 	
 	abstract public String getNodeType();
+	
+	abstract public ImageIcon getIcon();
 	
 	
 }

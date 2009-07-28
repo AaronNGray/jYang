@@ -1,8 +1,15 @@
 package yangTree.nodes;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.swing.ImageIcon;
+
 import jyang.parser.YANG_LeafList;
 
 public class LeafListNode extends DataNode {
+	
+	private static ImageIcon icon = null;
 	
 	private String value;
 	private String type;
@@ -24,12 +31,10 @@ public class LeafListNode extends DataNode {
 		this.type = type;
 	}
 	
-	
-	public String toString(String prefix) {
-		String result = prefix + "leaf-list " + definition.getBody() + "\n";
-		
+	public LeafListNode cloneBody(){
+		LeafListNode result = new LeafListNode((YANG_LeafList) definition);
+		result.setType(type);
 		return result;
-		
 	}
 	
 	public String toString(){
@@ -40,14 +45,27 @@ public class LeafListNode extends DataNode {
 		}
 	}
 		
-
 	public void setValue(String v) {
 		value = v;
 	}
-
-
-	@Override
+	
 	public String getNodeType() {
 		return "Leaf list";
+	}
+	
+	public ImageIcon getIcon(){
+		if (icon==null){
+			InputStream is = getClass().getResourceAsStream("/icons/leaflist.png");
+			try {
+				int lenght = is.available();
+				byte[] buffer = new byte[lenght];
+				is.read(buffer);
+				icon = new ImageIcon(buffer);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return icon;
 	}
 }

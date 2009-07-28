@@ -12,6 +12,7 @@ import org.w3c.dom.NodeList;
 
 import yangTree.nodes.CaseNode;
 import yangTree.nodes.ChoiceNode;
+import yangTree.nodes.ContainerNode;
 import yangTree.nodes.DataNode;
 import yangTree.nodes.DataTree;
 import yangTree.nodes.LeafListNode;
@@ -109,7 +110,7 @@ public class TreeFiller {
 
 		} else if (dataNode instanceof LeafListNode) {
 
-			LeafListNode filledNode = (LeafListNode) dataNode;
+			LeafListNode filledNode = ((LeafListNode) dataNode).cloneBody();
 			String value = null;
 			if (xmlNode.hasChildNodes()) {
 				value = xmlNode.getFirstChild().getNodeValue();
@@ -174,7 +175,8 @@ public class TreeFiller {
 				for (Map.Entry<DataNode, NodeDescriptor> entry : eligibleNodes
 						.entrySet()) {
 					DataNode nodeChild = entry.getKey();
-					if (xmlChild.getNodeName().equals(nodeChild.getName())) {
+					String[] xmlChildName = xmlChild.getNodeName().split(":");
+					if (xmlChildName[xmlChildName.length-1].equals(nodeChild.getName())) {
 						entry.setValue(MATCHED);
 						DataNode newChild = fillTreeEngine(nodeChild, xmlChild);
 						if (newChild != null) {
