@@ -188,12 +188,11 @@ public class YangSchemaTreeGenerator {
 		} else if (body instanceof YANG_List) {
 			YANG_List list = (YANG_List) body;
 			ListNode node = new ListNode(list,list.getKey().getKey());
+			
 			Vector<YangTreeNode> childs = ytn.getChilds();
-			Vector<DataNode> elements = new Vector<DataNode>();
 			for (YangTreeNode child : childs) {
-				elements.add(buildModuleTree(child));
+				node.addContent(buildModuleTree(child));
 			}
-			node.setEntry(elements);
 
 			return node;
 

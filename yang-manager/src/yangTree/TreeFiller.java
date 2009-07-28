@@ -1,6 +1,5 @@
 package yangTree;
 
-import java.awt.Point;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -12,7 +11,6 @@ import org.w3c.dom.NodeList;
 
 import yangTree.nodes.CaseNode;
 import yangTree.nodes.ChoiceNode;
-import yangTree.nodes.ContainerNode;
 import yangTree.nodes.DataNode;
 import yangTree.nodes.DataTree;
 import yangTree.nodes.LeafListNode;
@@ -181,15 +179,6 @@ public class TreeFiller {
 						DataNode newChild = fillTreeEngine(nodeChild, xmlChild);
 						if (newChild != null) {
 							treeResult.addContent(newChild);
-							// If the tree is a list, get the list key value.
-							if (dataNode instanceof ListNode
-									&& nodeChild.getName().equalsIgnoreCase(
-											((ListNode) treeResult)
-													.getKeyName())) {
-								((ListNode) treeResult)
-										.setKeyValue(((LeafNode) newChild)
-												.getValue());
-							}
 						}
 					}
 				}

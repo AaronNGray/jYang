@@ -24,7 +24,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import yangTree.TreeFiller;
-import yangTree.YangTreeViewer;
 import yangTree.nodes.DataNode;
 import yangTree.nodes.RootNode;
 

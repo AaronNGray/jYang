@@ -33,9 +33,16 @@ public class ListNode extends DataTree {
 		return keyvalue;
 	}
 	
-
-	public void setEntry(Vector<DataNode> e) {
-		nodes = new LinkedList<DataNode>(e);
+	@Override
+	public void addContent(DataNode node){
+		if (node instanceof LeafNode){
+			LeafNode leaf = (LeafNode) node;
+			if (leaf.getName().equals(keyname)){
+				leaf.setIsKey(true);
+				if (leaf.getValue()!=null) keyvalue=leaf.getValue();
+			}
+		}
+		nodes.add(node);
 	}
 
 	public void setKeyValue(String kv) {
