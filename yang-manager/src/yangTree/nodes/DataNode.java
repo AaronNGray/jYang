@@ -5,6 +5,8 @@ import java.io.Serializable;
 
 import javax.swing.ImageIcon;
 
+import yangTree.attributes.NameSpace;
+
 import jyang.parser.YANG_DataDef;
 
 public abstract class DataNode implements Serializable{

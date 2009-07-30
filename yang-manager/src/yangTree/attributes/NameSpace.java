@@ -1,4 +1,4 @@
-package yangTree.nodes;
+package yangTree.attributes;
 
 import java.io.Serializable;
 

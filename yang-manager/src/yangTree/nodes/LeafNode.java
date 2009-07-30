@@ -17,8 +17,9 @@ public class LeafNode extends DataNode {
 	private String type;
 	private boolean mandatory;
 	private String defaultValue;
-	private String defaultType;
 	private String description;
+	
+	private String typeDefDescription;
 
 	public LeafNode(YANG_Leaf d) {
 		definition = d;
@@ -27,16 +28,6 @@ public class LeafNode extends DataNode {
 	public LeafNode(YANG_Leaf d, String value) {
 		this.value = value;
 		definition = d;
-	}
-
-	public LeafNode(YANG_Leaf d, String value, boolean mandatory,
-			String defaultValue, String defaultType, String description) {
-		this.value = value;
-		definition = d;
-		this.mandatory = mandatory;
-		this.defaultValue = defaultValue;
-		this.defaultType = defaultType;
-		this.description = description;
 	}
 
 	public String getDescription() {
@@ -55,10 +46,6 @@ public class LeafNode extends DataNode {
 		return defaultValue;
 	}
 
-	public String getDefaultType() {
-		return defaultType;
-	}
-
 	public String getValue() {
 		return value;
 	}
@@ -74,14 +61,36 @@ public class LeafNode extends DataNode {
 	public void setValue(String value) {
 		this.value = value;
 	}
+	
+	public void setMandatory(boolean mandatory){
+		this.mandatory = mandatory;
+	}
+	
+	public void setDefaultValue(String defaultValue){
+		this.defaultValue = defaultValue;
+	}
+	
+	public void setDescription(String description){
+		this.description = description;
+	}
 
 	public void setIsKey(boolean isKey) {
 		this.isKey = isKey;
 	}
 
+	public void setTypeDefDescription(String typeDefDescription) {
+		this.typeDefDescription = typeDefDescription;
+	}
+
+	public String getTypeDefDescription() {
+		return typeDefDescription;
+	}
+
 	public LeafNode cloneBody() {
-		LeafNode result = new LeafNode((YANG_Leaf) definition, value,
-				mandatory, defaultValue, defaultType, description);
+		LeafNode result = new LeafNode((YANG_Leaf) definition, value);
+		result.setDefaultValue(defaultValue);
+		result.setDescription(description);
+		result.setMandatory(mandatory);
 		result.setType(type);
 		result.setIsKey(isKey);
 		return result;

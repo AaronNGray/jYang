@@ -9,6 +9,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import yangTree.attributes.NameSpace;
 import yangTree.nodes.CaseNode;
 import yangTree.nodes.ChoiceNode;
 import yangTree.nodes.DataNode;
@@ -16,7 +17,6 @@ import yangTree.nodes.DataTree;
 import yangTree.nodes.LeafListNode;
 import yangTree.nodes.LeafNode;
 import yangTree.nodes.ListNode;
-import yangTree.nodes.NameSpace;
 
 /*
  * Class used to create a tree filled with data, using a specification tree 

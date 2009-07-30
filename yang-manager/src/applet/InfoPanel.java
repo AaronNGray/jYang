@@ -97,13 +97,15 @@ public class InfoPanel extends JPanel {
 			int row = 3;
 			LeafNode leaf = (LeafNode) node;
 			if (leaf.isMandatory()){
-				buildTextField(3, "Mandatory", "Yes", false);
+				buildTextField(row, "Mandatory", "Yes", false);
 				row++;
-			} else if (leaf.getDefaultValue()!=null){
-				buildTextField(3, "Default value", leaf.getDefaultValue(), false);
+			}
+			if (leaf.getDefaultValue()!=null){
+				buildTextField(row, "Default value", leaf.getDefaultValue(), false);
 				row++;
-			} else if (leaf.getDefaultType()!=null){
-				buildTextField(3, "Default type", leaf.getDefaultType(), false);
+			}
+			if (leaf.getTypeDefDescription()!=null){
+				buildTextField(row, "Default value", leaf.getTypeDefDescription(), false);
 				row++;
 			}
 			if (leaf.getDescription()!=null){
