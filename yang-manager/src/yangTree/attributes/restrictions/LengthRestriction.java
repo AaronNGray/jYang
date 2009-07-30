@@ -2,15 +2,16 @@ package yangTree.attributes.restrictions;
 
 import java.util.LinkedList;
 
-import jyang.parser.YANG_Range;
+import jyang.parser.YANG_Length;
+
 import yangTree.attributes.UnitValueCheck;
 
-public class RangeRestriction extends Restriction {
+public class LengthRestriction extends Restriction {
 	
-	private LinkedList<Range> rangesList = new LinkedList<Range>(); 
+private LinkedList<Range> rangesList = new LinkedList<Range>(); 
 	
-	public RangeRestriction(YANG_Range range){
-		String[][] ranges = range.getRangeIntervals();
+	public LengthRestriction(YANG_Length length){
+		String[][] ranges = length.getLengthIntervals();
 		for (int i=0;i<ranges.length;i++){
 			rangesList.add(new Range(ranges[i]));
 		}
@@ -26,12 +27,12 @@ public class RangeRestriction extends Restriction {
 		if (inRange){
 			return UnitValueCheck.checkOK();
 		} else {
-			return new UnitValueCheck("This value is out of the permitted ranges");
+			return new UnitValueCheck("This value length is not permitted");
 		}
 	}
 	
 	public String getDescription(){
-		String description = "Value must be in range : "+rangesList.getFirst();
+		String description = "Value length must be in range : "+rangesList.getFirst();
 		for (int i=1;i<rangesList.size();i++){
 			description += " or "+rangesList.get(i);
 		}

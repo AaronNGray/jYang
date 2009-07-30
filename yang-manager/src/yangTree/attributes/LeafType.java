@@ -3,7 +3,11 @@ package yangTree.attributes;
 import java.util.LinkedList;
 
 import jyang.parser.YANG_Type;
+import yangTree.attributes.builtinTypes.BooleanType;
+import yangTree.attributes.builtinTypes.Decimal64Type;
+import yangTree.attributes.builtinTypes.EnumerationType;
 import yangTree.attributes.builtinTypes.IntegerTypes;
+import yangTree.attributes.builtinTypes.StringType;
 import yangTree.attributes.restrictions.Restriction;
 
 public abstract class LeafType {
@@ -12,6 +16,10 @@ public abstract class LeafType {
 	
 	public static LeafType buildType(YANG_Type type){
 		if (type.getType().contains("int")) return new IntegerTypes(type);
+		if (type.getType().equals("decimal64")) return new Decimal64Type(type);
+		if (type.getType().equals("string")) return new StringType(type);
+		if (type.getType().equals("boolean")) return new BooleanType(type);
+		if (type.getType().equals("enumeration")) return new EnumerationType(type);
 		return null;
 	}
 	
@@ -19,6 +27,14 @@ public abstract class LeafType {
 		ValueCheck result = new ValueCheck();
 		for (Restriction restriction : restrictionsList){
 			result.addUnitCheck(restriction.check(value));
+		}
+		return result;
+	}
+	
+	public String getRestrictionsDescription(){
+		String result = "";
+		for (Restriction restriction : restrictionsList){
+			result += restriction.getDescription()+"\n";
 		}
 		return result;
 	}

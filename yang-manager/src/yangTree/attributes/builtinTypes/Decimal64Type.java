@@ -7,11 +7,11 @@ import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.restrictions.RangeRestriction;
 
-public class Decimal64 extends LeafType {
+public class Decimal64Type extends LeafType {
 	
 	private int fractionDigits = 18;
 	
-	public Decimal64(YANG_Type type){
+	public Decimal64Type(YANG_Type type){
 		
 		YANG_Decimal64Spec spec = type.getDec64Spec();
 		if (spec!=null){

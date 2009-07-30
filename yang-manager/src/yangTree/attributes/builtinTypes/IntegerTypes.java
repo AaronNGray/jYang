@@ -10,6 +10,8 @@ import yangTree.attributes.ValueCheck;
 import yangTree.attributes.restrictions.RangeRestriction;
 
 public class IntegerTypes extends LeafType {
+	
+	//TODO : Handle default value "special" representation
 
 	private String name;
 	private int byteRange;
