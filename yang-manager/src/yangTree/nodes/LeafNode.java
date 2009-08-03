@@ -5,6 +5,8 @@ import java.io.InputStream;
 
 import javax.swing.ImageIcon;
 
+import yangTree.attributes.LeafTypeDef;
+
 import jyang.parser.YANG_Leaf;
 
 public class LeafNode extends DataNode {
@@ -14,12 +16,10 @@ public class LeafNode extends DataNode {
 
 	private boolean isKey = false;
 	private String value;
-	private String type;
+	private LeafTypeDef type;
 	private boolean mandatory;
 	private String defaultValue;
 	private String description;
-	
-	private String typeDefDescription;
 
 	public LeafNode(YANG_Leaf d) {
 		definition = d;
@@ -50,11 +50,11 @@ public class LeafNode extends DataNode {
 		return value;
 	}
 
-	public String getType() {
+	public LeafTypeDef getTypeDef() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setTypeDef(LeafTypeDef type) {
 		this.type = type;
 	}
 
@@ -78,20 +78,13 @@ public class LeafNode extends DataNode {
 		this.isKey = isKey;
 	}
 
-	public void setTypeDefDescription(String typeDefDescription) {
-		this.typeDefDescription = typeDefDescription;
-	}
-
-	public String getTypeDefDescription() {
-		return typeDefDescription;
-	}
 
 	public LeafNode cloneBody() {
 		LeafNode result = new LeafNode((YANG_Leaf) definition, value);
 		result.setDefaultValue(defaultValue);
 		result.setDescription(description);
 		result.setMandatory(mandatory);
-		result.setType(type);
+		result.setTypeDef(type);
 		result.setIsKey(isKey);
 		return result;
 	}

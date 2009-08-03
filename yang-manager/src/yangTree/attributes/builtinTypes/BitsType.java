@@ -1,37 +1,60 @@
 package yangTree.attributes.builtinTypes;
 
-import java.util.LinkedList;
+
+import java.util.TreeSet;
 
 import jyang.parser.YANG_Bit;
 import jyang.parser.YANG_Type;
 import yangTree.attributes.LeafType;
+import yangTree.attributes.UnitValueCheck;
+import yangTree.attributes.ValueCheck;
 
 public class BitsType extends LeafType {
 
 	// TODO : check uniqueness and range of enumeration element value.
 
-	private LinkedList<BitsElement> elements = new LinkedList<BitsElement>();
+	private TreeSet<BitsElement> elements = new TreeSet<BitsElement>();
 
 	public BitsType(YANG_Type type) {
 		int defaultValue = 0;
+		int choosedValue;
 		for (YANG_Bit bit : type.getBitSpec().getBits()) {
 			if (bit.getPosition() == null) {
 				defaultValue++;
-				elements.add(new BitsElement(bit.getBit(),
-						defaultValue, bit.getDescription().getDescription()));
+				choosedValue = defaultValue;
 			} else {
 				Integer value = new Integer(bit.getPosition().getPosition());
 				if (value > defaultValue)
 					defaultValue = value + 1;
-				elements.add(new BitsElement(bit.getBit(), value,
-						bit.getDescription().getDescription()));
+				choosedValue = value;
 			}
+			if (bit.getDescription()!=null){
+				elements.add(new BitsElement(bit.getBit(),
+						choosedValue, bit.getDescription().getDescription()));
+				} else {
+					elements.add(new BitsElement(bit.getBit(),
+							choosedValue));
+				}
 		}
+	}
+	
+	@Override
+	public ValueCheck check(String value){
+		ValueCheck result = super.check(value);
+		String[] bitsArray = value.split(" ");
+		TreeSet<BitsElement> elets = new TreeSet<BitsElement>(elements);
+		int i=0;
+		while (elets.size()>0 && i<bitsArray.length){
+			BitsElement elet = elets.pollFirst();
+			if (elet.getName().equals(bitsArray[i])) i++;
+		}
+		if (i<bitsArray.length) result.addUnitCheck(new UnitValueCheck("Unknown or unsorted bit value : \""+bitsArray[i]+"\""));
+		return result;
 	}
 
 	@Override
 	public String getName() {
-		String result = "Enumeration";
+		String result = "Bits : ";
 		for (BitsElement elt : elements){
 			result += "\n\t*"+elt.getName()+" ("+elt.getDescription()+")";
 		}

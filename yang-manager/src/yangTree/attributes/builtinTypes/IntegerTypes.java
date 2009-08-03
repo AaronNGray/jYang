@@ -23,10 +23,10 @@ public class IntegerTypes extends LeafType {
 		String byteR;
 		if (name.charAt(0) == 'u') {
 			positiveOnly = true;
-			byteR = name.substring(3);
+			byteR = name.substring(4);
 		} else {
 			positiveOnly = false;
-			byteR = name.substring(4);
+			byteR = name.substring(3);
 		}
 
 		byteRange = new Integer(byteR);
@@ -48,19 +48,26 @@ public class IntegerTypes extends LeafType {
 
 	@Override
 	public ValueCheck check(String value) {
-		ValueCheck result = super.check(value);
-		Long decimalValue = new Long(value);
+		ValueCheck result = new ValueCheck();
+		Long decimalValue = null;
+		try {
+		decimalValue = new Long(value);
+		} catch (NumberFormatException e){
+			result.addUnitCheck(new UnitValueCheck("This value does not present a correct integer format"));
+			return result;
+		}
 		long byteMaxValue = (long) Math.pow(2, byteRange);
 		if (positiveOnly) {
 			if (decimalValue < 0 || decimalValue > byteMaxValue - 1)
 				result.addUnitCheck(new UnitValueCheck("value out of "
 						+ getName() + " type range"));
 		} else {
-			if (decimalValue < byteMaxValue / 2
+			if (decimalValue < -byteMaxValue / 2
 					|| decimalValue > (byteMaxValue / 2) - 1)
 				result.addUnitCheck(new UnitValueCheck("value out of "
 						+ getName() + " type range"));
 		}
+		result.addChecks(super.check(value));
 		return result;
 	}
 

@@ -22,13 +22,20 @@ public class Decimal64Type extends LeafType {
 	}
 	
 	public ValueCheck check(String value){
-		ValueCheck result = super.check(value);
-		Long decimalValue = new Long(value);
+		ValueCheck result = new ValueCheck();
+		Double decimalValue = null;
+		try {
+			decimalValue = new Double(value);
+		} catch (NumberFormatException e){
+			result.addUnitCheck(new UnitValueCheck("This value does not present a correct number format"));
+			return result;
+		}
 		double mustBeInteger = decimalValue*((long) Math.pow(10, fractionDigits));
 		if (mustBeInteger!=Math.floor(mustBeInteger)){
 			Double fixedValue = Math.floor(mustBeInteger)*Math.pow(10, -fractionDigits);
 			result.addUnitCheck(new UnitValueCheck("Too many digits (max = "+fractionDigits+")",fixedValue.toString()));
 		}
+		result.addChecks(super.check(value));
 		return result;
 	}
 

@@ -104,8 +104,8 @@ public class InfoPanel extends JPanel {
 				buildTextField(row, "Default value", leaf.getDefaultValue(), false);
 				row++;
 			}
-			if (leaf.getTypeDefDescription()!=null){
-				buildTextField(row, "Default value", leaf.getTypeDefDescription(), false);
+			if (leaf.getTypeDef().getDefaultValue()!=null){
+				buildTextField(row, "Default value", leaf.getTypeDef().getDefaultValue(), false);
 				row++;
 			}
 			if (leaf.getDescription()!=null){
@@ -160,7 +160,7 @@ public class InfoPanel extends JPanel {
 		if (node instanceof RootNode) {
 			setHelpInfo();
 		} else if (node instanceof LeafNode) {
-			setLeafInfo(node, ((LeafNode) node).getType(), ((LeafNode) node)
+			setLeafInfo(node, ((LeafNode) node).getTypeDef().getName(), ((LeafNode) node)
 					.getValue());
 		} else if (node instanceof LeafListNode) {
 			setLeafInfo(node, ((LeafListNode) node).getType(),

@@ -13,6 +13,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 
+import yangTree.attributes.LeafTypeDef;
+import yangTree.attributes.NameSpace;
 import yangTree.nodes.*;
 
 import jyang.parser.*;
@@ -20,6 +22,8 @@ import jyang.parser.*;
 public class YangSchemaTreeGenerator {
 
 	private jyang parser = null;
+
+	private static YangContext context = null;
 
 	public YangSchemaTreeGenerator(String[] args) {
 		String ip = args[0];
@@ -50,9 +54,19 @@ public class YangSchemaTreeGenerator {
 		for (Enumeration<YANG_Specification> especs = specs.elements(); especs
 				.hasMoreElements();) {
 			YANG_Specification spec = especs.nextElement();
+			System.out.println("spec : " + spec.getName().toUpperCase());
+			try {
+				context = spec.buildSpecContext(new String[0], null,
+						new Vector<String>());
+				System.out.println(context);
+			} catch (YangParserException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			treeMap.put(spec.getName(), buildModuleTree(spec));
 		}
-		DataNode schemaTree = buildGeneralTree(modulesArgs, prefixes, treeMap);
+		RootNode schemaTree = buildGeneralTree(modulesArgs, prefixes, treeMap);
 
 		try {
 			ObjectOutputStream os = new ObjectOutputStream(
@@ -66,13 +80,14 @@ public class YangSchemaTreeGenerator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
+
 
 	/*
 	 * Link the different module Trees, and build the namespaces.
 	 */
-	public static DataNode buildGeneralTree(String[] modulesArgs,
+	public static RootNode buildGeneralTree(String[] modulesArgs,
 			String[] prefixes, Map<String, DataTree> treeMap) {
 
 		LinkedList<ContainerNode> usedNodes = new LinkedList<ContainerNode>();
@@ -91,13 +106,12 @@ public class YangSchemaTreeGenerator {
 				} else {
 					currentNode = new ContainerNode(splitNodeName[1]);
 					String prefixNS = splitNodeName[0];
-					currentNode
-							.setNameSpace(new NameSpace(prefixNS, true));
+					currentNode.setNameSpace(new NameSpace(prefixNS, true));
 					// Searching for the NS prefix in the prefix list
 					for (int k = 0; k < prefixes.length; k = k + 2) {
 						if (prefixNS.equals(prefixes[k])) {
-							currentNode.setNameSpace(new NameSpace(
-									prefixNS, prefixes[k + 1]));
+							currentNode.setNameSpace(new NameSpace(prefixNS,
+									prefixes[k + 1]));
 						}
 					}
 				}
@@ -129,8 +143,7 @@ public class YangSchemaTreeGenerator {
 				}
 
 			}
-			NameSpace moduleNS = new NameSpace(modulesArgs[i + 2],
-					false);
+			NameSpace moduleNS = new NameSpace(modulesArgs[i + 2], false);
 			DataTree subroot = treeMap.get(modulesArgs[i]);
 
 			// Special handling if two linked containers have the same name : in
@@ -187,8 +200,8 @@ public class YangSchemaTreeGenerator {
 
 		} else if (body instanceof YANG_List) {
 			YANG_List list = (YANG_List) body;
-			ListNode node = new ListNode(list,list.getKey().getKey());
-			
+			ListNode node = new ListNode(list, list.getKey().getKey());
+
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
 				node.addContent(buildModuleTree(child));
@@ -213,9 +226,9 @@ public class YangSchemaTreeGenerator {
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
-				if (child.getNode() instanceof YANG_Leaf){
+				if (child.getNode() instanceof YANG_Leaf) {
 					YANG_Leaf leaf = (YANG_Leaf) child.getNode();
-					if (!leaf.getType().getType().equalsIgnoreCase("empty")){
+					if (!leaf.getType().getType().equalsIgnoreCase("empty")) {
 						node.addContent(buildModuleTree(child));
 					}
 				} else {
@@ -227,29 +240,48 @@ public class YangSchemaTreeGenerator {
 
 		} else if (body instanceof YANG_Leaf) {
 			YANG_Leaf leaf = (YANG_Leaf) body;
-			
-			String leafdefault = null;
-			if (leaf.getDefault() != null)
-				leafdefault = leaf.getDefault().getDefault();
+			LeafNode node = new LeafNode(leaf);
 
-			String typeleafdefault = null;
-			if (leaf.getType().getTypedef() != null)
-				if (leaf.getType().getTypedef().getDefault() != null)
-					typeleafdefault = leaf.getType().getTypedef()
-							.getDefault().getDefault();
-			
-			boolean mandatory = false;
-			if (leaf.getMandatory()!=null){
-				mandatory = !leaf.getMandatory().getMandatory().equals("false");
+			if (leaf.getDefault() != null) {
+				node.setDefaultValue(leaf.getDefault().getDefault());
+			} else {
+				if (leaf.getType().getTypedef() != null) {
+					if (leaf.getType().getTypedef().getDefault() != null) {
+						node.setDefaultValue(leaf.getType().getTypedef()
+								.getDefault().getDefault());
+					}
+				}
 			}
-			
-			String description = null;
-			if (leaf.getDescription()!=null){
-				description = leaf.getDescription().getDescription();
+
+			if (leaf.getMandatory() != null) {
+				node.setMandatory(!leaf.getMandatory().getMandatory().equals(
+						"false"));
 			}
-			
-			LeafNode node = new LeafNode(leaf, null, mandatory, leafdefault, typeleafdefault, description);
-			node.setType(leaf.getType().getType());
+
+			if (leaf.getDescription() != null) {
+				node.setDescription(leaf.getDescription().getDescription());
+			}
+
+			LeafTypeDef typeDef = null;
+
+			try {
+				if (context.getTypeDef(leaf.getType()) != null) {
+					YANG_TypeDef ytypeDef = context.getTypeDef(leaf.getType());
+					System.out.println("node : " + leaf.getBody()
+							+ " | typedef : " + ytypeDef.getTypeDef()
+							+ " | typeDef type : "
+							+ ytypeDef.getType().getType());
+
+					typeDef = new LeafTypeDef(ytypeDef);
+				} else {
+					typeDef = new LeafTypeDef(leaf.getType());
+				}
+			} catch (YangParserException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			node.setTypeDef(typeDef);
 			return node;
 
 		} else if (body instanceof YANG_LeafList) {

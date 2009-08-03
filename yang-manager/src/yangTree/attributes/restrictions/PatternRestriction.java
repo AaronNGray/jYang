@@ -22,10 +22,10 @@ public class PatternRestriction extends Restriction {
 	@Override
 	public UnitValueCheck check(String value) {
 		Matcher matcher = pattern.matcher(value);
-		if (matcher.find()){
+		if (matcher.matches()){
 			return UnitValueCheck.checkOK();
 		} else {
-			return new UnitValueCheck("This value does not match the required pattern");
+			return new UnitValueCheck("This value does not match the required pattern : "+pattern);
 		}
 	}
 

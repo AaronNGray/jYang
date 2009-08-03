@@ -1,5 +1,6 @@
 package yangTree.attributes.restrictions;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import jyang.parser.YANG_Length;
@@ -19,10 +20,10 @@ private LinkedList<Range> rangesList = new LinkedList<Range>();
 
 	@Override
 	public UnitValueCheck check(String value) {
-		Double decimalValue = new Double(value);
+		Double length = new Double(value.length());
 		boolean inRange = false;
 		for (Range range : rangesList){
-			if (range.isInRange(decimalValue)) inRange=true;
+			if (range.isInRange(length)) inRange=true;
 		}
 		if (inRange){
 			return UnitValueCheck.checkOK();
@@ -37,26 +38,6 @@ private LinkedList<Range> rangesList = new LinkedList<Range>();
 			description += " or "+rangesList.get(i);
 		}
 		return description;
-	}
-	
-	private class Range {
-		
-		private int min;
-		private int max;
-		
-		public Range(String[] minmax){
-			this.min = new Integer(minmax[0]);
-			this.max = new Integer(minmax[1]);
-		}
-		
-		public boolean isInRange(Double value){
-			return value<max && value>min;
-		}
-		
-		public String toString(){
-			return "["+min+".."+max+"]";
-		}
-		
 	}
 
 }

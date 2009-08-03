@@ -1,16 +1,13 @@
 package yangTree.attributes;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import jyang.parser.YANG_Type;
-import yangTree.attributes.builtinTypes.BooleanType;
-import yangTree.attributes.builtinTypes.Decimal64Type;
-import yangTree.attributes.builtinTypes.EnumerationType;
-import yangTree.attributes.builtinTypes.IntegerTypes;
-import yangTree.attributes.builtinTypes.StringType;
+import yangTree.attributes.builtinTypes.*;
 import yangTree.attributes.restrictions.Restriction;
 
-public abstract class LeafType {
+public abstract class LeafType implements Serializable{
 	
 	protected LinkedList<Restriction> restrictionsList = new LinkedList<Restriction>();
 	
@@ -20,6 +17,8 @@ public abstract class LeafType {
 		if (type.getType().equals("string")) return new StringType(type);
 		if (type.getType().equals("boolean")) return new BooleanType(type);
 		if (type.getType().equals("enumeration")) return new EnumerationType(type);
+		if (type.getType().equals("bits")) return new BitsType(type);
+		System.err.println("Unknow built-in type");
 		return null;
 	}
 	
