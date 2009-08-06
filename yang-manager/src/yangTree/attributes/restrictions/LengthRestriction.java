@@ -9,7 +9,7 @@ import yangTree.attributes.UnitValueCheck;
 
 public class LengthRestriction extends Restriction {
 	
-private LinkedList<Range> rangesList = new LinkedList<Range>(); 
+protected LinkedList<Range> rangesList = new LinkedList<Range>(); 
 	
 	public LengthRestriction(YANG_Length length){
 		String[][] ranges = length.getLengthIntervals();
@@ -28,7 +28,7 @@ private LinkedList<Range> rangesList = new LinkedList<Range>();
 		if (inRange){
 			return UnitValueCheck.checkOK();
 		} else {
-			return new UnitValueCheck("This value length is not permitted");
+			return new UnitValueCheck("This value length (i.e. number of characters) is not permitted");
 		}
 	}
 	

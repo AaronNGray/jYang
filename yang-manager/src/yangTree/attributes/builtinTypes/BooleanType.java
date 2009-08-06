@@ -1,11 +1,11 @@
 package yangTree.attributes.builtinTypes;
 
 import jyang.parser.YANG_Type;
-import yangTree.attributes.LeafType;
+import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
-public class BooleanType extends LeafType {
+public class BooleanType extends BuiltinType {
 
 	public BooleanType(YANG_Type type) {}
 	

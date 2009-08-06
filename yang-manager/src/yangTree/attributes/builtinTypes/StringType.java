@@ -3,11 +3,11 @@ package yangTree.attributes.builtinTypes;
 import jyang.parser.YANG_Pattern;
 import jyang.parser.YANG_StringRestriction;
 import jyang.parser.YANG_Type;
-import yangTree.attributes.LeafType;
+import yangTree.attributes.BuiltinType;
 import yangTree.attributes.restrictions.LengthRestriction;
 import yangTree.attributes.restrictions.PatternRestriction;
 
-public class StringType extends LeafType {
+public class StringType extends BuiltinType {
 
 	public StringType(YANG_Type type) {
 		YANG_StringRestriction stringRestr = type.getStringRest();

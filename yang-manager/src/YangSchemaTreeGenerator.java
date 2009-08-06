@@ -13,7 +13,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 
-import yangTree.attributes.LeafTypeDef;
+import yangTree.attributes.LeafType;
 import yangTree.attributes.NameSpace;
 import yangTree.nodes.*;
 
@@ -54,11 +54,9 @@ public class YangSchemaTreeGenerator {
 		for (Enumeration<YANG_Specification> especs = specs.elements(); especs
 				.hasMoreElements();) {
 			YANG_Specification spec = especs.nextElement();
-			System.out.println("spec : " + spec.getName().toUpperCase());
 			try {
 				context = spec.buildSpecContext(new String[0], null,
 						new Vector<String>());
-				System.out.println(context);
 			} catch (YangParserException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -226,14 +224,7 @@ public class YangSchemaTreeGenerator {
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
-				if (child.getNode() instanceof YANG_Leaf) {
-					YANG_Leaf leaf = (YANG_Leaf) child.getNode();
-					if (!leaf.getType().getType().equalsIgnoreCase("empty")) {
-						node.addContent(buildModuleTree(child));
-					}
-				} else {
-					node.addContent(buildModuleTree(child));
-				}
+				node.addContent(buildModuleTree(child));
 			}
 
 			return node;
@@ -262,19 +253,14 @@ public class YangSchemaTreeGenerator {
 				node.setDescription(leaf.getDescription().getDescription());
 			}
 
-			LeafTypeDef typeDef = null;
+			LeafType typeDef = null;
 
 			try {
 				if (context.getTypeDef(leaf.getType()) != null) {
 					YANG_TypeDef ytypeDef = context.getTypeDef(leaf.getType());
-					System.out.println("node : " + leaf.getBody()
-							+ " | typedef : " + ytypeDef.getTypeDef()
-							+ " | typeDef type : "
-							+ ytypeDef.getType().getType());
-
-					typeDef = new LeafTypeDef(ytypeDef);
+					typeDef = new LeafType(ytypeDef);
 				} else {
-					typeDef = new LeafTypeDef(leaf.getType());
+					typeDef = new LeafType(leaf.getType());
 				}
 			} catch (YangParserException e) {
 				// TODO Auto-generated catch block

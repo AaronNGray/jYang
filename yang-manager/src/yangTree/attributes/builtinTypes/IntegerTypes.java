@@ -4,12 +4,12 @@ import jyang.parser.YANG_NumericalRestriction;
 import jyang.parser.YANG_Range;
 import jyang.parser.YANG_Type;
 
-import yangTree.attributes.LeafType;
+import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.restrictions.RangeRestriction;
 
-public class IntegerTypes extends LeafType {
+public class IntegerTypes extends BuiltinType {
 	
 	//TODO : Handle default value "special" representation
 

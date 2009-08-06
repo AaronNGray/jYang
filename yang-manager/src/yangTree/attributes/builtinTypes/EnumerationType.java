@@ -2,14 +2,16 @@ package yangTree.attributes.builtinTypes;
 
 import java.util.LinkedList;
 
+import applet.Util;
+
 import jyang.parser.YANG_Enum;
 import jyang.parser.YANG_Type;
 
-import yangTree.attributes.LeafType;
+import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
-public class EnumerationType extends LeafType {
+public class EnumerationType extends BuiltinType {
 
 	// TODO : check uniqueness and range of enumeration element value.
 
@@ -48,14 +50,26 @@ public class EnumerationType extends LeafType {
 		if (!found) result.addUnitCheck(new UnitValueCheck("This value is not an element of the enumeration")); 
 		return result;
 	}
+	
+	public String getName(){
+		String result = "Enumeration {";
+		for (EnumerationElement elt : elements){
+				result += " "+elt.getName()+" |";
+			}
+		return result.substring(0, result.length()-2)+" }";
+	}
 
 	@Override
-	public String getName() {
-		String result = "Enumeration : ";
+	public String getContent() {
+		String result = "Enumeration : <ul>";
 		for (EnumerationElement elt : elements){
-			result += "\n\t*"+elt.getName()+" ("+elt.getDescription()+")";
+			if (elt.getDescription()!=null) {
+				result += "<li>"+elt.getName()+" : <i>"+elt.getDescription()+"</i></li>";
+			} else {
+				result += "<li>"+elt.getName()+"</li>";
+			}
 		}
-		return result;
+		return result+"</ul>";
 	}
 
 }

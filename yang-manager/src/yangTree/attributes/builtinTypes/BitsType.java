@@ -3,13 +3,15 @@ package yangTree.attributes.builtinTypes;
 
 import java.util.TreeSet;
 
+import applet.Util;
+
 import jyang.parser.YANG_Bit;
 import jyang.parser.YANG_Type;
-import yangTree.attributes.LeafType;
+import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
-public class BitsType extends LeafType {
+public class BitsType extends BuiltinType {
 
 	// TODO : check uniqueness and range of enumeration element value.
 
@@ -51,14 +53,26 @@ public class BitsType extends LeafType {
 		if (i<bitsArray.length) result.addUnitCheck(new UnitValueCheck("Unknown or unsorted bit value : \""+bitsArray[i]+"\""));
 		return result;
 	}
+	
+	public String getName(){
+		String result = "Bits {";
+		for (BitsElement elt : elements){
+			result += " "+elt.getName()+" |";
+		}
+		return result.substring(0, result.length()-2)+" }";
+	}
 
 	@Override
-	public String getName() {
-		String result = "Bits : ";
+	public String getContent() {
+		String result = "Bits : <ul>";
 		for (BitsElement elt : elements){
-			result += "\n\t*"+elt.getName()+" ("+elt.getDescription()+")";
+			if (elt.getDescription()!=null){
+				result += "<li>"+elt.getName()+" : <i>"+elt.getDescription()+"</i></li>";
+			} else {
+				result += "<li>"+elt.getName()+"</li>";
+			}
 		}
-		return result;
+		return result+"</ul>";
 	}
 
 }

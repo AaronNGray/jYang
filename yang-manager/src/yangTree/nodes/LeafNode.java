@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import javax.swing.ImageIcon;
 
-import yangTree.attributes.LeafTypeDef;
+import yangTree.attributes.LeafType;
 
 import jyang.parser.YANG_Leaf;
 
@@ -16,7 +16,7 @@ public class LeafNode extends DataNode {
 
 	private boolean isKey = false;
 	private String value;
-	private LeafTypeDef type;
+	private LeafType type;
 	private boolean mandatory;
 	private String defaultValue;
 	private String description;
@@ -50,11 +50,11 @@ public class LeafNode extends DataNode {
 		return value;
 	}
 
-	public LeafTypeDef getTypeDef() {
+	public LeafType getTypeDef() {
 		return type;
 	}
 
-	public void setTypeDef(LeafTypeDef type) {
+	public void setTypeDef(LeafType type) {
 		this.type = type;
 	}
 

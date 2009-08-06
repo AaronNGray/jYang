@@ -9,10 +9,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import yangTree.attributes.LeafType;
+import yangTree.attributes.BuiltinType;
 import yangTree.attributes.NameSpace;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
+import yangTree.attributes.builtinTypes.EmptyType;
 import yangTree.nodes.CaseNode;
 import yangTree.nodes.ChoiceNode;
 import yangTree.nodes.DataNode;
@@ -98,26 +99,19 @@ public class TreeFiller {
 		if (dataNode instanceof LeafNode) {
 
 			LeafNode filledNode = ((LeafNode) dataNode).cloneBody();
-			
+
 			String value = null;
-			if (xmlNode.hasChildNodes()) {
-				value = xmlNode.getFirstChild().getNodeValue();
-			} else if (xmlNode.hasAttributes()) {
-				value = xmlNode.getAttributes().item(0).getNodeValue();
-			} else {
-				value = filledNode.getDefaultValue();
+			if (!(filledNode.getTypeDef().getBuiltinType() instanceof EmptyType)) {
+				if (xmlNode.hasChildNodes()) {
+					value = xmlNode.getFirstChild().getNodeValue();
+				} else if (xmlNode.hasAttributes()) {
+					value = xmlNode.getAttributes().item(0).getNodeValue();
+				} else {
+					value = filledNode.getDefaultValue();
+				}
+				filledNode.setValue(value);
 			}
-			filledNode.setValue(value);
 			result = filledNode;
-			
-			//Tests
-			LeafType type = filledNode.getTypeDef().getType();
-			ValueCheck errors = type.check(value);
-			System.out.println("Node : "+filledNode.getName()+" | Value : "+value+" | Restrictions : "+type.getRestrictionsDescription());
-			if (!errors.isOk()) {
-				System.out.println("Errors : "+errors.toString());
-			}
-			//End of tests
 
 		} else if (dataNode instanceof LeafListNode) {
 
@@ -187,7 +181,8 @@ public class TreeFiller {
 						.entrySet()) {
 					DataNode nodeChild = entry.getKey();
 					String[] xmlChildName = xmlChild.getNodeName().split(":");
-					if (xmlChildName[xmlChildName.length-1].equals(nodeChild.getName())) {
+					if (xmlChildName[xmlChildName.length - 1].equals(nodeChild
+							.getName())) {
 						entry.setValue(MATCHED);
 						DataNode newChild = fillTreeEngine(nodeChild, xmlChild);
 						if (newChild != null) {

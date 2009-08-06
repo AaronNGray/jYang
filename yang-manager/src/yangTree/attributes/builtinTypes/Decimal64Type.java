@@ -2,12 +2,12 @@ package yangTree.attributes.builtinTypes;
 
 import jyang.parser.YANG_Decimal64Spec;
 import jyang.parser.YANG_Type;
-import yangTree.attributes.LeafType;
+import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.restrictions.RangeRestriction;
 
-public class Decimal64Type extends LeafType {
+public class Decimal64Type extends BuiltinType {
 	
 	private int fractionDigits = 18;
 	
