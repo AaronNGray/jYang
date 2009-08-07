@@ -1,4 +1,4 @@
-package yangTree;
+ package yangTree;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,10 +9,10 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import yangTree.attributes.BuiltinType;
 import yangTree.attributes.NameSpace;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
+import yangTree.attributes.builtinTypes.BuiltinType;
 import yangTree.attributes.builtinTypes.EmptyType;
 import yangTree.nodes.CaseNode;
 import yangTree.nodes.ChoiceNode;
@@ -101,13 +101,13 @@ public class TreeFiller {
 			LeafNode filledNode = ((LeafNode) dataNode).cloneBody();
 
 			String value = null;
-			if (!(filledNode.getTypeDef().getBuiltinType() instanceof EmptyType)) {
+			if (!(filledNode.getType().getBuiltinType() instanceof EmptyType)) {
 				if (xmlNode.hasChildNodes()) {
 					value = xmlNode.getFirstChild().getNodeValue();
 				} else if (xmlNode.hasAttributes()) {
 					value = xmlNode.getAttributes().item(0).getNodeValue();
 				} else {
-					value = filledNode.getDefaultValue();
+					value = null;
 				}
 				filledNode.setValue(value);
 			}
@@ -195,7 +195,7 @@ public class TreeFiller {
 			// Unmatched parts of the tree will be filled with default values.
 			for (DataNode node : eligibleNodes.keySet()) {
 				if (eligibleNodes.get(node).equals(UNMATCHED)) {
-					DataNode newChild = fillTreeWithDefaultValues(node);
+					DataNode newChild = buildEmptyTree(node);
 					if (newChild != null) {
 						treeResult.addContent(newChild);
 					}
@@ -215,22 +215,15 @@ public class TreeFiller {
 
 	/*
 	 * When the xml no longer define values for a part of the tree, this part is
-	 * built matching the specifications, and filled with default values.
+	 * built matching the specifications, and not filled with values.
 	 */
-	private static DataNode fillTreeWithDefaultValues(DataNode dataNode) {
+	private static DataNode buildEmptyTree(DataNode dataNode) {
 
 		// Handle the leaves cases
 		if (dataNode instanceof LeafNode) {
 
 			LeafNode filledNode = ((LeafNode) dataNode).cloneBody();
-			String value = null;
-			if (filledNode.isMandatory()) {
-				System.out.println("WARNING : The mandatory leaf \""
-						+ filledNode.getName() + "\" is not present.");
-			} else {
-				value = filledNode.getDefaultValue();
-			}
-			filledNode.setValue(value);
+			filledNode.setValue(null);
 			return filledNode;
 
 		} else if (dataNode instanceof LeafListNode) {
@@ -246,7 +239,7 @@ public class TreeFiller {
 
 			DataTree filledNode = ((DataTree) dataNode).cloneBody();
 			for (DataNode node : ((DataTree) dataNode).getNodes()) {
-				DataNode child = fillTreeWithDefaultValues(node);
+				DataNode child = buildEmptyTree(node);
 				if (child != null) {
 					filledNode.addContent(child);
 				}

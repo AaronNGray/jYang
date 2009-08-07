@@ -15,6 +15,7 @@ import org.w3c.dom.Document;
 
 import yangTree.attributes.LeafType;
 import yangTree.attributes.NameSpace;
+import yangTree.attributes.builtinTypes.BuiltinType;
 import yangTree.nodes.*;
 
 import jyang.parser.*;
@@ -258,12 +259,17 @@ public class YangSchemaTreeGenerator {
 			try {
 				if (context.getTypeDef(leaf.getType()) != null) {
 					YANG_TypeDef ytypeDef = context.getTypeDef(leaf.getType());
-					typeDef = new LeafType(ytypeDef);
+					
+
+					while (!BuiltinType.isBuiltinType(ytypeDef.getType().getType())){
+						ytypeDef = context.getTypeDef(ytypeDef.getType());
+					}
+					
+					typeDef = new LeafType(ytypeDef,leaf.getType().getType());
 				} else {
 					typeDef = new LeafType(leaf.getType());
 				}
 			} catch (YangParserException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -273,7 +279,26 @@ public class YangSchemaTreeGenerator {
 		} else if (body instanceof YANG_LeafList) {
 			YANG_LeafList leafList = (YANG_LeafList) body;
 			LeafListNode node = new LeafListNode(leafList);
-			node.setType(leafList.getType().getType());
+			
+			LeafType typeDef = null;
+
+			try {
+				if (context.getTypeDef(leafList.getType()) != null) {
+					YANG_TypeDef ytypeDef = context.getTypeDef(leafList.getType());
+					
+					while (!BuiltinType.isBuiltinType(ytypeDef.getType().getType())){
+						ytypeDef = context.getTypeDef(ytypeDef.getType());
+					}
+					
+					typeDef = new LeafType(ytypeDef,leafList.getType().getType());
+				} else {
+					typeDef = new LeafType(leafList.getType());
+				}
+			} catch (YangParserException e) {
+				e.printStackTrace();
+			}
+			
+			node.setType(typeDef);
 			return node;
 
 		}

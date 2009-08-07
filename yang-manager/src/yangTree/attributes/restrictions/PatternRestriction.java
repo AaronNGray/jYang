@@ -25,7 +25,7 @@ public class PatternRestriction extends Restriction {
 		if (matcher.matches()){
 			return UnitValueCheck.checkOK();
 		} else {
-			return new UnitValueCheck("This value does not match the required pattern : "+pattern);
+			return new UnitValueCheck("This value does not match the required pattern : "+pattern+" .");
 		}
 	}
 

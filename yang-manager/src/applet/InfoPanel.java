@@ -13,6 +13,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import yangTree.attributes.LeafType;
+import yangTree.nodes.DataLeaf;
 import yangTree.nodes.DataNode;
 import yangTree.nodes.LeafListNode;
 import yangTree.nodes.LeafNode;
@@ -23,8 +24,8 @@ public class InfoPanel extends JPanel {
 
 	private JLabel titre;
 	private boolean isTreeFilled = false;
-	
-	private static final Insets insets = new Insets(3,0,3,0);
+
+	private static final Insets insets = new Insets(3, 0, 3, 0);
 
 	public InfoPanel(boolean isTreeFilled) {
 		super();
@@ -84,32 +85,47 @@ public class InfoPanel extends JPanel {
 		repaint();
 	}
 
-	private void setLeafInfo(DataNode node) {
+	private void setLeafInfo(DataLeaf node) {
 		clean();
 		titre.setText(node.getNodeType() + " : " + node.getName());
 
-		if (node instanceof LeafNode) {
-			
-			LeafNode leaf = (LeafNode) node;
-			buildTypePanel(1,leaf.getTypeDef());
-			
-			int row = 2;
-			if (isTreeFilled){
-				buildTextField(row, "Value", leaf.getValue(), false);
-				row++;
+		buildTypePanel(1, node.getType());
+
+		int row = 2;
+		String value = node.getValue();
+		if (isTreeFilled) {
+			if (value == null) {
+				value = "(No defined value)";
 			}
-			
+			buildTextField(row, "Value", value, false);
+		}
+		row++;
+		if (node.getCheck() != null && !node.getCheck().isOk()) {
+			if (node.getCheck().isCritical()) {
+				buildTextArea(row, "Errors", node.getCheck().toString(),
+						false);
+			} else {
+				buildTextArea(row, "Warnings", node.getCheck().toString(),
+						false);
+			}
+			row++;
+		}
+
+		if (node instanceof LeafNode) {
+
+			LeafNode leaf = (LeafNode) node;
+
 			if (leaf.isMandatory()) {
 				buildTextField(row, "Mandatory", "Yes", false);
 				row++;
 			}
 			if (leaf.getDefaultValue() != null) {
-				buildTextField(row, "Default value",
-						leaf.getDefaultValue(), false);
+				buildTextField(row, "Default value", leaf.getDefaultValue(),
+						false);
 				row++;
 			}
-			if (leaf.getTypeDef().getDefaultValue() != null) {
-				buildTextField(row, "Default value", leaf.getTypeDef()
+			if (leaf.getType().getDefaultValue() != null) {
+				buildTextField(row, "Default value", leaf.getType()
 						.getDefaultValue(), false);
 				row++;
 			}
@@ -120,20 +136,6 @@ public class InfoPanel extends JPanel {
 				description = matcher.replaceAll("");
 				buildTextArea(row, "Description", description, false);
 			}
-
-		} else {
-			
-			LeafListNode leafList = (LeafListNode) node;
-			String type = leafList.getType();
-			String value = leafList.getValue();
-
-			buildTextField(1, "Type", type, false);
-
-			if (value == null) {
-				value = "(No defined value)";
-			}
-			if (isTreeFilled)
-				buildTextField(2, "Value", value, false);
 
 		}
 		repaint();
@@ -151,7 +153,7 @@ public class InfoPanel extends JPanel {
 
 		JTextField field = new JTextField(value);
 		field.setEditable(isEditable);
-		field.setMargin(new Insets(0,3,0,3));
+		field.setMargin(new Insets(0, 3, 0, 3));
 		c.gridx = 1;
 		c.anchor = GridBagConstraints.LINE_START;
 		add(field, c);
@@ -178,8 +180,8 @@ public class InfoPanel extends JPanel {
 		add(area, c);
 
 	}
-	
-	private void buildTypePanel(int row, LeafType type){
+
+	private void buildTypePanel(int row, LeafType type) {
 		JLabel label = new JLabel("Type : ");
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
@@ -193,14 +195,14 @@ public class InfoPanel extends JPanel {
 		c.gridx = 1;
 		c.anchor = GridBagConstraints.LINE_START;
 		add(typePanel, c);
-		
+
 	}
 
 	public void setInfo(DataNode node) {
 		if (node instanceof RootNode) {
 			setHelpInfo();
-		} else if (node instanceof LeafNode || node instanceof LeafListNode) {
-			setLeafInfo(node);
+		} else if (node instanceof DataLeaf) {
+			setLeafInfo((DataLeaf) node);
 		} else {
 			setTreeNodeInfo(node);
 		}

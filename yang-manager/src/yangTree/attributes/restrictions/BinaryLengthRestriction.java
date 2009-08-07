@@ -29,7 +29,7 @@ public class BinaryLengthRestriction extends LengthRestriction {
 		if (inRange){
 			return UnitValueCheck.checkOK();
 		} else {
-			return new UnitValueCheck("This value length (i.e. number of octets) is not permitted");
+			return new UnitValueCheck("This value length (i.e. number of octets) is not permitted.");
 		}
 	}
 	

@@ -3,7 +3,6 @@ package yangTree.attributes.builtinTypes;
 import jyang.parser.YANG_Pattern;
 import jyang.parser.YANG_StringRestriction;
 import jyang.parser.YANG_Type;
-import yangTree.attributes.BuiltinType;
 import yangTree.attributes.restrictions.LengthRestriction;
 import yangTree.attributes.restrictions.PatternRestriction;
 

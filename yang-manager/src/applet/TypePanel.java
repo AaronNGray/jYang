@@ -17,8 +17,8 @@ import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.html.HTMLEditorKit;
 
-import yangTree.attributes.BuiltinType;
 import yangTree.attributes.LeafType;
+import yangTree.attributes.builtinTypes.BuiltinType;
 
 public class TypePanel extends JPanel {
 

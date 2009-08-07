@@ -7,7 +7,6 @@ import applet.Util;
 
 import jyang.parser.YANG_Bit;
 import jyang.parser.YANG_Type;
-import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
@@ -50,7 +49,7 @@ public class BitsType extends BuiltinType {
 			BitsElement elet = elets.pollFirst();
 			if (elet.getName().equals(bitsArray[i])) i++;
 		}
-		if (i<bitsArray.length) result.addUnitCheck(new UnitValueCheck("Unknown or unsorted bit value : \""+bitsArray[i]+"\""));
+		if (i<bitsArray.length) result.addUnitCheck(new UnitValueCheck("Unknown or unsorted bit value : \""+bitsArray[i]+"\"."));
 		return result;
 	}
 	

@@ -7,7 +7,6 @@ import applet.Util;
 import jyang.parser.YANG_Enum;
 import jyang.parser.YANG_Type;
 
-import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
@@ -47,7 +46,7 @@ public class EnumerationType extends BuiltinType {
 		for (EnumerationElement elt : elements){
 			if (elt.getName().equals(value)) found=true;
 		}
-		if (!found) result.addUnitCheck(new UnitValueCheck("This value is not an element of the enumeration")); 
+		if (!found) result.addUnitCheck(new UnitValueCheck("This value is not an element of the enumeration.")); 
 		return result;
 	}
 	

@@ -4,7 +4,6 @@ import jyang.parser.YANG_NumericalRestriction;
 import jyang.parser.YANG_Range;
 import jyang.parser.YANG_Type;
 
-import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.restrictions.RangeRestriction;
@@ -31,12 +30,6 @@ public class IntegerTypes extends BuiltinType {
 
 		byteRange = new Integer(byteR);
 
-		if (byteRange != 8 && byteRange != 16 && byteRange != 32
-				&& byteRange != 64) {
-			throw new IllegalArgumentException("Invalid IntegerType format : "
-					+ name);
-		}
-
 		YANG_NumericalRestriction numRestr = type.getNumRest();
 		if (numRestr != null) {
 			if (numRestr instanceof YANG_Range)
@@ -53,7 +46,7 @@ public class IntegerTypes extends BuiltinType {
 		try {
 		decimalValue = new Long(value);
 		} catch (NumberFormatException e){
-			result.addUnitCheck(new UnitValueCheck("This value does not present a correct integer format"));
+			result.addUnitCheck(new UnitValueCheck("This value does not present a correct integer format."));
 			return result;
 		}
 		long byteMaxValue = (long) Math.pow(2, byteRange);

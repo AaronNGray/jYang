@@ -4,24 +4,22 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JTree;
+import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import yangTree.YangTreeModel;
+import yangTree.nodes.DataLeaf;
 import yangTree.nodes.DataNode;
 
 public class YangTreeViewer extends JTree {
 
 	public YangTreeViewer(DataNode root) {
 		super(new YangTreeModel(root));
+		
+		ToolTipManager.sharedInstance().registerComponent(this);
 		getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		setRootVisible(true);
@@ -49,6 +47,13 @@ public class YangTreeViewer extends JTree {
 			super.getTreeCellRendererComponent(tree, value, sel, expanded,
 					leaf, row, hasFocus);
 			DataNode node = (DataNode) value;
+			
+			setToolTipText(null);
+			if (node instanceof DataLeaf){
+				DataLeaf dataLeaf = (DataLeaf) node;
+				if (dataLeaf.getCheck()!=null && !dataLeaf.getCheck().isOk())
+					setToolTipText(dataLeaf.getCheck().toString());
+			} 
 			setIcon(node.getIcon());
 			return this;
 		}

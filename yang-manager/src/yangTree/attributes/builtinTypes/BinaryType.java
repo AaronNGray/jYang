@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 import jyang.parser.YANG_StringRestriction;
 import jyang.parser.YANG_Type;
 
-import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.restrictions.BinaryLengthRestriction;
@@ -29,7 +28,7 @@ public class BinaryType extends BuiltinType {
 		ValueCheck result = new ValueCheck();
 		Matcher matcher = pattern.matcher(value);
 		if (!matcher.matches() || value.length()%4!=0){
-			result.addUnitCheck(new UnitValueCheck("This value does not match the base64 encoding scheme [RFC4648]"));
+			result.addUnitCheck(new UnitValueCheck("This value does not match the base64 encoding scheme [RFC4648]."));
 			return result;
 		}
 		result.addChecks(super.check(value));

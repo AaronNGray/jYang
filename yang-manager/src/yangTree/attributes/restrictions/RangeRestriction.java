@@ -30,7 +30,7 @@ public class RangeRestriction extends Restriction {
 			return UnitValueCheck.checkOK();
 		} else {
 			return new UnitValueCheck(
-					"This value is out of the permitted ranges");
+					"This value is out of the permitted ranges.");
 		}
 	}
 

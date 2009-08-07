@@ -6,7 +6,6 @@ import applet.Util;
 
 import jyang.parser.YANG_Type;
 
-import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
@@ -44,7 +43,7 @@ public class UnionType extends BuiltinType {
 			return result;
 		}
 		
-		result.addUnitCheck(new UnitValueCheck("This value does not correctly match any of the union types"));
+		result.addUnitCheck(new UnitValueCheck("This value does not correctly match any of the union types."));
 		return result;
 	}
 	

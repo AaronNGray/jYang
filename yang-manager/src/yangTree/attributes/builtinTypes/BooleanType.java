@@ -1,7 +1,6 @@
 package yangTree.attributes.builtinTypes;
 
 import jyang.parser.YANG_Type;
-import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
@@ -14,7 +13,7 @@ public class BooleanType extends BuiltinType {
 		ValueCheck result = super.check(value);
 		if (!value.equals("true") && !value.equals("false"))
 			result.addUnitCheck(new UnitValueCheck(
-					"A boolean value must be \"true\" or \"false\""));
+					"A boolean value must be \"true\" or \"false\"."));
 		return result;
 	}
 

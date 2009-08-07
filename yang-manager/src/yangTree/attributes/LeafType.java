@@ -2,6 +2,8 @@ package yangTree.attributes;
 
 import java.io.Serializable;
 
+import yangTree.attributes.builtinTypes.BuiltinType;
+
 import jyang.parser.YANG_Type;
 import jyang.parser.YANG_TypeDef;
 
@@ -16,10 +18,10 @@ public class LeafType implements Serializable{
 	private String defaultValue = null;
 	private String description = null;
 	
-	public LeafType(YANG_TypeDef typeDef){
+	public LeafType(YANG_TypeDef typeDef, String name){
 		this.isBuiltInType = false;
 		this.type = BuiltinType.buildType(typeDef.getType());
-		this.name = typeDef.getBody();
+		this.name = name;
 		if (typeDef.getUnits()!=null) this.units = typeDef.getUnits().getUnits();
 		if (typeDef.getDefault()!=null) this.defaultValue = typeDef.getDefault().getDefault();
 		if (typeDef.getDescription()!=null) this.description = typeDef.getDescription().getDescription();

@@ -2,10 +2,12 @@ package applet;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JApplet;
@@ -21,19 +23,18 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import yangTree.TreeFiller;
 import yangTree.nodes.DataNode;
 import yangTree.nodes.RootNode;
 
-
-
 public class YangApplet extends JApplet implements TreeSelectionListener {
 
-	private boolean isTreeFilled ;
+	private boolean isTreeFilled;
 	private String agentIP;
-	
+
 	private RootNode tree;
 	private YangTreeViewer treeViewer;
 
@@ -43,7 +44,6 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	private InfoPanel infoPanel;
 	public int height;
 	public int width;
-	
 
 	public void init() {
 		height = getSize().height;
@@ -51,13 +51,13 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		agentIP = getParameter("agentIP");
 		displaySpecTree();
 	}
-	
-	public boolean isTreeFilled(){
+
+	public boolean isTreeFilled() {
 		return isTreeFilled;
 	}
 
 	private void buildDisplay() {
-		
+
 		mainPanel = new JPanel();
 		setContentPane(mainPanel);
 
@@ -83,9 +83,9 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 		treeView.setMinimumSize(new Dimension(width, 150));
 		infoView.setMinimumSize(new Dimension(width, 50));
-		
+
 		validate();
-		
+
 	}
 
 	private InputStream sendRequestToServer(String requete) {
@@ -154,10 +154,16 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 	public void displayTreeValues() {
 		RootNode treeFilled = new RootNode("Yang Data");
+
+		String xmlCode = "<rpc-reply><data><netconf><security><rbac><roles><role><id>0</id><junior-roles><junior-role id=\"0\"/></junior-roles></role></roles></rbac></security></netconf></data></rpc-reply>";
+
 		for (DataNode node : tree.getNodes()) {
 			try {
 				DocumentBuilderFactory docBF = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
-				Document xmlDoc = docBF.newDocumentBuilder().parse(sendGetRequest(node.xmlFilter()));
+				// Document xmlDoc =
+				// docBF.newDocumentBuilder().parse(sendGetRequest(node.xmlFilter()));
+				Document xmlDoc = docBF.newDocumentBuilder().parse(
+						new InputSource(new StringReader(xmlCode)));
 				treeFilled.addContent(TreeFiller.fillTree(node, xmlDoc));
 			} catch (SAXException e) {
 				// TODO Auto-generated catch block

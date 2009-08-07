@@ -2,7 +2,6 @@ package yangTree.attributes.builtinTypes;
 
 import jyang.parser.YANG_Decimal64Spec;
 import jyang.parser.YANG_Type;
-import yangTree.attributes.BuiltinType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.restrictions.RangeRestriction;
@@ -27,13 +26,13 @@ public class Decimal64Type extends BuiltinType {
 		try {
 			decimalValue = new Double(value);
 		} catch (NumberFormatException e){
-			result.addUnitCheck(new UnitValueCheck("This value does not present a correct number format"));
+			result.addUnitCheck(new UnitValueCheck("This value does not present a correct number format."));
 			return result;
 		}
 		double mustBeInteger = decimalValue*((long) Math.pow(10, fractionDigits));
 		if (mustBeInteger!=Math.floor(mustBeInteger)){
 			Double fixedValue = Math.floor(mustBeInteger)*Math.pow(10, -fractionDigits);
-			result.addUnitCheck(new UnitValueCheck("Too many digits (max = "+fractionDigits+")",fixedValue.toString()));
+			result.addUnitCheck(new UnitValueCheck("Too many digits (max = "+fractionDigits+").",fixedValue.toString()));
 		}
 		result.addChecks(super.check(value));
 		return result;
