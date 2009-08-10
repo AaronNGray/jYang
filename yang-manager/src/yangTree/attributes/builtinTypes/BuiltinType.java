@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import jyang.parser.YANG_Type;
 import yangTree.attributes.ValueCheck;
+import yangTree.attributes.YangTreePath;
 import yangTree.attributes.builtinTypes.*;
 import yangTree.attributes.restrictions.Restriction;
 
@@ -27,7 +28,8 @@ public abstract class BuiltinType implements Serializable {
 		if (type.equals("decimal64") || type.equals("string")
 				|| type.equals("boolean") || type.equals("enumeration")
 				|| type.equals("bits") || type.equals("binary")
-				|| type.equals("empty") || type.equals("union"))
+				|| type.equals("empty") || type.equals("union")
+				|| type.equals("leafref"))
 			return true;
 		return false;
 	}
@@ -37,7 +39,7 @@ public abstract class BuiltinType implements Serializable {
 	 */
 	public static BuiltinType buildType(YANG_Type type) {
 		if (!isBuiltinType(type.getType())) {
-			System.err.println("Unknow built-in type");
+			System.err.println("Unknow built-in type : "+type.getType());
 			return null;
 		}
 		if (type.getType().contains("int"))
@@ -58,6 +60,8 @@ public abstract class BuiltinType implements Serializable {
 			return new EmptyType();
 		if (type.getType().equals("union"))
 			return new UnionType(type);
+		if (type.getType().equals("leafref"))
+			return new LeafrefType(type);
 		return null;
 	}
 

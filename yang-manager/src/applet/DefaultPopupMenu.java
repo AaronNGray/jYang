@@ -8,9 +8,9 @@ import javax.swing.JPopupMenu;
 
 public class DefaultPopupMenu extends JPopupMenu {
 	
-	private YangTreeViewer tree;
+	private YangTree tree;
 	
-	public DefaultPopupMenu(YangTreeViewer tree, int x, int y){
+	public DefaultPopupMenu(YangTree tree, int x, int y){
 		super();
 		this.tree = tree;
 		buildMenu();

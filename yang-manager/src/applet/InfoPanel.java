@@ -95,7 +95,7 @@ public class InfoPanel extends JPanel {
 		String value = node.getValue();
 		if (isTreeFilled) {
 			if (value == null) {
-				value = "(No defined value)";
+				value = "(No value)";
 			}
 			buildTextField(row, "Value", value, false);
 		}

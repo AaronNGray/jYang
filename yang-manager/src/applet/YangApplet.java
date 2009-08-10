@@ -27,7 +27,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import yangTree.TreeFiller;
+import yangTree.attributes.YangTreePath;
+import yangTree.attributes.builtinTypes.LeafrefType;
 import yangTree.nodes.DataNode;
+import yangTree.nodes.LeafNode;
 import yangTree.nodes.RootNode;
 
 public class YangApplet extends JApplet implements TreeSelectionListener {
@@ -36,7 +39,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	private String agentIP;
 
 	private RootNode tree;
-	private YangTreeViewer treeViewer;
+	private YangTree treeViewer;
 
 	private JPanel mainPanel;
 	private JScrollPane infoView;
@@ -66,7 +69,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		JButton button = new BottomButton(this);
 		mainPanel.add(button, BorderLayout.PAGE_END);
 
-		treeViewer = new YangTreeViewer(tree);
+		treeViewer = new YangTree(tree);
 		treeViewer.addTreeSelectionListener(this);
 		treeView = new JScrollPane(treeViewer);
 
@@ -155,7 +158,10 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	public void displayTreeValues() {
 		RootNode treeFilled = new RootNode("Yang Data");
 
-		String xmlCode = "<rpc-reply><data><netconf><security><rbac><roles><role><id>0</id><junior-roles><junior-role id=\"0\"/></junior-roles></role></roles></rbac></security></netconf></data></rpc-reply>";
+		/*
+		 * ! Méthode modifiée pour les tests !
+		 */
+		String xmlCode = "<rpc-reply><data><netconf><system><ltest>abc</ltest><machine></machine></system></netconf></data></rpc-reply>";
 
 		for (DataNode node : tree.getNodes()) {
 			try {
@@ -164,7 +170,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 				// docBF.newDocumentBuilder().parse(sendGetRequest(node.xmlFilter()));
 				Document xmlDoc = docBF.newDocumentBuilder().parse(
 						new InputSource(new StringReader(xmlCode)));
-				treeFilled.addContent(TreeFiller.fillTree(node, xmlDoc));
+				treeFilled.addContent(TreeFiller.fillTree(node, xmlDoc,new YangTreePath(treeFilled)));
 			} catch (SAXException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -177,6 +183,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 			}
 
 		}
+		TreeFiller.setPendingValues();
 		tree = treeFilled;
 		isTreeFilled = true;
 		buildDisplay();

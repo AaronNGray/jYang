@@ -8,8 +8,13 @@ import jyang.parser.YANG_Type;
 
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
+import yangTree.attributes.YangTreePath;
 
 public class UnionType extends BuiltinType {
+	
+	/*
+	 * WARNING : Leafref type as element of a union type will NOT work properly.
+	 */
 	
 	private LinkedList<BuiltinType> typesList ;
 	

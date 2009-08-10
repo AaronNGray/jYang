@@ -14,9 +14,9 @@ import yangTree.YangTreeModel;
 import yangTree.nodes.DataLeaf;
 import yangTree.nodes.DataNode;
 
-public class YangTreeViewer extends JTree {
+public class YangTree extends JTree {
 
-	public YangTreeViewer(DataNode root) {
+	public YangTree(DataNode root) {
 		super(new YangTreeModel(root));
 		
 		ToolTipManager.sharedInstance().registerComponent(this);
@@ -75,7 +75,7 @@ public class YangTreeViewer extends JTree {
 			
 			if (e.getButton()==MouseEvent.BUTTON3){
 				if (selRow==-1){
-					new DefaultPopupMenu(YangTreeViewer.this, e.getX(), e.getY());
+					new DefaultPopupMenu(YangTree.this, e.getX(), e.getY());
 				}
 			}
 		}

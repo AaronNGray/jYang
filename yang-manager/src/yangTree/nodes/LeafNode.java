@@ -57,6 +57,10 @@ public class LeafNode extends DataLeaf {
 			check = type.getBuiltinType().check(this.value);
 		} else {
 			check = new ValueCheck();
+			if (mandatory){
+				check.addUnitCheck(new UnitValueCheck("No value have been retrieved for this mandatory leaf."));
+				return;
+			}
 			if (type.getDefaultValue() != null) {
 				this.value = type.getDefaultValue();
 				check.addUnitCheck(new UnitValueCheck(

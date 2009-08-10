@@ -189,7 +189,7 @@ public class YangSchemaTreeGenerator {
 		if (body instanceof YANG_Container) {
 			YANG_Container cont = (YANG_Container) body;
 			ContainerNode node = new ContainerNode(cont);
-
+			
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
 				node.addContent(buildModuleTree(child));

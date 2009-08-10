@@ -1,4 +1,4 @@
- package yangTree;
+package yangTree;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,8 +12,10 @@ import org.w3c.dom.NodeList;
 import yangTree.attributes.NameSpace;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
+import yangTree.attributes.YangTreePath;
 import yangTree.attributes.builtinTypes.BuiltinType;
 import yangTree.attributes.builtinTypes.EmptyType;
+import yangTree.attributes.builtinTypes.LeafrefType;
 import yangTree.nodes.CaseNode;
 import yangTree.nodes.ChoiceNode;
 import yangTree.nodes.DataNode;
@@ -32,8 +34,11 @@ public class TreeFiller {
 	private static final NodeDescriptor UNMATCHED = new NodeDescriptor(-2, 0);
 
 	private static LinkedList<NameSpace> nameSpacePrefixList = new LinkedList<NameSpace>();
+	private static Map<LeafNode, String> pendingValues = new HashMap<LeafNode, String>();
 
-	public static DataNode fillTree(DataNode dataNode, Document xmlDocument) {
+	public static DataNode fillTree(DataNode dataNode, Document xmlDocument,
+			YangTreePath path) {
+
 		Node root = xmlDocument.getFirstChild();
 		if (!root.getNodeName().equals("rpc-reply")) {
 			throw new NetconfReplyMalformedException(
@@ -54,16 +59,21 @@ public class TreeFiller {
 				NodeList nodeList = list.item(i).getChildNodes();
 				for (int j = 0; j < nodeList.getLength(); j++) {
 					if (!nodeList.item(j).getNodeName().equals("#text")) {
-						return fillTreeEngine(dataNode, nodeList.item(j));
+						DataNode result = fillTreeEngine(dataNode, nodeList
+								.item(j), path);
+
+						return result;
 					}
 				}
 			}
 		}
 		throw new NetconfReplyMalformedException(
 				"Expected \"data\" node not present");
+
 	}
 
-	private static DataNode fillTreeEngine(DataNode dataNode, Node xmlNode) {
+	private static DataNode fillTreeEngine(DataNode dataNode, Node xmlNode,
+			YangTreePath path) {
 
 		String[] nodeName = xmlNode.getNodeName().split(":");
 		String name = nodeName[0];
@@ -99,6 +109,7 @@ public class TreeFiller {
 		if (dataNode instanceof LeafNode) {
 
 			LeafNode filledNode = ((LeafNode) dataNode).cloneBody();
+			path.appendChild(filledNode.getName());
 
 			String value = null;
 			if (!(filledNode.getType().getBuiltinType() instanceof EmptyType)) {
@@ -109,7 +120,13 @@ public class TreeFiller {
 				} else {
 					value = null;
 				}
-				filledNode.setValue(value);
+				if (filledNode.getType().getBuiltinType() instanceof LeafrefType) {
+					((LeafrefType) filledNode.getType().getBuiltinType())
+							.setPath(path);
+					pendingValues.put(filledNode, value);
+				} else {
+					filledNode.setValue(value);
+				}
 			}
 			result = filledNode;
 
@@ -132,6 +149,7 @@ public class TreeFiller {
 
 			DataTree tree = (DataTree) dataNode;
 			DataTree treeResult = tree.cloneBody();
+			path.appendChild(treeResult.getName());
 
 			// build the list of nodes that can match a child of xmlNode, with
 			// their associated choice & case (if exists).
@@ -184,7 +202,8 @@ public class TreeFiller {
 					if (xmlChildName[xmlChildName.length - 1].equals(nodeChild
 							.getName())) {
 						entry.setValue(MATCHED);
-						DataNode newChild = fillTreeEngine(nodeChild, xmlChild);
+						DataNode newChild = fillTreeEngine(nodeChild, xmlChild,
+								path);
 						if (newChild != null) {
 							treeResult.addContent(newChild);
 						}
@@ -192,7 +211,7 @@ public class TreeFiller {
 				}
 			}
 
-			// Unmatched parts of the tree will be filled with default values.
+			// Unmatched parts of the tree will be built, but not filled.
 			for (DataNode node : eligibleNodes.keySet()) {
 				if (eligibleNodes.get(node).equals(UNMATCHED)) {
 					DataNode newChild = buildEmptyTree(node);
@@ -299,6 +318,16 @@ public class TreeFiller {
 			}
 		}
 		return newEligibleNodes;
+	}
+
+	/*
+	 * Fills the pending values. This method must be called after ALL other
+	 * leaves have been filled and ALL the tree have been built.
+	 */
+	public static void setPendingValues() {
+		for (LeafNode leaf : TreeFiller.pendingValues.keySet()) {
+			leaf.setValue(TreeFiller.pendingValues.get(leaf));
+		}
 	}
 
 	/*
