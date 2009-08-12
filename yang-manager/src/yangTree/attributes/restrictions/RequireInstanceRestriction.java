@@ -1,32 +1,33 @@
 package yangTree.attributes.restrictions;
 
+import java.util.LinkedList;
+
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.YangTreePath;
+import yangTree.nodes.LeafNode;
 
 public class RequireInstanceRestriction extends Restriction {
 	
-	YangTreePath path;
+	private YangTreePath path;
 	
-	public RequireInstanceRestriction(YangTreePath path){
+	public RequireInstanceRestriction(YangTreePath path) {
 		this.path = path;
 	}
 
 	@Override
 	public UnitValueCheck check(String value) {
-		if (path.solvePath()==null){
-			return new UnitValueCheck("The reference leaf is not present.");
-		} else {
-			if (path.solvePath().getValue()==null){
-				System.out.println("node : "+path.solvePath().getName()+" ,value : "+path.solvePath().getValue());
-				return new UnitValueCheck("The reference leaf is not present.");
-			}
-			return UnitValueCheck.checkOK();
+		LinkedList<LeafNode> leaves = path.getLeavesAtThisPath();
+		if (leaves.size()==0) {
+			return new UnitValueCheck("No reference leaf present.");
+		} else if (leaves.size()==1 && leaves.peekFirst().getValue()==null) {
+			return new UnitValueCheck("No reference leaf present.");
 		}
+		return UnitValueCheck.checkOK();
 	}
 
 	@Override
 	public String getDescription() {
-		return "The reference leaf at : "+path.toString()+" must be present.";
+		return "A reference leaf at : "+path.toString()+" must be present.";
 	}
 
 }

@@ -2,8 +2,8 @@ package applet;
 
 public class Util {
 
-	/*
-	 * Add <br> tags so that the HTML text will wrap correctly.
+	/**
+	 * Add &lt;br&gt; tags so that the HTML text will wrap correctly.
 	 */
 	public static String wrapHTMLline(String line, int maxChar, int startingGap) {
 
@@ -21,7 +21,7 @@ public class Util {
 		return line;
 	}
 
-	/*
+	/**
 	 * Cut a string so that its length will not exceed a maximum value; if a cut
 	 * have been made, add "..." to the end.
 	 */
@@ -33,8 +33,8 @@ public class Util {
 		}
 	}
 
-	/*
-	 * Clean a string from its quotation marks or surrounding unexpected tags or blank spaces.
+	/**
+	 * Clean a string from its quotation marks or unexpected surrounding tags or blank spaces.
 	 */
 	public static String cleanValueString(String valueString) {
 		if (valueString == null) return null;

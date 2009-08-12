@@ -4,26 +4,33 @@ import java.io.Serializable;
 import java.util.LinkedList;
 
 import jyang.parser.YANG_Type;
+import yangTree.attributes.LeafType;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.YangTreePath;
 import yangTree.attributes.builtinTypes.*;
 import yangTree.attributes.restrictions.Restriction;
 
+/**
+ * Represents a YANG built-in type.
+ * @see LeafType
+ */
 public abstract class BuiltinType implements Serializable {
 
 	protected LinkedList<Restriction> restrictionsList = new LinkedList<Restriction>();
 
-	/*
-	 * Check if a given type is a built-in type.
+	/**
+	 * Checks if a given type is a YANG built-in type.
 	 */
 	public static boolean isBuiltinType(String type) {
-		if (type == null){
+		if (type == null) {
 			System.err.println("Unknow TypeDef");
 			return true;
 		}
-		if (type.equals("int8") || type.equals("int16") || type.equals("int32") || type.equals("int64"))
+		if (type.equals("int8") || type.equals("int16") || type.equals("int32")
+				|| type.equals("int64"))
 			return true;
-		if (type.equals("uint8") || type.equals("uint16") || type.equals("uint32") || type.equals("uint64"))
+		if (type.equals("uint8") || type.equals("uint16")
+				|| type.equals("uint32") || type.equals("uint64"))
 			return true;
 		if (type.equals("decimal64") || type.equals("string")
 				|| type.equals("boolean") || type.equals("enumeration")
@@ -34,12 +41,12 @@ public abstract class BuiltinType implements Serializable {
 		return false;
 	}
 
-	/*
-	 * Match a built-in type from a YANG type.
+	/**
+	 * Matches a built-in type from a YANG type.
 	 */
 	public static BuiltinType buildType(YANG_Type type) {
 		if (!isBuiltinType(type.getType())) {
-			System.err.println("Unknow built-in type : "+type.getType());
+			System.err.println("Unknow built-in type : " + type.getType());
 			return null;
 		}
 		if (type.getType().contains("int"))
@@ -65,8 +72,8 @@ public abstract class BuiltinType implements Serializable {
 		return null;
 	}
 
-	/*
-	 * Check if a value is permitted given its type and restrictions.
+	/**
+	 * Checks if a value is correct given its type and restrictions.
 	 */
 	public ValueCheck check(String value) {
 		ValueCheck result = new ValueCheck();
@@ -76,15 +83,15 @@ public abstract class BuiltinType implements Serializable {
 		return result;
 	}
 
-	/*
-	 * Return true if a value have at least one restriction.
+	/**
+	 * Returns true if a value have at least one restriction.
 	 */
 	public boolean hasRestrictions() {
 		return restrictionsList.size() > 0;
 	}
 
-	/*
-	 * Return a HTML-formatted description of the list of restrictions.
+	/**
+	 * Returns a HTML-formatted description of the list of restrictions.
 	 */
 	public String getRestrictionsDescription() {
 		String result = "<ul>";
@@ -94,13 +101,22 @@ public abstract class BuiltinType implements Serializable {
 		return result + "</ul>";
 	}
 
+	/**
+	 * Sets the absolute path of the leaf in which the type is present.
+	 */
 	/*
-	 * Return a very short description of the type.
+	 * Types that actually need this information will override this method.
+	 */
+	public void setPath(YangTreePath path) {
+	}
+
+	/**
+	 * Returns a very short description of the type.
 	 */
 	public abstract String getName();
 
-	/*
-	 * Return a HTML-formatted complete description of the type.
+	/**
+	 * Returns a HTML-formatted complete description of the type.
 	 */
 	public String getContent() {
 		return getName();

@@ -2,6 +2,10 @@ package yangTree.attributes;
 
 import java.util.LinkedList;
 
+/**
+ * Represents all the errors (critical UnitValueChecks) and warnings (non-critical UnitValueChecks) that have been detected on a CheckedNode.
+ * @see UnitValueCheck
+ */
 public class ValueCheck {
 
 	private LinkedList<UnitValueCheck> errorsList;
@@ -11,6 +15,9 @@ public class ValueCheck {
 		errorsList = new LinkedList<UnitValueCheck>();
 	}
 
+	/**
+	 * Adds a single check to this ValueCheck
+	 */
 	public void addUnitCheck(UnitValueCheck unitCheck) {
 		if (!unitCheck.isOk())
 			errorsList.add(unitCheck);
@@ -18,16 +25,26 @@ public class ValueCheck {
 			isCritical = true;
 	}
 
+	/**
+	 * Merges two ValueChecks
+	 */
 	public void addChecks(ValueCheck check) {
 		errorsList.addAll(check.getErrors());
 		if (check.isCritical())
 			isCritical = true;
 	}
 
+	/**
+	 * Returns <code>true</code> if there is no errors and no warnings.
+	 */
 	public boolean isOk() {
 		return errorsList.size() == 0;
 	}
 
+	/**
+	 * Returns a fixed value if one and only one such value have been retrieved.
+	 * Returns <code>null</code> otherwise.
+	 */
 	public UnitValueCheck getFixedCheck() {
 		if (errorsList.size() == 1
 				&& errorsList.getFirst().getFixedValue() != null)
@@ -35,10 +52,9 @@ public class ValueCheck {
 		return null;
 	}
 
-	/*
-	 * Return all the checks if there are only non-critical checks (i.e. a
-	 * warnings) , or only the critical checks if there is at least one critical
-	 * check (i.e. an error).
+	/**
+	 * Returns all the checks if there are only warnings , or only the errors if
+	 * there is at least one error.
 	 */
 	public LinkedList<UnitValueCheck> getErrors() {
 		if (isCritical) {
@@ -53,6 +69,9 @@ public class ValueCheck {
 		}
 	}
 
+	/**
+	 * Returns <code>true</code> if there is at least one error.
+	 */
 	public boolean isCritical() {
 		return isCritical;
 	}

@@ -199,7 +199,7 @@ public class YangSchemaTreeGenerator {
 
 		} else if (body instanceof YANG_List) {
 			YANG_List list = (YANG_List) body;
-			ListNode node = new ListNode(list, list.getKey().getKey());
+			ListNode node = new ListNode(list, list.getKey().getKeyLeaves());
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {

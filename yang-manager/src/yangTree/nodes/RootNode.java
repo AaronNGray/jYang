@@ -16,11 +16,11 @@ public class RootNode extends ContainerNode {
 	private String name = "root";
 	
 	public RootNode(){
-		super("");
+		super("root");
 	}
 	
 	public RootNode(String name){
-		super("");
+		super("root");
 		this.name = name;
 	}
 	

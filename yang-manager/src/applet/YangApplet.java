@@ -161,15 +161,17 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		/*
 		 * ! Méthode modifiée pour les tests !
 		 */
-		String xmlCode = "<rpc-reply><data><netconf><system><ltest>abc</ltest><machine></machine></system></netconf></data></rpc-reply>";
+		String xmlCode = "<rpc-reply><data><netconf><system>" +
+				"<listT><id>1</id><name>a</name></listT>" +
+				"<listT><id>2</id><name>b</name></listT>"+
+				"<leafN>b</leafN> <leafT>2</leafT>"+
+				"</system></netconf></data></rpc-reply>";
 
 		for (DataNode node : tree.getNodes()) {
 			try {
 				DocumentBuilderFactory docBF = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
-				// Document xmlDoc =
-				// docBF.newDocumentBuilder().parse(sendGetRequest(node.xmlFilter()));
-				Document xmlDoc = docBF.newDocumentBuilder().parse(
-						new InputSource(new StringReader(xmlCode)));
+				//Document xmlDoc = docBF.newDocumentBuilder().parse(sendGetRequest(node.xmlFilter()));
+				Document xmlDoc = docBF.newDocumentBuilder().parse(new InputSource(new StringReader(xmlCode)));
 				treeFilled.addContent(TreeFiller.fillTree(node, xmlDoc,new YangTreePath(treeFilled)));
 			} catch (SAXException e) {
 				// TODO Auto-generated catch block

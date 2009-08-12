@@ -10,6 +10,7 @@ import applet.Util;
 import yangTree.attributes.LeafType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
+import yangTree.attributes.YangTreePath;
 
 import jyang.parser.YANG_Leaf;
 
@@ -57,6 +58,10 @@ public class LeafNode extends DataLeaf {
 			check = type.getBuiltinType().check(this.value);
 		} else {
 			check = new ValueCheck();
+			if (isKey){
+				check.addUnitCheck(new UnitValueCheck("No value have been retrieved for this list-key leaf."));
+				return;
+			}
 			if (mandatory){
 				check.addUnitCheck(new UnitValueCheck("No value have been retrieved for this mandatory leaf."));
 				return;

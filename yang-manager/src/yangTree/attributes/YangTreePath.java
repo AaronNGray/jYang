@@ -1,77 +1,160 @@
 package yangTree.attributes;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
+import applet.Util;
 
 import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 
 import yangTree.nodes.DataNode;
 import yangTree.nodes.DataTree;
 import yangTree.nodes.LeafNode;
+import yangTree.nodes.ListNode;
+import yangTree.nodes.ListNode;
 import yangTree.nodes.RootNode;
 
+/**
+ * Represents an absolute path in a YangTree.
+ */
 public class YangTreePath implements Serializable {
 
 	private String path;
-	public RootNode root;
+	private RootNode root;
+	private LinkedList<LeafNode> leavesAtPath = null;
 
+	/**
+	 * Creates a path at the root.
+	 */
 	public YangTreePath(RootNode root) {
-		this.path = "";
+		this.path = "/";
 		this.root = root;
 	}
 
-	private YangTreePath(String path,  RootNode root) {
+	private YangTreePath(String path, RootNode root) {
 		this.path = path;
 		this.root = root;
 	}
 
+	public YangTreePath clone() {
+		return new YangTreePath(path, root);
+	}
+
+	/**
+	 * Appends a node to this path
+	 */
 	public void appendChild(String child) {
-		path += "/"+child;
+		path += child + "/";
 	}
 
-	private void appendPath(String otherPath) {
-		path += otherPath;
-	}
-
-	private void removeChild() {
-		path = path.substring(0, path.lastIndexOf("/"));
-	}
-
-	public YangTreePath buildRootPath(String relativePath) {
-		YangTreePath result = new YangTreePath(path, root);
-		String tempPath = relativePath;
-		while (tempPath.startsWith("../")) {
-			tempPath = tempPath.substring(3);
-			result.removeChild();
-		}
-		result.appendPath("/" + tempPath);
-		return result;
-	}
-
-	private LeafNode solvePath(DataNode node) {
-
-		if (path.equals("/"))
-			return (LeafNode) node;
-
-		String tempPath = path.substring(1);
-		String[] nodes = tempPath.split("/");
-		DataNode match = null;
-		for (DataNode cnode : ((DataTree) node).getNodes()) {
-			if (cnode.getName().equals(nodes[0]))
-				match = cnode;
-		}
-		if (match == null) return null;
-		if (tempPath.indexOf("/")==-1){
-			tempPath="/";
-		} else {
-			tempPath = tempPath.substring(tempPath.indexOf("/"));
-		}
-		YangTreePath newPath = new YangTreePath(tempPath, root);
-		return newPath.solvePath(match);
-
+	/**
+	 * Gets all the leaves that are at this path in the tree.
+	 */
+	public LinkedList<LeafNode> getLeavesAtThisPath() {
+		if (leavesAtPath == null)
+			leavesAtPath = getNodesAtPath(path, root);
+		return leavesAtPath;
 	}
 	
-	public LeafNode solvePath(){
-		return solvePath(root);
+	/**
+	 * Builds a new path given a relative path from this path.<br>
+	 * For example, if this path is "/a/b/" and the relative path is "../c", the result will be "/a/c/".<br>
+	 * <br>
+	 * <b>WARNING</b> : Due to relative list-key values considerations, use <u>only</u> this method when the tree is <u>totally</u> filled.
+	 */
+	public YangTreePath buildRelativePath(String relativePath){
+		
+		String result = path ;
+		if (relativePath.startsWith("/")) {
+			result = relativePath;
+		} else {
+			String cutPath = relativePath;
+			while (cutPath.startsWith("../")) {
+				cutPath = cutPath.substring(3);
+				result = result.substring(0, result.substring(0, result.length()-1).lastIndexOf("/"));
+			}
+			result += "/" + cutPath;
+		}
+		if (!result.endsWith("/"))
+			result += "/";
+
+		while (result.indexOf("current") != -1) {
+			String cutPath = result
+					.substring(result.indexOf("current") + 7);
+			String subPath = cutPath.substring(cutPath.indexOf("/")+1, cutPath.indexOf("]"));	
+			YangTreePath subSolvedPath = buildRelativePath(subPath);
+			String value = subSolvedPath.getLeavesAtThisPath().getFirst().getValue();
+			result = result.substring(0, result.indexOf("current"))
+					+ value + cutPath.substring(cutPath.indexOf("]"));
+		}
+
+		return new YangTreePath(result,root);
+	}
+
+	/*
+	 * Recursive method used to retrieve leaves at a specific path, starting from a specific node.
+	 */
+	private static LinkedList<LeafNode> getNodesAtPath(String currentPath, DataNode node) {
+
+		LinkedList<LeafNode> result = new LinkedList<LeafNode>();
+		if (currentPath.equals("/")) {
+			result.add((LeafNode) node);
+			return result;
+		}
+
+		String tempPath = currentPath.substring(1);
+		String[] nodes = tempPath.split("/");
+		String currentNode = nodes[0];
+
+		String nodeName = currentNode;
+		Map<String, String> predicates = null;
+		if (currentNode.indexOf("[") != -1) {
+			nodeName = currentNode.substring(0, currentNode.indexOf("["));
+			predicates = getPredicates(currentNode);
+		}
+
+		LinkedList<DataNode> nodesMatched = new LinkedList<DataNode>();
+		for (DataNode cnode : ((DataTree) node).getNodes()) {
+			if (cnode.getName().equals(nodeName)) {
+				if (cnode instanceof ListNode && predicates != null) {
+					if (((ListNode) cnode).hasSameKey(predicates))
+						nodesMatched.add(cnode);
+				} else {
+					nodesMatched.add(cnode);
+				}
+			}
+		}
+
+		tempPath = tempPath.substring(tempPath.indexOf("/"));
+
+		for (DataNode child : nodesMatched) {
+			result.addAll(getNodesAtPath(tempPath, child));
+		}
+		return result;
+
+	}
+
+	/**
+	 * Parses a string to build a map of predicates keys and values.
+	 */
+	private static Map<String, String> getPredicates(String stringToParse) {
+
+		Map<String, String> result = new HashMap<String, String>();
+
+		while (stringToParse.indexOf("[") != -1) {
+			String firstArg = stringToParse.substring(stringToParse
+					.indexOf("[") + 1, stringToParse.indexOf("]"));
+			String[] args = firstArg.split("=");
+			result.put(Util.cleanValueString(args[0]), Util
+					.cleanValueString(args[1]));
+			stringToParse = stringToParse
+					.substring(stringToParse.indexOf("]") + 1);
+		}
+
+		return result;
+
 	}
 
 	public String toString() {

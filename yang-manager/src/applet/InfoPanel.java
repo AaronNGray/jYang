@@ -74,13 +74,22 @@ public class InfoPanel extends JPanel {
 					false);
 		}
 
+		int row = 2;
 		if (node instanceof ListNode) {
 			ListNode list = (ListNode) node;
-			if (isTreeFilled) {
-				buildTextField(2, list.getKeyName(), list.getKeyValue(), false);
-			} else {
-				buildTextField(2, "Key", list.getKeyName(), false);
+			buildTextField(row, "Keys", list.getKeysRepresentation(), false);
+			row++;
+
+			if (list.getCheck() != null && !list.getCheck().isOk()) {
+				if (list.getCheck().isCritical()) {
+					buildTextArea(row, "Errors", list.getCheck().toString(),
+							false);
+				} else {
+					buildTextArea(row, "Warnings", list.getCheck().toString(),
+							false);
+				}
 			}
+
 		}
 		repaint();
 	}
@@ -102,8 +111,7 @@ public class InfoPanel extends JPanel {
 		row++;
 		if (node.getCheck() != null && !node.getCheck().isOk()) {
 			if (node.getCheck().isCritical()) {
-				buildTextArea(row, "Errors", node.getCheck().toString(),
-						false);
+				buildTextArea(row, "Errors", node.getCheck().toString(), false);
 			} else {
 				buildTextArea(row, "Warnings", node.getCheck().toString(),
 						false);

@@ -11,7 +11,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
 import yangTree.YangTreeModel;
-import yangTree.nodes.DataLeaf;
+import yangTree.nodes.CheckedNode;
 import yangTree.nodes.DataNode;
 
 public class YangTree extends JTree {
@@ -49,10 +49,10 @@ public class YangTree extends JTree {
 			DataNode node = (DataNode) value;
 			
 			setToolTipText(null);
-			if (node instanceof DataLeaf){
-				DataLeaf dataLeaf = (DataLeaf) node;
-				if (dataLeaf.getCheck()!=null && !dataLeaf.getCheck().isOk())
-					setToolTipText(dataLeaf.getCheck().toString());
+			if (node instanceof CheckedNode){
+				CheckedNode checkedNode = (CheckedNode) node;
+				if (checkedNode.getCheck()!=null && !checkedNode.getCheck().isOk())
+					setToolTipText(checkedNode.getCheck().toString());
 			} 
 			setIcon(node.getIcon());
 			return this;

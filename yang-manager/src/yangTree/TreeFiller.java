@@ -16,6 +16,7 @@ import yangTree.attributes.YangTreePath;
 import yangTree.attributes.builtinTypes.BuiltinType;
 import yangTree.attributes.builtinTypes.EmptyType;
 import yangTree.attributes.builtinTypes.LeafrefType;
+import yangTree.attributes.builtinTypes.UnionType;
 import yangTree.nodes.CaseNode;
 import yangTree.nodes.ChoiceNode;
 import yangTree.nodes.DataNode;
@@ -73,8 +74,9 @@ public class TreeFiller {
 	}
 
 	private static DataNode fillTreeEngine(DataNode dataNode, Node xmlNode,
-			YangTreePath path) {
+			YangTreePath currentPath) {
 
+		YangTreePath path = currentPath.clone();
 		String[] nodeName = xmlNode.getNodeName().split(":");
 		String name = nodeName[0];
 		NameSpace namespace = null;
@@ -120,9 +122,10 @@ public class TreeFiller {
 				} else {
 					value = null;
 				}
-				if (filledNode.getType().getBuiltinType() instanceof LeafrefType) {
-					((LeafrefType) filledNode.getType().getBuiltinType())
-							.setPath(path);
+				// Some types have to be filled in the end.
+				if (filledNode.getType().getBuiltinType() instanceof LeafrefType
+						|| filledNode.getType().getBuiltinType() instanceof UnionType) {
+					filledNode.getType().getBuiltinType().setPath(path);
 					pendingValues.put(filledNode, value);
 				} else {
 					filledNode.setValue(value);
@@ -194,6 +197,7 @@ public class TreeFiller {
 
 			// At last, search for matching between xmlChildren and
 			// dataNodeChildren
+			LinkedList<ListNode> listInstances = new LinkedList<ListNode>();
 			for (Node xmlChild : xmlChildren) {
 				for (Map.Entry<DataNode, NodeDescriptor> entry : eligibleNodes
 						.entrySet()) {
@@ -205,6 +209,21 @@ public class TreeFiller {
 						DataNode newChild = fillTreeEngine(nodeChild, xmlChild,
 								path);
 						if (newChild != null) {
+							
+							//Check uniqueness of key for all list instance.
+							if (newChild instanceof ListNode){
+								ListNode list = (ListNode) newChild;
+								boolean alreadyExists = false;
+								for (ListNode otherList : listInstances){
+									alreadyExists = alreadyExists || list.hasSameKey(otherList);							
+								}
+								if (alreadyExists) {
+									list.addUnitCheck(new UnitValueCheck("Duplicate key"));
+								} else {
+									listInstances.add(list);
+								}
+							}
+							
 							treeResult.addContent(newChild);
 						}
 					}

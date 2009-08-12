@@ -7,6 +7,10 @@ import yangTree.attributes.builtinTypes.BuiltinType;
 import jyang.parser.YANG_Type;
 import jyang.parser.YANG_TypeDef;
 
+/**
+ * Represents the type of a leaf. This can be either a YANG built-in type or a YANG typeDef.
+ * @see BuiltinType
+ */
 public class LeafType implements Serializable{
 	
 	private boolean isBuiltInType ;

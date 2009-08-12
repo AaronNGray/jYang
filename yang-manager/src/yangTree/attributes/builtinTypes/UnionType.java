@@ -12,10 +12,6 @@ import yangTree.attributes.YangTreePath;
 
 public class UnionType extends BuiltinType {
 	
-	/*
-	 * WARNING : Leafref type as element of a union type will NOT work properly.
-	 */
-	
 	private LinkedList<BuiltinType> typesList ;
 	
 	public UnionType(YANG_Type type){
@@ -52,6 +48,13 @@ public class UnionType extends BuiltinType {
 		return result;
 	}
 	
+	@Override
+	public void setPath(YangTreePath path){
+		for (BuiltinType type : typesList){
+			type.setPath(path);
+		}
+	}
+	
 	public String getName(){
 		String result = "Union {";
 		for (BuiltinType type : typesList){
@@ -64,7 +67,7 @@ public class UnionType extends BuiltinType {
 	public String getContent() {
 		String result =  "Union : <ul>";
 		for (BuiltinType type : typesList){
-			result += "<li>"+type.getName()+"</li>";
+			result += "<li>"+type.getContent()+"</li>";
 		}
 		return result+"</ul>";
 	}

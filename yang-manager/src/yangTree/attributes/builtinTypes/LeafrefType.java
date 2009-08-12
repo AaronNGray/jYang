@@ -1,5 +1,7 @@
 package yangTree.attributes.builtinTypes;
 
+import java.util.LinkedList;
+
 import jyang.parser.YANG_Type;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
@@ -22,28 +24,35 @@ public class LeafrefType extends BuiltinType {
 		}
 	}
 
+	@Override
 	public void setPath(YangTreePath path) {
-		this.path = path.buildRootPath(relativePath);
-		if (requireInstance) {
-			restrictionsList.add(new RequireInstanceRestriction(this.path));
-		}
+		this.path = path;
 	}
 
 	@Override
 	public ValueCheck check(String value) {
+		
+		YangTreePath solvedPath = path.buildRelativePath(relativePath);
+		if (requireInstance) {
+			restrictionsList.add(new RequireInstanceRestriction(solvedPath));
+		}
+		
 		ValueCheck result = super.check(value);
 		if (!result.isOk())
 			return result;
-		LeafNode leaf = path.solvePath();
-		if (leaf!=null && leaf.getValue()!=null ){
-				if (!leaf.getValue().equals(value))
-			result.addUnitCheck(new UnitValueCheck(
-					"This value does not match the reference leaf value : \""
-							+ leaf.getValue() + "\""));
-		} else {
+		LinkedList<LeafNode> leaves = solvedPath.getLeavesAtThisPath();
+		if (leaves.size()==0) {
 			result.addUnitCheck(new UnitValueCheck("The reference leaf value is not present",false));
+		} else {
+			boolean match = false;
+			for (LeafNode leaf : leaves){
+				match = match || leaf.getValue().equals(value);
+			}
+			if (!match) result.addUnitCheck(new UnitValueCheck(
+					"This value does not match a reference leaf value."));
 		}
 		return result;
+		
 	}
 
 	public String getName() {
@@ -52,7 +61,7 @@ public class LeafrefType extends BuiltinType {
 
 	@Override
 	public String getContent() {
-		return "Leafref : " + path.toString();
+		return "Leafref : " + relativePath;
 	}
 
 }
