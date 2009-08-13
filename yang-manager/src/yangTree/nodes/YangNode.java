@@ -9,10 +9,10 @@ import yangTree.attributes.NameSpace;
 import jyang.parser.YANG_DataDef;
 
 /**
- * Represents a node in the YangTree. Such a node is either a {@link DataTree} or a {@link DataLeaf}.
+ * Represents a node in the YangTree. Such a node is either a {@link YangInnerNode} or a {@link YangLeaf}.
  */
 
-public abstract class DataNode implements Serializable {
+public abstract class YangNode implements Serializable {
 
 	public YANG_DataDef definition;
 	private NameSpace nameSpace;

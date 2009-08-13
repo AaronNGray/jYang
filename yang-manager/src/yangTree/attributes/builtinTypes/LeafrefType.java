@@ -10,7 +10,7 @@ import yangTree.attributes.restrictions.RequireInstanceRestriction;
 import yangTree.nodes.LeafNode;
 import yangTree.nodes.RootNode;
 
-public class LeafrefType extends BuiltinType {
+public class LeafrefType extends BuiltinType implements PathSensitiveType {
 
 	private String relativePath;
 	private YangTreePath path;
@@ -24,7 +24,6 @@ public class LeafrefType extends BuiltinType {
 		}
 	}
 
-	@Override
 	public void setPath(YangTreePath path) {
 		this.path = path;
 	}

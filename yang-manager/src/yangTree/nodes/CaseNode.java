@@ -9,7 +9,7 @@ import javax.swing.ImageIcon;
 import jyang.parser.YANG_Case;
 
 
-public class CaseNode extends DataTree {
+public class CaseNode extends YangInnerNode {
 	
 	private static ImageIcon icon = null;
 
@@ -18,7 +18,7 @@ public class CaseNode extends DataTree {
 		definition = c;
 	}
 
-	public void addContent(DataNode d) {
+	public void addContent(YangNode d) {
 		nodes.add(d);
 	}
 

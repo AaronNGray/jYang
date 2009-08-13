@@ -10,29 +10,29 @@ import yangTree.nodes.*;
 
 public class YangTreeModel implements TreeModel {
 
-	private DataNode root;
+	private YangNode root;
 	
-	public YangTreeModel(DataNode root){
+	public YangTreeModel(YangNode root){
 		this.root = root;
 	}
 	
 	public Object getChild(Object parent,int index){
 		
-		DataTree tree = (DataTree) parent;
+		YangInnerNode tree = (YangInnerNode) parent;
 		return tree.getNodes().get(index);
 
 	}
 	
 	public int getChildCount(Object parent){
-		DataTree node = (DataTree) parent;
+		YangInnerNode node = (YangInnerNode) parent;
 		return node.getNodes().size();
 	}
 	
 	public int getIndexOfChild(Object parent, Object child){
 		
-		DataTree tree = (DataTree) parent;
+		YangInnerNode tree = (YangInnerNode) parent;
 		int i = 0;
-		for (DataNode node : tree.getNodes()){
+		for (YangNode node : tree.getNodes()){
 			if (node.equals(child)){
 				return i;
 			} else {
@@ -44,7 +44,7 @@ public class YangTreeModel implements TreeModel {
 	}
 	
 	public boolean isLeaf(Object node){
-		DataNode dataNode = (DataNode) node;
+		YangNode dataNode = (YangNode) node;
 		return (dataNode instanceof LeafNode) || (dataNode instanceof LeafListNode);
 	}
 	

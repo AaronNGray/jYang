@@ -8,10 +8,10 @@ import yangTree.attributes.ValueCheck;
 /**
  * Represents a leaf in a YangTree.
  * 
- * @see DataTree
+ * @see YangInnerNode
  * 
  */
-public abstract class DataLeaf extends DataNode implements CheckedNode {
+public abstract class YangLeaf extends YangNode implements CheckedYangNode {
 
 	protected String value = null;
 	protected LeafType type;

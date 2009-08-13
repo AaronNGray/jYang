@@ -10,7 +10,7 @@ import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.YangTreePath;
 
-public class UnionType extends BuiltinType {
+public class UnionType extends BuiltinType implements PathSensitiveType {
 	
 	private LinkedList<BuiltinType> typesList ;
 	
@@ -48,10 +48,10 @@ public class UnionType extends BuiltinType {
 		return result;
 	}
 	
-	@Override
 	public void setPath(YangTreePath path){
 		for (BuiltinType type : typesList){
-			type.setPath(path);
+			if (type instanceof PathSensitiveType)
+				((PathSensitiveType) type).setPath(path);
 		}
 	}
 	

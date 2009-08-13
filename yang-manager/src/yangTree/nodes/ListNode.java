@@ -17,20 +17,31 @@ import com.sun.org.apache.xml.internal.utils.SuballocatedByteVector;
 
 import jyang.parser.YANG_List;
 
-public class ListNode extends DataTree implements CheckedNode {
+public class ListNode extends YangInnerNode implements ListedYangNode {
 
 	private static ImageIcon icon = null;
 	private static ImageIcon errorIcon = null;
 
+	private int minElements = 0;
+	private int maxElements = Integer.MAX_VALUE;
+	
 	private Map<String, String> keymap = new HashMap<String, String>();
 	private ValueCheck check = null;
 
 	public ListNode(YANG_List d) {
 		definition = d;
+		if (d.getMinElement()!=null)
+			this.minElements = new Integer(d.getMinElement().getMinElement());
+		if (d.getMaxElement()!=null && !d.getMaxElement().getMaxElement().equals("unbounded"))
+			this.maxElements = new Integer(d.getMaxElement().getMaxElement());
 	}
 
 	public ListNode(YANG_List d, String[] keys) {
 		definition = d;
+		if (d.getMinElement()!=null)
+			this.minElements = new Integer(d.getMinElement().getMinElement());
+		if (d.getMaxElement()!=null && !d.getMaxElement().getMaxElement().equals("unbounded"))
+			this.maxElements = new Integer(d.getMaxElement().getMaxElement());
 		for (int i = 0; i < keys.length; i++) {
 			keymap.put(keys[i], null);
 		}
@@ -42,7 +53,7 @@ public class ListNode extends DataTree implements CheckedNode {
 	}
 
 	@Override
-	public void addContent(DataNode node) {
+	public void addContent(YangNode node) {
 		if (node instanceof LeafNode) {
 			LeafNode leaf = (LeafNode) node;
 			if (keymap.containsKey(leaf.getName())) {
@@ -55,16 +66,35 @@ public class ListNode extends DataTree implements CheckedNode {
 		nodes.add(node);
 	}
 
-	public void addUnitCheck(UnitValueCheck unitCheck) {
-		if (check == null)
-			check = new ValueCheck();
-		check.addUnitCheck(unitCheck);
-	}
-
 	public ListNode cloneBody() {
 		return new ListNode((YANG_List) definition, keymap);
 	}
 	
+	@Override
+	public ValueCheck getCheck() {
+		if (check==null){
+			check = new ValueCheck();
+		}
+		return check;
+	}
+
+	public int getMinElements() {
+		return minElements;
+	}
+
+	public int getMaxElements() {
+		return maxElements;
+	}
+
+	public int compareTo(ListedYangNode otherListedNode) {
+		ListNode otherList = (ListNode) otherListedNode;
+		for (String key : keymap.keySet()){
+			if (keymap.get(key).compareTo(otherList.keymap.get(key))!=0)
+				return keymap.get(key).compareTo(otherList.keymap.get(key));
+		}
+		return 0;
+	}
+
 	public boolean hasSameKey(Map<String,String> keymap){
 		for (String key : this.keymap.keySet()) {
 			if (!this.keymap.get(key).equals(keymap.get(key)))
@@ -75,11 +105,6 @@ public class ListNode extends DataTree implements CheckedNode {
 
 	public boolean hasSameKey(ListNode otherList) {
 		return hasSameKey(otherList.keymap);
-	}
-
-	@Override
-	public ValueCheck getCheck() {
-		return check;
 	}
 
 	public String getKeysRepresentation() {

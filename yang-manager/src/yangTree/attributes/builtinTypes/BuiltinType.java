@@ -102,15 +102,6 @@ public abstract class BuiltinType implements Serializable {
 	}
 
 	/**
-	 * Sets the absolute path of the leaf in which the type is present.
-	 */
-	/*
-	 * Types that actually need this information will override this method.
-	 */
-	public void setPath(YangTreePath path) {
-	}
-
-	/**
 	 * Returns a very short description of the type.
 	 */
 	public abstract String getName();

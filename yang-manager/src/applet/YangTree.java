@@ -11,12 +11,12 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
 import yangTree.YangTreeModel;
-import yangTree.nodes.CheckedNode;
-import yangTree.nodes.DataNode;
+import yangTree.nodes.CheckedYangNode;
+import yangTree.nodes.YangNode;
 
 public class YangTree extends JTree {
 
-	public YangTree(DataNode root) {
+	public YangTree(YangNode root) {
 		super(new YangTreeModel(root));
 		
 		ToolTipManager.sharedInstance().registerComponent(this);
@@ -46,11 +46,11 @@ public class YangTree extends JTree {
 				boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 			super.getTreeCellRendererComponent(tree, value, sel, expanded,
 					leaf, row, hasFocus);
-			DataNode node = (DataNode) value;
+			YangNode node = (YangNode) value;
 			
 			setToolTipText(null);
-			if (node instanceof CheckedNode){
-				CheckedNode checkedNode = (CheckedNode) node;
+			if (node instanceof CheckedYangNode){
+				CheckedYangNode checkedNode = (CheckedYangNode) node;
 				if (checkedNode.getCheck()!=null && !checkedNode.getCheck().isOk())
 					setToolTipText(checkedNode.getCheck().toString());
 			} 

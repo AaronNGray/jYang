@@ -14,15 +14,35 @@ import yangTree.attributes.builtinTypes.BuiltinType;
 
 import jyang.parser.YANG_LeafList;
 
-public class LeafListNode extends DataLeaf {
+public class LeafListNode extends YangLeaf implements ListedYangNode {
 
 	private static ImageIcon icon = null;
 	private static ImageIcon errorIcon = null;
 	private static ImageIcon warningIcon = null;
 
+	private int minElements = 0;
+	private int maxElements = Integer.MAX_VALUE;
 
 	public LeafListNode(YANG_LeafList d) {
 		definition = d;
+		if (d.getMinElement()!=null)
+			this.minElements = new Integer(d.getMinElement().getMinElement());
+		if (d.getMaxElement()!=null && !d.getMaxElement().getMaxElement().equals("unbounded"))
+			this.maxElements = new Integer(d.getMaxElement().getMaxElement());
+	}
+
+	public int getMinElements() {
+		return minElements;
+	}
+
+	public int getMaxElements() {
+		return maxElements;
+	}
+
+	@Override
+	public int compareTo(ListedYangNode otherListedNode) {
+		LeafListNode otherNode = (LeafListNode) otherListedNode;
+		return value.compareTo(otherNode.getValue());
 	}
 
 	public void setType(LeafType type) {

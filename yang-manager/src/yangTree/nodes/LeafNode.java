@@ -14,7 +14,7 @@ import yangTree.attributes.YangTreePath;
 
 import jyang.parser.YANG_Leaf;
 
-public class LeafNode extends DataLeaf {
+public class LeafNode extends YangLeaf {
 
 	private static ImageIcon standardIcon = null;
 	private static ImageIcon isKeyIcon = null;

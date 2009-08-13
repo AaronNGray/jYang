@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 
 import jyang.parser.YANG_Choice;
 
-public class ChoiceNode extends DataTree {
+public class ChoiceNode extends YangInnerNode {
 	
 	private static ImageIcon icon = null;
 
@@ -26,7 +26,7 @@ public class ChoiceNode extends DataTree {
 		return "Choice";
 	}
 
-	public DataTree cloneBody() {
+	public YangInnerNode cloneBody() {
 		return new ChoiceNode((YANG_Choice) definition);
 	}
 	

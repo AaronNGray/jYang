@@ -13,8 +13,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import yangTree.attributes.LeafType;
-import yangTree.nodes.DataLeaf;
-import yangTree.nodes.DataNode;
+import yangTree.nodes.YangLeaf;
+import yangTree.nodes.YangNode;
 import yangTree.nodes.LeafListNode;
 import yangTree.nodes.LeafNode;
 import yangTree.nodes.ListNode;
@@ -65,7 +65,7 @@ public class InfoPanel extends JPanel {
 		repaint();
 	}
 
-	private void setTreeNodeInfo(DataNode node) {
+	private void setTreeNodeInfo(YangNode node) {
 		clean();
 		titre.setText(node.getNodeType() + " : " + node.getName());
 
@@ -94,7 +94,7 @@ public class InfoPanel extends JPanel {
 		repaint();
 	}
 
-	private void setLeafInfo(DataLeaf node) {
+	private void setLeafInfo(YangLeaf node) {
 		clean();
 		titre.setText(node.getNodeType() + " : " + node.getName());
 
@@ -206,11 +206,11 @@ public class InfoPanel extends JPanel {
 
 	}
 
-	public void setInfo(DataNode node) {
+	public void setInfo(YangNode node) {
 		if (node instanceof RootNode) {
 			setHelpInfo();
-		} else if (node instanceof DataLeaf) {
-			setLeafInfo((DataLeaf) node);
+		} else if (node instanceof YangLeaf) {
+			setLeafInfo((YangLeaf) node);
 		} else {
 			setTreeNodeInfo(node);
 		}

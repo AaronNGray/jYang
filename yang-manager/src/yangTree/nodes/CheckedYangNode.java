@@ -5,7 +5,7 @@ import yangTree.attributes.ValueCheck;
 /**
  * Representation of a node that can be checked, i.e. that can present errors or warnings
  */
-public interface CheckedNode {
+public interface CheckedYangNode {
 
 	/**
 	 * Returns the errors and warnings detected on this leaf, or

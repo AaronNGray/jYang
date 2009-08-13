@@ -9,8 +9,8 @@ import applet.Util;
 
 import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 
-import yangTree.nodes.DataNode;
-import yangTree.nodes.DataTree;
+import yangTree.nodes.YangNode;
+import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.LeafNode;
 import yangTree.nodes.ListNode;
 import yangTree.nodes.ListNode;
@@ -96,7 +96,7 @@ public class YangTreePath implements Serializable {
 	/*
 	 * Recursive method used to retrieve leaves at a specific path, starting from a specific node.
 	 */
-	private static LinkedList<LeafNode> getNodesAtPath(String currentPath, DataNode node) {
+	private static LinkedList<LeafNode> getNodesAtPath(String currentPath, YangNode node) {
 
 		LinkedList<LeafNode> result = new LinkedList<LeafNode>();
 		if (currentPath.equals("/")) {
@@ -115,8 +115,8 @@ public class YangTreePath implements Serializable {
 			predicates = getPredicates(currentNode);
 		}
 
-		LinkedList<DataNode> nodesMatched = new LinkedList<DataNode>();
-		for (DataNode cnode : ((DataTree) node).getNodes()) {
+		LinkedList<YangNode> nodesMatched = new LinkedList<YangNode>();
+		for (YangNode cnode : ((YangInnerNode) node).getNodes()) {
 			if (cnode.getName().equals(nodeName)) {
 				if (cnode instanceof ListNode && predicates != null) {
 					if (((ListNode) cnode).hasSameKey(predicates))
@@ -129,7 +129,7 @@ public class YangTreePath implements Serializable {
 
 		tempPath = tempPath.substring(tempPath.indexOf("/"));
 
-		for (DataNode child : nodesMatched) {
+		for (YangNode child : nodesMatched) {
 			result.addAll(getNodesAtPath(tempPath, child));
 		}
 		return result;

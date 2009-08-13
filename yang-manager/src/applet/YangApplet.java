@@ -29,7 +29,7 @@ import org.xml.sax.SAXException;
 import yangTree.TreeFiller;
 import yangTree.attributes.YangTreePath;
 import yangTree.attributes.builtinTypes.LeafrefType;
-import yangTree.nodes.DataNode;
+import yangTree.nodes.YangNode;
 import yangTree.nodes.LeafNode;
 import yangTree.nodes.RootNode;
 
@@ -162,12 +162,12 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		 * ! Méthode modifiée pour les tests !
 		 */
 		String xmlCode = "<rpc-reply><data><netconf><system>" +
-				"<listT><id>1</id><name>a</name></listT>" +
-				"<listT><id>2</id><name>b</name></listT>"+
-				"<leafN>b</leafN> <leafT>2</leafT>"+
+				"<listT> a </listT>" +
+				"<listT> b   </listT>"+
+				"<listT>   c</listT>"+
 				"</system></netconf></data></rpc-reply>";
 
-		for (DataNode node : tree.getNodes()) {
+		for (YangNode node : tree.getNodes()) {
 			try {
 				DocumentBuilderFactory docBF = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
 				//Document xmlDoc = docBF.newDocumentBuilder().parse(sendGetRequest(node.xmlFilter()));
@@ -194,7 +194,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
 
-		DataNode selectedNode = (DataNode) treeViewer
+		YangNode selectedNode = (YangNode) treeViewer
 				.getLastSelectedPathComponent();
 
 		if (selectedNode == null)

@@ -51,7 +51,7 @@ public class YangSchemaTreeGenerator {
 
 		parser = new jyang(yarg);
 		Hashtable<String, YANG_Specification> specs = parser.getYangsSpecs();
-		Map<String, DataTree> treeMap = new HashMap<String, DataTree>();
+		Map<String, YangInnerNode> treeMap = new HashMap<String, YangInnerNode>();
 		for (Enumeration<YANG_Specification> especs = specs.elements(); especs
 				.hasMoreElements();) {
 			YANG_Specification spec = especs.nextElement();
@@ -87,7 +87,7 @@ public class YangSchemaTreeGenerator {
 	 * Link the different module Trees, and build the namespaces.
 	 */
 	public static RootNode buildGeneralTree(String[] modulesArgs,
-			String[] prefixes, Map<String, DataTree> treeMap) {
+			String[] prefixes, Map<String, YangInnerNode> treeMap) {
 
 		LinkedList<ContainerNode> usedNodes = new LinkedList<ContainerNode>();
 		RootNode rootNode = new RootNode("Yang Specifications");
@@ -143,16 +143,16 @@ public class YangSchemaTreeGenerator {
 
 			}
 			NameSpace moduleNS = new NameSpace(modulesArgs[i + 2], false);
-			DataTree subroot = treeMap.get(modulesArgs[i]);
+			YangInnerNode subroot = treeMap.get(modulesArgs[i]);
 
 			// Special handling if two linked containers have the same name : in
 			// this case, there are merged.
-			DataNode secondSubRoot = subroot.getNodes().getFirst();
+			YangNode secondSubRoot = subroot.getNodes().getFirst();
 			if (subroot.getNodes().size() == 1
 					&& lastUsedNode.toString().equals(secondSubRoot.toString())) {
 				lastUsedNode.setNameSpace(lastUsedNode.getNameSpace()
 						.mergeWith(moduleNS));
-				subroot = (DataTree) secondSubRoot;
+				subroot = (YangInnerNode) secondSubRoot;
 			}
 
 			// If a module have a prefix and an explicit namespace, they are
@@ -164,7 +164,7 @@ public class YangSchemaTreeGenerator {
 						.mergeWith(moduleNS));
 			}
 
-			for (DataNode node : subroot.getNodes()) {
+			for (YangNode node : subroot.getNodes()) {
 				lastUsedNode.addContent(node);
 			}
 		}
@@ -172,7 +172,7 @@ public class YangSchemaTreeGenerator {
 		return rootNode;
 	}
 
-	public static DataTree buildModuleTree(YANG_Specification spec) {
+	public static YangInnerNode buildModuleTree(YANG_Specification spec) {
 		YangTreeNode ytn = spec.getSchemaTree();
 		RootNode rootNode = new RootNode();
 		Vector<YangTreeNode> childs = ytn.getChilds();
@@ -182,7 +182,7 @@ public class YangSchemaTreeGenerator {
 		return rootNode;
 	}
 
-	public static DataNode buildModuleTree(YangTreeNode ytn) {
+	public static YangNode buildModuleTree(YangTreeNode ytn) {
 
 		YANG_Body body = ytn.getNode();
 
