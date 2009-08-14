@@ -10,16 +10,16 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.StyledEditorKit;
-import javax.swing.text.html.HTMLEditorKit;
 
 import yangTree.attributes.LeafType;
 import yangTree.attributes.builtinTypes.BuiltinType;
 
+/**
+ * The panel that displays informations about a {@link LeafType}.
+ *
+ */
+@SuppressWarnings("serial")
 public class TypePanel extends JPanel {
 
 	private JTextField typeName;

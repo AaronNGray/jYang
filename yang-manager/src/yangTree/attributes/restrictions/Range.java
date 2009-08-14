@@ -2,6 +2,7 @@ package yangTree.attributes.restrictions;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class Range implements Serializable {
 
 	private int min;

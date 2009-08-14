@@ -14,6 +14,11 @@ import yangTree.YangTreeModel;
 import yangTree.nodes.CheckedYangNode;
 import yangTree.nodes.YangNode;
 
+/**
+ * Provides a display of a YangTree.
+ * 
+ */
+@SuppressWarnings("serial")
 public class YangTree extends JTree {
 
 	public YangTree(YangNode root) {

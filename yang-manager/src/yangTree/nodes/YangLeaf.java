@@ -1,6 +1,6 @@
 package yangTree.nodes;
 
-import javax.swing.ImageIcon;
+import applet.InfoPanel;
 
 import yangTree.attributes.LeafType;
 import yangTree.attributes.ValueCheck;
@@ -11,6 +11,7 @@ import yangTree.attributes.ValueCheck;
  * @see YangInnerNode
  * 
  */
+@SuppressWarnings("serial")
 public abstract class YangLeaf extends YangNode implements CheckedYangNode {
 
 	protected String value = null;
@@ -34,6 +35,21 @@ public abstract class YangLeaf extends YangNode implements CheckedYangNode {
 
 	public ValueCheck getCheck() {
 		return check;
+	}
+	
+	@Override
+	public void buildInfoPanel(InfoPanel panel){
+		super.buildInfoPanel(panel);
+		
+		panel.addTypePanel(type);
+		
+		String value = getValue();
+		if (panel.isTreeFilled()) {
+			if (value == null) {
+				value = "(No value)";
+			}
+			panel.addTextField("Value", value);
+		}
 	}
 
 	/**

@@ -3,16 +3,13 @@ package yangTree.attributes.builtinTypes;
 
 import java.util.TreeSet;
 
-import applet.Util;
-
 import jyang.parser.YANG_Bit;
 import jyang.parser.YANG_Type;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
+@SuppressWarnings("serial")
 public class BitsType extends BuiltinType {
-
-	// TODO : check uniqueness and range of enumeration element value.
 
 	private TreeSet<BitsElement> elements = new TreeSet<BitsElement>();
 

@@ -4,6 +4,7 @@ import jyang.parser.YANG_Type;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
+@SuppressWarnings("serial")
 public class BooleanType extends BuiltinType {
 
 	public BooleanType(YANG_Type type) {}

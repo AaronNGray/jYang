@@ -5,15 +5,16 @@ import java.io.InputStream;
 
 import javax.swing.ImageIcon;
 
+import applet.InfoPanel;
 import applet.Util;
 
 import yangTree.attributes.LeafType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
-import yangTree.attributes.builtinTypes.BuiltinType;
 
 import jyang.parser.YANG_LeafList;
 
+@SuppressWarnings("serial")
 public class LeafListNode extends YangLeaf implements ListedYangNode {
 
 	private static ImageIcon icon = null;
@@ -79,6 +80,15 @@ public class LeafListNode extends YangLeaf implements ListedYangNode {
 						false));
 			}
 		}
+	}
+	
+	@Override
+	public void buildInfoPanel(InfoPanel panel){
+		super.buildInfoPanel(panel);
+		if (minElements>0)
+			panel.addTextField("Minimum number of elements", minElements+"");
+		if (maxElements<Integer.MAX_VALUE)
+			panel.addTextField("Maximum number of elements", maxElements+"");
 	}
 
 	public String getNodeType() {

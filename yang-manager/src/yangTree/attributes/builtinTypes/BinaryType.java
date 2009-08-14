@@ -10,6 +10,7 @@ import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.restrictions.BinaryLengthRestriction;
 
+@SuppressWarnings("serial")
 public class BinaryType extends BuiltinType {
 	
 	public static final Pattern pattern = Pattern.compile("[A-Za-z0-9+/]*[=]{0,2}");

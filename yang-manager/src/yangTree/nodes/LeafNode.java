@@ -2,18 +2,21 @@ package yangTree.nodes;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 
+import applet.InfoPanel;
 import applet.Util;
 
 import yangTree.attributes.LeafType;
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
-import yangTree.attributes.YangTreePath;
 
 import jyang.parser.YANG_Leaf;
 
+@SuppressWarnings("serial")
 public class LeafNode extends YangLeaf {
 
 	private static ImageIcon standardIcon = null;
@@ -109,10 +112,29 @@ public class LeafNode extends YangLeaf {
 		return result;
 	}
 
-	public String toString(String prefix) {
-		return prefix + "leaf " + definition.getBody() + "; value : " + value;
+	@Override
+	public void buildInfoPanel(InfoPanel panel){
+		super.buildInfoPanel(panel);
+		if (isMandatory()) 
+			panel.addTextField("Mandatory", "Yes");
+		
+		if (getDefaultValue() != null)
+			panel.addTextField("Default value", getDefaultValue());
+		
+		if (getType().getDefaultValue() != null) {
+			panel.addTextField("Default value", getType()
+					.getDefaultValue());
+		}
+		if (getDescription() != null) {
+			String description = getDescription();
+			Pattern pattern = Pattern.compile("[\n\t]");
+			Matcher matcher = pattern.matcher(description);
+			description = matcher.replaceAll("");
+			panel.addTextArea("Description", description);
+		}
 	}
-
+	
+	
 	public String toString() {
 		if (value == null) {
 			return definition.getBody();

@@ -4,8 +4,7 @@ import java.io.Serializable;
 
 import applet.Util;
 
-import jyang.parser.YANG_Enum;
-
+@SuppressWarnings("serial")
 public class EnumerationElement implements Serializable{
 	
 	private String name;

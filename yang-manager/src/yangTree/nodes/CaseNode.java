@@ -1,6 +1,5 @@
 package yangTree.nodes;
 
-import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -9,6 +8,7 @@ import javax.swing.ImageIcon;
 import jyang.parser.YANG_Case;
 
 
+@SuppressWarnings("serial")
 public class CaseNode extends YangInnerNode {
 	
 	private static ImageIcon icon = null;

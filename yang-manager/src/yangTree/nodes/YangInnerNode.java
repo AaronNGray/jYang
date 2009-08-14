@@ -2,11 +2,14 @@ package yangTree.nodes;
 
 import java.util.LinkedList;
 
+import applet.InfoPanel;
+
 /**
  * Represents a inner node (i.e. that is not a leaf) in a YangTree.
  * @see YangLeaf
  *
  */
+@SuppressWarnings("serial")
 public abstract class YangInnerNode extends YangNode {
 	
 	protected LinkedList<YangNode> nodes = new LinkedList<YangNode>();
@@ -28,6 +31,13 @@ public abstract class YangInnerNode extends YangNode {
 	 */
 	public void addContent(YangNode node){
 		nodes.add(node);
+	}
+	
+	@Override
+	public void buildInfoPanel(InfoPanel panel){
+		super.buildInfoPanel(panel);
+		if (getNameSpace()!=null)
+			panel.addTextField("Namespace", getNameSpace().getNameSpace());
 	}
 
 }

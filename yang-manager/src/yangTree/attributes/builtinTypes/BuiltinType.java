@@ -6,14 +6,13 @@ import java.util.LinkedList;
 import jyang.parser.YANG_Type;
 import yangTree.attributes.LeafType;
 import yangTree.attributes.ValueCheck;
-import yangTree.attributes.YangTreePath;
-import yangTree.attributes.builtinTypes.*;
 import yangTree.attributes.restrictions.Restriction;
 
 /**
  * Represents a YANG built-in type.
  * @see LeafType
  */
+@SuppressWarnings("serial")
 public abstract class BuiltinType implements Serializable {
 
 	protected LinkedList<Restriction> restrictionsList = new LinkedList<Restriction>();
@@ -42,7 +41,7 @@ public abstract class BuiltinType implements Serializable {
 	}
 
 	/**
-	 * Matches a built-in type from a YANG type.
+	 * Creates a <code>BuiltInType</code> from a YANG type.
 	 */
 	public static BuiltinType buildType(YANG_Type type) {
 		if (!isBuiltinType(type.getType())) {

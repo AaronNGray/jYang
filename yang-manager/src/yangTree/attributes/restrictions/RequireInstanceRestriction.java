@@ -6,6 +6,7 @@ import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.YangTreePath;
 import yangTree.nodes.LeafNode;
 
+@SuppressWarnings("serial")
 public class RequireInstanceRestriction extends Restriction {
 	
 	private YangTreePath path;

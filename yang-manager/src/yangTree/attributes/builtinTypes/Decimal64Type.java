@@ -6,6 +6,7 @@ import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.restrictions.RangeRestriction;
 
+@SuppressWarnings("serial")
 public class Decimal64Type extends BuiltinType {
 	
 	private int fractionDigits = 18;

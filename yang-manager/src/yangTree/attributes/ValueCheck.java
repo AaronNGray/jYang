@@ -42,7 +42,7 @@ public class ValueCheck {
 	}
 
 	/**
-	 * Returns a fixed value if one and only one such value have been retrieved.
+	 * Returns a <code>UnitValueCheck</code> containing a fixed value if one and only one such value have been retrieved.
 	 * Returns <code>null</code> otherwise.
 	 */
 	public UnitValueCheck getFixedCheck() {

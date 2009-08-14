@@ -7,18 +7,17 @@ import java.util.Map;
 
 import applet.Util;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
-
 import yangTree.nodes.YangNode;
 import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.LeafNode;
 import yangTree.nodes.ListNode;
-import yangTree.nodes.ListNode;
+
 import yangTree.nodes.RootNode;
 
 /**
  * Represents an absolute path in a YangTree.
  */
+@SuppressWarnings("serial")
 public class YangTreePath implements Serializable {
 
 	private String path;

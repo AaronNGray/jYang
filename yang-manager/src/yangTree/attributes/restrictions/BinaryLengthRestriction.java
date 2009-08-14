@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import yangTree.attributes.UnitValueCheck;
 import jyang.parser.YANG_Length;
 
+@SuppressWarnings("serial")
 public class BinaryLengthRestriction extends LengthRestriction {
 	
 	public BinaryLengthRestriction(YANG_Length length){

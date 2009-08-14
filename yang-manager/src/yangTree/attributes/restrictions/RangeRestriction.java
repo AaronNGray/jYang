@@ -1,11 +1,11 @@
 package yangTree.attributes.restrictions;
 
-import java.io.Serializable;
 import java.util.LinkedList;
 
 import jyang.parser.YANG_Range;
 import yangTree.attributes.UnitValueCheck;
 
+@SuppressWarnings("serial")
 public class RangeRestriction extends Restriction {
 
 	private LinkedList<Range> rangesList = new LinkedList<Range>();

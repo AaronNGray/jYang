@@ -2,14 +2,13 @@ package yangTree.attributes.builtinTypes;
 
 import java.util.LinkedList;
 
-import applet.Util;
-
 import jyang.parser.YANG_Type;
 
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.YangTreePath;
 
+@SuppressWarnings("serial")
 public class UnionType extends BuiltinType implements PathSensitiveType {
 	
 	private LinkedList<BuiltinType> typesList ;

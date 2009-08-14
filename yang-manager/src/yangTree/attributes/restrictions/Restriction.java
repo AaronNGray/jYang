@@ -7,6 +7,7 @@ import yangTree.attributes.UnitValueCheck;
 /**
  * Represents a restriction that can be applied on a built-in type.
  */
+@SuppressWarnings("serial")
 public abstract class Restriction implements Serializable{
 	
 	/**

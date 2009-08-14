@@ -1,7 +1,7 @@
 package yangTree.attributes;
 
 /**
- * Represent a unit check that have been applied on a value given a type and some restrictions.
+ * Represents a unit check that have been applied on a value given a type and some restrictions.
  * This can be an error (critical check), a warning (non-critical check), or a OK (empty check).
  * @see ValueCheck
  */
@@ -17,7 +17,7 @@ public class UnitValueCheck {
 	}
 	
 	/**
-	 * Create a new critical unit check.
+	 * Creates a new critical unit check.
 	 */
 	public UnitValueCheck(String description){
 		this.isOk = false;
@@ -26,7 +26,7 @@ public class UnitValueCheck {
 	}
 	
 	/**
-	 * Create a new unit check that can be critical or not.
+	 * Creates a new unit check that can be critical or not.
 	 */
 	public UnitValueCheck(String description, boolean isCritical){
 		this.isOk = false;
@@ -35,7 +35,7 @@ public class UnitValueCheck {
 	}
 	
 	/**
-	 * Create a new non-critical unit check that suggest a fixed value.
+	 * Creates a new non-critical unit check that suggest a fixed value.
 	 */
 	public UnitValueCheck(String description, String fixedValue){
 		this.isOk = false;
@@ -45,7 +45,7 @@ public class UnitValueCheck {
 	}
 	
 	/**
-	 * Create a OK unit check.
+	 * Creates a OK unit check.
 	 */
 	public static UnitValueCheck checkOK(){
 		return new UnitValueCheck();
@@ -59,6 +59,9 @@ public class UnitValueCheck {
 		return description;
 	}
 	
+	/**
+	 * Returns a fixed value if such value has been suggested. Returns <code>null</code> otherwise.
+	 */
 	public String getFixedValue(){
 		return fixedValue;
 	}

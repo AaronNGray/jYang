@@ -3,12 +3,12 @@ package yangTree.nodes;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.LinkedList;
-
 import javax.swing.ImageIcon;
 
+import applet.InfoPanel;
 
+
+@SuppressWarnings("serial")
 public class RootNode extends ContainerNode {
 	
 	private static ImageIcon icon = null;
@@ -26,6 +26,10 @@ public class RootNode extends ContainerNode {
 	
 	public String toString(){
 		return name;
+	}
+	
+	public void buildInfoPanel(InfoPanel infos){
+		infos.setHelpInfo();
 	}
 	
 	public ImageIcon getIcon(){

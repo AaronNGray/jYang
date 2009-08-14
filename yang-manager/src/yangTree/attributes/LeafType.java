@@ -11,6 +11,7 @@ import jyang.parser.YANG_TypeDef;
  * Represents the type of a leaf. This can be either a YANG built-in type or a YANG typeDef.
  * @see BuiltinType
  */
+@SuppressWarnings("serial")
 public class LeafType implements Serializable{
 	
 	private boolean isBuiltInType ;

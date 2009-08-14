@@ -11,13 +11,9 @@ import org.w3c.dom.NodeList;
 
 import yangTree.attributes.NameSpace;
 import yangTree.attributes.UnitValueCheck;
-import yangTree.attributes.ValueCheck;
 import yangTree.attributes.YangTreePath;
-import yangTree.attributes.builtinTypes.BuiltinType;
 import yangTree.attributes.builtinTypes.EmptyType;
-import yangTree.attributes.builtinTypes.LeafrefType;
 import yangTree.attributes.builtinTypes.PathSensitiveType;
-import yangTree.attributes.builtinTypes.UnionType;
 import yangTree.nodes.CaseNode;
 import yangTree.nodes.CheckedYangNode;
 import yangTree.nodes.ChoiceNode;
@@ -28,9 +24,9 @@ import yangTree.nodes.LeafListNode;
 import yangTree.nodes.LeafNode;
 import yangTree.nodes.ListNode;
 
-/*
- * Class used to create a tree filled with data, using a specification tree 
- * and a XML Document consistent with a standard netConf reply.
+/**
+ * Class used to create a tree filled with data, using a specification tree and
+ * a XML Document consistent with a standard netConf reply.
  */
 public class TreeFiller {
 
@@ -40,6 +36,17 @@ public class TreeFiller {
 	private static LinkedList<NameSpace> nameSpacePrefixList = new LinkedList<NameSpace>();
 	private static Map<LeafNode, String> pendingValues = new HashMap<LeafNode, String>();
 
+	/**
+	 * Creates the filled tree.
+	 * 
+	 * @param dataNode
+	 *            : the root of an empty specification tree.
+	 * @param xmlDocument
+	 *            : the Netconf reply XML Document.
+	 * @param path
+	 *            : the path of the RootNode of the final filled tree.
+	 * @return the filled tree.
+	 */
 	public static YangNode fillTree(YangNode dataNode, Document xmlDocument,
 			YangTreePath path) {
 
@@ -310,8 +317,8 @@ public class TreeFiller {
 		return null;
 	}
 
-	/**
-	 * Walk through the list xmlChildren, searching for a match with an element
+	/*
+	 * Walks through the list xmlChildren, searching for a match with an element
 	 * of a caseNode
 	 */
 	private static Map<YangNode, NodeDescriptor> caseChooser(int choice,
@@ -354,8 +361,8 @@ public class TreeFiller {
 	}
 
 	/**
-	 * Fills the pending values. This method must be called after ALL other
-	 * leaves have been filled and ALL the tree have been built.
+	 * Fills the pending values. This method must be called after the tree have
+	 * been <u>totally</u> filled with the other values.
 	 */
 	public static void setPendingValues() {
 		for (LeafNode leaf : TreeFiller.pendingValues.keySet()) {

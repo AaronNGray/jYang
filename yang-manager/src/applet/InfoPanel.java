@@ -1,11 +1,8 @@
 package applet;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -13,20 +10,33 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import yangTree.attributes.LeafType;
-import yangTree.nodes.YangLeaf;
-import yangTree.nodes.YangNode;
-import yangTree.nodes.LeafListNode;
-import yangTree.nodes.LeafNode;
-import yangTree.nodes.ListNode;
-import yangTree.nodes.RootNode;
+import yangTree.attributes.ValueCheck;
 
+/**
+ * The bottom panel of the applet, used to display all the informations about a
+ * node.<br>
+ * <br>
+ * This panel is made of a <code>JLabel</code> title and a undefined number of lines. Each
+ * line is a <code>JLabel</code> followed by a <code>JComponent</code>. This class provides methods to add
+ * different types of lines.
+ * 
+ */
+@SuppressWarnings("serial")
 public class InfoPanel extends JPanel {
 
-	private JLabel titre;
+	private JLabel title;
 	private boolean isTreeFilled = false;
+	private int currentRow = 1;
 
 	private static final Insets insets = new Insets(3, 0, 3, 0);
 
+	/**
+	 * Creates a new InfoPanel with default display.
+	 * 
+	 * @param isTreeFilled
+	 *            : <code>true</code> if the displayed tree is filled,
+	 *            <code>false</code> otherwise
+	 */
 	public InfoPanel(boolean isTreeFilled) {
 		super();
 		this.isTreeFilled = isTreeFilled;
@@ -34,21 +44,39 @@ public class InfoPanel extends JPanel {
 		setHelpInfo();
 	}
 
-	private void clean() {
+	public boolean isTreeFilled() {
+		return isTreeFilled;
+	}
+
+	/**
+	 * Sets the text of the title.
+	 */
+	public void setTitleText(String text) {
+		title.setText(text);
+	}
+
+	/**
+	 * Removes all the lines of this InfoPanel and remove any title text.
+	 */
+	public void clean() {
+		currentRow = 1;
 		removeAll();
-		titre = new JLabel();
+		title = new JLabel();
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
 		c.gridwidth = 2;
 		c.anchor = GridBagConstraints.CENTER;
 		c.insets = insets;
-		add(titre, c);
+		add(title, c);
 	}
 
-	private void setHelpInfo() {
+	/**
+	 * Sets this InfoPanel to its default display.
+	 */
+	public void setHelpInfo() {
 		clean();
-		titre.setText("Select a node to display more information about it ;");
+		title.setText("Select a node to display more information about it ;");
 
 		String helpText;
 		if (isTreeFilled) {
@@ -62,117 +90,42 @@ public class InfoPanel extends JPanel {
 		c.gridy = 1;
 		c.insets = insets;
 		add(label, c);
-		repaint();
 	}
 
-	private void setTreeNodeInfo(YangNode node) {
-		clean();
-		titre.setText(node.getNodeType() + " : " + node.getName());
-
-		if (node.getNameSpace() != null) {
-			buildTextField(1, "Namespace", node.getNameSpace().getNameSpace(),
-					false);
-		}
-
-		int row = 2;
-		if (node instanceof ListNode) {
-			ListNode list = (ListNode) node;
-			buildTextField(row, "Keys", list.getKeysRepresentation(), false);
-			row++;
-
-			if (list.getCheck() != null && !list.getCheck().isOk()) {
-				if (list.getCheck().isCritical()) {
-					buildTextArea(row, "Errors", list.getCheck().toString(),
-							false);
-				} else {
-					buildTextArea(row, "Warnings", list.getCheck().toString(),
-							false);
-				}
-			}
-
-		}
-		repaint();
-	}
-
-	private void setLeafInfo(YangLeaf node) {
-		clean();
-		titre.setText(node.getNodeType() + " : " + node.getName());
-
-		buildTypePanel(1, node.getType());
-
-		int row = 2;
-		String value = node.getValue();
-		if (isTreeFilled) {
-			if (value == null) {
-				value = "(No value)";
-			}
-			buildTextField(row, "Value", value, false);
-		}
-		row++;
-		if (node.getCheck() != null && !node.getCheck().isOk()) {
-			if (node.getCheck().isCritical()) {
-				buildTextArea(row, "Errors", node.getCheck().toString(), false);
-			} else {
-				buildTextArea(row, "Warnings", node.getCheck().toString(),
-						false);
-			}
-			row++;
-		}
-
-		if (node instanceof LeafNode) {
-
-			LeafNode leaf = (LeafNode) node;
-
-			if (leaf.isMandatory()) {
-				buildTextField(row, "Mandatory", "Yes", false);
-				row++;
-			}
-			if (leaf.getDefaultValue() != null) {
-				buildTextField(row, "Default value", leaf.getDefaultValue(),
-						false);
-				row++;
-			}
-			if (leaf.getType().getDefaultValue() != null) {
-				buildTextField(row, "Default value", leaf.getType()
-						.getDefaultValue(), false);
-				row++;
-			}
-			if (leaf.getDescription() != null) {
-				String description = leaf.getDescription();
-				Pattern pattern = Pattern.compile("[\n\t]");
-				Matcher matcher = pattern.matcher(description);
-				description = matcher.replaceAll("");
-				buildTextArea(row, "Description", description, false);
-			}
-
-		}
-		repaint();
-	}
-
-	private void buildTextField(int row, String name, String value,
-			boolean isEditable) {
+	/**
+	 * Adds a non-editable <code>JTextField</code> line.
+	 * @param name : the name of the argument of the line.
+	 * @param value : the text that will be displayed in the JTextField.
+	 */
+	public void addTextField(String name, String value) {
 		JLabel label = new JLabel(name + " : ");
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = row;
+		c.gridy = currentRow;
 		c.insets = insets;
 		c.anchor = GridBagConstraints.NORTHEAST;
 		add(label, c);
 
 		JTextField field = new JTextField(value);
-		field.setEditable(isEditable);
+		field.setEditable(false);
 		field.setMargin(new Insets(0, 3, 0, 3));
 		c.gridx = 1;
 		c.anchor = GridBagConstraints.LINE_START;
 		add(field, c);
+
+		currentRow++;
 	}
 
-	private void buildTextArea(int row, String name, String value,
-			boolean isEditable) {
+	/**
+	 * Adds a non-editable <code>JTextArea</code> line.
+	 * @param name : the name of the argument of the line.
+	 * @param value : the text that will be displayed in the JTextArea.
+	 */
+	public void addTextArea(String name, String value) {
 		JLabel label = new JLabel(name + " : ");
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = row;
+		c.gridy = currentRow;
 		c.insets = insets;
 		c.anchor = GridBagConstraints.NORTHEAST;
 		add(label, c);
@@ -180,20 +133,26 @@ public class InfoPanel extends JPanel {
 		JTextArea area = new JTextArea(value);
 		area.setLineWrap(true);
 		area.setWrapStyleWord(true);
-		area.setEditable(isEditable);
+		area.setEditable(false);
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
 		c.weightx = 1;
 		c.anchor = GridBagConstraints.LINE_START;
 		add(area, c);
 
+		currentRow++;
 	}
 
-	private void buildTypePanel(int row, LeafType type) {
+	/**
+	 * Adds a line displaying a type.
+	 * @param type : The type to be displayed.
+	 * @see TypePanel
+	 */
+	public void addTypePanel(LeafType type) {
 		JLabel label = new JLabel("Type : ");
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = row;
+		c.gridy = currentRow;
 		c.insets = insets;
 		c.anchor = GridBagConstraints.NORTHEAST;
 		add(label, c);
@@ -204,15 +163,20 @@ public class InfoPanel extends JPanel {
 		c.anchor = GridBagConstraints.LINE_START;
 		add(typePanel, c);
 
+		currentRow++;
 	}
 
-	public void setInfo(YangNode node) {
-		if (node instanceof RootNode) {
-			setHelpInfo();
-		} else if (node instanceof YangLeaf) {
-			setLeafInfo((YangLeaf) node);
-		} else {
-			setTreeNodeInfo(node);
+	/**
+	 * Adds a line displaying errors or warnings if such exists.
+	 * @param check : The ValueCheck to be displayed.
+	 */
+	public void addValueCheckPanel(ValueCheck check) {
+		if (check != null && !check.isOk()) {
+			if (check.isCritical()) {
+				addTextArea("Errors", check.toString());
+			} else {
+				addTextArea("Warnings", check.toString());
+			}
 		}
 	}
 

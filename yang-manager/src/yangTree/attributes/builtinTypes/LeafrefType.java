@@ -8,8 +8,8 @@ import yangTree.attributes.ValueCheck;
 import yangTree.attributes.YangTreePath;
 import yangTree.attributes.restrictions.RequireInstanceRestriction;
 import yangTree.nodes.LeafNode;
-import yangTree.nodes.RootNode;
 
+@SuppressWarnings("serial")
 public class LeafrefType extends BuiltinType implements PathSensitiveType {
 
 	private String relativePath;

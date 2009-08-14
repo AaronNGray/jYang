@@ -6,6 +6,7 @@ import jyang.parser.YANG_Type;
 import yangTree.attributes.restrictions.LengthRestriction;
 import yangTree.attributes.restrictions.PatternRestriction;
 
+@SuppressWarnings("serial")
 public class StringType extends BuiltinType {
 
 	public StringType(YANG_Type type) {

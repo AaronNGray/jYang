@@ -2,17 +2,14 @@ package yangTree.attributes.builtinTypes;
 
 import java.util.LinkedList;
 
-import applet.Util;
-
 import jyang.parser.YANG_Enum;
 import jyang.parser.YANG_Type;
 
 import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
+@SuppressWarnings("serial")
 public class EnumerationType extends BuiltinType {
-
-	// TODO : check uniqueness and range of enumeration element value.
 
 	private LinkedList<EnumerationElement> elements = new LinkedList<EnumerationElement>();
 

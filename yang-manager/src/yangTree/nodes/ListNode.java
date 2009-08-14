@@ -3,20 +3,16 @@ package yangTree.nodes;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.ImageIcon;
-
-import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
-import com.sun.org.apache.xml.internal.utils.SuballocatedByteVector;
+import applet.InfoPanel;
 
 import jyang.parser.YANG_List;
 
+@SuppressWarnings("serial")
 public class ListNode extends YangInnerNode implements ListedYangNode {
 
 	private static ImageIcon icon = null;
@@ -70,7 +66,6 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 		return new ListNode((YANG_List) definition, keymap);
 	}
 	
-	@Override
 	public ValueCheck getCheck() {
 		if (check==null){
 			check = new ValueCheck();
@@ -118,6 +113,16 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 		}
 		result = result.substring(0, result.length() - 3);
 		return result;
+	}
+
+	@Override
+	public void buildInfoPanel(InfoPanel panel){
+		super.buildInfoPanel(panel);
+		panel.addTextField("Keys", getKeysRepresentation());
+		if (minElements>0)
+			panel.addTextField("Minimum number of elements", minElements+"");
+		if (maxElements<Integer.MAX_VALUE)
+			panel.addTextField("Maximum number of elements", maxElements+"");
 	}
 
 	public String toString() {

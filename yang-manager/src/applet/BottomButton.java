@@ -4,8 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JScrollBar;
 
+
+@SuppressWarnings("serial")
 public class BottomButton extends JButton implements ActionListener {
 	
 	private YangApplet applet;

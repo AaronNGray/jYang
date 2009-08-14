@@ -2,7 +2,6 @@ package applet;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -28,11 +27,15 @@ import org.xml.sax.SAXException;
 
 import yangTree.TreeFiller;
 import yangTree.attributes.YangTreePath;
-import yangTree.attributes.builtinTypes.LeafrefType;
 import yangTree.nodes.YangNode;
-import yangTree.nodes.LeafNode;
 import yangTree.nodes.RootNode;
 
+/**
+ * YangApplet main class.
+ * <br>
+ * Contains methods to interact with the Netconf manager.
+ */
+@SuppressWarnings("serial")
 public class YangApplet extends JApplet implements TreeSelectionListener {
 
 	private boolean isTreeFilled;
@@ -91,7 +94,12 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 	}
 
-	private InputStream sendRequestToServer(String requete) {
+	/**
+	 * Send a specific request to the Netconf manager.
+	 * @param request : the request to send.
+	 * @return an InputStream with the response of the manager.
+	 */
+	private InputStream sendRequestToServer(String request) {
 		try {
 
 			URL url = new URL("https://localhost:8888/");
@@ -105,7 +113,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 			connexion.setDoOutput(true);
 			OutputStreamWriter wr = new OutputStreamWriter(connexion
 					.getOutputStream());
-			wr.write(requete);
+			wr.write(request);
 			wr.flush();
 			wr.close();
 
@@ -118,6 +126,11 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 	}
 
+	/**
+	 * Send a "get" request to the Netconf manager.
+	 * @param filter : the filter to use in the "get" request.
+	 * @return an InputStream with the response of the manager.
+	 */
 	private InputStream sendGetRequest(String filter) {
 		String requeteAvecPOST = ""
 				+ "--A\r\n"
@@ -136,6 +149,9 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		return sendRequestToServer(requeteAvecPOST);
 	}
 
+	/**
+	 * Refreshes the applet so it will display the specifications tree.
+	 */
 	public void displaySpecTree() {
 		try {
 			URL url = new URL("https://localhost:8888/" + agentIP
@@ -155,6 +171,9 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		}
 	}
 
+	/**
+	 * Refreshes the applet so it will display the tree filled with values.
+	 */
 	public void displayTreeValues() {
 		RootNode treeFilled = new RootNode("Yang Data");
 
@@ -162,9 +181,9 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		 * ! Méthode modifiée pour les tests !
 		 */
 		String xmlCode = "<rpc-reply><data><netconf><system>" +
-				"<listT> a </listT>" +
-				"<listT> b   </listT>"+
-				"<listT>   c</listT>"+
+				"<listT> <leafT>B</leafT> </listT>" +
+				"<listT> <leafT>a22</leafT> </listT>"+
+				"<listT> <leafT>e</leafT> </listT>"+
 				"</system></netconf></data></rpc-reply>";
 
 		for (YangNode node : tree.getNodes()) {
@@ -200,8 +219,9 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		if (selectedNode == null)
 			return;
 
-		infoPanel.setInfo(selectedNode);
-
+		selectedNode.buildInfoPanel(infoPanel);
+		infoPanel.repaint();
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				JScrollBar verticalScrollBar = infoView.getVerticalScrollBar();

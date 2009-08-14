@@ -9,6 +9,7 @@ import jyang.parser.YangBuiltInTypes;
 
 import yangTree.attributes.UnitValueCheck;
 
+@SuppressWarnings("serial")
 public class PatternRestriction extends Restriction {
 	
 	private Pattern pattern;

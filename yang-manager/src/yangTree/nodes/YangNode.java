@@ -4,14 +4,17 @@ import java.io.Serializable;
 
 import javax.swing.ImageIcon;
 
+import applet.InfoPanel;
+
 import yangTree.attributes.NameSpace;
 
 import jyang.parser.YANG_DataDef;
 
 /**
- * Represents a node in the YangTree. Such a node is either a {@link YangInnerNode} or a {@link YangLeaf}.
+ * Represents a node in the YangTree.
  */
 
+@SuppressWarnings("serial")
 public abstract class YangNode implements Serializable {
 
 	public YANG_DataDef definition;
@@ -43,6 +46,19 @@ public abstract class YangNode implements Serializable {
 		}
 		result = result + ">\r\n\r\n</" + getName() + ">";
 		return result;
+	}
+	
+	/**
+	 * Builds the infoPanel that will display informations about this node.
+	 * 
+	 * @param panel : The InfoPanel that must be filled with informations.
+	 */
+	public void buildInfoPanel(InfoPanel panel){
+		panel.clean();
+		panel.setTitleText(getNodeType() + " : " + getName());
+		if (this instanceof CheckedYangNode){
+			panel.addValueCheckPanel(((CheckedYangNode) this).getCheck());
+		}
 	}
 
 	/**

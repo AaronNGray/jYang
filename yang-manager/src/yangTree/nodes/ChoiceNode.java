@@ -2,12 +2,11 @@ package yangTree.nodes;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedList;
-
 import javax.swing.ImageIcon;
 
 import jyang.parser.YANG_Choice;
 
+@SuppressWarnings("serial")
 public class ChoiceNode extends YangInnerNode {
 	
 	private static ImageIcon icon = null;

@@ -1,5 +1,6 @@
 package yangTree;
 
+@SuppressWarnings("serial")
 public class NetconfReplyMalformedException extends IllegalArgumentException{
 	
 	public NetconfReplyMalformedException(){

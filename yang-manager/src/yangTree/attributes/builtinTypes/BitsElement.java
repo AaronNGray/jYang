@@ -2,6 +2,7 @@ package yangTree.attributes.builtinTypes;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class BitsElement implements Comparable<BitsElement> , Serializable{
 	
 	private String name;

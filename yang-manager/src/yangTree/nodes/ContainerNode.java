@@ -8,6 +8,7 @@ import yangTree.attributes.ValueCheck;
 
 import jyang.parser.YANG_Container;
 
+@SuppressWarnings("serial")
 public class ContainerNode extends YangInnerNode implements CheckedYangNode {
 
 	private static ImageIcon icon = null;

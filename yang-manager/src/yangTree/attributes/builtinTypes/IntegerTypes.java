@@ -8,9 +8,8 @@ import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 import yangTree.attributes.restrictions.RangeRestriction;
 
+@SuppressWarnings("serial")
 public class IntegerTypes extends BuiltinType {
-	
-	//TODO : Handle default value "special" representation
 
 	private String name;
 	private int byteRange;
