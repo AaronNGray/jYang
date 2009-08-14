@@ -9,10 +9,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-
 import yangTree.attributes.LeafType;
 import yangTree.attributes.NameSpace;
 import yangTree.attributes.builtinTypes.BuiltinType;
@@ -190,6 +186,15 @@ public class YangSchemaTreeGenerator {
 			YANG_Container cont = (YANG_Container) body;
 			ContainerNode node = new ContainerNode(cont);
 			
+			for (YANG_TypeDef typeDef : cont.getTypeDefs()){
+				try {
+					context.addNode(typeDef);
+				} catch (YangParserException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
 				node.addContent(buildModuleTree(child));
@@ -200,6 +205,15 @@ public class YangSchemaTreeGenerator {
 		} else if (body instanceof YANG_List) {
 			YANG_List list = (YANG_List) body;
 			ListNode node = new ListNode(list, list.getKey().getKeyLeaves());
+			
+			for (YANG_TypeDef typeDef : list.getTypeDefs()){
+				try {
+					context.addNode(typeDef);
+				} catch (YangParserException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
