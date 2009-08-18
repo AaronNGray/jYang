@@ -63,7 +63,9 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 	}
 
 	public ListNode cloneBody() {
-		return new ListNode((YANG_List) definition, keymap);
+		ListNode clone = new ListNode((YANG_List) definition, keymap);
+		clone.setExpanded(isExpanded);
+		return clone;
 	}
 	
 	public ValueCheck getCheck() {
@@ -113,6 +115,16 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 		}
 		result = result.substring(0, result.length() - 3);
 		return result;
+	}
+	
+	@Override
+	public String[] xmlFilter() {
+		String result = super.xmlFilter()[0];
+		for (String key : keymap.keySet()){
+			result += "<"+key+">"+keymap.get(key)+"</"+key+">";
+		}
+		
+		return new String[]{result,"</" + getName() + ">"};
 	}
 
 	@Override

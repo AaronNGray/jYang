@@ -7,15 +7,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 /**
- * The pop-up menu displayed when right-clicking on the blank space of a YangTree.
+ * The pop-up menu displayed when right-clicking on the blank space or on the root node of a <code>YangTree</code> .
  * 
  */
 @SuppressWarnings("serial")
 public class DefaultPopupMenu extends JPopupMenu {
 	
-	private YangTree tree;
+	private YangTreeViewer tree;
 	
-	public DefaultPopupMenu(YangTree tree, int x, int y){
+	public DefaultPopupMenu(YangTreeViewer tree, int x, int y){
 		super();
 		this.tree = tree;
 		buildMenu();

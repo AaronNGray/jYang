@@ -12,25 +12,38 @@ import applet.InfoPanel;
 @SuppressWarnings("serial")
 public abstract class YangInnerNode extends YangNode {
 	
+	protected boolean isExpanded = false;
 	protected LinkedList<YangNode> nodes = new LinkedList<YangNode>();
 	
 	/**
 	 * Returns the children of this node.
 	 */
-	public LinkedList<YangNode> getNodes(){
+	public LinkedList<YangNode> getDescendantNodes(){
 		return nodes;
 	}
 	
+	public boolean isExpanded() {
+		return isExpanded;
+	}
+
+	public void setExpanded(boolean isExpanded) {
+		this.isExpanded = isExpanded;
+	}
+
 	/**
-	 * Returns an empty (i.e. without child) clone of this node.
-	 */
-	public abstract YangInnerNode cloneBody();
-	
-	/**
-	 * Add a child to this node.
+	 * Adds a child to this node.
 	 */
 	public void addContent(YangNode node){
 		nodes.add(node);
+	}
+	
+	/**
+	 * Returns an empty clone (i.e. without children) of this node.
+	 */
+	public abstract YangInnerNode cloneBody();
+	
+	public void setNodes(LinkedList<YangNode> nodes){
+		this.nodes = nodes;
 	}
 	
 	@Override

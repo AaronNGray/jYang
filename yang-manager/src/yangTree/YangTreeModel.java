@@ -19,20 +19,20 @@ public class YangTreeModel implements TreeModel {
 	public Object getChild(Object parent,int index){
 		
 		YangInnerNode tree = (YangInnerNode) parent;
-		return tree.getNodes().get(index);
+		return tree.getDescendantNodes().get(index);
 
 	}
 	
 	public int getChildCount(Object parent){
 		YangInnerNode node = (YangInnerNode) parent;
-		return node.getNodes().size();
+		return node.getDescendantNodes().size();
 	}
 	
 	public int getIndexOfChild(Object parent, Object child){
 		
 		YangInnerNode tree = (YangInnerNode) parent;
 		int i = 0;
-		for (YangNode node : tree.getNodes()){
+		for (YangNode node : tree.getDescendantNodes()){
 			if (node.equals(child)){
 				return i;
 			} else {

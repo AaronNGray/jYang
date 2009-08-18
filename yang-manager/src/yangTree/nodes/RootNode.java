@@ -24,6 +24,10 @@ public class RootNode extends ContainerNode {
 		this.name = name;
 	}
 	
+	public void setName(String name){
+		this.name = name;
+	}
+	
 	public String toString(){
 		return name;
 	}

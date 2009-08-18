@@ -30,7 +30,8 @@ public class LeafNode extends YangLeaf {
 	private boolean mandatory = false;
 	private String defaultValue = null;
 	private String description = null;
-
+	
+	
 	public LeafNode(YANG_Leaf d) {
 		definition = d;
 	}
@@ -101,15 +102,16 @@ public class LeafNode extends YangLeaf {
 	public void setIsKey(boolean isKey) {
 		this.isKey = isKey;
 	}
-
-	public LeafNode cloneBody() {
-		LeafNode result = new LeafNode((YANG_Leaf) definition);
-		result.setDefaultValue(defaultValue);
-		result.setDescription(description);
-		result.setMandatory(mandatory);
-		result.setTypeDef(type);
-		result.setIsKey(isKey);
-		return result;
+	
+	public LeafNode cloneBody(){
+		LeafNode clone = new LeafNode((YANG_Leaf) definition);
+		clone.setDefaultValue(defaultValue);
+		clone.setDescription(description);
+		clone.setIsKey(isKey);
+		clone.setMandatory(mandatory);
+		clone.setNameSpace(nameSpace);
+		clone.setTypeDef(type);
+		return clone;
 	}
 
 	@Override

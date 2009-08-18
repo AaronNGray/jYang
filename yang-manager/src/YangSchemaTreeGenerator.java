@@ -143,8 +143,8 @@ public class YangSchemaTreeGenerator {
 
 			// Special handling if two linked containers have the same name : in
 			// this case, there are merged.
-			YangNode secondSubRoot = subroot.getNodes().getFirst();
-			if (subroot.getNodes().size() == 1
+			YangNode secondSubRoot = subroot.getDescendantNodes().getFirst();
+			if (subroot.getDescendantNodes().size() == 1
 					&& lastUsedNode.toString().equals(secondSubRoot.toString())) {
 				lastUsedNode.setNameSpace(lastUsedNode.getNameSpace()
 						.mergeWith(moduleNS));
@@ -160,7 +160,7 @@ public class YangSchemaTreeGenerator {
 						.mergeWith(moduleNS));
 			}
 
-			for (YangNode node : subroot.getNodes()) {
+			for (YangNode node : subroot.getDescendantNodes()) {
 				lastUsedNode.addContent(node);
 			}
 		}

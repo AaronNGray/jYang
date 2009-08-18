@@ -49,11 +49,11 @@ public class LeafListNode extends YangLeaf implements ListedYangNode {
 	public void setType(LeafType type) {
 		this.type = type;
 	}
-
-	public LeafListNode cloneBody() {
-		LeafListNode result = new LeafListNode((YANG_LeafList) definition);
-		result.setType(type);
-		return result;
+	
+	public LeafListNode cloneBody(){
+		LeafListNode clone = new LeafListNode((YANG_LeafList) definition);
+		clone.setType(type);
+		return clone;
 	}
 
 	public String toString() {

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import javax.swing.tree.TreePath;
+
 import applet.Util;
 
 import yangTree.nodes.YangNode;
@@ -30,6 +32,17 @@ public class YangTreePath implements Serializable {
 	public YangTreePath(RootNode root) {
 		this.path = "/";
 		this.root = root;
+	}
+	
+	/**
+	 * Creates a YangTreePath from a TreePath.
+	 */ 
+	public YangTreePath(RootNode root, YangNode[] nodesArray){
+		this.root = root;
+		this.path = "/";
+		for (int i=0;i<nodesArray.length;i++){
+			path += nodesArray[i].getName() + "/";
+		}
 	}
 
 	private YangTreePath(String path, RootNode root) {
@@ -115,7 +128,7 @@ public class YangTreePath implements Serializable {
 		}
 
 		LinkedList<YangNode> nodesMatched = new LinkedList<YangNode>();
-		for (YangNode cnode : ((YangInnerNode) node).getNodes()) {
+		for (YangNode cnode : ((YangInnerNode) node).getDescendantNodes()) {
 			if (cnode.getName().equals(nodeName)) {
 				if (cnode instanceof ListNode && predicates != null) {
 					if (((ListNode) cnode).hasSameKey(predicates))
