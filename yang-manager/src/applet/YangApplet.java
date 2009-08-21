@@ -48,10 +48,10 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	private JPanel mainPanel;
 	
 	private RootNode specTree;
-	private YangSpecTreeViewer specTreeViewer;
+	private YangTreeViewer leftTreeViewer = null;
 	
 	private RootNode dataTree;
-	private YangDataTreeViewer dataTreeViewer;
+	private YangTreeViewer rightTreeViewer = null;
 	
 	private JScrollPane infoView;
 	private InfoPanel infoPanel;
@@ -76,8 +76,8 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	private void buildDisplay() {
 		
 		LinkedList<TreePath> display = null;
-		if (specTreeViewer!=null)
-			display = specTreeViewer.getCurrentDisplay();
+		if (leftTreeViewer!=null)
+			display = leftTreeViewer.getCurrentDisplay();
 		
 		int verticalDividerLocation = (int) Math.floor(height * 0.7);
 		if (verticalSplitPane!=null)
@@ -92,13 +92,8 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 		mainPanel.setLayout(new BorderLayout());
 
-		specTreeViewer = new YangSpecTreeViewer(this,specTree);
-		specTreeViewer.addTreeSelectionListener(this);
-		JScrollPane specTreeView = new JScrollPane(specTreeViewer);
-		
-		dataTreeViewer = new YangDataTreeViewer(this,dataTree);
-		dataTreeViewer.addTreeSelectionListener(this);
-		JScrollPane dataTreeView = new JScrollPane(dataTreeViewer);
+		JScrollPane specTreeView = new JScrollPane(leftTreeViewer);
+		JScrollPane dataTreeView = new JScrollPane(rightTreeViewer);
 	
 		infoView = new JScrollPane(infoPanel);
 		
@@ -114,7 +109,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		infoView.setMinimumSize(new Dimension(width, 50));
 		
 		if (display!=null)
-			specTreeViewer.setDisplay(display);
+			leftTreeViewer.setDisplay(display);
 
 		validate();
 
@@ -171,15 +166,21 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 */
 	public void displaySpecTree() {
 		try {
+			
 			URL url = new URL(getCodeBase() + agentIP + ".yang.byte");
 			HttpsURLConnection connexion = (HttpsURLConnection) url.openConnection();
 			ObjectInputStream ois = new ObjectInputStream(connexion.getInputStream());
 			Object inputObject = ois.readObject();
 			ois.close();
+			
 			specTree = (RootNode) inputObject;
+			leftTreeViewer = new YangSpecTreeViewer(this,specTree);
+			leftTreeViewer.addTreeSelectionListener(this);
 			buildDisplay();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			
+		} catch (ClassNotFoundException e){
+			e.printStackTrace();
+		} catch (IOException e){
 			e.printStackTrace();
 		}
 	}
@@ -198,16 +199,18 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		
 		DocumentBuilderFactory docBF = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
 		try {
+			
 			Document xmlDoc = docBF.newDocumentBuilder().parse(sendGetRequest(filter));
+			
 			dataTree = TreeFiller.createDataTree(specTree, path, xmlDoc);
+			rightTreeViewer = new YangDataTreeViewer(this,dataTree);
+			rightTreeViewer.addTreeSelectionListener(this);
+			
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -230,15 +233,16 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 		YangNode selectedNode = null;
 		
-		if (e.getSource() instanceof YangSpecTreeViewer){
-			selectedNode = (YangNode) specTreeViewer.getLastSelectedPathComponent();
+		if (e.getSource()==leftTreeViewer){
+			selectedNode = (YangNode) leftTreeViewer.getLastSelectedPathComponent();
 			infoPanel.setTreeFilled(false);
-			dataTreeViewer.removeSelection();
+			if (rightTreeViewer!=null)
+				rightTreeViewer.removeSelection();
 		} else
-		if (e.getSource() instanceof YangDataTreeViewer){
-			selectedNode = (YangNode) dataTreeViewer.getLastSelectedPathComponent();
+		if (e.getSource()==rightTreeViewer){
+			selectedNode = (YangNode) rightTreeViewer.getLastSelectedPathComponent();
 			infoPanel.setTreeFilled(true);
-			specTreeViewer.removeSelection();
+			leftTreeViewer.removeSelection();
 		}
 
 		if (selectedNode == null)

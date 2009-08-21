@@ -26,20 +26,21 @@ public abstract class YangNode implements Serializable {
 		return definition.getBody();
 	}
 
-	public boolean isSelected() {
-		return isSelected;
-	}
-
-	public void setSelected(boolean isSelected) {
-		this.isSelected = isSelected;
-	}
-
 	public void setNameSpace(NameSpace nameSpace) {
 		this.nameSpace = nameSpace;
 	}
 
 	public NameSpace getNameSpace() {
 		return nameSpace;
+	}
+	
+	/**
+	 * Perform the <code>check()</code> operation on this node if it is a <code>CheckableYangNode</code>, and do the same for all its children.
+	 * @see CheckableYangNode
+	 */
+	public void checkSubtree(){
+		if (this instanceof CheckableYangNode)
+			((CheckableYangNode) this).check();
 	}
 
 	/**
@@ -67,8 +68,8 @@ public abstract class YangNode implements Serializable {
 	public void buildInfoPanel(InfoPanel panel) {
 		panel.clean();
 		panel.setTitleText(getNodeType() + " : " + getName());
-		if (this instanceof CheckedYangNode) {
-			panel.addValueCheckPanel(((CheckedYangNode) this).getCheck());
+		if (this instanceof CheckableYangNode) {
+			panel.addValueCheckPanel(((CheckableYangNode) this).getCheck());
 		}
 	}
 	

@@ -81,12 +81,8 @@ public class InfoPanel extends JPanel {
 		clean();
 		title.setText("Select a node to display more information about it ;");
 
-		String helpText;
-		if (isTreeFilled) {
-			helpText = "Click on \"Return to specifications\" button to empty the tree of its values.";
-		} else {
-			helpText = "Click on \"Retrieve Values\" button to retrieve leaves values.";
-		}
+		String helpText = "Right-click to perform operations";
+		
 		JLabel label = new JLabel(helpText);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;

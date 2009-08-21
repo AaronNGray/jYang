@@ -11,9 +11,6 @@ import yangTree.nodes.YangNode;
 import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.LeafNode;
 import yangTree.nodes.ListNode;
-
-import yangTree.nodes.RootNode;
-
 /**
  * Represents an absolute path in a YangTree.
  */
@@ -21,38 +18,48 @@ import yangTree.nodes.RootNode;
 public class YangTreePath implements Serializable {
 
 	private String path;
-	private RootNode root;
+	private String mandatoryNode = null;
+	private YangNode root = null;
 	private LinkedList<LeafNode> leavesAtPath = null;
 
 	/**
-	 * Creates a path at the root.
+	 * Creates an new empty path.
 	 */
-	public YangTreePath(RootNode root) {
-		this.path = "/";
-		this.root = root;
-	}
-	
-	/**
-	 * Creates a YangTreePath from a TreePath.
-	 */ 
-	public YangTreePath(RootNode root, YangNode[] nodesArray){
-		this.root = root;
-		this.path = "/";
-		for (int i=0;i<nodesArray.length;i++){
-			path += nodesArray[i].getName() + "/";
-		}
+	public YangTreePath() {
 	}
 
-	private YangTreePath(String path, RootNode root) {
+	/**
+	 * Creates a new empty path that specifies a mandatory node.
+	 */
+	public YangTreePath(String mandatoryNode) {
+		this.mandatoryNode = mandatoryNode;
+	}
+
+	private YangTreePath(String path, YangNode root, String mandatoryNode) {
 		this.path = path;
 		this.root = root;
+		this.mandatoryNode = mandatoryNode;
+	}
+
+	/**
+	 * Returns <code>true</code> if this path contains its mandatory node, or if
+	 * no mandatory node have been specified. Returns <code>false</code>
+	 * otherwise.
+	 */
+	public boolean isPathReachable() {
+		if (mandatoryNode==null)
+			return true;
+		return path.contains("/"+mandatoryNode+"/");
 	}
 
 	/**
 	 * Returns a new path built by appending a node to this path
 	 */
-	public YangTreePath pathByAppendingChild(String child) {
-		return new YangTreePath(path + child + "/",root);
+	public YangTreePath pathByAppendingChild(YangNode child) {
+		if (root==null) {
+			return new YangTreePath("/",child,mandatoryNode);
+		}
+		return new YangTreePath(path + child.getName() + "/", root, mandatoryNode);
 	}
 
 	/**
@@ -63,23 +70,26 @@ public class YangTreePath implements Serializable {
 			leavesAtPath = getNodesAtPath(path, root);
 		return leavesAtPath;
 	}
-	
+
 	/**
 	 * Builds a new path given a relative path from this path.<br>
-	 * For example, if this path is "/a/b/" and the relative path is "../c", the result will be "/a/c/".<br>
+	 * For example, if this path is "/a/b/" and the relative path is "../c", the
+	 * result will be "/a/c/".<br>
 	 * <br>
-	 * <b>WARNING</b> : Due to relative list-key values considerations, use <u>only</u> this method when the tree is <u>totally</u> filled.
+	 * <b>WARNING</b> : Due to relative list-key values considerations, use
+	 * <u>only</u> this method when the tree is <u>totally</u> filled.
+	 * @throws ReferenceLeafNotRetrievedException If the result do not contain the mandatory node.
 	 */
-	public YangTreePath buildRelativePath(String relativePath){
-		
-		String result = path ;
+	public YangTreePath buildRelativePath(String relativePath) throws ReferenceLeafNotRetrievedException {
+
+		String result = path;
 		if (relativePath.startsWith("/")) {
 			result = relativePath;
 		} else {
 			String cutPath = relativePath;
 			while (cutPath.startsWith("../")) {
 				cutPath = cutPath.substring(3);
-				result = result.substring(0, result.substring(0, result.length()-1).lastIndexOf("/"));
+				result = result.substring(0, result.substring(0, result.length() - 1).lastIndexOf("/"));
 			}
 			result += "/" + cutPath;
 		}
@@ -87,20 +97,22 @@ public class YangTreePath implements Serializable {
 			result += "/";
 
 		while (result.indexOf("current") != -1) {
-			String cutPath = result
-					.substring(result.indexOf("current") + 7);
-			String subPath = cutPath.substring(cutPath.indexOf("/")+1, cutPath.indexOf("]"));	
+			String cutPath = result.substring(result.indexOf("current") + 7);
+			String subPath = cutPath.substring(cutPath.indexOf("/") + 1, cutPath.indexOf("]"));
 			YangTreePath subSolvedPath = buildRelativePath(subPath);
 			String value = subSolvedPath.getLeavesAtThisPath().getFirst().getValue();
-			result = result.substring(0, result.indexOf("current"))
-					+ value + cutPath.substring(cutPath.indexOf("]"));
+			result = result.substring(0, result.indexOf("current")) + value + cutPath.substring(cutPath.indexOf("]"));
 		}
-
-		return new YangTreePath(result,root);
+		
+		YangTreePath pathResult =  new YangTreePath(result, root, mandatoryNode);
+		if (!pathResult.isPathReachable())
+			throw new ReferenceLeafNotRetrievedException();
+		return pathResult;
 	}
 
 	/*
-	 * Recursive method used to retrieve leaves at a specific path, starting from a specific node.
+	 * Recursive method used to retrieve leaves at a specific path, starting
+	 * from a specific node.
 	 */
 	private static LinkedList<LeafNode> getNodesAtPath(String currentPath, YangNode node) {
 
@@ -150,13 +162,10 @@ public class YangTreePath implements Serializable {
 		Map<String, String> result = new HashMap<String, String>();
 
 		while (stringToParse.indexOf("[") != -1) {
-			String firstArg = stringToParse.substring(stringToParse
-					.indexOf("[") + 1, stringToParse.indexOf("]"));
+			String firstArg = stringToParse.substring(stringToParse.indexOf("[") + 1, stringToParse.indexOf("]"));
 			String[] args = firstArg.split("=");
-			result.put(Util.cleanValueString(args[0]), Util
-					.cleanValueString(args[1]));
-			stringToParse = stringToParse
-					.substring(stringToParse.indexOf("]") + 1);
+			result.put(Util.cleanValueString(args[0]), Util.cleanValueString(args[1]));
+			stringToParse = stringToParse.substring(stringToParse.indexOf("]") + 1);
 		}
 
 		return result;

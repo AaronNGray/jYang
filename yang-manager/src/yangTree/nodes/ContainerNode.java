@@ -10,7 +10,7 @@ import yangTree.attributes.ValueCheck;
 import jyang.parser.YANG_Container;
 
 @SuppressWarnings("serial")
-public class ContainerNode extends YangInnerNode implements CheckedYangNode {
+public class ContainerNode extends YangInnerNode implements CheckableYangNode {
 
 	private static ImageIcon icon = null;
 	private static ImageIcon errorIcon = null;
@@ -33,6 +33,8 @@ public class ContainerNode extends YangInnerNode implements CheckedYangNode {
 		}
 		return check;
 	}
+	
+	public void check(){}
 
 	public boolean equalsTo(ContainerNode node) {
 		return (getNameSpace() + ":" + getName()).equals(node.getNameSpace()

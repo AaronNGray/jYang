@@ -20,7 +20,7 @@ public class RequireInstanceRestriction extends Restriction {
 		LinkedList<LeafNode> leaves = path.getLeavesAtThisPath();
 		if (leaves.size()==0) {
 			return new UnitValueCheck("No reference leaf present.");
-		} else if (leaves.size()==1 && leaves.peekFirst().getValue()==null) {
+		} else if (leaves.size()==1 && leaves.getFirst().getValue()==null) {
 			return new UnitValueCheck("No reference leaf present.");
 		}
 		return UnitValueCheck.checkOK();
@@ -28,7 +28,7 @@ public class RequireInstanceRestriction extends Restriction {
 
 	@Override
 	public String getDescription() {
-		return "A reference leaf at : "+path.toString()+" must be present.";
+		return "A reference leaf must be present.";
 	}
 
 }

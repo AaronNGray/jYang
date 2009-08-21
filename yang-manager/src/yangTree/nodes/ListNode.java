@@ -98,6 +98,8 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 		}
 		return check;
 	}
+	
+	public void check() {}
 
 	public int getMinElements() {
 		return minElements;

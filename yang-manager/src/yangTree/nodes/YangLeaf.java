@@ -11,7 +11,7 @@ import yangTree.attributes.ValueCheck;
  * 
  */
 @SuppressWarnings("serial")
-public abstract class YangLeaf extends YangNode implements CheckedYangNode {
+public abstract class YangLeaf extends YangNode {
 
 	protected String value = null;
 	protected LeafType type;
@@ -52,9 +52,9 @@ public abstract class YangLeaf extends YangNode implements CheckedYangNode {
 	}
 
 	/**
-	 * Sets the value of this leaf. After this method is invoked, the value will
-	 * be <u>immediately</u> checked.
+	 * Sets the value of this leaf.
 	 */
 	public abstract void setValue(String value);
+	
 
 }

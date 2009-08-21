@@ -17,7 +17,7 @@ import yangTree.attributes.ValueCheck;
 import jyang.parser.YANG_Leaf;
 
 @SuppressWarnings("serial")
-public class LeafNode extends YangLeaf {
+public class LeafNode extends YangLeaf implements CheckableYangNode {
 
 	private static ImageIcon standardIcon = null;
 	private static ImageIcon isKeyIcon = null;
@@ -59,15 +59,10 @@ public class LeafNode extends YangLeaf {
 	public void setValue(String value) {
 		if (value != null) {
 			this.value = Util.cleanValueString(value);
-			check = type.getBuiltinType().check(this.value);
 		} else {
 			check = new ValueCheck();
 			if (isKey){
 				check.addUnitCheck(new UnitValueCheck("No value have been retrieved for this list-key leaf."));
-				return;
-			}
-			if (mandatory){
-				check.addUnitCheck(new UnitValueCheck("No value have been retrieved for this mandatory leaf."));
 				return;
 			}
 			if (type.getDefaultValue() != null) {
@@ -80,11 +75,20 @@ public class LeafNode extends YangLeaf {
 				check.addUnitCheck(new UnitValueCheck(
 						"No value retrieved ; leaf default value assumed.",
 						false));
+			} else if (mandatory){
+				check.addUnitCheck(new UnitValueCheck("No value have been retrieved for this mandatory leaf."));
+				return;
 			} else {
 				check.addUnitCheck(new UnitValueCheck("No value retrieved.",
 						false));
 			}
 		}
+	}
+
+	@Override
+	public void check() {
+		if (value!=null)
+			check = type.getBuiltinType().check(this.value);
 	}
 
 	public void setMandatory(boolean mandatory) {
@@ -111,7 +115,6 @@ public class LeafNode extends YangLeaf {
 		clone.setMandatory(mandatory);
 		clone.setNameSpace(nameSpace);
 		clone.setTypeDef(type);
-		clone.setSelected(isSelected);
 		return clone;
 	}
 

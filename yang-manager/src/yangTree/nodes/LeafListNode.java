@@ -53,7 +53,6 @@ public class LeafListNode extends YangLeaf implements ListedYangNode {
 	public LeafListNode cloneBody(){
 		LeafListNode clone = new LeafListNode((YANG_LeafList) definition);
 		clone.setType(type);
-		clone.setSelected(isSelected);
 		return clone;
 	}
 
@@ -68,7 +67,6 @@ public class LeafListNode extends YangLeaf implements ListedYangNode {
 	public void setValue(String value) {
 		if (value != null) {
 			this.value = Util.cleanValueString(value);
-			check = type.getBuiltinType().check(this.value);
 		} else {
 			check = new ValueCheck();
 			if (type.getDefaultValue() != null) {
@@ -81,6 +79,11 @@ public class LeafListNode extends YangLeaf implements ListedYangNode {
 						false));
 			}
 		}
+	}
+	
+	public void check(){
+		if (value!=null)
+			check = type.getBuiltinType().check(this.value);
 	}
 	
 	@Override

@@ -11,7 +11,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import yangTree.YangTreeModel;
-import yangTree.nodes.CheckedYangNode;
+import yangTree.nodes.CheckableYangNode;
 import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.YangNode;
 
@@ -130,8 +130,8 @@ public abstract class YangTreeViewer extends JTree {
 			YangNode node = (YangNode) value;
 
 			setToolTipText(null);
-			if (node instanceof CheckedYangNode) {
-				CheckedYangNode checkedNode = (CheckedYangNode) node;
+			if (node instanceof CheckableYangNode) {
+				CheckableYangNode checkedNode = (CheckableYangNode) node;
 				if (checkedNode.getCheck() != null && !checkedNode.getCheck().isOk())
 					setToolTipText(checkedNode.getCheck().toString());
 			}

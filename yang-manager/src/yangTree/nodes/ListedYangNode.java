@@ -4,7 +4,7 @@ package yangTree.nodes;
  * Represents a node that can present multiple occurrences in a YangTree filled.
  * 
  */
-public interface ListedYangNode extends CheckedYangNode {
+public interface ListedYangNode extends CheckableYangNode {
 
 	/**
 	 * Returns the minimum number of occurrence of this list.

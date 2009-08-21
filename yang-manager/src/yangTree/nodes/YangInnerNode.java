@@ -32,6 +32,13 @@ public abstract class YangInnerNode extends YangNode {
 	public void addChild(YangNode node) {
 		descendantNodes.add(node);
 	}
+	
+	public void checkSubtree(){
+		super.checkSubtree();
+		for (YangNode child : descendantNodes){
+			child.checkSubtree();
+		}
+	}
 
 	/**
 	 * Returns an empty clone (i.e. without children) of this node.<br>

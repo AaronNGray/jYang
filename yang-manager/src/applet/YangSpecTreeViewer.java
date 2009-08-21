@@ -48,12 +48,14 @@ public class YangSpecTreeViewer extends YangTreeViewer {
 		}
 
 		private void buildMenu() {
-			JMenuItem updateItem = add("Get all values");
+			JMenuItem updateItem = add("Get all");
 			updateItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					applet.displayDataTree();
 				}
 			});
+			
+			addSeparator();
 
 			JMenuItem expandItem = add("Expand all");
 			expandItem.addActionListener(new ActionListener() {
@@ -91,7 +93,7 @@ public class YangSpecTreeViewer extends YangTreeViewer {
 
 		private void buildMenu() {
 
-			JMenuItem refreshItem = add("Get value");
+			JMenuItem refreshItem = add("Get");
 			refreshItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					applet.displayDataTree(getPathForLocation(x, y));
@@ -99,6 +101,8 @@ public class YangSpecTreeViewer extends YangTreeViewer {
 			});
 
 			if (node instanceof YangInnerNode) {
+				
+				addSeparator();
 
 				JMenuItem expandItem = add("Expand subtree");
 				expandItem.addActionListener(new ActionListener() {
