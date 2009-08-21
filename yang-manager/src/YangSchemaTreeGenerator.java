@@ -113,7 +113,7 @@ public class YangSchemaTreeGenerator {
 
 				if (mismatchFound) {
 
-					lastUsedNode.addContent(currentNode);
+					lastUsedNode.addChild(currentNode);
 					usedNodes.add(currentNode);
 					lastUsedNode = currentNode;
 
@@ -129,7 +129,7 @@ public class YangSchemaTreeGenerator {
 					if (match == null) {
 						mismatchFound = true;
 						usedNodes.add(currentNode);
-						lastUsedNode.addContent(currentNode);
+						lastUsedNode.addChild(currentNode);
 						lastUsedNode = currentNode;
 					} else {
 						lastUsedNode = match;
@@ -161,7 +161,7 @@ public class YangSchemaTreeGenerator {
 			}
 
 			for (YangNode node : subroot.getDescendantNodes()) {
-				lastUsedNode.addContent(node);
+				lastUsedNode.addChild(node);
 			}
 		}
 
@@ -173,7 +173,7 @@ public class YangSchemaTreeGenerator {
 		RootNode rootNode = new RootNode();
 		Vector<YangTreeNode> childs = ytn.getChilds();
 		for (YangTreeNode child : childs) {
-			rootNode.addContent(buildModuleTree(child));
+			rootNode.addChild(buildModuleTree(child));
 		}
 		return rootNode;
 	}
@@ -197,7 +197,7 @@ public class YangSchemaTreeGenerator {
 			
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
-				node.addContent(buildModuleTree(child));
+				node.addChild(buildModuleTree(child));
 			}
 
 			return node;
@@ -217,7 +217,7 @@ public class YangSchemaTreeGenerator {
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
-				node.addContent(buildModuleTree(child));
+				node.addChild(buildModuleTree(child));
 			}
 
 			return node;
@@ -228,7 +228,7 @@ public class YangSchemaTreeGenerator {
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
-				node.addContent(buildModuleTree(child));
+				node.addChild(buildModuleTree(child));
 			}
 
 			return node;
@@ -239,7 +239,7 @@ public class YangSchemaTreeGenerator {
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
-				node.addContent(buildModuleTree(child));
+				node.addChild(buildModuleTree(child));
 			}
 
 			return node;

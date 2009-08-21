@@ -2,8 +2,6 @@ package applet;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 
 import javax.swing.JTree;
@@ -14,7 +12,6 @@ import javax.swing.tree.TreeSelectionModel;
 
 import yangTree.YangTreeModel;
 import yangTree.nodes.CheckedYangNode;
-import yangTree.nodes.RootNode;
 import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.YangNode;
 
@@ -23,26 +20,29 @@ import yangTree.nodes.YangNode;
  * 
  */
 @SuppressWarnings("serial")
-public class YangTreeViewer extends JTree {
+public abstract class YangTreeViewer extends JTree {
 
-	private YangApplet applet;
+	protected YangApplet applet;
 
 	public YangTreeViewer(YangApplet applet, YangNode root) {
+		
 		super(new YangTreeModel(root));
-
 		this.applet = applet;
 
 		ToolTipManager.sharedInstance().registerComponent(this);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		setRootVisible(true);
 		setCellRenderer(new CustomCellRenderer());
-		addMouseListener(new CustomMouseListener());
+		
 	}
-
-	public void updateTree(TreePath path) {
-		applet.updateTree(path);
+	
+	/**
+	 * Removes the current selection.
+	 */
+	public void removeSelection(){
+		if (getSelectionPath()!=null)
+			removeSelectionPath(getSelectionPath());
 	}
-
+	
 	/**
 	 * Collapses all the lines of the displayed tree.
 	 */
@@ -58,6 +58,38 @@ public class YangTreeViewer extends JTree {
 	public void expandAll() {
 		for (int i = 0; i < getRowCount(); i++) {
 			expandRow(i);
+		}
+	}
+
+	/**
+	 * Collapses a given node and all his descendants.
+	 * 
+	 * @param path
+	 *            : the path of the node.
+	 */
+	public void collapseNode(TreePath path) {
+		YangInnerNode node = (YangInnerNode) path.getLastPathComponent();
+		for (YangNode child : node.getDescendantNodes()) {
+			if (child instanceof YangInnerNode) {
+				collapseNode(path.pathByAddingChild(child));
+			}
+		}
+		collapsePath(path);
+	}
+
+	/**
+	 * Expands a given node and all his descendants.
+	 * 
+	 * @param path
+	 *            : the path of the node.
+	 */
+	public void expandNode(TreePath path) {
+		expandPath(path);
+		YangInnerNode node = (YangInnerNode) path.getLastPathComponent();
+		for (YangNode child : node.getDescendantNodes()) {
+			if (child instanceof YangInnerNode) {
+				expandNode(path.pathByAddingChild(child));
+			}
 		}
 	}
 
@@ -90,42 +122,6 @@ public class YangTreeViewer extends JTree {
 		}
 	}
 
-	/**
-	 * Sets the "<code>isExpanded</code>" value to <code>true</code> for each
-	 * <code>YangInnerNode</code> of the displayed tree that is currently
-	 * expanded.
-	 * 
-	 * @see #applyDisplayFromTree(RootNode)
-	 */
-	public void setDisplayOnTree() {
-		for (TreePath path : getCurrentDisplay()) {
-			((YangInnerNode) path.getLastPathComponent()).setExpanded(true);
-		}
-	}
-
-	/**
-	 * Changes the display of the current tree according to each
-	 * <code>YangInnerNode</code> "<code>isExpanded</code>" value.
-	 * 
-	 * @param root
-	 *            : the root of the currently displayed tree.
-	 * @see #setDisplayOnTree()
-	 */
-	public void applyDisplayFromTree(RootNode root) {
-		applyDisplayFromTree_Engine(root, new TreePath(root));
-	}
-
-	private void applyDisplayFromTree_Engine(YangInnerNode node, TreePath path) {
-		if (node.isExpanded())
-			expandPath(path);
-		for (YangNode child : node.getDescendantNodes()) {
-			if (child instanceof YangInnerNode) {
-				YangInnerNode cchild = (YangInnerNode) child;
-				applyDisplayFromTree_Engine(cchild, path.pathByAddingChild(cchild));
-			}
-		}
-	}
-
 	private class CustomCellRenderer extends DefaultTreeCellRenderer {
 
 		@Override
@@ -148,23 +144,6 @@ public class YangTreeViewer extends JTree {
 			Dimension result = super.getPreferredSize();
 			result.setSize(result.width, result.height + 4);
 			return result;
-		}
-
-	}
-
-	private class CustomMouseListener extends MouseAdapter {
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			int selRow = getRowForLocation(e.getX(), e.getY());
-
-			if (e.getButton() == MouseEvent.BUTTON3) {
-				if (selRow == -1 || selRow == 0) {
-					new DefaultPopupMenu(YangTreeViewer.this, e.getX(), e.getY());
-				} else {
-					new NodePopupMenu(YangTreeViewer.this, (YangNode) getPathForLocation(e.getX(), e.getY()).getLastPathComponent(), e.getX(), e.getY());
-				}
-			}
 		}
 
 	}

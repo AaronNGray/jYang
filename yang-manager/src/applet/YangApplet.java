@@ -20,7 +20,6 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.TreePath;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -29,12 +28,9 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.sun.org.apache.xerces.internal.impl.RevalidationHandler;
 
-import yangTree.NodeNoLongerExistsException;
 import yangTree.TreeFiller;
 import yangTree.attributes.YangTreePath;
-import yangTree.nodes.LeafNode;
 import yangTree.nodes.ListNode;
 import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.YangNode;
@@ -47,16 +43,21 @@ import yangTree.nodes.RootNode;
 @SuppressWarnings("serial")
 public class YangApplet extends JApplet implements TreeSelectionListener {
 
-	private boolean isTreeFilled;
 	private String agentIP;
-
-	private RootNode tree;
-	private YangTreeViewer treeViewer;
 	
 	private JPanel mainPanel;
+	
+	private RootNode specTree;
+	private YangSpecTreeViewer specTreeViewer;
+	
+	private RootNode dataTree;
+	private YangDataTreeViewer dataTreeViewer;
+	
 	private JScrollPane infoView;
-	private JScrollPane treeView;
 	private InfoPanel infoPanel;
+	
+	private JSplitPane verticalSplitPane = null;
+	private JSplitPane horizontalSplitPane = null;
 	
 	public int height;
 	public int width;
@@ -65,41 +66,55 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		height = getSize().height;
 		width = getSize().width;
 		agentIP = getParameter("agentIP");
+		
+		infoPanel = new InfoPanel();
+		
 		displaySpecTree();
 	}
 
-	public boolean isTreeFilled() {
-		return isTreeFilled;
-	}
 
 	private void buildDisplay() {
 		
+		LinkedList<TreePath> display = null;
+		if (specTreeViewer!=null)
+			display = specTreeViewer.getCurrentDisplay();
+		
+		int verticalDividerLocation = (int) Math.floor(height * 0.7);
+		if (verticalSplitPane!=null)
+			verticalDividerLocation = verticalSplitPane.getDividerLocation();
+		
+		int horizontalDividerLocation = (int) Math.floor(width * 0.5);
+		if (horizontalSplitPane!=null)
+			horizontalDividerLocation = horizontalSplitPane.getDividerLocation();
 
 		mainPanel = new JPanel();
 		setContentPane(mainPanel);
 
 		mainPanel.setLayout(new BorderLayout());
 
-		JButton button = new BottomButton(this);
-		mainPanel.add(button, BorderLayout.PAGE_END);
-
-		treeViewer = new YangTreeViewer(this,tree);
-		treeViewer.addTreeSelectionListener(this);
-		treeView = new JScrollPane(treeViewer);
-
-		infoPanel = new InfoPanel(isTreeFilled);
+		specTreeViewer = new YangSpecTreeViewer(this,specTree);
+		specTreeViewer.addTreeSelectionListener(this);
+		JScrollPane specTreeView = new JScrollPane(specTreeViewer);
+		
+		dataTreeViewer = new YangDataTreeViewer(this,dataTree);
+		dataTreeViewer.addTreeSelectionListener(this);
+		JScrollPane dataTreeView = new JScrollPane(dataTreeViewer);
+	
 		infoView = new JScrollPane(infoPanel);
+		
+		horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,specTreeView,dataTreeView);
+		horizontalSplitPane.setDividerLocation(horizontalDividerLocation);
+		
+		verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, horizontalSplitPane, infoView);
+		verticalSplitPane.setDividerLocation(verticalDividerLocation);
+		mainPanel.add(verticalSplitPane, BorderLayout.CENTER);
 
-		JSplitPane splitPane = new JSplitPane();
-		splitPane.setTopComponent(treeView);
-		splitPane.setBottomComponent(infoView);
-		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		mainPanel.add(splitPane, BorderLayout.CENTER);
-
-		splitPane.setDividerLocation((int) Math.floor(height * 0.7));
-
-		treeView.setMinimumSize(new Dimension(width, 150));
+		specTreeView.setMinimumSize(new Dimension(100,150));
+		dataTreeView.setMinimumSize(new Dimension(100,150));
 		infoView.setMinimumSize(new Dimension(width, 50));
+		
+		if (display!=null)
+			specTreeViewer.setDisplay(display);
 
 		validate();
 
@@ -115,7 +130,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	private InputStream sendRequestToServer(String request) {
 		try {
 
-			URL url = new URL("https://localhost:8888/");
+			URL url = getCodeBase();
 
 			HttpsURLConnection connexion = (HttpsURLConnection) url.openConnection();
 
@@ -156,13 +171,12 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 */
 	public void displaySpecTree() {
 		try {
-			URL url = new URL("https://localhost:8888/" + agentIP + ".yang.byte");
+			URL url = new URL(getCodeBase() + agentIP + ".yang.byte");
 			HttpsURLConnection connexion = (HttpsURLConnection) url.openConnection();
 			ObjectInputStream ois = new ObjectInputStream(connexion.getInputStream());
 			Object inputObject = ois.readObject();
 			ois.close();
-			tree = (RootNode) inputObject;
-			isTreeFilled = false;
+			specTree = (RootNode) inputObject;
 			buildDisplay();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -171,96 +185,66 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	}
 
 	/**
-	 * Refreshes the applet so it will display the tree filled with values.
+	 * Refreshes the applet so it will display the data tree.
+	 * @param path : the path of the node that will be filled and displayed.
 	 */
-	public void displayTreeValues() {
-		treeViewer.setDisplayOnTree();
-		RootNode treeFilled = new RootNode("Yang Data");
-
-		/*
-		 * ! Méthode modifiée pour les tests !
-		 */
-		String xmlCode = "<rpc-reply><data><netconf><system>" + "<cont>" + "<leafA>ABC</leafA> <leafB>123</leafB>" + "</cont>"
-				+ "</system></netconf></data></rpc-reply>";
-
-		String filterPerso = "" + "<netconf xmlns=\"urn:loria:madynes:ensuite:yencap:1.0\">" + "<network>"
-				+ "<interfaces xmlns=\"urn:loria:madynes:ensuite:yencap:1.0:module:Interfaces:1.0\">" + "<interface>" + "<name>bla</name>"
-				+ "</interface>" + "</interfaces>" + "</network>" + "</netconf>";
-
-		for (YangNode node : tree.getDescendantNodes()) {
-			try {
-				DocumentBuilderFactory docBF = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
-				Document xmlDoc = docBF.newDocumentBuilder().parse(sendGetRequest(node.xmlFilter()[0] + node.xmlFilter()[1]));
-				//Document xmlDoc = docBF.newDocumentBuilder().parse(sendGetRequest(filterPerso));
-				// Document xmlDoc = docBF.newDocumentBuilder().parse(new InputSource(new StringReader(xmlCode)));
-				treeFilled.addContent(TreeFiller.fillTree(node, xmlDoc, new YangTreePath(treeFilled)));
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+	public void displayDataTree(TreePath path) {
+		
+		YangNode[] ppath = new YangNode[path.getPath().length-1];
+		for (int i=0;i<ppath.length;i++){
+			ppath[i] = (YangNode) path.getPath()[i+1];
 		}
-		TreeFiller.setPendingValues();
-		tree = treeFilled;
-		isTreeFilled = true;
-		
-		buildDisplay();
-		treeViewer.applyDisplayFromTree(tree);
-	}
-
-	/**
-	 * Updates the values of a subtree of the current YangTree.
-	 * 
-	 * @param path
-	 *            : the path of the root of the subtree that will be updated.
-	 */
-	public void updateTree(TreePath path) {
-		
-		String xmlCode = "<rpc-reply><data><netconf><network>" + "<interfaces></interfaces>"
-		+ "</network></netconf></data></rpc-reply>";
-
-		YangNode[] nodesArray = new YangNode[path.getPath().length-1] ;
-		for (int i=0;i<nodesArray.length;i++){
-			nodesArray[i] = (YangNode) path.getPath()[i+1];
-		}
-		
-		YangTreePath ytpath = new YangTreePath((RootNode) path.getPath()[0], nodesArray);
-		String filter = buildUpdateFilter(nodesArray);
+		String filter = buildNetconfRequestFilter(ppath);
 		
 		DocumentBuilderFactory docBF = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
 		try {
-			//Document xmlDoc = docBF.newDocumentBuilder().parse(new InputSource(new StringReader(xmlCode)));
 			Document xmlDoc = docBF.newDocumentBuilder().parse(sendGetRequest(filter));
-			try {
-				TreeFiller.UpdateTree(nodesArray[nodesArray.length-1], xmlDoc, ytpath);
-			} catch (NodeNoLongerExistsException e) {
-				YangInnerNode parentNode = (YangInnerNode) nodesArray[nodesArray.length-2];
-				parentNode.getDescendantNodes().remove(nodesArray[nodesArray.length-1]);
-			}
-		} catch (Exception e) {
+			dataTree = TreeFiller.createDataTree(specTree, path, xmlDoc);
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		LinkedList<TreePath> display = treeViewer.getCurrentDisplay();
+		
+		
 		buildDisplay();
-		treeViewer.setDisplay(display);
-		treeViewer.setSelectionPath(path);
-		treeViewer.scrollPathToVisible(path);
 	}
+	
+	/**
+	 * Refreshes the applet so it will display the entire data tree.
+	 */
+	public void displayDataTree(){
+		TreePath path = new TreePath(specTree);
+		path = path.pathByAddingChild(specTree.getDescendantNodes().getFirst());
+		displayDataTree(path);
+	}
+	
 
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
 
-		YangNode selectedNode = (YangNode) treeViewer.getLastSelectedPathComponent();
+		YangNode selectedNode = null;
+		
+		if (e.getSource() instanceof YangSpecTreeViewer){
+			selectedNode = (YangNode) specTreeViewer.getLastSelectedPathComponent();
+			infoPanel.setTreeFilled(false);
+			dataTreeViewer.removeSelection();
+		} else
+		if (e.getSource() instanceof YangDataTreeViewer){
+			selectedNode = (YangNode) dataTreeViewer.getLastSelectedPathComponent();
+			infoPanel.setTreeFilled(true);
+			specTreeViewer.removeSelection();
+		}
 
 		if (selectedNode == null)
 			return;
 
+		
 		selectedNode.buildInfoPanel(infoPanel);
 		infoPanel.repaint();
 
@@ -275,7 +259,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 	}
 
-	private static String buildUpdateFilter(YangNode[] path) {
+	private static String buildNetconfRequestFilter(YangNode[] path) {
 
 		if (path.length == 0) {
 			return "";
@@ -286,8 +270,14 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 			newPath[i] = path[i + 1];
 		}
 
-		String[] firstNodePath = path[0].xmlFilter();
-		return firstNodePath[0] + buildUpdateFilter(newPath) + firstNodePath[1];
+		String[] firstNodePath ;
+		if (path[0] instanceof ListNode){
+			firstNodePath = ((ListNode) path[0]).xmlFilter(path.length>1);
+		} else {
+			firstNodePath = path[0].xmlFilter();
+		}
+		
+		return firstNodePath[0] + buildNetconfRequestFilter(newPath) + firstNodePath[1];
 
 	}
 

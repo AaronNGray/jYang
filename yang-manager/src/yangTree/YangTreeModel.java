@@ -45,7 +45,7 @@ public class YangTreeModel implements TreeModel {
 	
 	public boolean isLeaf(Object node){
 		YangNode dataNode = (YangNode) node;
-		return (dataNode instanceof LeafNode) || (dataNode instanceof LeafListNode);
+		return (dataNode instanceof YangLeaf);
 	}
 	
 	public Object getRoot(){

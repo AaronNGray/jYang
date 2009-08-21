@@ -53,6 +53,7 @@ public class LeafListNode extends YangLeaf implements ListedYangNode {
 	public LeafListNode cloneBody(){
 		LeafListNode clone = new LeafListNode((YANG_LeafList) definition);
 		clone.setType(type);
+		clone.setSelected(isSelected);
 		return clone;
 	}
 

@@ -111,6 +111,7 @@ public class LeafNode extends YangLeaf {
 		clone.setMandatory(mandatory);
 		clone.setNameSpace(nameSpace);
 		clone.setTypeDef(type);
+		clone.setSelected(isSelected);
 		return clone;
 	}
 

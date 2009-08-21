@@ -1,9 +1,5 @@
 package yangTree.nodes;
 
-import java.util.LinkedList;
-
-import javax.swing.tree.TreePath;
-
 import applet.InfoPanel;
 
 import yangTree.attributes.LeafType;
@@ -12,7 +8,6 @@ import yangTree.attributes.ValueCheck;
 /**
  * Represents a leaf in a YangTree.
  * 
- * @see YangInnerNode
  * 
  */
 @SuppressWarnings("serial")

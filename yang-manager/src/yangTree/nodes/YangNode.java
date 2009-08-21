@@ -1,11 +1,7 @@
 package yangTree.nodes;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-
 import javax.swing.ImageIcon;
-import javax.swing.tree.TreePath;
-
 import applet.InfoPanel;
 
 import yangTree.attributes.NameSpace;
@@ -21,12 +17,21 @@ public abstract class YangNode implements Serializable {
 
 	public YANG_DataDef definition;
 	protected NameSpace nameSpace;
+	protected boolean isSelected = false;
 
 	/**
 	 * Returns the name of this node
 	 */
 	public String getName() {
 		return definition.getBody();
+	}
+
+	public boolean isSelected() {
+		return isSelected;
+	}
+
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
 	}
 
 	public void setNameSpace(NameSpace nameSpace) {

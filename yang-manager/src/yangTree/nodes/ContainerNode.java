@@ -5,7 +5,6 @@ import java.io.InputStream;
 
 import javax.swing.ImageIcon;
 
-import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
 import jyang.parser.YANG_Container;
@@ -42,7 +41,6 @@ public class ContainerNode extends YangInnerNode implements CheckedYangNode {
 
 	public ContainerNode cloneBody() {
 		ContainerNode clone = new ContainerNode((YANG_Container) definition);
-		clone.setExpanded(isExpanded);
 		return clone;
 	}
 	

@@ -37,15 +37,18 @@ public class InfoPanel extends JPanel {
 	 *            : <code>true</code> if the displayed tree is filled,
 	 *            <code>false</code> otherwise
 	 */
-	public InfoPanel(boolean isTreeFilled) {
+	public InfoPanel() {
 		super();
-		this.isTreeFilled = isTreeFilled;
 		setLayout(new GridBagLayout());
 		setHelpInfo();
 	}
 
 	public boolean isTreeFilled() {
 		return isTreeFilled;
+	}
+	
+	public void setTreeFilled(boolean isTreeFilled){
+		this.isTreeFilled = isTreeFilled;
 	}
 
 	/**

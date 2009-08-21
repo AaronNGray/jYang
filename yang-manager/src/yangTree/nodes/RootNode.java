@@ -28,6 +28,10 @@ public class RootNode extends ContainerNode {
 		this.name = name;
 	}
 	
+	public RootNode cloneBody(){
+		return new RootNode(name);
+	}
+	
 	public String toString(){
 		return name;
 	}

@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.swing.tree.TreePath;
-
 import applet.Util;
 
 import yangTree.nodes.YangNode;
@@ -50,15 +48,11 @@ public class YangTreePath implements Serializable {
 		this.root = root;
 	}
 
-	public YangTreePath clone() {
-		return new YangTreePath(path, root);
-	}
-
 	/**
-	 * Appends a node to this path
+	 * Returns a new path built by appending a node to this path
 	 */
-	public void appendChild(String child) {
-		path += child + "/";
+	public YangTreePath pathByAppendingChild(String child) {
+		return new YangTreePath(path + child + "/",root);
 	}
 
 	/**

@@ -18,16 +18,18 @@ public class CaseNode extends YangInnerNode {
 		definition = c;
 	}
 
-	public void addContent(YangNode d) {
-		nodes.add(d);
-	}
-
 	public String toString() {
 		return definition.getBody();
 	}
+
+	@Override
+	public CaseNode cloneBody() {
+		CaseNode clone = new CaseNode((YANG_Case) definition);
+		return clone;
+	}
 	
-	public CaseNode cloneBody(){
-		return new CaseNode((YANG_Case) definition);
+	public String[] xmlFilter(){
+		return new String[]{"",""};
 	}
 
 	public String getNodeType() {

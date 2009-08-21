@@ -15,18 +15,22 @@ public class ChoiceNode extends YangInnerNode {
 		definition = choice;
 	}
 	
-	
 	public String toString(){
 		return definition.getBody();
+	}
+	
+	public ChoiceNode cloneBody(){
+		ChoiceNode clone = new ChoiceNode((YANG_Choice) definition);
+		return clone;
+	}
+	
+	public String[] xmlFilter(){
+		return new String[]{"",""};
 	}
 	
 	
 	public String getNodeType() {
 		return "Choice";
-	}
-
-	public YangInnerNode cloneBody() {
-		return new ChoiceNode((YANG_Choice) definition);
 	}
 	
 	public ImageIcon getIcon(){
