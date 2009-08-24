@@ -33,6 +33,20 @@ public abstract class YangInnerNode extends YangNode {
 		descendantNodes.add(node);
 	}
 	
+	/**
+	 * Gets all the children of this node that is matching a given name.
+	 * @param childName : the name of the child to get.
+	 * @return The list of children that is matching the given name.
+	 */
+	public LinkedList<YangNode> getChildByName(String childName){
+		LinkedList<YangNode> result = new LinkedList<YangNode>();
+		for (YangNode child : descendantNodes){
+			if (child.getName().equals(childName))
+				result.add(child);
+		}
+		return result;
+	}
+	
 	public void checkSubtree(){
 		super.checkSubtree();
 		for (YangNode child : descendantNodes){
@@ -41,9 +55,7 @@ public abstract class YangInnerNode extends YangNode {
 	}
 
 	/**
-	 * Returns an empty clone (i.e. without children) of this node.<br>
-	 * <b>Note :</b> All the other parameters of this node <u>(including the
-	 * list of children in specification)</u> <u>WILL</u> be kept.
+	 * Returns an empty clone (i.e. without children) of this node.
 	 */
 	public abstract YangInnerNode cloneBody();
 
@@ -52,6 +64,18 @@ public abstract class YangInnerNode extends YangNode {
 		super.buildInfoPanel(panel);
 		if (getNameSpace() != null)
 			panel.addTextField("Namespace", getNameSpace().getNameSpace());
+	}
+	
+	public String getXMLRepresentation(){
+		String result = "<"+getName();
+		if (nameSpace!=null && nameSpace.getNameSpace() != null) {
+			result = result + nameSpace.getXMLArg();
+		}
+		result += ">";
+		for (YangNode child : getDescendantNodes()){
+			result+= child.getXMLRepresentation();
+		}
+		return result+"</"+getName()+">";
 	}
 
 }

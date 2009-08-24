@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
+import yangTree.nodes.LeafNode;
 import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.YangNode;
 
@@ -31,7 +32,7 @@ public class YangDataTreeViewer extends YangTreeViewer {
 			int selRow = getRowForLocation(e.getX(), e.getY());
 
 			if (e.getButton() == MouseEvent.BUTTON3) {
-				if (selRow == -1 || selRow == 0) {
+				if (selRow == -1) {
 					new DefaultPopupMenu(e.getX(), e.getY());
 				} else {
 					new NodePopupMenu(getPathForLocation(e.getX(), e.getY()), e.getX(), e.getY());
@@ -96,6 +97,15 @@ public class YangDataTreeViewer extends YangTreeViewer {
 				collapseItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						collapseNode(path);
+					}
+				});
+			}
+			
+			if (node instanceof LeafNode) {
+				JMenuItem expandItem = add("Edit value");
+				expandItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						applet.getInfoPanel().allowEdition();
 					}
 				});
 			}

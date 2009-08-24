@@ -62,7 +62,9 @@ public class RootNode extends ContainerNode {
 	}
 	
 	public RootNode cloneBody(){
-		return new RootNode(name);
+		RootNode result = new RootNode(name);
+		result.setPath(path);
+		return result;
 	}
 	
 	public String toString(){
@@ -87,6 +89,36 @@ public class RootNode extends ContainerNode {
 			}
 		}
 		return icon;
+	}
+	
+	@Override
+	public String getXMLRepresentation(){
+		
+		String result = "";
+		if (path != null){
+			Object[] arrayPath = path.getPath();
+			for (int i=1;i<arrayPath.length;i++){
+				result+="<"+((YangNode) arrayPath[i]).getName()+">";
+			}
+		}
+		
+		if (nameSpace!=null && nameSpace.getNameSpace() != null) {
+			result = result + nameSpace.getXMLArg();
+		}
+		result += ">";
+		
+		for (YangNode child : getDescendantNodes()){
+			result+= child.getXMLRepresentation();
+		}
+		
+		if (path != null){
+			Object[] arrayPath = path.getPath();
+			for (int i=arrayPath.length-1;i>0;i--){
+				result+="</"+((YangNode) arrayPath[i]).getName()+">";
+			}
+		}
+		return result;
+		
 	}
 
 }

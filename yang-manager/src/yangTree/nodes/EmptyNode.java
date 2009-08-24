@@ -32,6 +32,11 @@ public class EmptyNode extends YangLeaf {
 	}
 
 	@Override
+	public YangNode cloneBody() {
+		return this;
+	}
+
+	@Override
 	public ImageIcon getIcon() {
 		if (icon == null) {
 			InputStream is = getClass().getResourceAsStream(

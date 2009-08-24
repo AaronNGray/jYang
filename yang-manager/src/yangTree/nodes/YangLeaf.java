@@ -42,19 +42,23 @@ public abstract class YangLeaf extends YangNode {
 		
 		panel.addTypePanel(type);
 		
-		String value = getValue();
-		if (panel.isTreeFilled()) {
-			if (value == null) {
-				value = "(No value)";
-			}
-			panel.addTextField("Value", value);
-		}
+		if (panel.isTreeFilled())
+			panel.addValuePanel(this);
+		
 	}
 
 	/**
 	 * Sets the value of this leaf.
 	 */
 	public abstract void setValue(String value);
+	
+	public String getXMLRepresentation(){
+		if (value == null){
+			return "<"+getName()+"></"+getName()+">";
+		} else  {
+			return "<"+getName()+">"+value+"</"+getName()+">";
+		}
+	}
 	
 
 }

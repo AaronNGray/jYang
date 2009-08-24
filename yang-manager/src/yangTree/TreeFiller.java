@@ -307,6 +307,7 @@ public class TreeFiller {
 		if (namespace != null) {
 			result.setNameSpace(namespace);
 		}
+		
 		return result;
 
 	}
@@ -415,7 +416,7 @@ public class TreeFiller {
 	}
 
 	/**
-	 * Special class used to sort and check a set of occurrences of a
+	 * Special class used to sort a set of occurrences of a
 	 * ListedYangNode.
 	 */
 	private static class ListBuilder {
@@ -440,8 +441,6 @@ public class TreeFiller {
 			if (i == occurrences.size()) {
 				occurrences.addLast(occurrence);
 			} else {
-				if (occurrences.get(i).compareTo(occurrence) == 0)
-					occurrence.getCheck().addUnitCheck(new UnitValueCheck("Duplicated key"));
 				occurrences.add(i, occurrence);
 			}
 		}

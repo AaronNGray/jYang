@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import javax.swing.ImageIcon;
 
+import yangTree.attributes.UnitValueCheck;
 import yangTree.attributes.ValueCheck;
 
 import jyang.parser.YANG_Container;
@@ -34,7 +35,18 @@ public class ContainerNode extends YangInnerNode implements CheckableYangNode {
 		return check;
 	}
 	
-	public void check(){}
+	public void check(){
+		for (YangNode child : descendantNodes){
+			for (YangNode cchild : descendantNodes){
+				if (child!=cchild && child.getName().equals(cchild.getName()) && child instanceof ListNode && cchild instanceof ListNode) {
+					ListNode list = (ListNode) child;
+					ListNode llist = (ListNode) cchild;
+					if (list.hasSameKey(llist))
+						list.getCheck().addUnitCheck(new UnitValueCheck("Duplicated Key : "+list.getKeysRepresentation()));
+				}
+			}
+		}
+	}
 
 	public boolean equalsTo(ContainerNode node) {
 		return (getNameSpace() + ":" + getName()).equals(node.getNameSpace()

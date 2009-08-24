@@ -73,6 +73,12 @@ public abstract class YangNode implements Serializable {
 		}
 	}
 	
+	/**
+	 * Returns an empty clone of this node. If this node is an inner node, the clone will have no child; if this node is a leaf, the clone will have no value.<br>
+	 * All other attributes, such as type or namespace are kept.
+	 */
+	public abstract YangNode cloneBody();
+	
 
 	/**
 	 * Returns the name of the type of this node.
@@ -83,5 +89,10 @@ public abstract class YangNode implements Serializable {
 	 * Returns the icon used to display this node in a tree.
 	 */
 	abstract public ImageIcon getIcon();
+	
+	/**
+	 * Returns the complete XML representation of this node.
+	 */
+	abstract public String getXMLRepresentation();
 
 }

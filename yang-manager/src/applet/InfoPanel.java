@@ -11,6 +11,7 @@ import javax.swing.JTextField;
 
 import yangTree.attributes.LeafType;
 import yangTree.attributes.ValueCheck;
+import yangTree.nodes.YangLeaf;
 
 /**
  * The bottom panel of the applet, used to display all the informations about a
@@ -24,6 +25,8 @@ import yangTree.attributes.ValueCheck;
 @SuppressWarnings("serial")
 public class InfoPanel extends JPanel {
 
+	private YangApplet applet;
+	
 	private JLabel title;
 	private boolean isTreeFilled = false;
 	private int currentRow = 1;
@@ -37,8 +40,9 @@ public class InfoPanel extends JPanel {
 	 *            : <code>true</code> if the displayed tree is filled,
 	 *            <code>false</code> otherwise
 	 */
-	public InfoPanel() {
+	public InfoPanel(YangApplet applet) {
 		super();
+		this.applet = applet;
 		setLayout(new GridBagLayout());
 		setHelpInfo();
 	}
@@ -164,6 +168,29 @@ public class InfoPanel extends JPanel {
 
 		currentRow++;
 	}
+	
+	/**
+	 * Adds a line displaying a value of a leaf.
+	 * @param leaf : The leaf which value will be displayed.
+	 * @see ValuePanel
+	 */
+	public void addValuePanel(YangLeaf leaf){
+		JLabel label = new JLabel("Value : ");
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.insets = insets;
+		c.anchor = GridBagConstraints.NORTHEAST;
+		add(label, c);
+
+		ValuePanel valuePanel = new ValuePanel(leaf,applet);
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.anchor = GridBagConstraints.LINE_START;
+		add(valuePanel, c);
+
+		currentRow++;
+	}
 
 	/**
 	 * Adds a line displaying errors or warnings if such exists.
@@ -175,6 +202,17 @@ public class InfoPanel extends JPanel {
 				addTextArea("Errors", check.toString());
 			} else {
 				addTextArea("Warnings", check.toString());
+			}
+		}
+	}
+	
+	/**
+	 * Updates the display so it will allow the edition of the value of the current leaf.
+	 */
+	public void allowEdition(){
+		for (int i=0;i<getComponentCount();i++){
+			if (getComponent(i) instanceof ValuePanel){
+				((ValuePanel) getComponent(i)).allowEdition();
 			}
 		}
 	}
