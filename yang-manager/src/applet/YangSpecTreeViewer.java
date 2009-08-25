@@ -48,10 +48,24 @@ public class YangSpecTreeViewer extends YangTreeViewer {
 		}
 
 		private void buildMenu() {
-			JMenuItem updateItem = add("Get all");
-			updateItem.addActionListener(new ActionListener() {
+			JMenuItem getItem = add("Get all");
+			getItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					applet.displayDataTree();
+					applet.displayDataTree(false);
+				}
+			});
+			
+			JMenuItem getConfigItem = add("Get-config all");
+			getConfigItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					applet.displayDataTree(true);
+				}
+			});
+			
+			JMenuItem editItem = add("Edit-config all");
+			editItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					//TODO handle.
 				}
 			});
 			
@@ -93,10 +107,24 @@ public class YangSpecTreeViewer extends YangTreeViewer {
 
 		private void buildMenu() {
 
-			JMenuItem refreshItem = add("Get");
-			refreshItem.addActionListener(new ActionListener() {
+			JMenuItem getItem = add("Get");
+			getItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					applet.displayDataTree(getPathForLocation(x, y));
+					applet.displayDataTree(getPathForLocation(x, y),false);
+				}
+			});
+			
+			JMenuItem getConfigItem = add("Get-config");
+			getConfigItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					applet.displayDataTree(getPathForLocation(x, y),true);
+				}
+			});
+			
+			JMenuItem editItem = add("Edit-config");
+			editItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					//TODO handle.
 				}
 			});
 

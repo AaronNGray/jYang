@@ -8,17 +8,33 @@ import javax.swing.ImageIcon;
 import applet.InfoPanel;
 
 /**
- * A node used to represent that there is no node...
+ * A node used to represent that a specific leaf in the specification tree have no occurrence in the data tree.
  */
 @SuppressWarnings("serial")
 public class EmptyNode extends YangLeaf {
 	
 	private static ImageIcon icon = null;
 	
-	public String description;
+	private String description;
+	private YangLeaf specLeaf ;
 	
-	public EmptyNode(String description){
+	/**
+	 * Creates an <code>EmptyNode</code> associated with a specific leaf in the specification tree.
+	 * @param specLeaf : the leaf in the specification tree.
+	 * @param description : the text associated with this node when displayed.
+	 */
+	public EmptyNode(YangLeaf specLeaf, String description){
 		this.description = description;
+		this.specLeaf = specLeaf;
+	}
+	
+	/**
+	 * Creates an occurrence of the specification leaf associated with this <code>EmptyNode</code> as a child of a given <code>YangInnerNode</code>.
+	 */ 
+	public void createLeaf(YangInnerNode parentNode){
+		YangLeaf leaf =  specLeaf.cloneBody();
+		parentNode.addChild(leaf);
+		parentNode.getDescendantNodes().remove(this);
 	}
 
 	@Override
@@ -32,7 +48,7 @@ public class EmptyNode extends YangLeaf {
 	}
 
 	@Override
-	public YangNode cloneBody() {
+	public EmptyNode cloneBody() {
 		return this;
 	}
 
@@ -56,7 +72,7 @@ public class EmptyNode extends YangLeaf {
 
 	@Override
 	public String getNodeType() {
-		return "";
+		return null;
 	}
 
 	@Override

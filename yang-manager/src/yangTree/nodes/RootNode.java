@@ -94,30 +94,17 @@ public class RootNode extends ContainerNode {
 	@Override
 	public String getXMLRepresentation(){
 		
-		String result = "";
-		if (path != null){
-			Object[] arrayPath = path.getPath();
-			for (int i=1;i<arrayPath.length;i++){
-				result+="<"+((YangNode) arrayPath[i]).getName()+">";
+		if (path==null){
+			String result = "";
+			for (YangNode node : descendantNodes){
+				result+=node.getXMLRepresentation();
 			}
+			return result;
+		} else {
+			((YangInnerNode) path.getLastPathComponent()).setDescendantsNodes(getDescendantNodes());
+			RootNode superRoot = (RootNode) path.getPath()[0];
+			return superRoot.getXMLRepresentation();
 		}
-		
-		if (nameSpace!=null && nameSpace.getNameSpace() != null) {
-			result = result + nameSpace.getXMLArg();
-		}
-		result += ">";
-		
-		for (YangNode child : getDescendantNodes()){
-			result+= child.getXMLRepresentation();
-		}
-		
-		if (path != null){
-			Object[] arrayPath = path.getPath();
-			for (int i=arrayPath.length-1;i>0;i--){
-				result+="</"+((YangNode) arrayPath[i]).getName()+">";
-			}
-		}
-		return result;
 		
 	}
 

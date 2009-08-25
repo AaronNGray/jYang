@@ -11,7 +11,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import yangTree.YangTreeModel;
-import yangTree.nodes.CheckableYangNode;
 import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.YangNode;
 
@@ -25,24 +24,24 @@ public abstract class YangTreeViewer extends JTree {
 	protected YangApplet applet;
 
 	public YangTreeViewer(YangApplet applet, YangNode root) {
-		
+
 		super(new YangTreeModel(root));
 		this.applet = applet;
 
 		ToolTipManager.sharedInstance().registerComponent(this);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		setCellRenderer(new CustomCellRenderer());
-		
+
 	}
-	
+
 	/**
 	 * Removes the current selection.
 	 */
-	public void removeSelection(){
-		if (getSelectionPath()!=null)
+	public void removeSelection() {
+		if (getSelectionPath() != null)
 			removeSelectionPath(getSelectionPath());
 	}
-	
+
 	/**
 	 * Collapses all the lines of the displayed tree.
 	 */
@@ -130,11 +129,8 @@ public abstract class YangTreeViewer extends JTree {
 			YangNode node = (YangNode) value;
 
 			setToolTipText(null);
-			if (node instanceof CheckableYangNode) {
-				CheckableYangNode checkedNode = (CheckableYangNode) node;
-				if (checkedNode.getCheck() != null && !checkedNode.getCheck().isOk())
-					setToolTipText(checkedNode.getCheck().toString());
-			}
+			if (node.getCheck() != null && !node.getCheck().isOk())
+				setToolTipText(node.getCheck().toString());
 			setIcon(node.getIcon());
 			return this;
 		}

@@ -33,8 +33,23 @@ public abstract class YangLeaf extends YangNode {
 	}
 
 	public ValueCheck getCheck() {
+		if (check==null)
+			check = new ValueCheck();
 		return check;
 	}
+	
+	public void check() {
+		if (check==null)
+			check = new ValueCheck();
+		if (value!=null)
+			check.addChecks(type.getBuiltinType().check(this.value));
+	}
+	
+	/**
+	 * Returns an empty clone (i.e. without value) of this leaf.<br>
+	 * All other other attributes, such as type or restrictions, are kept.
+	 */
+	public abstract YangLeaf cloneBody();
 	
 	@Override
 	public void buildInfoPanel(InfoPanel panel){

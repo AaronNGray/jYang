@@ -1,10 +1,10 @@
 package yangTree.nodes;
 
 /**
- * Represents a node that can present multiple occurrences in a YangTree filled.
+ * Represents a node that can present multiple occurrences in a data tree.
  * 
  */
-public interface ListedYangNode extends CheckableYangNode {
+public interface ListedYangNode {
 
 	/**
 	 * Returns the minimum number of occurrence of this list.
@@ -25,5 +25,11 @@ public interface ListedYangNode extends CheckableYangNode {
 	 *         0  if the two elements have the same identifier.
 	 */
 	public int compareTo(ListedYangNode otherListedNode);
+	
+	/**
+	 * Returns <code>true</code> if the two occurrences are considered as equals in the current Yang tree context.<br>
+	 * Returns <code>false</code> otherwise.
+	 */
+	public boolean equalsOccurrence(ListedYangNode otherOccurrence);
 
 }

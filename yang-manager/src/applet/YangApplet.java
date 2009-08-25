@@ -40,18 +40,21 @@ import yangTree.nodes.RootNode;
 @SuppressWarnings("serial")
 public class YangApplet extends JApplet implements TreeSelectionListener {
 
+	private static DocumentBuilderFactory documentBuilderFactory = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
+
 	private String agentIP;
 
 	private JPanel mainPanel;
-	
+
 	private JPanel bottomPanel;
-	public boolean editionInProgress = false;
-	
+	private boolean editionInProgress = false;
+
 	private RootNode specTree;
 	private YangTreeViewer leftTreeViewer = null;
 
 	private RootNode dataTree;
 	private TreePath currentlyDisplayedPath = null;
+	private boolean getConfig ;
 	private YangTreeViewer rightTreeViewer = null;
 
 	private JScrollPane infoView;
@@ -73,13 +76,11 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		displaySpecTree();
 	}
 
-	public InfoPanel getInfoPanel(){
+	public InfoPanel getInfoPanel() {
 		return infoPanel;
 	}
 
 	private void buildDisplay() {
-		
-		System.out.println(editionInProgress);
 
 		LinkedList<TreePath> display = null;
 		if (leftTreeViewer != null)
@@ -116,29 +117,39 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 		if (display != null)
 			leftTreeViewer.setDisplay(display);
-		
+
 		bottomPanel = new JPanel();
 		JButton buttonCancel = new JButton("< Cancel all modifications");
-		buttonCancel.addActionListener(new ActionListener(){
+		buttonCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				editionInProgress = false;
-				displayDataTree(currentlyDisplayedPath);	
+				displayDataTree(currentlyDisplayedPath,getConfig);
 			}
 		});
 		bottomPanel.add(buttonCancel);
 		JButton buttonEdit = new JButton("Apply all modifications >");
-		buttonEdit.addActionListener(new ActionListener(){
+		buttonEdit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				sendEditRequest(dataTree.getXMLRepresentation());
+				InputStream reply = sendEditRequest(dataTree.getXMLRepresentation());
+				try {
+					Document replyDocument = documentBuilderFactory.newDocumentBuilder().parse(reply);
+					infoPanel.setEditionReplyInfo(replyDocument);
+				} catch (SAXException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} catch (ParserConfigurationException e1) {
+					e1.printStackTrace();
+				}
 				editionInProgress = false;
-				displayDataTree(currentlyDisplayedPath);
+				displayDataTree(currentlyDisplayedPath,getConfig);
 			}
 		});
 		bottomPanel.add(buttonEdit);
 		bottomPanel.setVisible(editionInProgress);
-		
+
 		mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
 		validate();
@@ -181,11 +192,19 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 * 
 	 * @param filter
 	 *            : the filter to use in the "get" request.
+	 * @param getConfig
+	 *            : <code>true</code> if the operation that will be performed is
+	 *            "get-config" ; <code>false</code> if the operation that will
+	 *            be performed is "get"
 	 * @return an InputStream with the response of the manager.
 	 */
-	private InputStream sendGetRequest(String filter) {
+	private InputStream sendGetRequest(String filter, boolean getConfig) {
+		String operation = "get";
+		if (getConfig) {
+			operation = "get-config";
+		}
 		String requeteAvecPOST = "" + "--A\r\n" + "Content-Disposition: form-data; name=\"source\"\r\n\r\nrunning\r\n" + "--A\r\n"
-				+ "Content-Disposition: form-data; name=\"operation\"\r\n\r\nget\r\n" + "--A\r\n" + "Content-Disposition: form-data; name=\"filter\"\r\n\r\n"
+				+ "Content-Disposition: form-data; name=\"operation\"\r\n\r\n"+operation+"\r\n" + "--A\r\n" + "Content-Disposition: form-data; name=\"filter\"\r\n\r\n"
 				+ filter + "\r\n" + "--A\r\n" + "Content-Disposition: form-data; name=\"type\"\r\n\r\nsubtree\r\n" + "--A\r\n"
 				+ "Content-Disposition: form-data; name=\"noHTML\"\r\n\r\nyes\r\n" + "--A--\r\n";
 		return sendRequestToServer(requeteAvecPOST);
@@ -199,7 +218,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 * @return an InputStream with the response of the manager.
 	 */
 	private InputStream sendEditRequest(String filter) {
-		String requeteAvecPOST = "" + "--A\r\n" + "Content-Disposition: form-data; name=\"source\"\r\n\r\nrunning\r\n" + "--A\r\n"
+		String requeteAvecPOST = "" + "--A\r\n" + "Content-Disposition: form-data; name=\"target\"\r\n\r\nrunning\r\n" + "--A\r\n"
 				+ "Content-Disposition: form-data; name=\"default-operation\"\r\n\r\nmerge\r\n" + "--A\r\n"
 				+ "Content-Disposition: form-data; name=\"subtree\"\r\n\r\n" + filter + "\r\n" + "--A\r\n"
 				+ "Content-Disposition: form-data; name=\"error-option\"\r\n\r\nstop-on-error\r\n" + "--A\r\n"
@@ -208,7 +227,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 				+ "Content-Disposition: form-data; name=\"noHTML\"\r\n\r\nyes\r\n" + "--A--\r\n";
 		return sendRequestToServer(requeteAvecPOST);
 	}
-	
+
 	/**
 	 * Refreshes the applet so it will display the specifications tree.
 	 */
@@ -238,8 +257,12 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 * 
 	 * @param path
 	 *            : the path of the node that will be filled and displayed.
+	 * @param getConfig
+	 *            : <code>true</code> if the operation that will be performed is
+	 *            "get-config" ; <code>false</code> if the operation that will
+	 *            be performed is "get"
 	 */
-	public void displayDataTree(TreePath path) {
+	public void displayDataTree(TreePath path, boolean getConfig) {
 
 		YangNode[] ppath = new YangNode[path.getPath().length - 1];
 		for (int i = 0; i < ppath.length; i++) {
@@ -247,16 +270,16 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		}
 		String filter = buildNetconfRequestFilter(ppath);
 
-		DocumentBuilderFactory docBF = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
 		try {
 
-			Document xmlDoc = docBF.newDocumentBuilder().parse(sendGetRequest(filter));
+			Document xmlDoc = documentBuilderFactory.newDocumentBuilder().parse(sendGetRequest(filter,getConfig));
 
 			dataTree = TreeFiller.createDataTree(specTree, path, xmlDoc);
 			rightTreeViewer = new YangDataTreeViewer(this, dataTree);
 			rightTreeViewer.addTreeSelectionListener(this);
 			currentlyDisplayedPath = path;
-			
+			this.getConfig = getConfig;
+
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -270,17 +293,23 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 	/**
 	 * Refreshes the applet so it will display the entire data tree.
+	 * 
+	 * @param getConfig
+	 *            : <code>true</code> if the operation that will be performed is
+	 *            "get-config" ; <code>false</code> if the operation that will
+	 *            be performed is "get"
 	 */
-	public void displayDataTree() {
+	public void displayDataTree(boolean getConfig) {
 		TreePath path = new TreePath(specTree);
 		path = path.pathByAddingChild(specTree.getDescendantNodes().getFirst());
-		displayDataTree(path);
+		displayDataTree(path, getConfig);
 	}
-	
+
 	/**
-	 * Performs all needed operations on the current display after a leaf value has been edited.
+	 * Updates the display after an edition have been performed in the data
+	 * tree.
 	 */
-	public void editionPerformed(){
+	public void editionPerformed() {
 		int selectedRow = rightTreeViewer.getSelectionRows()[0];
 		dataTree.checkSubtree();
 		rightTreeViewer = new YangDataTreeViewer(this, dataTree);
@@ -288,7 +317,24 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		buildDisplay();
 		rightTreeViewer.setSelectionRow(selectedRow);
 		rightTreeViewer.scrollRowToVisible(selectedRow);
-		
+
+		editionInProgress = true;
+		bottomPanel.setVisible(true);
+	}
+	
+	/**
+	 * Updates the display after an edition have been performed in the data
+	 * tree, and selects a specific node in the data tree.
+	 * @param selectedPath : the path of the node that will be selected.
+	 */
+	public void editionPerformed(TreePath selectedPath){
+		dataTree.checkSubtree();
+		rightTreeViewer = new YangDataTreeViewer(this, dataTree);
+		rightTreeViewer.addTreeSelectionListener(this);
+		buildDisplay();
+		rightTreeViewer.setSelectionPath(selectedPath);
+		rightTreeViewer.scrollPathToVisible(selectedPath);
+
 		editionInProgress = true;
 		bottomPanel.setVisible(true);
 	}
@@ -325,7 +371,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		});
 
 	}
-	
+
 	private static String buildNetconfRequestFilter(YangNode[] path) {
 
 		if (path.length == 0) {

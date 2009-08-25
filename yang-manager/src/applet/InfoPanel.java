@@ -9,6 +9,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import yangTree.NetconfReplyMalformedException;
 import yangTree.attributes.LeafType;
 import yangTree.attributes.ValueCheck;
 import yangTree.nodes.YangLeaf;
@@ -17,16 +22,17 @@ import yangTree.nodes.YangLeaf;
  * The bottom panel of the applet, used to display all the informations about a
  * node.<br>
  * <br>
- * This panel is made of a <code>JLabel</code> title and a undefined number of lines. Each
- * line is a <code>JLabel</code> followed by a <code>JComponent</code>. This class provides methods to add
- * different types of lines.
+ * This panel is made of a <code>JLabel</code> title and a undefined number of
+ * lines. Each line is a <code>JLabel</code> followed by a
+ * <code>JComponent</code>. This class provides methods to add different types
+ * of lines.
  * 
  */
 @SuppressWarnings("serial")
 public class InfoPanel extends JPanel {
 
 	private YangApplet applet;
-	
+
 	private JLabel title;
 	private boolean isTreeFilled = false;
 	private int currentRow = 1;
@@ -47,11 +53,52 @@ public class InfoPanel extends JPanel {
 		setHelpInfo();
 	}
 
+	/**
+	 * Display the information contained in the reply of a netconf agent to a
+	 * "edit-config" operation.
+	 * 
+	 * @param xmlDocument
+	 *            : the xml-formatted netconf reply. This reply <u>must</u> be a
+	 *            reply to a "edit-config" operation.
+	 */
+	public void setEditionReplyInfo(Document xmlDocument) {
+
+		clean();
+		Node root = xmlDocument.getFirstChild();
+		if (!root.getNodeName().equals("rpc-reply")) {
+			throw new NetconfReplyMalformedException("Expected \"rpc-reply\" node not present");
+		}
+		Node rpcErrorNode = null;
+		NodeList list = root.getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			if (list.item(i).getNodeName().equals("ok")) {
+				setTitleText("Modifications applied sucessfully.");
+				return;
+			}
+			if (list.item(i).getNodeName().equals("rpc-error"))
+				rpcErrorNode = list.item(i);
+		}
+
+		if (rpcErrorNode == null)
+			throw new NetconfReplyMalformedException("Expected \"ok\" or \"rpc-error\" node not present.");
+
+		setTitleText("Error when trying to apply modifications :");
+		list = rpcErrorNode.getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			NodeList children = node.getChildNodes();
+			for (int j = 0; j < children.getLength(); j++) {
+				addTextArea(node.getNodeName(), children.item(j).getNodeValue());
+			}
+		}
+
+	}
+
 	public boolean isTreeFilled() {
 		return isTreeFilled;
 	}
-	
-	public void setTreeFilled(boolean isTreeFilled){
+
+	public void setTreeFilled(boolean isTreeFilled) {
 		this.isTreeFilled = isTreeFilled;
 	}
 
@@ -86,7 +133,7 @@ public class InfoPanel extends JPanel {
 		title.setText("Select a node to display more information about it ;");
 
 		String helpText = "Right-click to perform operations";
-		
+
 		JLabel label = new JLabel(helpText);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
@@ -97,8 +144,11 @@ public class InfoPanel extends JPanel {
 
 	/**
 	 * Adds a non-editable <code>JTextField</code> line.
-	 * @param name : the name of the argument of the line.
-	 * @param value : the text that will be displayed in the JTextField.
+	 * 
+	 * @param name
+	 *            : the name of the argument of the line.
+	 * @param value
+	 *            : the text that will be displayed in the JTextField.
 	 */
 	public void addTextField(String name, String value) {
 		JLabel label = new JLabel(name + " : ");
@@ -121,8 +171,11 @@ public class InfoPanel extends JPanel {
 
 	/**
 	 * Adds a non-editable <code>JTextArea</code> line.
-	 * @param name : the name of the argument of the line.
-	 * @param value : the text that will be displayed in the JTextArea.
+	 * 
+	 * @param name
+	 *            : the name of the argument of the line.
+	 * @param value
+	 *            : the text that will be displayed in the JTextArea.
 	 */
 	public void addTextArea(String name, String value) {
 		JLabel label = new JLabel(name + " : ");
@@ -148,7 +201,9 @@ public class InfoPanel extends JPanel {
 
 	/**
 	 * Adds a line displaying a type.
-	 * @param type : The type to be displayed.
+	 * 
+	 * @param type
+	 *            : The type to be displayed.
 	 * @see TypePanel
 	 */
 	public void addTypePanel(LeafType type) {
@@ -168,13 +223,15 @@ public class InfoPanel extends JPanel {
 
 		currentRow++;
 	}
-	
+
 	/**
 	 * Adds a line displaying a value of a leaf.
-	 * @param leaf : The leaf which value will be displayed.
+	 * 
+	 * @param leaf
+	 *            : The leaf which value will be displayed.
 	 * @see ValuePanel
 	 */
-	public void addValuePanel(YangLeaf leaf){
+	public void addValuePanel(YangLeaf leaf) {
 		JLabel label = new JLabel("Value : ");
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
@@ -183,7 +240,7 @@ public class InfoPanel extends JPanel {
 		c.anchor = GridBagConstraints.NORTHEAST;
 		add(label, c);
 
-		ValuePanel valuePanel = new ValuePanel(leaf,applet);
+		ValuePanel valuePanel = new ValuePanel(leaf, applet);
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 1;
 		c.anchor = GridBagConstraints.LINE_START;
@@ -194,7 +251,9 @@ public class InfoPanel extends JPanel {
 
 	/**
 	 * Adds a line displaying errors or warnings if such exists.
-	 * @param check : The ValueCheck to be displayed.
+	 * 
+	 * @param check
+	 *            : The ValueCheck to be displayed.
 	 */
 	public void addValueCheckPanel(ValueCheck check) {
 		if (check != null && !check.isOk()) {
@@ -205,13 +264,14 @@ public class InfoPanel extends JPanel {
 			}
 		}
 	}
-	
+
 	/**
-	 * Updates the display so it will allow the edition of the value of the current leaf.
+	 * Updates the display so it will allow the edition of the value of the
+	 * current leaf.
 	 */
-	public void allowEdition(){
-		for (int i=0;i<getComponentCount();i++){
-			if (getComponent(i) instanceof ValuePanel){
+	public void allowEdition() {
+		for (int i = 0; i < getComponentCount(); i++) {
+			if (getComponent(i) instanceof ValuePanel) {
 				((ValuePanel) getComponent(i)).allowEdition();
 			}
 		}

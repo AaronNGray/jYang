@@ -4,12 +4,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.LinkedList;
 
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
+import yangTree.nodes.EmptyNode;
+import yangTree.nodes.LeafListNode;
 import yangTree.nodes.LeafNode;
+import yangTree.nodes.ListNode;
 import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.YangNode;
 
@@ -24,7 +29,7 @@ public class YangDataTreeViewer extends YangTreeViewer {
 
 		expandAll();
 	}
-	
+
 	private class CustomMouseListener extends MouseAdapter {
 
 		@Override
@@ -99,8 +104,38 @@ public class YangDataTreeViewer extends YangTreeViewer {
 						collapseNode(path);
 					}
 				});
+
+				YangInnerNode innerNode = (YangInnerNode) node;
+				LinkedList<YangNode> specDescendants = innerNode.getSpecificationNode().getDescendantNodes();
+				LinkedList<LeafListNode> leafListChildren = new LinkedList<LeafListNode>();
+				LinkedList<ListNode> listChildren = new LinkedList<ListNode>();
+				for (YangNode node : specDescendants){
+					if (node instanceof LeafListNode)
+						leafListChildren.add((LeafListNode) node);
+					if (node instanceof ListNode)
+						listChildren.add((ListNode) node);
+				}
+				
+				if (leafListChildren.size() > 0) {
+					JMenu addLeafListItem = new JMenu("add leaf-list occurrence");
+					for (LeafListNode leafList : leafListChildren) {
+						JMenuItem item = addLeafListItem.add(leafList.getName());
+						item.addActionListener(new CreationActionListener(innerNode, leafList));
+					}
+					add(addLeafListItem);
+				}
+				
+				if (listChildren.size() > 0) {
+					JMenu addListItem = new JMenu("add list occurrence");
+					for (ListNode list : listChildren) {
+						JMenuItem item = addListItem.add(list.getName());
+						item.addActionListener(new CreationActionListener(innerNode, list));
+					}
+					add(addListItem);
+				}
+
 			}
-			
+
 			if (node instanceof LeafNode) {
 				JMenuItem expandItem = add("Edit value");
 				expandItem.addActionListener(new ActionListener() {
@@ -109,6 +144,43 @@ public class YangDataTreeViewer extends YangTreeViewer {
 					}
 				});
 			}
+
+			if (node instanceof EmptyNode) {
+				JMenuItem expandItem = add("Create this leaf");
+				expandItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						((EmptyNode) node).createLeaf((YangInnerNode) path.getParentPath().getLastPathComponent());
+						applet.editionPerformed();
+						applet.getInfoPanel().allowEdition();
+					}
+				});
+			}
+		}
+
+		private class CreationActionListener implements ActionListener {
+		
+			public YangInnerNode parentNode;
+			public YangNode nodeToCreate;
+		
+			public CreationActionListener(YangInnerNode parentNode, YangNode nodeToCreate) {
+				this.parentNode = parentNode;
+				this.nodeToCreate = nodeToCreate;
+			}
+		
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				YangNode newChild = null;
+				if (nodeToCreate instanceof LeafListNode){
+					newChild = ((LeafListNode) nodeToCreate).cloneBody();
+				}
+				if (nodeToCreate instanceof ListNode){
+					newChild = ((ListNode) nodeToCreate).createNewOccurrence();
+				}
+				parentNode.addChild(newChild);
+				applet.editionPerformed(NodePopupMenu.this.path.pathByAddingChild(newChild));
+				applet.getInfoPanel().allowEdition();
+			}
+		
 		}
 
 	}

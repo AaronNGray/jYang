@@ -9,7 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import yangTree.nodes.LeafNode;
 import yangTree.nodes.YangLeaf;
 
 /**
@@ -109,7 +108,7 @@ public class ValuePanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			LeafNode leafNode = (LeafNode) leaf;
+			YangLeaf leafNode = (YangLeaf) leaf;
 			leafNode.setValue(valueField.getText());
 			forbidEdition();
 			applet.editionPerformed();

@@ -5,6 +5,7 @@ import javax.swing.ImageIcon;
 import applet.InfoPanel;
 
 import yangTree.attributes.NameSpace;
+import yangTree.attributes.ValueCheck;
 
 import jyang.parser.YANG_DataDef;
 
@@ -18,6 +19,23 @@ public abstract class YangNode implements Serializable {
 	public YANG_DataDef definition;
 	protected NameSpace nameSpace;
 	protected boolean isSelected = false;
+	
+	protected ValueCheck check = null;
+
+	/**
+	 * Returns the warnings and errors found on this node.
+	 */
+	public ValueCheck getCheck() {
+		if (check == null) {
+			check = new ValueCheck();
+		}
+		return check;
+	}
+	
+	/**
+	 * Checks the node for possible errors or warnings and consequently modify the ValueCheck.
+	 */
+	public abstract void check();
 
 	/**
 	 * Returns the name of this node
@@ -35,12 +53,10 @@ public abstract class YangNode implements Serializable {
 	}
 	
 	/**
-	 * Perform the <code>check()</code> operation on this node if it is a <code>CheckableYangNode</code>, and do the same for all its children.
-	 * @see CheckableYangNode
+	 * Perform the <code>check()</code> operation on this node, and do the same for all its children.
 	 */
 	public void checkSubtree(){
-		if (this instanceof CheckableYangNode)
-			((CheckableYangNode) this).check();
+		check();
 	}
 
 	/**
@@ -68,9 +84,7 @@ public abstract class YangNode implements Serializable {
 	public void buildInfoPanel(InfoPanel panel) {
 		panel.clean();
 		panel.setTitleText(getNodeType() + " : " + getName());
-		if (this instanceof CheckableYangNode) {
-			panel.addValueCheckPanel(((CheckableYangNode) this).getCheck());
-		}
+		panel.addValueCheckPanel(getCheck());
 	}
 	
 	/**

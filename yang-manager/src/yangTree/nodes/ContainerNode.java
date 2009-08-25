@@ -5,18 +5,14 @@ import java.io.InputStream;
 
 import javax.swing.ImageIcon;
 
-import yangTree.attributes.UnitValueCheck;
-import yangTree.attributes.ValueCheck;
-
 import jyang.parser.YANG_Container;
 
 @SuppressWarnings("serial")
-public class ContainerNode extends YangInnerNode implements CheckableYangNode {
+public class ContainerNode extends YangInnerNode {
 
 	private static ImageIcon icon = null;
 	private static ImageIcon errorIcon = null;
 
-	private ValueCheck check = null;
 
 	public ContainerNode(YANG_Container c) {
 		definition = c;
@@ -28,26 +24,6 @@ public class ContainerNode extends YangInnerNode implements CheckableYangNode {
 		definition = ycontainer;
 	}
 
-	public ValueCheck getCheck() {
-		if (check == null) {
-			check = new ValueCheck();
-		}
-		return check;
-	}
-	
-	public void check(){
-		for (YangNode child : descendantNodes){
-			for (YangNode cchild : descendantNodes){
-				if (child!=cchild && child.getName().equals(cchild.getName()) && child instanceof ListNode && cchild instanceof ListNode) {
-					ListNode list = (ListNode) child;
-					ListNode llist = (ListNode) cchild;
-					if (list.hasSameKey(llist))
-						list.getCheck().addUnitCheck(new UnitValueCheck("Duplicated Key : "+list.getKeysRepresentation()));
-				}
-			}
-		}
-	}
-
 	public boolean equalsTo(ContainerNode node) {
 		return (getNameSpace() + ":" + getName()).equals(node.getNameSpace()
 				+ ":" + node.getName());
@@ -55,6 +31,11 @@ public class ContainerNode extends YangInnerNode implements CheckableYangNode {
 
 	public ContainerNode cloneBody() {
 		ContainerNode clone = new ContainerNode((YANG_Container) definition);
+		if (specificationNode==null){
+			clone.specificationNode = this;
+		} else {
+			clone.specificationNode = specificationNode;
+		}
 		return clone;
 	}
 	

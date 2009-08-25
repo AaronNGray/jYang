@@ -6,16 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
-import yangTree.attributes.ValueCheck;
-
 import applet.InfoPanel;
 
 import jyang.parser.YANG_List;
 
 @SuppressWarnings("serial")
 public class ListNode extends YangInnerNode implements ListedYangNode {
-	
-	//TODO : Check the "unique" substatement.
+
+	// TODO : Check the "unique" substatement.
 
 	private static ImageIcon icon = null;
 	private static ImageIcon errorIcon = null;
@@ -24,7 +22,6 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 	private int maxElements = Integer.MAX_VALUE;
 
 	private Map<String, LeafNode> keymap = new HashMap<String, LeafNode>();
-	private ValueCheck check = null;
 
 	public ListNode(YANG_List d) {
 		definition = d;
@@ -57,7 +54,7 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 			if (keymap.containsKey(leaf.getName())) {
 				leaf.setIsKey(true);
 				if (leaf.getValue() != null) {
-					keymap.put(leaf.getName(),leaf);
+					keymap.put(leaf.getName(), leaf);
 				}
 			}
 		}
@@ -89,17 +86,13 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 
 	public ListNode cloneBody() {
 		ListNode clone = new ListNode((YANG_List) definition, keymap);
+		if (specificationNode == null) {
+			clone.specificationNode = this;
+		} else {
+			clone.specificationNode = specificationNode;
+		}
 		return clone;
 	}
-
-	public ValueCheck getCheck() {
-		if (check == null) {
-			check = new ValueCheck();
-		}
-		return check;
-	}
-	
-	public void check() {}
 
 	public int getMinElements() {
 		return minElements;
@@ -118,6 +111,14 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 		return 0;
 	}
 
+	@Override
+	public boolean equalsOccurrence(ListedYangNode otherOccurrence) {
+		if (!(otherOccurrence instanceof ListNode))
+			return false;
+		ListNode otherList = (ListNode) otherOccurrence;
+		return hasSameKey(otherList);
+	}
+
 	public boolean hasSameKey(Map<String, String> keymap) {
 		for (String key : this.keymap.keySet()) {
 			if (!this.keymap.get(key).getValue().equals(keymap.get(key)))
@@ -125,9 +126,13 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 		}
 		return true;
 	}
-	
+
 	public boolean hasSameKey(ListNode otherList) {
 		for (String key : this.keymap.keySet()) {
+			System.out.println(this.keymap.get(key));
+			if (otherList.keymap.get(key) == null || otherList.keymap.get(key).getValue() == null || this.keymap.get(key) == null
+					|| this.keymap.get(key).getValue() == null)
+				return false;
 			if (!this.keymap.get(key).getValue().equals(otherList.keymap.get(key).getValue()))
 				return false;
 		}
@@ -216,20 +221,20 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 		}
 	}
 
-	public String getXMLRepresentation(){
-		String result = "<"+getName();
-		if (nameSpace!=null && nameSpace.getNameSpace() != null) {
+	public String getXMLRepresentation() {
+		String result = "<" + getName();
+		if (nameSpace != null && nameSpace.getNameSpace() != null) {
 			result = result + nameSpace.getXMLArg();
 		}
 		result += ">";
-		for (YangNode child : getDescendantNodes()){
-			result+= child.getXMLRepresentation();
+		for (YangNode child : getDescendantNodes()) {
+			result += child.getXMLRepresentation();
 		}
-		for (String key : keymap.keySet()){
-			if (keymap.get(key)!=null && getChildByName(key).size()==0)
-				result+="<"+key+">"+keymap.get(key)+"</"+key+">";
+		for (String key : keymap.keySet()) {
+			if (keymap.get(key) != null && getChildByName(key).size() == 0)
+				result += "<" + key + ">" + keymap.get(key) + "</" + key + ">";
 		}
-		return result+"</"+getName()+">";
+		return result + "</" + getName() + ">";
 	}
-	
+
 }

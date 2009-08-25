@@ -17,7 +17,7 @@ import yangTree.attributes.ValueCheck;
 import jyang.parser.YANG_Leaf;
 
 @SuppressWarnings("serial")
-public class LeafNode extends YangLeaf implements CheckableYangNode {
+public class LeafNode extends YangLeaf {
 
 	private static ImageIcon standardIcon = null;
 	private static ImageIcon isKeyIcon = null;
@@ -60,7 +60,8 @@ public class LeafNode extends YangLeaf implements CheckableYangNode {
 		if (value != null) {
 			this.value = Util.cleanValueString(value);
 		} else {
-			check = new ValueCheck();
+			if (check==null)
+				check = new ValueCheck();
 			if (isKey){
 				check.addUnitCheck(new UnitValueCheck("No value have been retrieved for this list-key leaf."));
 				return;
@@ -85,11 +86,6 @@ public class LeafNode extends YangLeaf implements CheckableYangNode {
 		}
 	}
 
-	@Override
-	public void check() {
-		if (value!=null)
-			check = type.getBuiltinType().check(this.value);
-	}
 
 	public void setMandatory(boolean mandatory) {
 		this.mandatory = mandatory;

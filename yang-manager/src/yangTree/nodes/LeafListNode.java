@@ -46,6 +46,16 @@ public class LeafListNode extends YangLeaf implements ListedYangNode {
 		return value.compareTo(otherNode.getValue());
 	}
 
+	@Override
+	public boolean equalsOccurrence(ListedYangNode otherOccurrence) {
+		if (!(otherOccurrence instanceof LeafListNode))
+			return false;
+		LeafListNode otherLeafList = (LeafListNode) otherOccurrence;
+		if (value==null || otherLeafList.value==null)
+			return false;
+		return value.equals(otherLeafList.value);
+	}
+
 	public void setType(LeafType type) {
 		this.type = type;
 	}
@@ -68,7 +78,8 @@ public class LeafListNode extends YangLeaf implements ListedYangNode {
 		if (value != null) {
 			this.value = Util.cleanValueString(value);
 		} else {
-			check = new ValueCheck();
+			if (check==null)
+				check = new ValueCheck();
 			if (type.getDefaultValue() != null) {
 				this.value = type.getDefaultValue();
 				check.addUnitCheck(new UnitValueCheck(
@@ -79,11 +90,6 @@ public class LeafListNode extends YangLeaf implements ListedYangNode {
 						false));
 			}
 		}
-	}
-	
-	public void check(){
-		if (value!=null)
-			check = type.getBuiltinType().check(this.value);
 	}
 	
 	@Override
@@ -153,4 +159,5 @@ public class LeafListNode extends YangLeaf implements ListedYangNode {
 			return icon;
 		}
 	}
+	
 }

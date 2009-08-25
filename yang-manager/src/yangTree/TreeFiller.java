@@ -18,11 +18,11 @@ import yangTree.attributes.YangTreePath;
 import yangTree.attributes.builtinTypes.EmptyType;
 import yangTree.attributes.builtinTypes.PathSensitiveType;
 import yangTree.nodes.CaseNode;
-import yangTree.nodes.CheckableYangNode;
 import yangTree.nodes.ChoiceNode;
 import yangTree.nodes.EmptyNode;
 import yangTree.nodes.ListedYangNode;
 import yangTree.nodes.RootNode;
+import yangTree.nodes.YangLeaf;
 import yangTree.nodes.YangNode;
 import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.LeafListNode;
@@ -99,7 +99,7 @@ public class TreeFiller {
 		}
 		
 		if (result.getDescendantNodes().size()==0)
-			result.addChild(new EmptyNode(nodeToFillName+" : No such node retrieved."));
+			result.addChild(new EmptyNode((YangLeaf) nodeToFill, nodeToFillName+" : No such leaf retrieved."));
 
 		result.checkSubtree();
 		return result;
@@ -287,7 +287,7 @@ public class TreeFiller {
 
 			// Now, the ListedYangNodes can be added :
 			for (String key : listBuilders.keySet()) {
-				((CheckableYangNode) treeResult).getCheck().addUnitCheck(listBuilders.get(key).check());
+				treeResult.getCheck().addUnitCheck(listBuilders.get(key).check());
 				for (ListedYangNode n : listBuilders.get(key).occurrences) {
 					//Only non-empty list will be added :
 					if (n instanceof ListNode){

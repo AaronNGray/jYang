@@ -2,6 +2,7 @@ package yangTree.nodes;
 
 import java.util.LinkedList;
 
+import yangTree.attributes.UnitValueCheck;
 import applet.InfoPanel;
 
 /**
@@ -14,7 +15,22 @@ import applet.InfoPanel;
 public abstract class YangInnerNode extends YangNode {
 
 	protected LinkedList<YangNode> descendantNodes = new LinkedList<YangNode>();
-
+	protected YangInnerNode specificationNode = null;
+	
+	
+	public void check(){
+		for (YangNode child : descendantNodes){
+			for (YangNode cchild : descendantNodes){
+				if (child!=cchild && child.getName().equals(cchild.getName()) && child instanceof ListedYangNode && cchild instanceof ListedYangNode) {
+					ListedYangNode list = (ListedYangNode) child;
+					ListedYangNode llist = (ListedYangNode) cchild;
+					if (list.equalsOccurrence(llist))
+						((YangNode) list).getCheck().addUnitCheck(new UnitValueCheck("Duplicated occurrence"));
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Returns the children of this node.
 	 */
@@ -24,6 +40,13 @@ public abstract class YangInnerNode extends YangNode {
 
 	public void setDescendantsNodes(LinkedList<YangNode> nodes) {
 		this.descendantNodes = nodes;
+	}
+	
+	/**
+	 * Returns the specification node associated with this data node, or <code>null</code> if this node is already a specification node.
+	 */
+	public YangInnerNode getSpecificationNode(){
+		return specificationNode;
 	}
 
 	/**
@@ -53,11 +76,29 @@ public abstract class YangInnerNode extends YangNode {
 			child.checkSubtree();
 		}
 	}
+	
 
 	/**
 	 * Returns an empty clone (i.e. without children) of this node.
 	 */
 	public abstract YangInnerNode cloneBody();
+	
+	/**
+	 * Creates a new occurrence of this node, filled with empty nodes.
+	 * @return a new occurrence of this node.
+	 */
+	public YangInnerNode createNewOccurrence(){
+		YangInnerNode result = cloneBody();
+		for (YangNode child : descendantNodes){
+			if (child instanceof YangInnerNode){
+				result.addChild(((YangInnerNode) child).createNewOccurrence());
+			} else if (child instanceof LeafNode){
+				result.addChild(child.cloneBody());
+			}
+		}
+		return result;
+	}
+	
 
 	@Override
 	public void buildInfoPanel(InfoPanel panel) {
@@ -69,7 +110,7 @@ public abstract class YangInnerNode extends YangNode {
 	public String getXMLRepresentation(){
 		String result = "<"+getName();
 		if (nameSpace!=null && nameSpace.getNameSpace() != null) {
-			result = result + nameSpace.getXMLArg();
+			result += " "+nameSpace.getXMLArg();
 		}
 		result += ">";
 		for (YangNode child : getDescendantNodes()){
