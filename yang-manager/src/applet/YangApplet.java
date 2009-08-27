@@ -415,7 +415,6 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 			InputStream reply = null;
 			try {
 				
-				System.out.println(dataTree.getXMLRepresentation());
 				reply = sendEditRequest(dataTree.getXMLRepresentation());
 				
 			} catch (ChoiceStillPresentException e2) {
