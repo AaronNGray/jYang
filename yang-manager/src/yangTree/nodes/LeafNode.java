@@ -12,8 +12,6 @@ import applet.Util;
 
 import yangTree.attributes.LeafType;
 import yangTree.attributes.UnitValueCheck;
-import yangTree.attributes.ValueCheck;
-
 import jyang.parser.YANG_Leaf;
 
 @SuppressWarnings("serial")
@@ -31,6 +29,7 @@ public class LeafNode extends YangLeaf {
 	private String defaultValue = null;
 	private String description = null;
 	
+	private boolean noRetrievedValue = true;
 	
 	public LeafNode(YANG_Leaf d) {
 		definition = d;
@@ -59,28 +58,32 @@ public class LeafNode extends YangLeaf {
 	public void setValue(String value) {
 		if (value != null) {
 			this.value = Util.cleanValueString(value);
-		} else {
-			if (check==null)
-				check = new ValueCheck();
+			noRetrievedValue = false;
+		}
+	}
+	
+	public void check(){
+		super.check();
+		if (noRetrievedValue){
 			if (isKey){
-				check.addUnitCheck(new UnitValueCheck("No value have been retrieved for this list-key leaf."));
+				check.addUnitCheck(new UnitValueCheck("No value have been specified for this list-key leaf."));
 				return;
 			}
 			if (type.getDefaultValue() != null) {
 				this.value = type.getDefaultValue();
 				check.addUnitCheck(new UnitValueCheck(
-						"No value retrieved ; type default value assumed.",
+						"No value specified ; type default value assumed.",
 						false));
 			} else if (defaultValue != null) {
 				this.value = defaultValue;
 				check.addUnitCheck(new UnitValueCheck(
-						"No value retrieved ; leaf default value assumed.",
+						"No value specified ; leaf default value assumed.",
 						false));
 			} else if (mandatory){
-				check.addUnitCheck(new UnitValueCheck("No value have been retrieved for this mandatory leaf."));
+				check.addUnitCheck(new UnitValueCheck("No value have been specified for this mandatory leaf."));
 				return;
 			} else {
-				check.addUnitCheck(new UnitValueCheck("No value retrieved.",
+				check.addUnitCheck(new UnitValueCheck("No value specified.",
 						false));
 			}
 		}

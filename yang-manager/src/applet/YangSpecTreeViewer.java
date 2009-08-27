@@ -12,6 +12,10 @@ import javax.swing.tree.TreePath;
 import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.YangNode;
 
+/**
+ * Provides a display of a Yang specification tree.
+ *
+ */
 @SuppressWarnings("serial")
 public class YangSpecTreeViewer extends YangTreeViewer {
 	

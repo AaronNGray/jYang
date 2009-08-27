@@ -124,22 +124,32 @@ public class InfoPanel extends JPanel {
 		c.insets = insets;
 		add(title, c);
 	}
+	
+	/**
+	 * Display a given text.
+	 * @param text : the text to display.
+	 */
+	public void displayPlainText(String text){
+		clean();
+		String[] lines = text.split("\n");
+		title.setText(lines[0]);
+		
+		for (int i=1;i<lines.length;i++){
+			JLabel label = new JLabel(lines[i]);
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = i;
+			c.insets = insets;
+			add(label, c);
+		}
+		
+	}
 
 	/**
 	 * Sets this InfoPanel to its default display.
 	 */
 	public void setHelpInfo() {
-		clean();
-		title.setText("Select a node to display more information about it ;");
-
-		String helpText = "Right-click to perform operations";
-
-		JLabel label = new JLabel(helpText);
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 1;
-		c.insets = insets;
-		add(label, c);
+		displayPlainText("Select a node to display more information about it ;\nRight-click to perform operations");
 	}
 
 	/**

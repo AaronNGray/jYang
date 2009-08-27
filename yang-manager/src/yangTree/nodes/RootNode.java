@@ -6,6 +6,8 @@ import java.io.InputStream;
 import javax.swing.ImageIcon;
 import javax.swing.tree.TreePath;
 
+import yangTree.ChoiceStillPresentException;
+
 import applet.InfoPanel;
 
 
@@ -57,6 +59,14 @@ public class RootNode extends ContainerNode {
 		return result;
 	}
 	
+	/**
+	 * Removes checks then performs new checks for all the nodes of this tree.
+	 */
+	public void recheckAll(){
+		uncheckSubtree();
+		checkSubtree();
+	}
+	
 	public void setName(String name){
 		this.name = name;
 	}
@@ -92,7 +102,7 @@ public class RootNode extends ContainerNode {
 	}
 	
 	@Override
-	public String getXMLRepresentation(){
+	public String getXMLRepresentation() throws ChoiceStillPresentException {
 		
 		if (path==null){
 			String result = "";

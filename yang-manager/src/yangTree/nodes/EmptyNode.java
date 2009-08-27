@@ -16,27 +16,15 @@ public class EmptyNode extends YangLeaf {
 	private static ImageIcon icon = null;
 	
 	private String description;
-	private YangLeaf specLeaf ;
 	
 	/**
-	 * Creates an <code>EmptyNode</code> associated with a specific leaf in the specification tree.
-	 * @param specLeaf : the leaf in the specification tree.
+	 * Creates an new <code>EmptyNode</code>.
 	 * @param description : the text associated with this node when displayed.
 	 */
-	public EmptyNode(YangLeaf specLeaf, String description){
+	public EmptyNode(String description){
 		this.description = description;
-		this.specLeaf = specLeaf;
 	}
 	
-	/**
-	 * Creates an occurrence of the specification leaf associated with this <code>EmptyNode</code> as a child of a given <code>YangInnerNode</code>.
-	 */ 
-	public void createLeaf(YangInnerNode parentNode){
-		YangLeaf leaf =  specLeaf.cloneBody();
-		parentNode.addChild(leaf);
-		parentNode.getDescendantNodes().remove(this);
-	}
-
 	@Override
 	public void buildInfoPanel(InfoPanel panel){
 		panel.clean();

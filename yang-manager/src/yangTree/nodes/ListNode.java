@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
+
+import yangTree.ChoiceStillPresentException;
 import applet.InfoPanel;
 
 import jyang.parser.YANG_List;
@@ -53,9 +55,7 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 			LeafNode leaf = (LeafNode) node;
 			if (keymap.containsKey(leaf.getName())) {
 				leaf.setIsKey(true);
-				if (leaf.getValue() != null) {
-					keymap.put(leaf.getName(), leaf);
-				}
+				keymap.put(leaf.getName(), leaf);
 			}
 		}
 		descendantNodes.add(node);
@@ -63,7 +63,7 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 
 	/**
 	 * Adds a child to this node only if it is not a key. If the child is a key,
-	 * just adds its value to the keymap.
+	 * just adds it to the keymap.
 	 * 
 	 * @param node
 	 *            : the child that will be added.
@@ -121,6 +121,8 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 
 	public boolean hasSameKey(Map<String, String> keymap) {
 		for (String key : this.keymap.keySet()) {
+			if (this.keymap.get(key).getValue()==null)
+				return false;
 			if (!this.keymap.get(key).getValue().equals(keymap.get(key)))
 				return false;
 		}
@@ -129,7 +131,6 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 
 	public boolean hasSameKey(ListNode otherList) {
 		for (String key : this.keymap.keySet()) {
-			System.out.println(this.keymap.get(key));
 			if (otherList.keymap.get(key) == null || otherList.keymap.get(key).getValue() == null || this.keymap.get(key) == null
 					|| this.keymap.get(key).getValue() == null)
 				return false;
@@ -142,13 +143,22 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 	public String getKeysRepresentation() {
 		String result = "";
 		for (String key : keymap.keySet()) {
-			if (keymap.get(key) == null) {
+			if (keymap.get(key) == null || keymap.get(key).getValue()==null) {
 				result += key + " , ";
 			} else {
 				result += key + ":" + keymap.get(key).getValue() + " , ";
 			}
 		}
 		result = result.substring(0, result.length() - 3);
+		return result;
+	}
+	
+	public String getKeyXMLRepresentation() {
+		String result = "";
+		for (String key : keymap.keySet()) {
+			if (keymap.get(key) != null && keymap.get(key).getValue() != null)
+				result += "<"+key+">" + keymap.get(key).getValue() + "</"+key+">";
+		}
 		return result;
 	}
 
@@ -221,7 +231,7 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 		}
 	}
 
-	public String getXMLRepresentation() {
+	public String getXMLRepresentation() throws ChoiceStillPresentException {
 		String result = "<" + getName();
 		if (nameSpace != null && nameSpace.getNameSpace() != null) {
 			result = result + nameSpace.getXMLArg();

@@ -9,8 +9,6 @@ import applet.InfoPanel;
 import applet.Util;
 
 import yangTree.attributes.LeafType;
-import yangTree.attributes.UnitValueCheck;
-import yangTree.attributes.ValueCheck;
 
 import jyang.parser.YANG_LeafList;
 
@@ -75,21 +73,8 @@ public class LeafListNode extends YangLeaf implements ListedYangNode {
 	}
 
 	public void setValue(String value) {
-		if (value != null) {
+		if (value != null)
 			this.value = Util.cleanValueString(value);
-		} else {
-			if (check==null)
-				check = new ValueCheck();
-			if (type.getDefaultValue() != null) {
-				this.value = type.getDefaultValue();
-				check.addUnitCheck(new UnitValueCheck(
-						"No value retrieved ; type default value assumed.",
-						false));
-			} else {
-				check.addUnitCheck(new UnitValueCheck("No value retrieved.",
-						false));
-			}
-		}
 	}
 	
 	@Override

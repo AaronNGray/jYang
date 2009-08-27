@@ -7,7 +7,7 @@ import yangTree.attributes.ValueCheck;
 
 /**
  * Represents a leaf in a YangTree.
- * 
+ * @see YangNode
  * 
  */
 @SuppressWarnings("serial")
@@ -15,7 +15,6 @@ public abstract class YangLeaf extends YangNode {
 
 	protected String value = null;
 	protected LeafType type;
-	protected ValueCheck check = null;
 
 	/**
 	 * Returns the value of this leaf if such exists, otherwise returns
@@ -31,12 +30,6 @@ public abstract class YangLeaf extends YangNode {
 	public LeafType getType() {
 		return type;
 	}
-
-	public ValueCheck getCheck() {
-		if (check==null)
-			check = new ValueCheck();
-		return check;
-	}
 	
 	public void check() {
 		if (check==null)
@@ -50,6 +43,10 @@ public abstract class YangLeaf extends YangNode {
 	 * All other other attributes, such as type or restrictions, are kept.
 	 */
 	public abstract YangLeaf cloneBody();
+	
+	public YangLeaf cloneTree(){
+		return cloneBody();
+	}
 	
 	@Override
 	public void buildInfoPanel(InfoPanel panel){

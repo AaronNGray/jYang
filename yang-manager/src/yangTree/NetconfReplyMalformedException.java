@@ -1,5 +1,9 @@
 package yangTree;
 
+/**
+ * Exception raised when the netconf reply is not formed as expected.
+ *
+ */
 @SuppressWarnings("serial")
 public class NetconfReplyMalformedException extends IllegalArgumentException{
 	

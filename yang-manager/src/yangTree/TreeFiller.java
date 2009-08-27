@@ -22,7 +22,6 @@ import yangTree.nodes.ChoiceNode;
 import yangTree.nodes.EmptyNode;
 import yangTree.nodes.ListedYangNode;
 import yangTree.nodes.RootNode;
-import yangTree.nodes.YangLeaf;
 import yangTree.nodes.YangNode;
 import yangTree.nodes.YangInnerNode;
 import yangTree.nodes.LeafListNode;
@@ -94,14 +93,12 @@ public class TreeFiller {
 		}
 
 		result.setPath(rootPath);
-		for (YangNode child : currentNode.getDescendantNodes()) {
-			result.addChild(child);
-		}
+		result.setDescendantsNodes(currentNode.getDescendantNodes());
 		
 		if (result.getDescendantNodes().size()==0)
-			result.addChild(new EmptyNode((YangLeaf) nodeToFill, nodeToFillName+" : No such leaf retrieved."));
+			result.addChild(new EmptyNode(nodeToFillName+" : No such leaf retrieved."));
 
-		result.checkSubtree();
+		result.recheckAll();
 		return result;
 	}
 
@@ -322,9 +319,6 @@ public class TreeFiller {
 		if (dataNode instanceof LeafNode) {
 
 			LeafNode filledNode = ((LeafNode) dataNode).cloneBody();
-			
-			if (!filledNode.isMandatory())
-				return null;
 			
 			filledNode.setValue(null);
 			return filledNode;

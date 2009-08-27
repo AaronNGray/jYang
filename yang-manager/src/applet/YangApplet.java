@@ -28,6 +28,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import yangTree.ChoiceStillPresentException;
 import yangTree.TreeFiller;
 import yangTree.nodes.ListNode;
 import yangTree.nodes.YangNode;
@@ -128,26 +129,11 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 			}
 		});
 		bottomPanel.add(buttonCancel);
+		
 		JButton buttonEdit = new JButton("Apply all modifications >");
-		buttonEdit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				InputStream reply = sendEditRequest(dataTree.getXMLRepresentation());
-				try {
-					Document replyDocument = documentBuilderFactory.newDocumentBuilder().parse(reply);
-					infoPanel.setEditionReplyInfo(replyDocument);
-				} catch (SAXException e1) {
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				} catch (ParserConfigurationException e1) {
-					e1.printStackTrace();
-				}
-				editionInProgress = false;
-				displayDataTree(currentlyDisplayedPath,getConfig);
-			}
-		});
+		buttonEdit.addActionListener(new ApplyModificationsActionListener());
 		bottomPanel.add(buttonEdit);
+		
 		bottomPanel.setVisible(editionInProgress);
 
 		mainPanel.add(bottomPanel, BorderLayout.SOUTH);
@@ -199,10 +185,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 * @return an InputStream with the response of the manager.
 	 */
 	private InputStream sendGetRequest(String filter, boolean getConfig) {
-		String operation = "get";
-		if (getConfig) {
-			operation = "get-config";
-		}
+		String operation = getConfig ? "get-config" : "get";
 		String requeteAvecPOST = "" + "--A\r\n" + "Content-Disposition: form-data; name=\"source\"\r\n\r\nrunning\r\n" + "--A\r\n"
 				+ "Content-Disposition: form-data; name=\"operation\"\r\n\r\n"+operation+"\r\n" + "--A\r\n" + "Content-Disposition: form-data; name=\"filter\"\r\n\r\n"
 				+ filter + "\r\n" + "--A\r\n" + "Content-Disposition: form-data; name=\"type\"\r\n\r\nsubtree\r\n" + "--A\r\n"
@@ -311,7 +294,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 */
 	public void editionPerformed() {
 		int selectedRow = rightTreeViewer.getSelectionRows()[0];
-		dataTree.checkSubtree();
+		dataTree.recheckAll();
 		rightTreeViewer = new YangDataTreeViewer(this, dataTree);
 		rightTreeViewer.addTreeSelectionListener(this);
 		buildDisplay();
@@ -328,7 +311,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 * @param selectedPath : the path of the node that will be selected.
 	 */
 	public void editionPerformed(TreePath selectedPath){
-		dataTree.checkSubtree();
+		dataTree.recheckAll();
 		rightTreeViewer = new YangDataTreeViewer(this, dataTree);
 		rightTreeViewer.addTreeSelectionListener(this);
 		buildDisplay();
@@ -392,6 +375,40 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 		return firstNodePath[0] + buildNetconfRequestFilter(newPath) + firstNodePath[1];
 
+	}
+	
+	private class ApplyModificationsActionListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			InputStream reply = null;
+			try {
+				
+				reply = sendEditRequest(dataTree.getXMLRepresentation());
+				
+			} catch (ChoiceStillPresentException e2) {
+				
+				infoPanel.displayPlainText("Modifications cannot be applied :\nsome choices remain unsolved.");
+				repaint();
+				return;
+				
+			}
+			
+			try {
+				Document replyDocument = documentBuilderFactory.newDocumentBuilder().parse(reply);
+				infoPanel.setEditionReplyInfo(replyDocument);
+			} catch (SAXException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (ParserConfigurationException e1) {
+				e1.printStackTrace();
+			}
+			editionInProgress = false;
+			displayDataTree(currentlyDisplayedPath,getConfig);
+			
+		}
+		
 	}
 
 }

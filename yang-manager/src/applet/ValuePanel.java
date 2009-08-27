@@ -67,7 +67,7 @@ public class ValuePanel extends JPanel {
 		if (leaf.getValue()!=null) {
 			valueField = new JTextField(leaf.getValue());
 		} else {
-			valueField = new JTextField("No value");
+			valueField = new JTextField("(No value)");
 		}
 	}
 	

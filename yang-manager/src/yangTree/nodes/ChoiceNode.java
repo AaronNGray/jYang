@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import javax.swing.ImageIcon;
 
+import yangTree.ChoiceStillPresentException;
+
 import jyang.parser.YANG_Choice;
 
 @SuppressWarnings("serial")
@@ -47,6 +49,10 @@ public class ChoiceNode extends YangInnerNode {
 			}
 		}
 		return icon;
+	}
+	
+	public String getXMLRepresentation() throws ChoiceStillPresentException {
+		throw new ChoiceStillPresentException();
 	}
 	
 }

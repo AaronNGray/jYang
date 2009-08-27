@@ -130,7 +130,7 @@ public abstract class YangTreeViewer extends JTree {
 
 			setToolTipText(null);
 			if (node.getCheck() != null && !node.getCheck().isOk())
-				setToolTipText(node.getCheck().toString());
+				setToolTipText(Util.cutString(node.getCheck().toString(),100));
 			setIcon(node.getIcon());
 			return this;
 		}
