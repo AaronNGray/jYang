@@ -16,13 +16,22 @@ public class EmptyNode extends YangLeaf {
 	private static ImageIcon icon = null;
 	
 	private String description;
+	private LeafNode specificationNode;
 	
 	/**
 	 * Creates an new <code>EmptyNode</code>.
 	 * @param description : the text associated with this node when displayed.
 	 */
-	public EmptyNode(String description){
+	public EmptyNode(String description, LeafNode specificationNode){
 		this.description = description;
+		this.specificationNode = specificationNode;
+	}
+	
+	/**
+	 * Creates an instance of the specification leaf.
+	 */
+	public LeafNode createLeaf(){
+		return specificationNode.cloneBody();
 	}
 	
 	@Override

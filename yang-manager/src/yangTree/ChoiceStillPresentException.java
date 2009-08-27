@@ -1,7 +1,7 @@
 package yangTree;
 
 /**
- * Exception raised when trying to apply a tree when choices nodes are still present.
+ * Exception raised when trying to apply a tree where choices nodes are still present.
  * 
  */
 @SuppressWarnings("serial")

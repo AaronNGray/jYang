@@ -31,6 +31,7 @@ public class ContainerNode extends YangInnerNode {
 
 	public ContainerNode cloneBody() {
 		ContainerNode clone = new ContainerNode((YANG_Container) definition);
+		clone.setNameSpace(nameSpace);
 		if (specificationNode==null){
 			clone.specificationNode = this;
 		} else {

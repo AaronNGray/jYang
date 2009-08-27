@@ -37,7 +37,7 @@ public class TreeFiller {
 	private static final NodeDescriptor NO_CASE = new NodeDescriptor(-1, 0);
 
 	private static LinkedList<NameSpace> nameSpacePrefixList = new LinkedList<NameSpace>();
-	private static String nodeToFillName ;
+	private static YangNode nodeToFill ;
 
 	/**
 	 * Creates the filled data Tree.
@@ -52,8 +52,8 @@ public class TreeFiller {
 	 */
 	public static RootNode createDataTree(RootNode specRoot, TreePath treePath, Document xmlDocument) {
 
-		YangNode nodeToFill = (YangNode) treePath.getLastPathComponent() ;
-		nodeToFillName = nodeToFill.getName();
+		nodeToFill = (YangNode) treePath.getLastPathComponent() ;
+		String nodeToFillName = nodeToFill.getName();
 		Node currentXmlNode = null;
 
 		Node root = xmlDocument.getFirstChild();
@@ -96,7 +96,7 @@ public class TreeFiller {
 		result.setDescendantsNodes(currentNode.getDescendantNodes());
 		
 		if (result.getDescendantNodes().size()==0)
-			result.addChild(new EmptyNode(nodeToFillName+" : No such leaf retrieved."));
+			result.addChild(new EmptyNode(nodeToFillName+" : No such leaf retrieved.",(LeafNode) nodeToFill));
 
 		result.recheckAll();
 		return result;
@@ -262,7 +262,7 @@ public class TreeFiller {
 
 								// At empty levels, list children must be
 								// "silently" added.
-								if (treeResult instanceof ListNode && !newChild.getName().equals(nodeToFillName) && emptyLevelsLeft > 0) {
+								if (treeResult instanceof ListNode && !newChild.getName().equals(nodeToFill.getName()) && emptyLevelsLeft > 0) {
 									((ListNode) treeResult).addChildSilently(newChild);
 								} else {
 									treeResult.addChild(newChild);
@@ -272,14 +272,16 @@ public class TreeFiller {
 						}
 					}
 				}
+				
 				// If the current node must be filled, unmatched parts of the
 				// tree will be built.
-				if (!matchFound && emptyLevelsLeft <= 0) {
+				if (!matchFound && emptyLevelsLeft <= 0 ) {
 					YangNode newChild = buildEmptyTree(nodeChild);
 					if (newChild != null) {
 						treeResult.addChild(newChild);
 					}
 				}
+				
 			}
 
 			// Now, the ListedYangNodes can be added :
@@ -390,8 +392,7 @@ public class TreeFiller {
 	}
 
 	/**
-	 * Special class used only to describe nodes for the case chooser, or to
-	 * check if a node has been matched.
+	 * Special class used to describe nodes for the case chooser.
 	 */
 	private static class NodeDescriptor {
 

@@ -22,6 +22,8 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 
 	private int minElements = 0;
 	private int maxElements = Integer.MAX_VALUE;
+	
+	private boolean mustBeCreated = false;
 
 	private Map<String, LeafNode> keymap = new HashMap<String, LeafNode>();
 
@@ -47,6 +49,14 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 	private ListNode(YANG_List d, Map<String, LeafNode> keymap) {
 		definition = d;
 		this.keymap = new HashMap<String, LeafNode>(keymap);
+	}
+
+	public void setMustBeCreated(boolean mustBeCreated) {
+		this.mustBeCreated = mustBeCreated;
+	}
+
+	public boolean isMustBeCreated() {
+		return mustBeCreated;
 	}
 
 	@Override
@@ -86,12 +96,25 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 
 	public ListNode cloneBody() {
 		ListNode clone = new ListNode((YANG_List) definition, keymap);
+		clone.setNameSpace(nameSpace);
 		if (specificationNode == null) {
 			clone.specificationNode = this;
 		} else {
 			clone.specificationNode = specificationNode;
 		}
 		return clone;
+	}
+	
+	/**
+	 * Creates an empty clone of this list and its descendants.<br>
+	 * <b>Note :</b> the clone will be marked to be created (operation="create") in the next netconf "edit-config" request.
+	 * @return An empty clone of this node, filled with empty clones of its children.
+	 * @see #cloneBody()
+	 */
+	public ListNode cloneTree(){
+		ListNode result = (ListNode) super.cloneTree();
+		result.setMustBeCreated(true);
+		return result;
 	}
 
 	public int getMinElements() {
@@ -236,6 +259,8 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 		if (nameSpace != null && nameSpace.getNameSpace() != null) {
 			result = result + nameSpace.getXMLArg();
 		}
+		if (mustBeCreated)
+			result += " xmlns:xc=\"urn:ietf:params:xml:ns:netconf:base:1.0\" xc:operation=\"create\"";
 		result += ">";
 		for (YangNode child : getDescendantNodes()) {
 			result += child.getXMLRepresentation();
@@ -244,6 +269,31 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 			if (keymap.get(key) != null && getChildByName(key).size() == 0)
 				result += "<" + key + ">" + keymap.get(key) + "</" + key + ">";
 		}
+		if (deleteOperations!=null)
+			result += deleteOperations.getOperations();
+		return result + "</" + getName() + ">";
+	}
+	
+	public String getXMLReplaceRepresentation() throws ChoiceStillPresentException {
+		String result = "<" + getName();
+		if (nameSpace != null && nameSpace.getNameSpace() != null) {
+			result = result + nameSpace.getXMLArg();
+		}
+		if (mustBeCreated) {
+			result += " xmlns:xc=\"urn:ietf:params:xml:ns:netconf:base:1.0\" xc:operation=\"create\"";
+		} else {
+			result += " xmlns:xc=\"urn:ietf:params:xml:ns:netconf:base:1.0\" xc:operation=\"replace\"";
+		}
+		result += ">";
+		for (YangNode child : getDescendantNodes()) {
+			result += child.getXMLRepresentation();
+		}
+		for (String key : keymap.keySet()) {
+			if (keymap.get(key) != null && getChildByName(key).size() == 0)
+				result += "<" + key + ">" + keymap.get(key) + "</" + key + ">";
+		}
+		if (deleteOperations!=null)
+			result += deleteOperations.getOperations();
 		return result + "</" + getName() + ">";
 	}
 

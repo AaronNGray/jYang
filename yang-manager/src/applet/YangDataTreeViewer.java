@@ -14,6 +14,7 @@ import javax.swing.tree.TreePath;
 import yangTree.nodes.CaseNode;
 import yangTree.nodes.ChoiceNode;
 import yangTree.nodes.ContainerNode;
+import yangTree.nodes.EmptyNode;
 import yangTree.nodes.LeafListNode;
 import yangTree.nodes.LeafNode;
 import yangTree.nodes.ListNode;
@@ -185,6 +186,20 @@ public class YangDataTreeViewer extends YangTreeViewer {
 					}
 				});
 				
+			}
+			
+			if (node instanceof EmptyNode){
+				JMenuItem item = add("Create this leaf");
+				item.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						LeafNode leaf = ((EmptyNode) node).createLeaf();
+						YangInnerNode parent = (YangInnerNode) path.getParentPath().getLastPathComponent();
+						parent.addChild(leaf);
+						parent.getDescendantNodes().remove(node);
+						applet.editionPerformed(path.getParentPath().pathByAddingChild(leaf));
+						applet.getInfoPanel().allowEdition();
+					}
+				});
 			}
 		}
 

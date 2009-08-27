@@ -42,9 +42,7 @@ public class InfoPanel extends JPanel {
 	/**
 	 * Creates a new InfoPanel with default display.
 	 * 
-	 * @param isTreeFilled
-	 *            : <code>true</code> if the displayed tree is filled,
-	 *            <code>false</code> otherwise
+	 * @param applet : The <code>YangApplet</code> that contains this <code>InfoPanel</code>.
 	 */
 	public InfoPanel(YangApplet applet) {
 		super();

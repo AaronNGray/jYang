@@ -35,7 +35,7 @@ import yangTree.nodes.YangNode;
 import yangTree.nodes.RootNode;
 
 /**
- * YangApplet main class. <br>
+ * Provides the display of the "Yang browsing" applet.<br>
  * Contains methods to interact with the Netconf manager.
  */
 @SuppressWarnings("serial")
@@ -287,6 +287,37 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		path = path.pathByAddingChild(specTree.getDescendantNodes().getFirst());
 		displayDataTree(path, getConfig);
 	}
+	
+	/**
+	 * Refreshes the applet so it will display an empty data tree
+	 * @param path
+	 *            : the path of the node that will be displayed.
+	 */
+	public void displayEmptyTree(TreePath path){
+		YangNode node = (YangNode) path.getLastPathComponent();
+		RootNode root = new RootNode();
+		root.setPath(path.getParentPath());
+		root.addChild(node.cloneTree());
+		dataTree = root;
+		dataTree.recheckAll();
+		rightTreeViewer = new YangDataTreeViewer(this, dataTree);
+		rightTreeViewer.addTreeSelectionListener(this);
+		
+		currentlyDisplayedPath = path;
+		getConfig = true;
+		
+		buildDisplay();
+	}
+	
+	/**
+	 * Refreshes the applet so it will display the entire empty data tree
+	 * 
+	 */
+	public void displayEmptyTree(){
+		TreePath path = new TreePath(specTree);
+		path = path.pathByAddingChild(specTree.getDescendantNodes().getFirst());
+		displayEmptyTree(path);
+	}
 
 	/**
 	 * Updates the display after an edition have been performed in the data
@@ -384,6 +415,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 			InputStream reply = null;
 			try {
 				
+				System.out.println(dataTree.getXMLRepresentation());
 				reply = sendEditRequest(dataTree.getXMLRepresentation());
 				
 			} catch (ChoiceStillPresentException e2) {

@@ -1,9 +1,16 @@
 package applet;
 
+/**
+ * Provides methods to perform useful operations on <code>String</code>s.
+ *
+ */
 public class Util {
 
 	/**
 	 * Add &lt;br&gt; tags so that the HTML text will wrap correctly.
+	 * @param line : the text to wrap.
+	 * @param maxChar : the maximum number of character in a single line.
+	 * @param startingGap : the gap at the beginning of the first line.
 	 */
 	public static String wrapHTMLline(String line, int maxChar, int startingGap) {
 
@@ -22,8 +29,10 @@ public class Util {
 	}
 
 	/**
-	 * Cut a string so that its length will not exceed a maximum value; if a cut
+	 * Cut a <code>String</code> so that its length will not exceed a maximum value; if a cut
 	 * have been made, add "..." to the end.
+	 * @param string : the text to cut.
+	 * @param maxLength : the maximum number of characters allowed before a cut will be performed.
 	 */
 	public static String cutString(String string, int maxLength) {
 		if (string.length() > maxLength) {
@@ -34,7 +43,8 @@ public class Util {
 	}
 
 	/**
-	 * Clean a string from its quotation marks or unexpected surrounding tags or blank spaces.
+	 * Clean a <code>String</code> from its quotation marks or unexpected surrounding tags or blank spaces.
+	 * @param valueString : the <code>String</code> to clean.
 	 */
 	public static String cleanValueString(String valueString) {
 		if (valueString == null) return null;

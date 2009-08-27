@@ -83,7 +83,7 @@ public abstract class BuiltinType implements Serializable {
 	}
 
 	/**
-	 * Returns true if a value have at least one restriction.
+	 * Returns true if this <code>BuiltinType</code> have at least one restriction.
 	 */
 	public boolean hasRestrictions() {
 		return restrictionsList.size() > 0;
