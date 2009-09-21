@@ -1,3 +1,29 @@
+/**
+###############################################################################
+#                                                                             #
+# YencaP software, LORIA-INRIA LORRAINE, MADYNES RESEARCH TEAM                #
+# Copyright (C) 2009  Emmanuel NATAF                                          #
+#                                                                             #
+# This library is free software; you can redistribute it and/or               #
+# modify it under the terms of the GNU Lesser General Public                  #
+# License as published by the Free Software Foundation; either                #
+# version 2.1 of the License, or (at your option) any later version.          #
+#                                                                             #
+# This library is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU           #
+# Lesser General Public License for more details.                             #
+#                                                                             #
+# You should have received a copy of the GNU Lesser General Public            #
+# License along with this library; if not, write to the Free Software         #
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA   #
+#                                                                             #
+# Author Info:                                                                #
+#   Name : Emmanuel Nataf and cyrille Cornu		                              #
+#   Email: nataf@loria.fr										              #
+#                                                                             #
+###############################################################################
+**/
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,13 +35,22 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Vector;
 
-import yangTree.attributes.LeafType;
-import yangTree.attributes.NameSpace;
-import yangTree.attributes.builtinTypes.BuiltinType;
-import yangTree.nodes.*;
+import yangtree.attributes.LeafType;
+import yangtree.attributes.NameSpace;
+import yangtree.attributes.builtinTypes.BuiltinType;
+import yangtree.nodes.*;
 
 import jyang.parser.*;
 
+/**
+ * 
+ * @author Cornu - nataf
+ * 
+ * This class generates a yangTreeNode from  yang specifications and xpath
+ * It writes a file object for the netconf agent that has announced its yang 
+ * capabilities
+ *
+ */
 public class YangSchemaTreeGenerator {
 
 	private jyang parser = null;
@@ -44,8 +79,11 @@ public class YangSchemaTreeGenerator {
 		for (int i = 0; i < 3 * nbmodules; i++) {
 			modulesArgs[i] = args[3 + nbPrefixes * 2 + nbmodules + i];
 		}
-
+		
 		parser = new jyang(yarg);
+		if (!parser.isParsingOk())
+			System.exit(-1);
+		
 		Hashtable<String, YANG_Specification> specs = parser.getYangsSpecs();
 		Map<String, YangInnerNode> treeMap = new HashMap<String, YangInnerNode>();
 		for (Enumeration<YANG_Specification> especs = specs.elements(); especs

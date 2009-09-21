@@ -12,8 +12,8 @@ import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import yangTree.attributes.LeafType;
-import yangTree.attributes.builtinTypes.BuiltinType;
+import yangtree.attributes.LeafType;
+import yangtree.attributes.builtinTypes.BuiltinType;
 
 /**
  * The panel that displays informations about a {@link LeafType}.

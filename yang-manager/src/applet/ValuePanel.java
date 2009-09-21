@@ -9,7 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import yangTree.nodes.YangLeaf;
+import yangtree.nodes.YangLeaf;
 
 /**
  * The panel in which the value of a leaf is displayed and can be edited.

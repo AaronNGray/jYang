@@ -9,12 +9,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
-import yangTree.nodes.CaseNode;
-import yangTree.nodes.ChoiceNode;
-import yangTree.nodes.LeafListNode;
-import yangTree.nodes.ListNode;
-import yangTree.nodes.YangInnerNode;
-import yangTree.nodes.YangNode;
+import yangtree.nodes.CaseNode;
+import yangtree.nodes.ChoiceNode;
+import yangtree.nodes.LeafListNode;
+import yangtree.nodes.ListNode;
+import yangtree.nodes.YangInnerNode;
+import yangtree.nodes.YangNode;
 
 /**
  * Provides a display of a Yang specification tree.

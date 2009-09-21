@@ -10,9 +10,9 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import yangTree.YangTreeModel;
-import yangTree.nodes.YangInnerNode;
-import yangTree.nodes.YangNode;
+import yangtree.YangTreeModel;
+import yangtree.nodes.YangInnerNode;
+import yangtree.nodes.YangNode;
 
 /**
  * Provides a display of a YangTree.

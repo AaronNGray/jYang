@@ -28,11 +28,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import yangTree.ChoiceStillPresentException;
-import yangTree.TreeFiller;
-import yangTree.nodes.ListNode;
-import yangTree.nodes.YangNode;
-import yangTree.nodes.RootNode;
+import yangtree.ChoiceStillPresentException;
+import yangtree.TreeFiller;
+import yangtree.nodes.ListNode;
+import yangtree.nodes.RootNode;
+import yangtree.nodes.YangNode;
 
 /**
  * Provides the display of the "Yang browsing" applet.<br>

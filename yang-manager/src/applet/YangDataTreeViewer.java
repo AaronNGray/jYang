@@ -11,16 +11,16 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
-import yangTree.nodes.CaseNode;
-import yangTree.nodes.ChoiceNode;
-import yangTree.nodes.ContainerNode;
-import yangTree.nodes.EmptyNode;
-import yangTree.nodes.LeafListNode;
-import yangTree.nodes.LeafNode;
-import yangTree.nodes.ListNode;
-import yangTree.nodes.RootNode;
-import yangTree.nodes.YangInnerNode;
-import yangTree.nodes.YangNode;
+import yangtree.nodes.CaseNode;
+import yangtree.nodes.ChoiceNode;
+import yangtree.nodes.ContainerNode;
+import yangtree.nodes.EmptyNode;
+import yangtree.nodes.LeafListNode;
+import yangtree.nodes.LeafNode;
+import yangtree.nodes.ListNode;
+import yangtree.nodes.RootNode;
+import yangtree.nodes.YangInnerNode;
+import yangtree.nodes.YangNode;
 
 /**
  * Provides a display of a Yang data tree.

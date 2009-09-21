@@ -13,10 +13,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import yangTree.NetconfReplyMalformedException;
-import yangTree.attributes.LeafType;
-import yangTree.attributes.ValueCheck;
-import yangTree.nodes.YangLeaf;
+import yangtree.NetconfReplyMalformedException;
+import yangtree.attributes.LeafType;
+import yangtree.attributes.ValueCheck;
+import yangtree.nodes.YangLeaf;
 
 /**
  * The bottom panel of the applet, used to display all the informations about a
