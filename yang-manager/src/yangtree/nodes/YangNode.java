@@ -1,4 +1,4 @@
-package yangtree.nodes;
+ package yangtree.nodes;
 
 import java.io.Serializable;
 import javax.swing.ImageIcon;

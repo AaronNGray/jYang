@@ -40,7 +40,8 @@ public class YangSpecTreeViewer extends YangTreeViewer {
 				if (selRow == -1 || selRow == 0) {
 					new DefaultPopupMenu(e.getX(), e.getY());
 				} else {
-					new NodePopupMenu(getPathForLocation(e.getX(), e.getY()), e.getX(), e.getY());
+					new NodePopupMenu(getPathForLocation(e.getX(), e.getY()), e
+							.getX(), e.getY());
 				}
 			}
 		}
@@ -185,7 +186,9 @@ public class YangSpecTreeViewer extends YangTreeViewer {
 	private static boolean isEligileEditConfig(TreePath path) {
 		Object[] array = path.getPath();
 		for (int i = 0; i < array.length - 1; i++) {
-			if (array[i] instanceof ListNode || array[i] instanceof ChoiceNode || array[i] instanceof CaseNode || array[i] instanceof LeafListNode)
+			if (array[i] instanceof ListNode || array[i] instanceof ChoiceNode
+					|| array[i] instanceof CaseNode
+					|| array[i] instanceof LeafListNode)
 				return false;
 		}
 		Object lastNode = array[array.length - 1];
