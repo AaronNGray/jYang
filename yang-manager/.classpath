@@ -3,6 +3,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Parser"/>
-	<classpathentry kind="lib" path="/Users/manu/Downloads/java3d-1_5_1-macosx/j3d-jre.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
