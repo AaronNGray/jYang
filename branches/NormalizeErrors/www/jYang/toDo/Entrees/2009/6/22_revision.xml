@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<content collectionGUID="3504FBF6-A3D9-4E80-BC52-11281AF296A8">
+  <lastEdited clientType="local-build-20090624" date="2009-06-24 14:42:35 +0200"/>
+  <textBox id="generic-header-attribute" dynamic="no" visible="yes">
+    <richText>jYang to do list and known bugs</richText>
+  </textBox>
+  <textBox id="generic-body-attributes" dynamic="no" visible="yes">
+    <richText>When a module is imported by revision I must check if the revision date is in the imported module revisions.</richText>
+  </textBox>
+  <textBox id="generic-title-attributes" dynamic="no" visible="yes">
+    <richText>revision</richText>
+  </textBox>
+  <textBox id="generic-datefield-attributes" dynamic="no" visible="yes">
+    <richText>22/06/09</richText>
+  </textBox>
+</content>

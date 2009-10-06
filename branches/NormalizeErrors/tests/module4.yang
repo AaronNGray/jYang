@@ -1,0 +1,13 @@
+module module4 {
+
+	namespace "toto";
+	prefix mod4;
+
+	import module2 {prefix md3;}
+	
+	typedef madynesInt2 {
+		type md3:m2int;
+	}
+	
+	
+}

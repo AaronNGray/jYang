@@ -1,0 +1,52 @@
+\begin{thebibliography}{1}
+
+\bibitem{yang01}
+M.~Bjorklund.
+\newblock {YANG - A data modeling language for NETCONF}, August 2008.
+\newblock http://www.ietf.org/internet-drafts/draft-ietf-netmod-yang-01.txt.
+
+\bibitem{yang02}
+M.~Bjorklund.
+\newblock {YANG - A data modeling language for NETCONF}, November 2008.
+\newblock http://www.ietf.org/internet-drafts/draft-ietf-netmod-yang-02.txt.
+
+\bibitem{rfc1442}
+J.~Case, K.~McCloghrie, M.~Rose, and S.~Waldbusser.
+\newblock {Structure of Management Information for version 2 of the Simple
+  Network Management Protocol (SNMPv2)}.
+\newblock RFC 1442 (Proposed Standard), April 1993.
+\newblock Obsoleted by RFC 1902.
+
+\bibitem{rfc1157}
+J.D. Case, M.~Fedor, M.L. Schoffstall, and J.~Davin.
+\newblock {Simple Network Management Protocol (SNMP)}.
+\newblock RFC 1157 (Historic), May 1990.
+
+\bibitem{CRIDLIG:2005:INRIA-00000804:1}
+{V}incent {C}ridlig and {R}adu {S}tate.
+\newblock {Y}enca{P} {D}ocumentation.
+\newblock Technical report, {INRIA} {L}orraine, 2005.
+
+\bibitem{rfc2748}
+D.~Durham, J.~Boyle, R.~Cohen, S.~Herzog, R.~Rajan, and A.~Sastry.
+\newblock {The COPS (Common Open Policy Service) Protocol}.
+\newblock RFC 2748 (Proposed Standard), January 2000.
+\newblock Updated by RFC 4261.
+
+\bibitem{rfc4741}
+R.~Enns.
+\newblock {NETCONF Configuration Protocol}.
+\newblock RFC 4741 (Proposed Standard), December 2006.
+
+\bibitem{rfc3159}
+K.~McCloghrie, M.~Fine, J.~Seligson, K.~Chan, S.~Hahn, R.~Sahita, A.~Smith, and
+  F.~Reichmeyer.
+\newblock {Structure of Policy Provisioning Information (SPPI)}.
+\newblock RFC 3159 (Proposed Standard), August 2001.
+
+\bibitem{rfc3780}
+F.~Strauss and J.~Schoenwaelder.
+\newblock {SMIng - Next Generation Structure of Management Information}.
+\newblock RFC 3780 (Experimental), May 2004.
+
+\end{thebibliography}

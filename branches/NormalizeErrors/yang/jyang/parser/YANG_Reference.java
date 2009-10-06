@@ -1,0 +1,31 @@
+package jyang.parser;
+
+
+public class YANG_Reference extends SimpleNode implements YANG_Meta {
+
+    private String reference = null;
+
+  public YANG_Reference(int id) {
+    super(id);
+  }
+
+  public YANG_Reference(yang p, int id) {
+    super(p, id);
+  }
+
+    public void setReference(String r){
+	reference = r;
+    }
+
+    public String getReference(){
+	return reference;
+    }
+    
+    public void check(YangContext context){
+    }
+
+    public String toString(){
+	return "reference " + reference + ";";
+    }
+
+}

@@ -1,0 +1,27 @@
+package jyang.parser;
+
+
+public class YANG_ErrorAppt extends SimpleNode {
+
+	private String errorappt = null;
+
+	public YANG_ErrorAppt(int id) {
+		super(id);
+	}
+
+	public YANG_ErrorAppt(yang p, int id) {
+		super(p, id);
+	}
+
+	public void setErrorAppt(String e) {
+		errorappt = e;
+	}
+
+	public String getErrorAppt() {
+	  return errorappt;
+  }
+	
+	public String toString(){
+		return "error-appt-tag " + errorappt + ";";
+	}
+}
