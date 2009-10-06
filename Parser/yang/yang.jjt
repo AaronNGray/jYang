@@ -4,7 +4,7 @@ options {
   NODE_PREFIX="YANG_";
   NODE_PACKAGE="jyang.parser";
   
-} 
+}
 
 PARSER_BEGIN(yang)
 package jyang.parser;
@@ -14,7 +14,7 @@ public class yang {
 }
 PARSER_END(yang)
 
-SKIP :
+SKIP : 
 {
 " "
 | "\t"
@@ -251,7 +251,7 @@ TOKEN: /* string without quote and without space */
 	|
 	<ABSNODEID: "/" (<FIRST>)+>
 	|
-	<NAMESPACE: <FIRST> (<SEC>)+>
+	<ID_SEMI_COL_ID: <FIRST> (<SEC>)+>
 	|
 	<#SEC:  ["/", "\\", "(", ")","~","0"-"9","_","a"-"z","A"-"Z", "[", "]", ".", "-", "=","?", "+",":"]>
 	|
@@ -642,7 +642,7 @@ Token t, tn;
 YANG_Unknown un = null;
 }
 {
-	t = <namespacekeyword>  (uri = uristr() | tn = <NAMESPACE> { uri = tn.image;})  
+	t = <namespacekeyword>  (uri = uristr() | tn = <ID_SEMI_COL_ID> { uri = tn.image;})  
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		
 		{
@@ -3635,39 +3635,28 @@ Token i,j;
 YANG_Unknown unknown = null;
 }
 {
-//	 p = prefix() l = ":" 
 	 		(
-				i = <NAMESPACE>
+				i = <ID_SEMI_COL_ID>
 				{
 					jjtThis.setExtension(i.image);
 					jjtThis.setLine(i.beginLine);
 					jjtThis.setCol(i.beginColumn);
-				}
-			//|
-			//	kw = anykeyword()
-			//	{
-			//		jjtThis.setExtension(kw);
-				//	jjtThis.setLine(l.beginLine);
-				//	jjtThis.setCol(l.beginColumn);
-			//	}
-		    ) 
+				}  
+		
 				[ 
 				str = string()
-				{
-					jjtThis.setArgument(str);
-				}
+					{
+						jjtThis.setArgument(str);
+					}
 				]
          		  (
-	   			";" 
-	  			|
-	 			"{" (
-					unknown = unknownstatement()
-						{
-							jjtThis.addUnknown(unknown);
-						}
-				     )* 
-				"}"
-			  )
+	   					";" 
+	  				|
+	 					"{" (unknown = unknownstatement() {jjtThis.addUnknown(unknown);})* 
+						"}"
+			   	   )
+			)
+			
 				{
 					
 					return jjtThis;
@@ -4831,7 +4820,7 @@ String i = null;}
 	 // LOOKAHEAD(2)p = prefix() ":"
 	 //] 
 	 (
-	 s = <NAMESPACE>
+	 s = <ID_SEMI_COL_ID>
 	 {
 	 	i = s.image;
 	 	return i;

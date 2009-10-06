@@ -30,6 +30,7 @@ import jyang.tools.Yang2Yin;
 public class jyang {
 
 	private Hashtable<String, YANG_Specification> yangsSpecs = new Hashtable<String, YANG_Specification>();
+	private boolean parsingOk;
 
 	public static void main(String args[]) {
 		new jyang(args);
@@ -205,6 +206,7 @@ public class jyang {
 		// Parse yang specs
 		
 		boolean reinit = false;
+		boolean noError = true;
 		for (Enumeration<InputStream> ei = specs.elements(); ei
 				.hasMoreElements();) {
 			if (!reinit) {
@@ -231,15 +233,23 @@ public class jyang {
 									.println("only yin (incomplete),  dsdl format will be possible");
 					}
 				}
+				else
+					noError = false;
 
 			} catch (ParseException pe) {
 				System.err.println(pe.getMessage());
 				System.exit(-1);
 			}
-		}/*
+		}
+		parsingOk = noError;
+		/*
 		if (format.compareTo("applet") == 0) {
 			new Yang2Applet(yangsSpecs, paths, out);
 		}*/
+	}
+
+	public boolean isParsingOk() {
+		return parsingOk;
 	}
 
 	public Hashtable<String, YANG_Specification> getYangsSpecs() {
