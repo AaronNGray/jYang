@@ -2,7 +2,7 @@
 package jyang.parser;
 
 
-public class YANG_Decimal64Spec extends SimpleNode {
+public class YANG_Decimal64Spec extends SimpleYangNode {
 	
 	private String fractionDigit = null;
 	private YANG_Range range = null;

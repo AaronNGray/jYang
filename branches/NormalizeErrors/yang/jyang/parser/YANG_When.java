@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_When extends SimpleNode {
+public class YANG_When extends SimpleYangNode {
 
     private String when = null;
 

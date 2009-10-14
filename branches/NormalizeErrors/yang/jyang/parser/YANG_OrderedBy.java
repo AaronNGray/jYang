@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_OrderedBy extends SimpleNode {
+public class YANG_OrderedBy extends SimpleYangNode {
 
 	private String orderedby = null;
 

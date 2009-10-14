@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_Mandatory extends SimpleNode {
+public class YANG_Mandatory extends SimpleYangNode {
 
     private String mandatory = null;
 

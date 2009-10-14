@@ -5,10 +5,9 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class YANG_UsesAugment extends YANG_DataDefInfoWhen {
+public class YANG_UsesAugment extends StatuedNode {
 
 	private String usesaugment = null;
-	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
 	private Vector<YANG_Case> cases = new Vector<YANG_Case>();
 
 	private Pattern dsni = null;
@@ -47,14 +46,6 @@ public class YANG_UsesAugment extends YANG_DataDefInfoWhen {
 		return getUsesAugment();
 	}
 
-	public void addDataDef(YANG_DataDef d) {
-		datadefs.add(d);
-	}
-
-	public Vector<YANG_DataDef> getDataDefs() {
-		return datadefs;
-	}
-
 	public void addCase(YANG_Case c) {
 		cases.add(c);
 	}
@@ -64,7 +55,7 @@ public class YANG_UsesAugment extends YANG_DataDefInfoWhen {
 	}
 
 	public boolean isBracked() {
-		return super.isBracked() || datadefs.size() != 0 || cases.size() != 0;
+		return super.isBracked() ||  cases.size() != 0;
 	}
 
 	public String toString() {
@@ -72,9 +63,6 @@ public class YANG_UsesAugment extends YANG_DataDefInfoWhen {
 		result += "augment " + getUsesAugment() + " {\n";
 		if (isBracked()) {
 			result += super.toString() + "\n";
-			for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
-					.hasMoreElements();)
-				result += ed.nextElement().toString() + "\n";
 			for (Enumeration<YANG_Case> ec = cases.elements(); ec
 					.hasMoreElements();)
 				result += ec.nextElement().toString() + "\n";

@@ -1,16 +1,16 @@
 package jyang.parser;
 
 
-public abstract class YANG_DeviateUnitsDefault extends SimpleNode {
+public abstract class Deviate extends SimpleYangNode {
 
 	private YANG_Units units = null;
 	private YANG_Default ydefault = null;
 
-	public YANG_DeviateUnitsDefault(int i) {
+	public Deviate(int i) {
 		super(i);
 	}
 
-	public YANG_DeviateUnitsDefault(yang p, int i) {
+	public Deviate(yang p, int i) {
 		super(p, i);
 	}
 

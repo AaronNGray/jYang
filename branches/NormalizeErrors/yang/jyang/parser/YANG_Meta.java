@@ -19,5 +19,5 @@ package jyang.parser;
 
  */
 
-public interface YANG_Meta extends Node {
+public interface YANG_Meta extends YangNode {
 }

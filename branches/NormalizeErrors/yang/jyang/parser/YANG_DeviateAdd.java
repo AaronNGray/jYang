@@ -4,10 +4,9 @@ import java.util.Vector;
 
 
 
-public class YANG_DeviateAdd extends YANG_DeviateConfig {
+public class YANG_DeviateAdd extends DeviateAddReplace {
 
 	private Vector<YANG_Must> musts = new Vector<YANG_Must>();
-
 	private Vector<YANG_Unique> uniques = new Vector<YANG_Unique>();
 
 	public YANG_DeviateAdd(int id) {

@@ -19,12 +19,11 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
-
-
-public class YANG_Container extends YANG_DataDefConfigMust implements
-		YANG_CaseDef, YANG_ShortCase {
+public class YANG_Container extends MustDataDef implements YANG_CaseDataDef,
+		YANG_ShortCase {
 
 	private String container = null;
 
@@ -55,11 +54,11 @@ public class YANG_Container extends YANG_DataDefConfigMust implements
 		return container;
 	}
 
-	public void setPresence(YANG_Presence p) throws YangParserException {
+	public void setPresence(YANG_Presence p) {
 		if (b_presence)
-			throw new YangParserException(
-					"Presence already defined in container " + container, p
-							.getLine(), p.getCol());
+			YangErrorManager.add(p.getLine(), p.getCol(),
+					YangErrorManager.messages.getString("presence"));
+
 		b_presence = true;
 		presence = p;
 	}
@@ -97,13 +96,17 @@ public class YANG_Container extends YANG_DataDefConfigMust implements
 				|| groupings.size() != 0 || datadefs.size() != 0;
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context) {
 		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig.getConfig().compareTo("false") == 0
-					&& getConfig().getConfig().compareTo("true") == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":config to true and parent config to false");
+			if (parentConfig.getConfigStr().compareTo("false") == 0
+					&& getConfig().getConfigStr().compareTo("true") == 0)
+				YangErrorManager.add(context.getSpec().getName(), getLine(),
+						getCol(), YangErrorManager.messages.getString("ctf"));
+			/*
+			 * throw new YangParserException("@" + getLine() + "." + getCol() +
+			 * ":config to true and parent config to false");
+			 */
 		}
 
 	}
@@ -131,14 +134,14 @@ public class YANG_Container extends YANG_DataDefConfigMust implements
 
 		return result;
 	}
-	
+
 	public YANG_Container clone() {
-		YANG_Container cc = new YANG_Container( parser, id);
+		YANG_Container cc = new YANG_Container(parser, id);
 		cc.setContainer(getContainer());
 		cc.setLine(getLine());
 		cc.setCol(getCol());
 		return cc;
-		
+
 	}
 
 }

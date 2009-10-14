@@ -1,7 +1,7 @@
 
 package jyang.parser;
 
-public class YANG_LeafRefSpecification extends SimpleNode {
+public class YANG_LeafRefSpecification extends SimpleYangNode {
 
 	private YANG_Path path = null;
 	public YANG_Path getPath() {

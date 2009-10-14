@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_MinElement extends SimpleNode {
+public class YANG_MinElement extends SimpleYangNode {
 
     private String min = null;
 

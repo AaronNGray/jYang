@@ -3,18 +3,14 @@ package jyang.parser;
 import java.util.Enumeration;
 import java.util.Vector;
 
-public class YANG_TypeDef extends YANG_Body {
+public class YANG_TypeDef extends StatuedBody {
 
 	private String typedef = null;
 	private YANG_Type ytype = null;
 	private YANG_Units units = null;
 	private YANG_Default defaultstr = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 
-	private boolean b_type = false, b_units = false, b_default = false,
-			b_status = false, b_description = false, b_reference = false;
+	private boolean b_type = false, b_units = false, b_default = false;
 	
 	private boolean used = false, correct = true;
 
@@ -62,31 +58,6 @@ public class YANG_TypeDef extends YANG_Body {
 		return units;
 	}
 
-	public void setStatus(YANG_Status s) throws YangParserException {
-		if (b_status)
-			throw new YangParserException("Status already defined in typedef "
-					+ typedef, s.getLine(), s.getCol());
-		b_status = true;
-		status = s;
-	}
-
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException(
-					"Description already defined in typedef " + typedef, d
-							.getLine(), d.getCol());
-		b_description = true;
-		description = d;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
 	public void setDefault(YANG_Default d) throws YangParserException {
 		if (b_default)
 			throw new YangParserException("Default already defined in typedef "
@@ -99,18 +70,6 @@ public class YANG_TypeDef extends YANG_Body {
 		return defaultstr;
 	}
 
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException(
-					"Reference already defined in typedef " + typedef, r
-							.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
 
 	public void check(YangContext context) throws YangParserException {
 		
@@ -186,12 +145,7 @@ public class YANG_TypeDef extends YANG_Body {
 			result += units.toString() + "\n";
 		if (defaultstr != null)
 			result += defaultstr.toString() + "\n";
-		if (status != null)
-			result += status.toString() + "\n";
-		if (description != null)
-			result += description.toString() + "\n";
-		if (reference != null)
-			result += reference.toString() + "\n";
+		result += super.toString();
 		result += "}";
 		return result;
 	}

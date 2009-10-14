@@ -2,7 +2,7 @@ package jyang.parser;
 
 
 
-public class YANG_Default extends SimpleNode {
+public class YANG_Default extends SimpleYangNode {
 
 	private String defaultstr = null;
 

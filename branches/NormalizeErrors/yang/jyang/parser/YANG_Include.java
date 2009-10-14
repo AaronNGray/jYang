@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_Include extends SimpleNode implements YANG_Linkage {
+public class YANG_Include extends SimpleYangNode implements YANG_Linkage {
 
 	private String include = null;
 	

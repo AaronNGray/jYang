@@ -22,12 +22,11 @@ package jyang.parser;
 import java.util.*;
 
 
-public class YANG_RefineCase extends YANG_Refinement {
+public class YANG_RefineCase extends YANG_Refine {
 
 	private String refinecase = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
-	private Vector<YANG_Refinement> refinements = new Vector<YANG_Refinement>();
+	
+	private Vector<YANG_Refine> refinements = new Vector<YANG_Refine>();
 
 	private boolean bracked = false;
 
@@ -52,30 +51,13 @@ public class YANG_RefineCase extends YANG_Refinement {
 		return refinecase;
 	}
 
-	public void setDescription(YANG_Description d) {
-		description = d;
-		bracked = true;
-	}
 
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) {
-		reference = r;
-		bracked = true;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
-	public void addRefinement(YANG_Refinement r) {
+	public void addRefinement(YANG_Refine r) {
 		refinements.add(r);
 		bracked = true;
 	}
 
-	public Vector<YANG_Refinement> getRefinements() {
+	public Vector<YANG_Refine> getRefinements() {
 		return refinements;
 	}
 
@@ -109,8 +91,8 @@ public class YANG_RefineCase extends YANG_Refinement {
 					+ choice.getLine()
 					+ " " + usedgrouping);
 		
-		for (Enumeration<YANG_Refinement> er = getRefinements().elements(); er.hasMoreElements();){
-			YANG_Refinement ref = er.nextElement();
+		for (Enumeration<YANG_Refine> er = getRefinements().elements(); er.hasMoreElements();){
+			YANG_Refine ref = er.nextElement();
 			ref.setUsedGrouping(usedgrouping);
 			ref.setParent(this);
 			if (ycase != null)
@@ -125,11 +107,7 @@ public class YANG_RefineCase extends YANG_Refinement {
 		result += "case " + refinecase;
 		if (bracked) {
 			result += "{\n";
-			if (description != null)
-				result += description.toString() + "\n";
-			if (reference != null)
-				result += reference.toString() + "\n";
-			for (Enumeration<YANG_Refinement> er = refinements.elements(); er
+			for (Enumeration<YANG_Refine> er = refinements.elements(); er
 					.hasMoreElements();)
 				result += er.nextElement().toString() + "\n";
 			result += "}";

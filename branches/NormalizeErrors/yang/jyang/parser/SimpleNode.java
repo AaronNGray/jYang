@@ -28,29 +28,12 @@ public class SimpleNode implements Node {
   protected Node parent;
   protected Node[] children;
   protected int id;
-  protected yang parser;
 
-	private Vector<YANG_Unknown> unknowns = new Vector<YANG_Unknown>();
-
-	public void addUnknown(YANG_Unknown u){
-		unknowns.add(u);
-	}
-	public Vector<YANG_Unknown> getUnknowns(){
-		return unknowns;
-	}
-    /**
-     * special Yang parser 
-     **/
-    private int line, col;
 
   public SimpleNode(int i) {
     id = i;
   }
 
-  public SimpleNode(yang p, int i) {
-    this(i);
-    parser = p;
-  }
 
   public void jjtOpen() {
   }
@@ -104,33 +87,6 @@ public class SimpleNode implements Node {
     }
   }
 
-    public void setLine(int l){
-	line = l;
-    }
-    public void setCol(int c){
-	col = c;
-    }
-    public int getLine(){
-	return line;
-    }
-    public int getCol(){
-	return col;
-    }
-/*
-    public void check() throws YangParserException{
-    }
-
-    public void check(String[] paths, yang p) throws ParseException{
-    }
-  */  
-    public String unquote(String s){
-    	if(s.charAt(0) == '"')
-    	    s = s.substring(1);
-    	if(s.charAt(s.length()-1) == '"')
-    	    s = s.substring(0, s.length()-1);
-    	return s;
-    }
-    
   
 }
 

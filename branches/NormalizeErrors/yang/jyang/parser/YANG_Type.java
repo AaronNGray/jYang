@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class YANG_Type extends SimpleNode {
+public class YANG_Type extends SimpleYangNode {
 
 	private String type = null;
 	private Vector<YANG_Enum> enums = new Vector<YANG_Enum>();

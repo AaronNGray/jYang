@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_Status extends SimpleNode {
+public class YANG_Status extends SimpleYangNode {
 
 	private String status = null;
 

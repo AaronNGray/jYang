@@ -2,7 +2,7 @@
 package jyang.parser;
 
 
-public class YANG_DeviateNotSupported extends SimpleNode {
+public class YANG_DeviateNotSupported extends SimpleYangNode {
   public YANG_DeviateNotSupported(int id) {
     super(id);
   }

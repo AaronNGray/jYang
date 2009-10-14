@@ -4,7 +4,7 @@ import java.util.Vector;
 
 
 
-public abstract class YANG_DeviateMustUnique extends YANG_DeviateUnitsDefault {
+public abstract class YANG_DeviateMustUnique extends Deviate {
 
 	private Vector<YANG_Must> musts = new Vector<YANG_Must>();
 	

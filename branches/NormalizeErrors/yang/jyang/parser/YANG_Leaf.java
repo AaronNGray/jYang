@@ -22,15 +22,16 @@ import java.util.*;
 
 
 
-public class YANG_Leaf extends YANG_DataDefFullInfo implements YANG_CaseDef,
+public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 		YANG_ShortCase {
 
 	private String leaf = null;
 	private YANG_Type type = null;
 	private YANG_Units units = null;
+	private YANG_Mandatory mandatory = null;
 	private YANG_Default ydefault = null;
 
-	private boolean b_type = false, b_units = false, b_default = false;
+	private boolean b_type = false, b_units = false, b_default = false, b_mandatory = false;
 
 	public YANG_Leaf(int id) {
 		super(id);
@@ -88,9 +89,22 @@ public class YANG_Leaf extends YANG_DataDefFullInfo implements YANG_CaseDef,
 	public YANG_Default getDefault() {
 		return ydefault;
 	}
-	
+
+	public void setMandatory(YANG_Mandatory m) throws YangParserException {
+		if (b_mandatory)
+			throw new YangParserException(
+					"Mandatory already defined in Choice ", m
+							.getLine(), m.getCol());
+		b_mandatory = true;
+		mandatory = m;
+	}
+
+	public YANG_Mandatory getMandatory() {
+		return mandatory;
+	}
+
 	public boolean isBracked(){
-		return super.isBracked() || b_default || b_type || b_units;
+		return super.isBracked() || b_default || b_type || b_units|| b_mandatory;
 	}
 
 	
@@ -104,8 +118,8 @@ public class YANG_Leaf extends YANG_DataDefFullInfo implements YANG_CaseDef,
 		
 		if (b_config){
 			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig.getConfig().compareTo("false") == 0 &&
-					getConfig().getConfig().compareTo("true") == 0)
+			if (parentConfig.getConfigStr().compareTo("false") == 0 &&
+					getConfig().getConfigStr().compareTo("true") == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol() +
 						":config to true and parent config to false");
 		}

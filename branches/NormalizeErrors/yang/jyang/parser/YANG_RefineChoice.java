@@ -21,20 +21,14 @@ package jyang.parser;
 import java.util.*;
 
 
-public class YANG_RefineChoice extends YANG_Refinement {
+public class YANG_RefineChoice extends MandatoryRefineNode {
 
 	private String refinechoice = null;
 	private YANG_Default ydefault = null;
-	private YANG_Config config = null;
-	private YANG_Mandatory mandatory = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
-	private Vector<YANG_RefineCase> refinecases = new Vector<YANG_RefineCase>();
 
 	private boolean bracked = false;
 
-	private boolean b_default = false, b_config = false, b_mandatory = false,
-			b_description = false, b_reference = false;
+	private boolean b_default = false;
 
 	public YANG_RefineChoice(int id) {
 		super(id);
@@ -70,70 +64,7 @@ public class YANG_RefineChoice extends YANG_Refinement {
 		return ydefault;
 	}
 	
-	public void setConfig(YANG_Config d) throws YangParserException {
-		if (b_config)
-			throw new YangParserException(
-					"Config already defined in refin choice " + refinechoice,
-					d.getLine(), d.getCol());
-		b_config = true;
-		config = d;
-		bracked = true;
-	}
 
-	public YANG_Config getConfig() {
-		return config;
-	}
-
-	public void setMandatory(YANG_Mandatory m) throws YangParserException {
-		if (b_mandatory)
-			throw new YangParserException(
-					"Mandatory already defined in refin choice " + refinechoice,
-					m.getLine(), m.getCol());
-		b_mandatory = true;
-		mandatory = m;
-		bracked = true;
-	}
-
-	public YANG_Mandatory getMandatory() {
-		return mandatory;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException(
-					"Description already defined in refin choice "
-							+ refinechoice, d.getLine(), d.getCol());
-		b_description = true;
-		description = d;
-		bracked = true;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException(
-					"Reference already defined in refin choice " + refinechoice,
-					r.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-		bracked = true;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
-	public void addRefineCase(YANG_RefineCase r) {
-		refinecases.add(r);
-		bracked = true;
-	}
-
-	public Vector<YANG_RefineCase> getRefineCases() {
-		return refinecases;
-	}
 
 	public boolean isBracked() {
 		return bracked;
@@ -143,13 +74,6 @@ public class YANG_RefineChoice extends YANG_Refinement {
 			throws YangParserException {
 		if (getDefault() != null)
 			getDefault().check(context, choice);
-		for (Enumeration<YANG_RefineCase> er = getRefineCases().elements(); er
-				.hasMoreElements();) {
-			YANG_RefineCase rcase = er.nextElement();
-			rcase.setUsedGrouping(ug);
-			rcase.setParent(this);
-			rcase.check(context, choice);
-		}
 	}
 
 	public void check(YangContext context, YANG_Grouping grouping)
@@ -175,14 +99,14 @@ public class YANG_RefineChoice extends YANG_Refinement {
 		
 		YANG_Config parentConfig = getParentConfig();
 		if (b_config) {
-			if (parentConfig.getConfig().compareTo("false") == 0
-					&& config.getConfig().compareTo("true") == 0)
+			if (parentConfig.getConfigStr().compareTo("false") == 0
+					&& config.getConfigStr().compareTo("true") == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":config to true and parent config to false");
 		} else {
 			if (choice.getConfig() != null) {
-				if (parentConfig.getConfig().compareTo("false") == 0
-						&& choice.getConfig().getConfig().compareTo("true") == 0)
+				if (parentConfig.getConfigStr().compareTo("false") == 0
+						&& choice.getConfig().getConfigStr().compareTo("true") == 0)
 					throw new YangParserException("@" + getLine() + "."
 							+ getCol() + ":config to true in the grouping "
 							+ grouping.getBody() + " at line "
@@ -190,7 +114,7 @@ public class YANG_RefineChoice extends YANG_Refinement {
 
 			}
 		}
-		
+		/*
 		for (Enumeration<YANG_RefineCase> er = getRefineCases().elements(); er
 				.hasMoreElements();) {
 			YANG_RefineCase rcase = er.nextElement();
@@ -206,6 +130,7 @@ public class YANG_RefineChoice extends YANG_Refinement {
 //						+ " at line " + grouping.getLine());
 			}
 		}
+		*/
 	}
 
 	public String toString() {
@@ -215,26 +140,13 @@ public class YANG_RefineChoice extends YANG_Refinement {
 			result += "{\n";
 			if (ydefault != null)
 				result += ydefault.toString() + "\n";
-			if (b_config)
-				result += config.toString() + "\n";
-			if (mandatory != null)
-				result += mandatory.toString() + "\n";
-			if (description != null)
-				result += description.toString() + "\n";
-			if (reference != null)
-				result += reference.toString() + "\n";
-			for (Enumeration<YANG_RefineCase> er = refinecases.elements(); er
-					.hasMoreElements();)
-				result += er.nextElement().toString() + "\n";
+
+			result += super.toString() + "\n";
+			
 			result += "}";
 		} else
-			result += ";";
+			result += super.toString() + ";";
 		return result;
 	}
 
-	@Override
-	public void check(YangContext context) throws YangParserException {
-		// TODO Auto-generated method stub
-		
-	}
 }

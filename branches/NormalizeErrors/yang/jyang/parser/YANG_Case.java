@@ -22,10 +22,10 @@ package jyang.parser;
 import java.util.*;
 
 
-public class YANG_Case extends YANG_DataDefInfoWhen {
+public class YANG_Case extends StatuedNode {
 
 	private String ycase = null;
-	private Vector<YANG_CaseDef> casedatadefs = new Vector<YANG_CaseDef>();
+	private Vector<YANG_CaseDataDef> casedatadefs = new Vector<YANG_CaseDataDef>();
 
 
 
@@ -50,11 +50,11 @@ public class YANG_Case extends YANG_DataDefInfoWhen {
 	}
 
 	
-	public void addCaseDef(YANG_CaseDef c) {
+	public void addCaseDef(YANG_CaseDataDef c) {
 		casedatadefs.add(c);
 	}
 
-	public Vector<YANG_CaseDef> getCaseDefs() {
+	public Vector<YANG_CaseDataDef> getCaseDefs() {
 		return casedatadefs;
 	}
 
@@ -68,7 +68,7 @@ public class YANG_Case extends YANG_DataDefInfoWhen {
 		if (isBracked()) {
 			result += " {\n";
 			result += super.toString() + "\n";
-			for (Enumeration<YANG_CaseDef> ec = casedatadefs.elements(); ec
+			for (Enumeration<YANG_CaseDataDef> ec = casedatadefs.elements(); ec
 					.hasMoreElements();)
 				result += ec.nextElement().toString() + "\n";
 			result += "}";

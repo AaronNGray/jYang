@@ -22,7 +22,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 
-public class YANG_StringRestriction extends SimpleNode {
+public class YANG_StringRestriction extends SimpleYangNode {
 
 	private YANG_Length length = null;
 	private Vector<YANG_Pattern> patterns = new Vector<YANG_Pattern>();

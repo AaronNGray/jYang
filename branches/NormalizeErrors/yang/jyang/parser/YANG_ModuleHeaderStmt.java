@@ -19,6 +19,6 @@ package jyang.parser;
 
  */
 
-public interface YANG_ModuleHeaderStmt extends Node{
+public interface YANG_ModuleHeaderStmt extends YangNode{
 
 }

@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_DeviateReplace extends YANG_DeviateConfig {
+public class YANG_DeviateReplace extends DeviateAddReplace {
 
 	private YANG_Type type = null;
 	private boolean b_type = false;

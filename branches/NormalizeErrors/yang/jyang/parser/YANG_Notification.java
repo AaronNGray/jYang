@@ -23,11 +23,9 @@ import java.util.*;
 
 
 
-public class YANG_Notification extends YANG_DataDefInfo {
+public class YANG_Notification extends TypedefGroupingBody {
 
 	private String notification = null;
-	private Vector<YANG_TypeDef> typedefs = new Vector<YANG_TypeDef>();
-	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
 
 
@@ -53,22 +51,6 @@ public class YANG_Notification extends YANG_DataDefInfo {
 
 
 
-	public void addTypeDef(YANG_TypeDef t) {
-		typedefs.add(t);
-	}
-
-	public Vector<YANG_TypeDef> getTypeDefs() {
-		return typedefs;
-	}
-
-	public void addGrouping(YANG_Grouping g) {
-		groupings.add(g);
-	}
-
-	public Vector<YANG_Grouping> getGroupings() {
-		return groupings;
-	}
-
 	public void addDataDef(YANG_DataDef d) {
 		datadefs.add(d);
 	}
@@ -78,7 +60,7 @@ public class YANG_Notification extends YANG_DataDefInfo {
 	}
 
 	public boolean isBracked() {
-		return super.isBracked() || typedefs.size() != 0 || groupings.size() != 0 || datadefs.size() != 0;
+		return super.isBracked() ||  datadefs.size() != 0;
 	}
 
 	public void check(YangContext context) throws YangParserException {
@@ -90,12 +72,6 @@ public class YANG_Notification extends YANG_DataDefInfo {
 		if (isBracked()) {
 			result += "{\n";
 			result += super.toString();
-			for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
-					.hasMoreElements();)
-				result += et.nextElement().toString() + "\n";
-			for (Enumeration<YANG_Grouping> eg = groupings.elements(); eg
-					.hasMoreElements();)
-				result += eg.nextElement().toString() + "\n";
 			for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
 					.hasMoreElements();)
 				result += ed.nextElement().toString() + "\n";

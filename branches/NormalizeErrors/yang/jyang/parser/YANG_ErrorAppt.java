@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_ErrorAppt extends SimpleNode {
+public class YANG_ErrorAppt extends SimpleYangNode {
 
 	private String errorappt = null;
 

@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_Must extends SimpleNode {
+public class YANG_Must extends SimpleYangNode {
 
 	private String must = null;
 	private YANG_ErrorMessage errmess = null;

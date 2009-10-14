@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_Reference extends SimpleNode implements YANG_Meta {
+public class YANG_Reference extends SimpleYangNode implements YANG_Meta {
 
     private String reference = null;
 

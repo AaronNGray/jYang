@@ -24,7 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public abstract class YANG_Specification extends SimpleNode {
+public abstract class YANG_Specification extends SimpleYangNode {
 
 	static protected Hashtable<String, YANG_Specification> checkedSpecs = new Hashtable<String, YANG_Specification>();
 	static protected boolean isCheckOk = true;

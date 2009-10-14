@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 
 
-public class YANG_Prefix extends SimpleNode implements YANG_Header {
+public class YANG_Prefix extends SimpleYangNode implements YANG_Header {
 
 	private String prefix = null;
 

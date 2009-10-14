@@ -22,18 +22,13 @@ import java.util.*;
 
 
 
-public class YANG_LeafList extends  YANG_DataDefConfigMust
-		implements YANG_CaseDef, YANG_ShortCase {
+public class YANG_LeafList extends  ListedDataDef{
 
 	private String leaflist = null;
 	private YANG_Type type = null;
 	private YANG_Units units = null;
-	private YANG_MinElement min = null;
-	private YANG_MaxElement max = null;
-	private YANG_OrderedBy ordered = null;
 
-	private boolean b_type = false, b_units = false,
-			b_min = false, b_max = false, b_ordered = false;
+	private boolean b_type = false, b_units = false;
 
 	public YANG_LeafList(int id) {
 		super(id);
@@ -80,47 +75,8 @@ public class YANG_LeafList extends  YANG_DataDefConfigMust
 	}
 
 
-	public void setMinElement(YANG_MinElement m) throws YangParserException {
-		if (b_min)
-			throw new YangParserException(
-					"Min element already defined in leaf-list " + leaflist, m
-							.getLine(), m.getCol());
-		b_min = true;
-		min = m;
-	}
-
-	public YANG_MinElement getMinElement() {
-		return min;
-	}
-
-	public void setMaxElement(YANG_MaxElement m) throws YangParserException {
-		if (b_max)
-			throw new YangParserException(
-					"Max element already defined in leaf-list " + leaflist, m
-							.getLine(), m.getCol());
-		b_max = true;
-		max = m;
-	}
-
-	public YANG_MaxElement getMaxElement() {
-		return max;
-	}
-
-	public void setOrderedBy(YANG_OrderedBy o) throws YangParserException {
-		if (b_ordered)
-			throw new YangParserException(
-					"Ordered-by already defined in leaf-list " + leaflist, o
-							.getLine(), o.getCol());
-		b_ordered = true;
-		ordered = o;
-	}
-
-	public YANG_OrderedBy getOrderedBy() {
-		return ordered;
-	}
-	
 	public boolean isBracked(){
-		return super.isBracked() || b_ordered || b_min || b_max || b_type || b_units;
+		return super.isBracked() || b_type || b_units;
 	}
 
 	
@@ -134,8 +90,8 @@ public class YANG_LeafList extends  YANG_DataDefConfigMust
 		
 		if (b_config){
 			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig.getConfig().compareTo("false") == 0 &&
-					getConfig().getConfig().compareTo("true") == 0)
+			if (parentConfig.getConfigStr().compareTo("false") == 0 &&
+					getConfig().getConfigStr().compareTo("true") == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol() +
 						":config to true and parent config to false");
 		}
@@ -149,12 +105,7 @@ public class YANG_LeafList extends  YANG_DataDefConfigMust
 			result += type.toString() + "\n";
 		if (b_units)
 			result += units.toString() + "\n";
-		if (min != null)
-			result += min.toString() + "\n";
-		if (max != null)
-			result += max.toString() + "\n";
-		if (ordered != null)
-			result += ordered.toString() + "\n";
+		result += super.toString() + "\n";
 		result += super.toString() + "\n";
 		result += "}\n";
 

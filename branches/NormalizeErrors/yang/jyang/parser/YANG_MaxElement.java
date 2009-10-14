@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_MaxElement extends SimpleNode {
+public class YANG_MaxElement extends SimpleYangNode {
 
     private String max = null;
 

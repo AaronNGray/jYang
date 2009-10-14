@@ -21,27 +21,25 @@ package jyang.parser;
 import java.util.Enumeration;
 
 
-public  class YANG_Refinement extends YANG_Body {
+public  abstract class YANG_Refine extends DocumentedNode {
 	
 	protected String usedgrouping = null;
 	protected String refineNodeId = null;
 	
 	
 
-	public YANG_Refinement(int id) {
+	public YANG_Refine(int id) {
 		super(id);
 	}
 
-	public YANG_Refinement(yang p, int id) {
+	public YANG_Refine(yang p, int id) {
 		super(p, id);
 	}
 
 	public  String getBody(){return "";}
 
-	public  void check(YangContext context, YANG_Grouping g)
-			throws YangParserException{
-		
-	}
+	public  abstract void check(YangContext context, YANG_Grouping g)
+			throws YangParserException;
 
 	public void setUsedGrouping(String g){
 		usedgrouping = g;
@@ -161,8 +159,8 @@ public  class YANG_Refinement extends YANG_Body {
 	public void check(YangContext context, YANG_Case yc)
 			throws YangParserException {
 		boolean found = false;
-		YANG_CaseDef cdef = null;
-		for (Enumeration<YANG_CaseDef> ec = yc.getCaseDefs().elements(); ec
+		YANG_CaseDataDef cdef = null;
+		for (Enumeration<YANG_CaseDataDef> ec = yc.getCaseDefs().elements(); ec
 				.hasMoreElements()
 				&& !found;) {
 			cdef = ec.nextElement();
@@ -253,7 +251,6 @@ public  class YANG_Refinement extends YANG_Body {
 		}
 	}
 
-	@Override
 	public void check(YangContext context) throws YangParserException {
 		// TODO Auto-generated method stub
 		

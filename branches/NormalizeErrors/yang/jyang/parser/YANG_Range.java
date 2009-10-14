@@ -23,7 +23,7 @@ import java.util.regex.PatternSyntaxException;
 
 
 
-public class YANG_Range extends SimpleNode implements YANG_NumericalRestriction {
+public class YANG_Range extends SimpleYangNode implements YANG_NumericalRestriction {
 
 	private String range = null;
 	private YANG_ErrorMessage errmess = null;

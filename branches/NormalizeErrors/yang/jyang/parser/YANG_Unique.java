@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class YANG_Unique extends SimpleNode {
+public class YANG_Unique extends SimpleYangNode {
 
 	private Pattern desc_sch_nid = null;
 

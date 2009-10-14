@@ -22,20 +22,15 @@ package jyang.parser;
 import java.util.*;
 
 
-public class YANG_RefineLeaf extends YANG_Refinement {
+public class YANG_RefineLeaf extends MustRefineNode {
 
 	private String refineleaf = null;
-	private Vector<YANG_Must> musts = new Vector<YANG_Must>();
 	private YANG_Default ydefault = null;
-	private YANG_Config config = null;
 	private YANG_Mandatory mandatory = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 
 	private boolean bracked = false;
 
-	private boolean b_default = false, b_config = false, b_mandatory = false,
-			b_description = false, b_reference = false;
+	private boolean b_default = false, b_mandatory = false;
 
 	public YANG_RefineLeaf(int id) {
 		super(id);
@@ -57,15 +52,6 @@ public class YANG_RefineLeaf extends YANG_Refinement {
 		return refineleaf;
 	}
 
-	public void addMust(YANG_Must m) {
-		musts.add(m);
-		bracked = true;
-	}
-
-	public Vector<YANG_Must> getMusts() {
-		return musts;
-	}
-
 	public void setDefault(YANG_Default d) throws YangParserException {
 		if (b_default)
 			throw new YangParserException(
@@ -78,20 +64,6 @@ public class YANG_RefineLeaf extends YANG_Refinement {
 
 	public YANG_Default getDefault() {
 		return ydefault;
-	}
-
-	public void setConfig(YANG_Config c) throws YangParserException {
-		if (b_config)
-			throw new YangParserException(
-					"Config already defined in refine leaf " + refineleaf, c
-							.getLine(), c.getCol());
-		b_config = true;
-		config = c;
-		bracked = true;
-	}
-
-	public YANG_Config getConfig() {
-		return config;
 	}
 
 	public void setMandatory(YANG_Mandatory m) throws YangParserException {
@@ -108,34 +80,6 @@ public class YANG_RefineLeaf extends YANG_Refinement {
 		return mandatory;
 	}
 
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException(
-					"Description already defined in refine leaf " + refineleaf,
-					d.getLine(), d.getCol());
-		b_description = true;
-		description = d;
-		bracked = true;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException(
-					"Reference already defined in refine leaf " + refineleaf, r
-							.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-		bracked = true;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
 	public boolean isBracked() {
 		return bracked;
 	}
@@ -147,15 +91,15 @@ public class YANG_RefineLeaf extends YANG_Refinement {
 		
 		YANG_Config parentConfig = getParentConfig();
 		if (b_config){
-			if (parentConfig.getConfig().compareTo("false") == 0 &&
-					config.getConfig().compareTo("true") == 0)
+			if (parentConfig.getConfigStr().compareTo("false") == 0 &&
+					config.getConfigStr().compareTo("true") == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol() +
 						":config to true and parent config to false");
 		}
 		else {
 			if (leaf.getConfig() != null){
-				if (parentConfig.getConfig().compareTo("false") == 0 &&
-						leaf.getConfig().getConfig().compareTo("true") == 0)
+				if (parentConfig.getConfigStr().compareTo("false") == 0 &&
+						leaf.getConfig().getConfigStr().compareTo("true") == 0)
 					throw new YangParserException("@" + getLine() + "." + getCol() +
 							":config to true in the grouping  but parent config to false");
 				
@@ -194,15 +138,15 @@ public class YANG_RefineLeaf extends YANG_Refinement {
 
 		YANG_Config parentConfig = getParentConfig();
 		if (b_config){
-			if (parentConfig.getConfig().compareTo("false") == 0 &&
-					config.getConfig().compareTo("true") == 0)
+			if (parentConfig.getConfigStr().compareTo("false") == 0 &&
+					config.getConfigStr().compareTo("true") == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol() +
 						":config to true and parent config to false");
 		}
 		else {
 			if (leaf.getConfig() != null){
-				if (parentConfig.getConfig().compareTo("false") == 0 &&
-						leaf.getConfig().getConfig().compareTo("true") == 0)
+				if (parentConfig.getConfigStr().compareTo("false") == 0 &&
+						leaf.getConfig().getConfigStr().compareTo("true") == 0)
 					throw new YangParserException("@" + getLine() + "." + getCol() +
 							":config to true in the grouping  but parent config to false");
 				
@@ -216,19 +160,9 @@ public class YANG_RefineLeaf extends YANG_Refinement {
 		result += "leaf " + refineleaf;
 		if (bracked) {
 			result += "{\n";
-			for (Enumeration<YANG_Must> em = musts.elements(); em
-					.hasMoreElements();)
-				result += em.nextElement().toString() + "\n";
 			if (ydefault != null)
-				result += ydefault.toString() + "\n";
-			if (config != null)
-				result += config.toString() + "\n";
 			if (mandatory != null)
 				result += mandatory.toString() + "\n";
-			if (description != null)
-				result += description.toString() + "\n";
-			if (reference != null)
-				result += reference.toString() + "\n";
 			result += "}";
 		} else
 			result += ";";
@@ -236,9 +170,4 @@ public class YANG_RefineLeaf extends YANG_Refinement {
 		return result;
 	}
 
-	@Override
-	public void check(YangContext context) throws YangParserException {
-		// TODO Auto-generated method stub
-		
-	}
 }

@@ -1,18 +1,17 @@
 package jyang.parser;
 
 
-public abstract class YANG_DeviateConfig extends YANG_DeviateUnitsDefault {
+public abstract class DeviateAddReplace extends Deviate {
 
 	private YANG_Config config = null;
-	
 	private YANG_Mandatory mandatory = null;
 	private YANG_MinElement min = null;
 	private YANG_MaxElement max = null;
 	
-	public YANG_DeviateConfig(int i) {
+	public DeviateAddReplace(int i) {
 		super(i);
 	}
-	public YANG_DeviateConfig(yang p, int i) {
+	public DeviateAddReplace(yang p, int i) {
 		super(p, i);
 	}
 	public YANG_Config getConfig() {

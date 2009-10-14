@@ -22,7 +22,7 @@ import java.util.*;
 
 
 
-public class YANG_Output extends YANG_DataDef {
+public class YANG_Output extends SimpleYangNode {
 
 	private Vector<YANG_TypeDef> typedefs = new Vector<YANG_TypeDef>();
 	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
@@ -109,11 +109,6 @@ public class YANG_Output extends YANG_DataDef {
 			result += ed.nextElement().toString() + "\n";
 		result += "}";
 		return result;
-	}
-
-	@Override
-	public String getBody() {
-		return "output";
 	}
 
 }

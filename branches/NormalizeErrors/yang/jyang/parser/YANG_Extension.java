@@ -1,19 +1,15 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
 
-public class YANG_Extension extends  YANG_Body{
+
+public class YANG_Extension extends  StatuedBody {
 
     private String extension = null;
     private YANG_Argument argument = null;
-    private YANG_Status status = null;
-    private YANG_Description description = null;
-    private YANG_Reference reference = null;
 
-    private boolean bracked = false;
 
-    private boolean b_argument = false,
-	b_status = false, b_description = false,
-	b_reference = false;
+    private boolean b_argument = false;
 
   public YANG_Extension(int id) {
     super(id);
@@ -35,60 +31,26 @@ public class YANG_Extension extends  YANG_Body{
 	return extension;
     }
 
-    public void setArgument(YANG_Argument a) throws YangParserException {
+    public void setArgument(YANG_Argument a) {
 	if(b_argument)
+		YangErrorManager.add(a.getLine(), a.getCol(), MessageFormat.format(
+				YangErrorManager.messages.getString("ad2"), "argument",
+				getBody()));
+	/*
 	    throw new YangParserException("Argument already defined in extension " +
 					  extension, getLine(), getCol());
+					  */
 	b_argument = true;
 	argument = a;
-	bracked = true;
     }
 
     public YANG_Argument getArgument(){
 	return argument;
     }
 
-    public void setStatus(YANG_Status s) throws YangParserException {
-	if(b_status)
-	    throw new YangParserException("Status already defined in extension " +
-					  extension, getLine(), getCol());
-	b_status = true;
-	status = s;
-	bracked = true;
-    }
-
-    public YANG_Status getStatus(){
-	return status;
-    }
-
-    public void setDescription(YANG_Description d) throws YangParserException {
-	if(b_description)
-	    throw new YangParserException("Status already defined in extension " +
-					  extension, getLine(), getCol());
-	b_description = true;
-	description = d;
-	bracked = true;
-    }
-
-    public YANG_Description getDescription(){
-	return description;
-    }
-
-    public void setReference(YANG_Reference r) throws YangParserException {
-	if(b_reference)
-	    throw new YangParserException("Reference already defined in extension " +
-					  extension, getLine(), getCol());
-	b_reference = true;
-	reference = r;
-	bracked = true;
-    }
-
-    public YANG_Reference getReference(){
-	return reference;
-    }
-
+   
     public boolean isBracked(){
-	return bracked;
+	return b_argument || super.isBracked();
     }
     
     public void check(YangContext context){
@@ -97,16 +59,9 @@ public class YANG_Extension extends  YANG_Body{
     public String toString(){
 	String result = new String();
 	result += "extension " + extension;
-	if(bracked){
+	if(isBracked()){
 	    result += "{\n";
-	    if(argument != null)
-		result +=  argument.toString() + "\n";
-	    if(status != null)
-		result += status.toString() + "\n";
-	    if(description != null)
-		result += description.toString() + "\n";
-	    if(reference != null)
-		result += reference.toString() + "\n";
+	    super.toString();
 	    result += "}";
 	}
 	else

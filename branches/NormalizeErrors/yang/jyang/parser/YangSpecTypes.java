@@ -19,6 +19,7 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YangSpecTypes {
@@ -129,10 +130,12 @@ public class YangSpecTypes {
 					}
 					if (td != null) {
 						td.setCorrect(false);
-						//throw new YangParserException
+						// throw new YangParserException
 						System.err.println(module + "@:type " + basetype
 								+ " used by the typedef " + s + " at line "
 								+ td.getLine() + " is not defined");
+						YangErrorManager.add(module, td.getLine(), td.getCol(),
+								MessageFormat.format(YangErrorManager.messages.getString("nd"), td.getBody()));
 					}
 					// }
 				} else {
@@ -140,11 +143,12 @@ public class YangSpecTypes {
 					if (der.compareTo(basetype) == 0) {
 						YANG_TypeDef td = typedefs.get(basetype);
 						td.setCorrect(false);
-						//throw new YangParserException(
-								System.err.println(
-								module + "@" + td.getLine() + "."
+						// throw new YangParserException(
+						System.err.println(module + "@" + td.getLine() + "."
 								+ td.getCol() + ":typedef " + td.getBody()
 								+ " is self defining");
+						YangErrorManager.add(module, td.getLine(), td.getCol(),
+								MessageFormat.format(YangErrorManager.messages.getString("cd"), td.getBody()));
 					}
 				}
 			}
@@ -154,7 +158,7 @@ public class YangSpecTypes {
 			if (!YangBuiltInTypes.isBuiltIn(basetype)) {
 				Vector<String> chain = new Vector<String>();
 				chain.add(basetype);
-					checkChain(module, chain, deriveds.get(basetype));
+				checkChain(module, chain, deriveds.get(basetype));
 			}
 		}
 	}
@@ -164,15 +168,17 @@ public class YangSpecTypes {
 		if (b.contains(d)) {
 			YANG_TypeDef bt = typedefs.get(d);
 			bt.setCorrect(false);
-			for (Enumeration<String> es = b.elements();es.hasMoreElements();){
+			for (Enumeration<String> es = b.elements(); es.hasMoreElements();) {
 				String tn = es.nextElement();
 				YANG_TypeDef td = typedefs.get(tn);
 				td.setCorrect(false);
 			}
-			//throw new YangParserException
-			System.err.println(module + "@" + bt.getLine() + "."
-					+ bt.getCol() + ":circular dependency for type \"" + d
-					+ "\"");
+			// throw new YangParserException
+			System.err.println(module + "@" + bt.getLine() + "." + bt.getCol()
+					+ ":circular dependency for type \"" + d + "\"");
+			YangErrorManager.add(module, bt.getLine(), bt.getCol(),
+					MessageFormat.format(YangErrorManager.messages.getString("cd"), bt.getBody()));
+			
 			return false;
 		}
 		if (!YangBuiltInTypes.isBuiltIn(d)) {

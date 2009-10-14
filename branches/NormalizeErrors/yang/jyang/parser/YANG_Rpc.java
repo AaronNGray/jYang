@@ -22,11 +22,9 @@ import java.util.*;
 
 
 
-public class YANG_Rpc extends YANG_DataDefInfo {
+public class YANG_Rpc extends TypedefGroupingBody {
 
 	private String rpc = null;
-	private Vector<YANG_TypeDef> typedefs = new Vector<YANG_TypeDef>();
-	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
 	private YANG_Input input = null;
 	private YANG_Output output = null;
 
@@ -51,23 +49,6 @@ public class YANG_Rpc extends YANG_DataDefInfo {
 
 	public String getRpc() {
 		return rpc;
-	}
-
-	
-	public void addTypeDef(YANG_TypeDef t) {
-		typedefs.add(t);
-	}
-
-	public Vector<YANG_TypeDef> getTypeDefs() {
-		return typedefs;
-	}
-
-	public void addGrouping(YANG_Grouping g) {
-		groupings.add(g);
-	}
-
-	public Vector<YANG_Grouping> getGroupings() {
-		return groupings;
 	}
 
 	public void setInput(YANG_Input i) throws YangParserException {
@@ -96,7 +77,7 @@ public class YANG_Rpc extends YANG_DataDefInfo {
 	}
 
 	public boolean isBracked(){
-		return super.isBracked() || b_input || b_output || typedefs.size() != 0 || groupings.size() != 0;
+		return super.isBracked() || b_input || b_output ;
 	}
 
 	public void check(YangContext context) throws YangParserException {
@@ -112,12 +93,6 @@ public class YANG_Rpc extends YANG_DataDefInfo {
 		if (isBracked()) {
 			result += "{\n";
 			result += super.toString() + "\n";
-			for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
-					.hasMoreElements();)
-				result += et.nextElement().toString() + "\n";
-			for (Enumeration<YANG_Grouping> eg = groupings.elements(); eg
-					.hasMoreElements();)
-				result += eg.nextElement().toString() + "\n";
 			if (b_input)
 				result += input.toString() + "\n";
 			if (b_output)

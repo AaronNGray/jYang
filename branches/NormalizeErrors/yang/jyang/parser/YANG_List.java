@@ -21,15 +21,11 @@ package jyang.parser;
  */
 import java.util.*;
 
-public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
-		YANG_ShortCase {
+public class YANG_List extends ListedDataDef {
 
 	private String list = null;
 	private YANG_Key key = null;
 	private Vector<YANG_Unique> uniques = new Vector<YANG_Unique>();
-	private YANG_MinElement min = null;
-	private YANG_MaxElement max = null;
-	private YANG_OrderedBy orderedby = null;
 	private Vector<YANG_TypeDef> typedefs = new Vector<YANG_TypeDef>();
 	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
@@ -78,44 +74,6 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 		return uniques;
 	}
 
-	public void setMinElement(YANG_MinElement m) throws YangParserException {
-		if (b_min)
-			throw new YangParserException(
-					"Min element already defined in leaf-list " + list, m
-							.getLine(), m.getCol());
-		b_min = true;
-		min = m;
-	}
-
-	public YANG_MinElement getMinElement() {
-		return min;
-	}
-
-	public void setMaxElement(YANG_MaxElement m) throws YangParserException {
-		if (b_max)
-			throw new YangParserException(
-					"Max element already defined in leaf-list " + list, m
-							.getLine(), m.getCol());
-		b_max = true;
-		max = m;
-	}
-
-	public YANG_MaxElement getMaxElement() {
-		return max;
-	}
-
-	public void setOrderedBy(YANG_OrderedBy o) throws YangParserException {
-		if (b_ordered)
-			throw new YangParserException(
-					"Ordered-by already defined in leaf-list " + list, o
-							.getLine(), o.getCol());
-		b_ordered = true;
-		orderedby = o;
-	}
-
-	public YANG_OrderedBy getOrderedBy() {
-		return orderedby;
-	}
 
 	public void addTypeDef(YANG_TypeDef t) {
 		typedefs.add(t);
@@ -149,14 +107,14 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 	public void check(YangContext context) throws YangParserException {
 		if (!b_key) {
 			if (b_config) {
-				if (getConfig().getConfig().compareTo("true") == 0)
+				if (getConfig().getConfigStr().compareTo("true") == 0)
 					throw new YangParserException("@" + getLine() + "."
 							+ getCol() + ":key not present in list "
 							+ getList() + " with config true");
 			} else {
 				YANG_Config parentConfig = getParentConfig();
 				if (parentConfig != null)
-					if (parentConfig.getConfig().compareTo("true") == 0)
+					if (parentConfig.getConfigStr().compareTo("true") == 0)
 						throw new YangParserException("@" + getLine() + "."
 								+ getCol() + ":key not present in list "
 								+ getList() + " with parent config true");
@@ -166,8 +124,8 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 			if (b_config) {
 				YANG_Config parentConfig = getParentConfig();
 				if (parentConfig != null)
-					if (parentConfig.getConfig().compareTo("false") == 0
-							&& getConfig().getConfig().compareTo("true") == 0)
+					if (parentConfig.getConfigStr().compareTo("false") == 0
+							&& getConfig().getConfigStr().compareTo("true") == 0)
 						throw new YangParserException("@" + getLine() + "."
 								+ getCol()
 								+ ":config to true and parent config to false");
@@ -183,9 +141,9 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 				boolean found = false;
 				String configlist = null;
 				if (!b_config) {
-					configlist = getParentConfig().getConfig();
+					configlist = getParentConfig().getConfigStr();
 				} else
-					configlist = getConfig().getConfig();
+					configlist = getConfig().getConfigStr();
 				if (configlist != null)
 					for (Enumeration<YANG_DataDef> ed = getDataDefs()
 							.elements(); !found && ed.hasMoreElements();) {
@@ -215,7 +173,7 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 										configkeyleaf = YangBuiltInTypes
 												.removeQuotesAndTrim(leaf
 														.getConfig()
-														.getConfig());
+														.getConfigStr());
 									if (configlist.compareTo(configkeyleaf) != 0)
 										throw new YangParserException(
 												"@"
@@ -280,9 +238,9 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 			for (Enumeration<YANG_Case> ecases = c.getCases().elements(); ecases
 					.hasMoreElements();) {
 				YANG_Case ca = ecases.nextElement();
-				for (Enumeration<YANG_CaseDef> ecdef = ca.getCaseDefs()
+				for (Enumeration<YANG_CaseDataDef> ecdef = ca.getCaseDefs()
 						.elements(); ecdef.hasMoreElements();) {
-					YANG_CaseDef cdef = ecdef.nextElement();
+					YANG_CaseDataDef cdef = ecdef.nextElement();
 					if (cdef instanceof YANG_DataDef)
 						if (findKey(context, k, (YANG_DataDef) cdef))
 							return true;
@@ -301,12 +259,7 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 		for (Enumeration<YANG_Unique> eu = uniques.elements(); eu
 				.hasMoreElements();)
 			result += eu.nextElement().toString() + "\n";
-		if (min != null)
-			result += min.toString() + "\n";
-		if (max != null)
-			result += max.toString() + "\n";
-		if (orderedby != null)
-			result += orderedby.toString() + "\n";
+		result += super.toString() + "\n";
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 				.hasMoreElements();)
 			result += et.nextElement().toString() + "\n";

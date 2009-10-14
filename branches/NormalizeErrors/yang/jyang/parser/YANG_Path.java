@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 
 
-public class YANG_Path extends SimpleNode  {
+public class YANG_Path extends SimpleYangNode  {
 
 	private String path = null;
 

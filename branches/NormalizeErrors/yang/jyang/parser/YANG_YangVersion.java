@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_YangVersion extends SimpleNode implements YANG_Header {
+public class YANG_YangVersion extends SimpleYangNode implements YANG_Header {
 
     private String version = null;
 

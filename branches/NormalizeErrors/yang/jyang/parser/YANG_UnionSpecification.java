@@ -21,7 +21,7 @@ package jyang.parser;
 import java.util.*;
 
 
-public class YANG_UnionSpecification extends SimpleNode {
+public class YANG_UnionSpecification extends SimpleYangNode {
 
     private Vector<YANG_Type> types = new Vector<YANG_Type>();
 

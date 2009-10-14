@@ -3,7 +3,7 @@
 package jyang.parser;
 
 
-public class YANG_IfFeature extends SimpleNode {
+public class YANG_IfFeature extends SimpleYangNode {
 	
 	private String iffeature = null;
 	

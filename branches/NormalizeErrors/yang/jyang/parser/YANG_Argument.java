@@ -1,9 +1,14 @@
 package jyang.parser;
 
 
-public class YANG_Argument extends SimpleNode {
+public class YANG_Argument extends SimpleYangNode {
 
-    private String argument = null;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6256309128763772225L;
+	
+	private String argument = null;
     private YANG_Yin yin = null;
 
     private boolean bracked = false;

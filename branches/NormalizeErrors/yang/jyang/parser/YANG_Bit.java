@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_Bit extends SimpleNode {
+public class YANG_Bit extends SimpleYangNode {
 
 	private String bit = null;
 	private YANG_Position position = null;

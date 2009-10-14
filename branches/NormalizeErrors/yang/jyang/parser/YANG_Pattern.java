@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class YANG_Pattern extends SimpleNode {
+public class YANG_Pattern extends SimpleYangNode {
 
 	private String pattern = null;
 	private YANG_ErrorMessage errmess = null;

@@ -6,8 +6,6 @@ import java.util.Vector;
 public class YANG_Deviation extends YANG_Body {
 
 	private String deviation = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 	private YANG_DeviateNotSupported deviateNotSupported = null;
 
 	private Vector<YANG_DeviateAdd> deviateadds = new Vector<YANG_DeviateAdd>();
@@ -45,22 +43,6 @@ public class YANG_Deviation extends YANG_Body {
 
 	public void setDeviateNotSupported(YANG_DeviateNotSupported deviateNotSupported) {
 		this.deviateNotSupported = deviateNotSupported;
-	}
-	
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setDescription(YANG_Description description) {
-		this.description = description;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
-	public void setReference(YANG_Reference reference) {
-		this.reference = reference;
 	}
 	
 	public void addDeviateAdd(YANG_DeviateAdd da){

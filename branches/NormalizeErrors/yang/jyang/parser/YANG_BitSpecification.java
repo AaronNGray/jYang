@@ -21,7 +21,7 @@ package jyang.parser;
 import java.util.*;
 
 
-public class YANG_BitSpecification extends SimpleNode {
+public class YANG_BitSpecification extends SimpleYangNode {
 
     private Vector<YANG_Bit> bits = new Vector<YANG_Bit>();
 

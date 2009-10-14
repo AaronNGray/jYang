@@ -21,7 +21,7 @@ package jyang.parser;
 import java.util.regex.PatternSyntaxException;
 
 
-public class YANG_Length extends SimpleNode {
+public class YANG_Length extends SimpleYangNode {
 
 	private String length = null;
 	private YANG_ErrorMessage errmess = null;

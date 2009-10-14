@@ -30,8 +30,6 @@ import java.util.Vector;
 
 public interface Node extends java.io.Serializable {
 
-	public void addUnknown(YANG_Unknown u);
-	public Vector<YANG_Unknown> getUnknowns();
 	
   /** This method is called after the node has been made the current
     node.  It indicates that child nodes can now be added to it. */
@@ -56,17 +54,5 @@ public interface Node extends java.io.Serializable {
 
   /** Return the number of children the node has. */
   public int jjtGetNumChildren();
-
-    /** Return the line of the node **/
-    public int getLine();
-
-    /** Return the column of the node **/
-    public int getCol();
-
-    /** Syntaxic ckeck after lexical **/
-  //  public void check() throws YangParserException;
-
-    /** Semantical check after syntaxic **/
-//    public void check(String[] paths, yang p) throws ParseException;
 
 }

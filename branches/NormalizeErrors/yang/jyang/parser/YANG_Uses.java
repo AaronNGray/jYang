@@ -21,18 +21,19 @@ package jyang.parser;
  */
 import java.util.*;
 
-public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
+public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
 
 	private String uses = null;
-	private Vector<YANG_Refinement> refinements = new Vector<YANG_Refinement>();
+	private Vector<YANG_Refine> refinements = new Vector<YANG_Refine>();
 	private Vector<YANG_UsesAugment> usesaugments = new Vector<YANG_UsesAugment>();
 
+	/**
+	 * Grouping used reference
+	 */
 	private YANG_Grouping grouping = null;
-
 	public YANG_Grouping getGrouping() {
 		return grouping;
 	}
-
 	public void setGrouping(YANG_Grouping g) {
 		this.grouping = g;
 	}
@@ -62,12 +63,12 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 				|| usesaugments.size() != 0;
 	}
 
-	public void addRefinement(YANG_Refinement r) throws YangParserException {
+	public void addRefinement(YANG_Refine r) throws YangParserException {
 
 		refinements.add(r);
 	}
 
-	public Vector<YANG_Refinement> getRefinements() {
+	public Vector<YANG_Refine> getRefinements() {
 		return refinements;
 	}
 
@@ -161,9 +162,9 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 				}
 			}
 
-			for (Enumeration<YANG_Refinement> er = refinements.elements(); er
+			for (Enumeration<YANG_Refine> er = refinements.elements(); er
 					.hasMoreElements();) {
-				YANG_Refinement ref = er.nextElement();
+				YANG_Refine ref = er.nextElement();
 				try {
 					ref.setUsedGrouping("from the used grouping "
 							+ grouping.getGrouping() + " at line "
@@ -185,9 +186,6 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 		if (isBracked()) {
 			result += "{\n";
 			result += super.toString() + "\n";
-			for (Enumeration<YANG_Refinement> er = refinements.elements(); er
-					.hasMoreElements();)
-				result += er.nextElement().toString() + "\n";
 			for (Enumeration<YANG_UsesAugment> er = usesaugments.elements(); er
 					.hasMoreElements();)
 				result += er.nextElement().toString() + "\n";

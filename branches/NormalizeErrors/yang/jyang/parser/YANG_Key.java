@@ -23,7 +23,7 @@ import java.util.regex.PatternSyntaxException;
 
 
 
-public class YANG_Key extends SimpleNode {
+public class YANG_Key extends SimpleYangNode {
 
 	private String key = null;
 

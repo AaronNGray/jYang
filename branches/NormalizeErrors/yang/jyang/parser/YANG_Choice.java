@@ -21,7 +21,7 @@ package jyang.parser;
 import java.util.*;
 
 
-public class YANG_Choice extends YANG_DataDefConfig {
+public class YANG_Choice extends ConfigDataDef {
 
 	private String choice = null;
 	private YANG_Default ydefault = null;
@@ -100,9 +100,9 @@ public class YANG_Choice extends YANG_DataDefConfig {
 	}
 
 	private void trackMandatory(YANG_Case c) throws YangParserException {
-		for (Enumeration<YANG_CaseDef> ecd = c.getCaseDefs().elements(); ecd
+		for (Enumeration<YANG_CaseDataDef> ecd = c.getCaseDefs().elements(); ecd
 				.hasMoreElements();) {
-			YANG_CaseDef cdef = ecd.nextElement();
+			YANG_CaseDataDef cdef = ecd.nextElement();
 			if (cdef instanceof YANG_AnyXml) {
 				try {
 					checkMandatory((YANG_AnyXml) cdef);
@@ -165,8 +165,10 @@ public class YANG_Choice extends YANG_DataDefConfig {
 			YANG_DataDef ddef = edd.nextElement();
 			if (ddef instanceof YANG_AnyXml)
 				checkMandatory((YANG_AnyXml) ddef);
+			/*
 			else if (ddef instanceof YANG_Augment)
 				trackMandatory(((YANG_Augment) ddef).getDataDefs());
+				*/
 			else if (ddef instanceof YANG_Choice) {
 				YANG_Choice choice = (YANG_Choice) ddef;
 				if (choice.getMandatory() != null)
@@ -247,8 +249,8 @@ public class YANG_Choice extends YANG_DataDefConfig {
 		
 		if (b_config){
 			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig.getConfig().compareTo("false") == 0 &&
-					getConfig().getConfig().compareTo("true") == 0)
+			if (parentConfig.getConfigStr().compareTo("false") == 0 &&
+					getConfig().getConfigStr().compareTo("true") == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol() +
 						":config to true and parent config to false");
 		}

@@ -18,5 +18,5 @@ package jyang.parser;
     along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-public interface YANG_Linkage {
+public interface YANG_Linkage extends YangNode{
 }

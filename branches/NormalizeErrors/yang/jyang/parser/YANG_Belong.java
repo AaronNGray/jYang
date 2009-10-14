@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_Belong extends SimpleNode implements YANG_Header{
+public class YANG_Belong extends SimpleYangNode implements YANG_Header{
 
     private String belong = null;
     private YANG_Prefix prefix = null;
