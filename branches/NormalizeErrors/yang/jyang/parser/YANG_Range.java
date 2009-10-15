@@ -23,13 +23,9 @@ import java.util.regex.PatternSyntaxException;
 
 
 
-public class YANG_Range extends SimpleYangNode implements YANG_NumericalRestriction {
+public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestriction {
 
 	private String range = null;
-	private YANG_ErrorMessage errmess = null;
-	private YANG_ErrorAppt errapptag = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 
 	private String[][] ranges = null;
 
@@ -52,59 +48,12 @@ public class YANG_Range extends SimpleYangNode implements YANG_NumericalRestrict
 		return range;
 	}
 
-	public void setErrMess(YANG_ErrorMessage e) {
-		errmess = e;
-		bracked = true;
-	}
-
-	public YANG_ErrorMessage getErrMess() {
-		return errmess;
-	}
-
-	public void setErrAppTag(YANG_ErrorAppt e) {
-		errapptag = e;
-		bracked = true;
-	}
-
-	public YANG_ErrorAppt getErrAppTag() {
-		return errapptag;
-	}
-
-	public void setDescription(YANG_Description d) {
-		description = d;
-		bracked = true;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) {
-		reference = r;
-		bracked = true;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
-	public boolean isBracked() {
-		return bracked;
-	}
-
 	public String toString() {
 		String result = new String();
 		result += "range " + range;
 		if (bracked) {
 			result += "{\n";
-			if (errmess != null)
-				result += errmess + "\n";
-			if (errapptag != null)
-				result += errapptag + "\n";
-			if (description != null)
-				result += description.toString() + "\n";
-			if (reference != null)
-				result += reference.toString() + "\n";
+			result += super.toString();
 			result += "}";
 		} else
 			result += ";";

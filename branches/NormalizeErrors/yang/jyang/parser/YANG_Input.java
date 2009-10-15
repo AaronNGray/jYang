@@ -22,11 +22,7 @@ import java.util.*;
 
 
 
-public class YANG_Input extends SimpleYangNode {
-
-	private Vector<YANG_TypeDef> typedefs = new Vector<YANG_TypeDef>();
-	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
-	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
+public class YANG_Input extends Io {
 
 	public YANG_Input(int id) {
 		super(id);
@@ -34,30 +30,6 @@ public class YANG_Input extends SimpleYangNode {
 
 	public YANG_Input(yang p, int id) {
 		super(p, id);
-	}
-
-	public void addTypeDef(YANG_TypeDef t) {
-		typedefs.add(t);
-	}
-
-	public Vector<YANG_TypeDef> getTypeDefs() {
-		return typedefs;
-	}
-
-	public void addGrouping(YANG_Grouping g) {
-		groupings.add(g);
-	}
-
-	public Vector<YANG_Grouping> getGroupings() {
-		return groupings;
-	}
-
-	public void addDataDef(YANG_DataDef d) {
-		datadefs.add(d);
-	}
-
-	public Vector<YANG_DataDef> getDataDefs() {
-		return datadefs;
 	}
 
 	public void check(YangContext context) throws YangParserException {
@@ -97,15 +69,7 @@ public class YANG_Input extends SimpleYangNode {
 	public String toString() {
 		String result = new String();
 		result += "input {\n";
-		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
-				.hasMoreElements();)
-			result += et.nextElement().toString() + "\n";
-		for (Enumeration<YANG_Grouping> eg = groupings.elements(); eg
-				.hasMoreElements();)
-			result += eg.nextElement().toString() + "\n";
-		for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
-				.hasMoreElements();)
-			result += ed.nextElement().toString() + "\n";
+		result += super.toString();
 		result += "}";
 		return result;
 	}

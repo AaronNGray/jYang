@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_Must extends SimpleYangNode {
+public class YANG_Must extends ErrorTagedNode {
 
 	private String must = null;
 	private YANG_ErrorMessage errmess = null;
@@ -11,8 +11,6 @@ public class YANG_Must extends SimpleYangNode {
 
 	private boolean bracked = false;
 
-	private boolean b_errmess = false, b_errapptag = false,
-			b_description = false, b_reference = false;
 
 	public YANG_Must(int id) {
 		super(id);
@@ -30,63 +28,6 @@ public class YANG_Must extends SimpleYangNode {
 		return must;
 	}
 
-	public void setErrMess(YANG_ErrorMessage e) throws YangParserException {
-		if (b_errmess)
-			throw new YangParserException(
-					"Error message already defined in must" + must, getLine(),
-					getCol());
-		b_errmess = true;
-		bracked = true;
-		errmess = e;
-	}
-
-	public YANG_ErrorMessage getErrMess() {
-		return errmess;
-	}
-
-	public void setErrAppTag(YANG_ErrorAppt e) throws YangParserException {
-		if (b_errapptag)
-			throw new YangParserException(
-					"Error App Tag already defined in must" + must, getLine(),
-					getCol());
-		b_errapptag = true;
-		bracked = true;
-		errapptag = e;
-	}
-
-	public YANG_ErrorAppt getErrAppTag() {
-		return errapptag;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException("Description already defined in must"
-					+ must, d.getLine(), d.getCol());
-		b_description = true;
-		bracked = true;
-		description = d;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException("Reference already defined in must"
-					+ must, r.getLine(), r.getCol());
-		b_reference = true;
-		bracked = true;
-		reference = r;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
-	public boolean isBracked() {
-		return bracked;
-	}
 
 	public void check(YangContext context) {
 	}
@@ -96,14 +37,7 @@ public class YANG_Must extends SimpleYangNode {
 		result += "must " + must;
 		if (bracked) {
 			result += "{\n";
-			if (errmess != null)
-				result += errmess + "\n";
-			if (errapptag != null)
-				result += errapptag + "\n";
-			if (description != null)
-				result += description.toString() + "\n";
-			if (reference != null)
-				result += reference.toString() + "\n";
+			result += super.toString();
 		} else
 			result += ";";
 

@@ -4,17 +4,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class YANG_Pattern extends SimpleYangNode {
+public class YANG_Pattern extends ErrorTagedNode {
 
 	private String pattern = null;
-	private YANG_ErrorMessage errmess = null;
-	private YANG_ErrorAppt errapptag = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 
 	private Pattern regexp = null;
 
-	private boolean bracked = false;
 
 	public YANG_Pattern(int id) {
 		super(id);
@@ -42,46 +37,6 @@ public class YANG_Pattern extends SimpleYangNode {
 		return pattern;
 	}
 
-	public void setErrMess(YANG_ErrorMessage e) {
-		errmess = e;
-		bracked = true;
-	}
-
-	public YANG_ErrorMessage getErrMess() {
-		return errmess;
-	}
-
-	public void setErrAppTag(YANG_ErrorAppt e) {
-		errapptag = e;
-		bracked = true;
-	}
-
-	public YANG_ErrorAppt getErrAppTag() {
-		return errapptag;
-	}
-
-	public void setDescription(YANG_Description d) {
-		description = d;
-		bracked = true;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) {
-		reference = r;
-		bracked = true;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
-	public boolean isBracked() {
-		return bracked;
-	}
-	
 	public void checkExp(String exp) throws YangParserException{
 		Matcher m = regexp.matcher(exp);
 		if (!m.matches())
@@ -93,16 +48,9 @@ public class YANG_Pattern extends SimpleYangNode {
 	public String toString() {
 		String result = new String();
 		result += "pattern " + pattern;
-		if (bracked) {
+		if (isBracked()) {
 			result += "{\n";
-			if (errmess != null)
-				result += errmess + "\n";
-			if (errapptag != null)
-				result += errapptag + "\n";
-			if (description != null)
-				result += description.toString() + "\n";
-			if (reference != null)
-				result += reference.toString() + "\n";
+			result += super.toString();
 			result += "}";
 		} else
 			result += ";";
