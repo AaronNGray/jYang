@@ -1,5 +1,6 @@
 package jyang.parser;
 
+import java.util.Enumeration;
 import java.util.Vector;
 
 public abstract class MustRefineNode extends ConfigRefineNode {
@@ -21,6 +22,14 @@ public abstract class MustRefineNode extends ConfigRefineNode {
 
 	public Vector<YANG_Must> getMusts() {
 		return musts;
+	}
+	
+	public String toString() {
+		String result = "";
+		for (Enumeration<YANG_Must> em = musts.elements();em.hasMoreElements();)
+			result += em.nextElement() + "\n";
+		result += super.toString();
+		return result;
 	}
 	
 

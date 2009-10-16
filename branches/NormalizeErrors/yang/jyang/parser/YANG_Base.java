@@ -20,4 +20,8 @@ public class YANG_Base extends SimpleYangNode {
 	public void setBase(String base) {
 		this.base = base;
 	}
+	
+	public String toString() {
+		return "base " + base;
+	}
 }

@@ -43,7 +43,6 @@ public abstract class Io extends SimpleYangNode {
 
 	public String toString() {
 		String result = "";
-
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 				.hasMoreElements();)
 			result += et.nextElement().toString() + "\n";

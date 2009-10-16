@@ -1,5 +1,6 @@
 package jyang.parser;
 
+import java.util.Enumeration;
 
 public class YANG_DeviateReplace extends DeviateAddReplace {
 
@@ -18,12 +19,30 @@ public class YANG_DeviateReplace extends DeviateAddReplace {
 		return type;
 	}
 
-	public void setType(YANG_Type t)  throws YangParserException {
-		if (b_type)
-			throw new YangParserException(
-					"Type already defined in  deviate-replace ", t
-					.getLine(), t.getCol());
-		this.type = t;
+	public void setType(YANG_Type t) throws YangParserException {
+		if (!b_type) {
+			this.type = t;
+			b_type = true;
+		} else
+			YangErrorManager.add(t.getLine(), t.getCol(),
+					YangErrorManager.messages.getString("type"));
+	}
+
+	public boolean isBracked() {
+		return b_type || super.isBracked();
+	}
+
+	public String toString() {
+		String result = "deviate add";
+		if (isBracked()) {
+			result += "{\n";
+			if (b_type)
+				result += type.toString() + "\n";
+			result += super.toString() + "\n";
+			result += "}";
+		} else
+			result += ";";
+		return result;
 	}
 
 }

@@ -1,25 +1,25 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.regex.PatternSyntaxException;
-
 
 public class YANG_Length extends ErrorTagedNode {
 
@@ -34,7 +34,7 @@ public class YANG_Length extends ErrorTagedNode {
 		super(p, id);
 	}
 
-	public void setLength(String l) throws YangParserException {
+	public void setLength(String l)  {
 		length = l;
 		setLengths();
 	}
@@ -43,8 +43,7 @@ public class YANG_Length extends ErrorTagedNode {
 		return length;
 	}
 
-
-	private void setLengths() throws YangParserException {
+	private void setLengths(){
 
 		String length = YangBuiltInTypes.removeQuotes(getLength());
 		String[] test = null;
@@ -69,9 +68,9 @@ public class YANG_Length extends ErrorTagedNode {
 					lengths[j] = test[j].split("\\.\\.");
 					if (lengths[j].length != 2) {
 
-						throw new YangParserException("@" + getLine() + ":"
-								+ getCol() + ":bad length expression "
-								+ test[j]);
+						YangErrorManager.add(getLine(), getCol(),
+								YangErrorManager.messages
+										.getString("length_exp"));
 					}
 				}
 			} catch (PatternSyntaxException pe) {
@@ -87,11 +86,20 @@ public class YANG_Length extends ErrorTagedNode {
 	public String[][] getLengthIntervals() {
 		return lengths;
 	}
-	
+
+	public boolean isBracked() {
+		return super.isBracked();
+	}
+
 	public String toString() {
 		String result = "";
 		result += "length " + length;
-		result += super.toString();
+		if (isBracked()) {
+			result += "{\n";
+			result += super.toString();
+			result += "}";
+		} else
+			result += ";";
 		return result;
 	}
 

@@ -70,7 +70,8 @@ public class YANG_Output extends Io {
 
 	public String toString() {
 		String result = new String();
-		result += "output {\n";result += super.toString();
+		result += "output {\n";
+		result += super.toString();
 		result += "}";
 		return result;
 	}

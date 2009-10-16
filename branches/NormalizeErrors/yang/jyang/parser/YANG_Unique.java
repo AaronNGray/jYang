@@ -48,8 +48,8 @@ public class YANG_Unique extends SimpleYangNode {
 		if (m.matches())
 			unique = un;
 		else
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":incorrect descendant schema node id :" + u);
+			YangErrorManager.add(getLine(), getCol(),
+					YangErrorManager.messages.getString("unique_exp"));
 	}
 
 	public String getUnique() {

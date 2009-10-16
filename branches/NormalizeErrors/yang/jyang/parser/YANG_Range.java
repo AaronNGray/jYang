@@ -29,7 +29,6 @@ public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestrict
 
 	private String[][] ranges = null;
 
-	private boolean bracked = false;
 
 	public YANG_Range(int id) {
 		super(id);
@@ -39,7 +38,7 @@ public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestrict
 		super(p, id);
 	}
 
-	public void setRange(String r) throws YangParserException {
+	public void setRange(String r) {
 		range = r;
 		setRanges();
 	}
@@ -47,11 +46,15 @@ public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestrict
 	public String getRange() {
 		return range;
 	}
+	
+	public boolean isBracked() {
+		return super.isBracked();
+	}
 
 	public String toString() {
 		String result = new String();
 		result += "range " + range;
-		if (bracked) {
+		if (isBracked()) {
 			result += "{\n";
 			result += super.toString();
 			result += "}";
@@ -60,7 +63,7 @@ public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestrict
 		return result;
 	}
 
-	private void setRanges() throws YangParserException {
+	private void setRanges()  {
 
 		String range = YangBuiltInTypes.removeQuotes(getRange());
 		String[] test = null;
@@ -80,8 +83,8 @@ public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestrict
 				try {
 					ranges[j] = test[j].split("\\.\\.");
 					if (ranges[j].length != 2) {
-						throw new YangParserException("@" + getLine() + ":"
-								+ getCol() + ":bad range expression " + test[j]);
+						YangErrorManager.add(getLine(), getCol(),
+								YangErrorManager.messages.getString("range_exp"));
 					}
 				} catch (PatternSyntaxException pe) {
 					// Cannot occurs
@@ -98,4 +101,6 @@ public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestrict
 	public String[][] getRangeIntervals() {
 		return ranges;
 	}
+	
+	
 }

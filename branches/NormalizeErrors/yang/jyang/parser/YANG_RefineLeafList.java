@@ -23,10 +23,6 @@ import java.util.*;
 
 public class YANG_RefineLeafList extends ListedRefineNode {
 
-	private String refineleaflist = null;
-	
-	private boolean bracked = false;
-	
 	public YANG_RefineLeafList(int id) {
 		super(id);
 	}
@@ -35,22 +31,6 @@ public class YANG_RefineLeafList extends ListedRefineNode {
 		super(p, id);
 	}
 
-	public void setRefineLeafList(String r) {
-		refineleaflist = r;
-	}
-
-	public String getBody() {
-		return getRefineLeafList();
-	}
-
-	public String getRefineLeafList() {
-		return refineleaflist;
-	}
-
-	public boolean isBracked() {
-		return bracked;
-	}
-	
 	public void check(YangContext context, YANG_LeafList leaflist) throws YangParserException {
 		YANG_Config parentConfig = getParentConfig();
 		if (b_config){
@@ -80,12 +60,12 @@ public class YANG_RefineLeafList extends ListedRefineNode {
 			YANG_DataDef ddef = edd.nextElement();
 			if (ddef instanceof YANG_LeafList) {
 				leaflist = (YANG_LeafList) ddef;
-				found = leaflist.getLeafList().compareTo(getRefineLeafList()) == 0;
+				found = leaflist.getLeafList().compareTo(getRefineNodeId()) == 0;
 			}
 		}
 		if (!found)
 			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":refine leaf-list " + getRefineLeafList()
+					+ ":refine leaf-list " + getRefineNodeId()
 					+ " is not in the used grouping " + grouping.getGrouping());
 
 		YANG_Config parentConfig = getParentConfig();
@@ -110,13 +90,8 @@ public class YANG_RefineLeafList extends ListedRefineNode {
 	}
 
 	public String toString() {
-		String result = new String();
-		result += "leaf-list " + refineleaflist;
-		if (bracked) {
-			result += "{\n";
-			result += "}";
-		} else
-			result += ";";
+		String result = "";
+		result += super.toString() + "\n";
 		return result;
 	}
 

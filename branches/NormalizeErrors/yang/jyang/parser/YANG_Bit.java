@@ -1,13 +1,11 @@
 package jyang.parser;
 
-
-public class YANG_Bit extends SimpleYangNode {
+public class YANG_Bit extends StatuedNode {
 
 	private String bit = null;
 	private YANG_Position position = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
+
+	private boolean b_position = false;
 
 	public YANG_Bit(int id) {
 		super(id);
@@ -26,49 +24,34 @@ public class YANG_Bit extends SimpleYangNode {
 	}
 
 	public void setPosition(YANG_Position p) {
-		position = p;
+		if (!b_position) {
+			position = p;
+			b_position = true;
+		} else
+			YangErrorManager.add(p.getLine(), p.getCol(),
+					YangErrorManager.messages.getString("position"));
 	}
 
 	public YANG_Position getPosition() {
 		return position;
 	}
 
-	public void setStatus(YANG_Status s) {
-		status = s;
-	}
-
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) {
-		description = d;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) {
-		reference = r;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
+	public boolean isBracked() {
+		return b_position || super.isBracked();
 	}
 
 	public String toString() {
-		String result = new String();
-		result += "bit " + bit + "{\n";
-		if (position != null)
+		String result = "";
+		result += "bit " + bit;
+		if (isBracked()) {
+			result += "{\n";
+		if (b_position)
 			result += position.toString() + "\n";
-		if (status != null)
-			result += status.toString() + "\n";
-		if (description != null)
-			result += description.toString() + "\n";
-		if (reference != null)
-			result += reference.toString() + "\n";
+		result += super.toString() + "\n";
 		result += "}";
+		}
+		else
+			result += ";";
 		return result;
 	}
 }

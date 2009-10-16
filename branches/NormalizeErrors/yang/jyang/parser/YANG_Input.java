@@ -67,7 +67,7 @@ public class YANG_Input extends Io {
 	}
 
 	public String toString() {
-		String result = new String();
+		String result = "";
 		result += "input {\n";
 		result += super.toString();
 		result += "}";

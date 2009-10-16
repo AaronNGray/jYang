@@ -40,6 +40,10 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	protected Vector<YANG_Module> importeds = new Vector<YANG_Module>();
 	protected Vector<YANG_SubModule> includeds = new Vector<YANG_SubModule>();
 	
+
+	private boolean organization = false, contact = false, description = false,
+			reference = false;
+	
 	
 	
 	
@@ -103,6 +107,39 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 	public Vector<YANG_Body> getBodies() {
 		return bodies;
+	}
+	
+	public void addMeta(YANG_Meta m) {
+		
+		if (m instanceof YANG_Organization) {
+			if (organization)
+				YangErrorManager.add(m.getLine(), m.getCol(),
+						YangErrorManager.messages.getString("organization"));
+			else
+				organization = true;
+		}
+		if (m instanceof YANG_Contact) {
+			if (contact)
+				YangErrorManager.add(m.getLine(), m.getCol(),
+						YangErrorManager.messages.getString("contact"));
+			else
+				contact = true;
+		}
+		if (m instanceof YANG_Description) {
+			if (description)
+				YangErrorManager.add(m.getLine(), m.getCol(),
+						YangErrorManager.messages.getString("description"));
+			else
+				description = true;
+		}
+		if (m instanceof YANG_Reference) {
+			if (reference)
+				YangErrorManager.add(m.getLine(), m.getCol(),
+						YangErrorManager.messages.getString("reference"));
+			else
+				reference = true;
+		}
+		metas.add(m);
 	}
 
 	public void check() throws YangParserException {

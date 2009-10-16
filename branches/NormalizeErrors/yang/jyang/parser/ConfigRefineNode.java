@@ -16,14 +16,13 @@ public abstract class ConfigRefineNode extends YANG_Refine {
 		super(p, id);
 	}
 
-	public void setConfig(YANG_Config c){
-		if (b_config)
-			YangErrorManager.add(c.getLine(), c.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("ad2"), "config",
-					getBody()));
-		
-		b_config = true;
-		config = c;
+	public void setConfig(YANG_Config c) {
+		if (!b_config) {
+			b_config = true;
+			config = c;
+		} else
+			YangErrorManager.add(c.getLine(), c.getCol(),
+					YangErrorManager.messages.getString("config"));
 	}
 
 	public YANG_Config getConfig() {

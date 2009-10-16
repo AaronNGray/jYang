@@ -1685,7 +1685,7 @@ public class YANG_Type extends SimpleYangNode {
 	}
 
 	public String toString() {
-		String result = new String();
+		String result = "";
 		result += "type " + type;
 		if (bracked) {
 			result += "{\n";

@@ -24,12 +24,6 @@ import java.util.*;
 
 public class YANG_RefineCase extends YANG_Refine {
 
-	private String refinecase = null;
-	
-	private Vector<YANG_Refine> refinements = new Vector<YANG_Refine>();
-
-	private boolean bracked = false;
-
 	public YANG_RefineCase(int id) {
 		super(id);
 	}
@@ -38,32 +32,7 @@ public class YANG_RefineCase extends YANG_Refine {
 		super(p, id);
 	}
 
-	public void setRefineCase(String c) {
-		refinecase = c;
-	}
 
-	public String getBody() {
-		return getRefineCase();
-
-	}
-
-	public String getRefineCase() {
-		return refinecase;
-	}
-
-
-	public void addRefinement(YANG_Refine r) {
-		refinements.add(r);
-		bracked = true;
-	}
-
-	public Vector<YANG_Refine> getRefinements() {
-		return refinements;
-	}
-
-	public boolean isBracked() {
-		return bracked;
-	}
 
 	public void check(YangContext c, YANG_Grouping g) throws YangParserException {}
 	
@@ -75,44 +44,28 @@ public class YANG_RefineCase extends YANG_Refine {
 		YANG_ShortCase yscase = null;
 		for (Enumeration <YANG_Case> ec = choice.getCases().elements(); ec.hasMoreElements() && !found;){
 			ycase = ec.nextElement();
-			found = ycase.getCase().compareTo(getRefineCase()) == 0;
+			found = ycase.getCase().compareTo(getRefineNodeId()) == 0;
 		}
 		for (Enumeration <YANG_ShortCase> esc = choice.getShortCases().elements(); esc.hasMoreElements() && !found;){
 			yscase = esc.nextElement();
-			found = yscase.getBody().compareTo(getRefineCase()) == 0;
+			found = yscase.getBody().compareTo(getRefineNodeId()) == 0;
 		}
 		if (!found)
 			throw new YangParserException("@" + getLine() + "." + getCol()
 					+ ":refine case " 
-					+ getRefineCase()
+					+ getRefineNodeId()
 					+ " is not a case of the choice "
 					+ choice.getChoice()
 					+ " at line " 
 					+ choice.getLine()
 					+ " " + usedgrouping);
 		
-		for (Enumeration<YANG_Refine> er = getRefinements().elements(); er.hasMoreElements();){
-			YANG_Refine ref = er.nextElement();
-			ref.setUsedGrouping(usedgrouping);
-			ref.setParent(this);
-			if (ycase != null)
-				ref.check(context, ycase);
-			else if (yscase != null)
-				ref.check(context, yscase);
-		}
+		
 	}
 
 	public String toString() {
-		String result = new String();
-		result += "case " + refinecase;
-		if (bracked) {
-			result += "{\n";
-			for (Enumeration<YANG_Refine> er = refinements.elements(); er
-					.hasMoreElements();)
-				result += er.nextElement().toString() + "\n";
-			result += "}";
-		} else
-			result += ";";
+		String result = "";
+		result += super.toString() + "\n";
 		return result;
 	}
 

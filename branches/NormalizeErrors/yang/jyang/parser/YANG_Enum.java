@@ -1,14 +1,11 @@
 package jyang.parser;
 
-public class YANG_Enum extends SimpleYangNode {
+public class YANG_Enum extends StatuedNode {
 
 	private String enumid = null;
 	private YANG_Value value = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 
-	private boolean bracked = false;
+	private boolean b_value = false;
 
 	public YANG_Enum(int id) {
 		super(id);
@@ -27,58 +24,30 @@ public class YANG_Enum extends SimpleYangNode {
 	}
 
 	public void setValue(YANG_Value v) {
-		value = v;
-		bracked = true;
+		if (!b_value) {
+			value = v;
+			b_value = true;
+		} else
+			YangErrorManager.add(v.getLine(), v.getCol(),
+					YangErrorManager.messages.getString("value"));
 	}
 
 	public YANG_Value getValue() {
 		return value;
 	}
 
-	public void setStatus(YANG_Status s) {
-		status = s;
-		bracked = true;
-	}
-
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) {
-		description = d;
-		bracked = true;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setReference(YANG_Reference r) {
-		reference = r;
-		bracked = true;
-	}
-
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
 	public boolean isBracked() {
-		return bracked;
+		return b_value || super.isBracked();
 	}
 
 	public String toString() {
-		String result = new String();
+		String result = "";
 		result += "enum " + enumid;
-		if (bracked) {
+		if (isBracked()) {
 			result += " {\n";
 			if (value != null)
 				result += value.toString() + "\n";
-			if (status != null)
-				result += status.toString() + "\n";
-			if (description != null)
-				result += description.toString() + "\n";
-			if (reference != null)
-				result += reference.toString() + "\n";
+			result += super.toString() + "\n";
 			result += " } ";
 		} else
 			result += ";";

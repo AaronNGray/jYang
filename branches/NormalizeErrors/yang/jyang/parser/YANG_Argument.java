@@ -45,8 +45,8 @@ public class YANG_Argument extends SimpleYangNode {
     public String toString(){
 	String result = new String();
 	result += "argument " + argument;
-	if(yin != null)
-	    result += "{" + yin.toString() + "}";
+	if(isBracked())
+	    result += "{\n" + yin.toString() + "}";
 	else
 	    result += ";";
 	return result;

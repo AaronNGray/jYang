@@ -1,32 +1,29 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
 
-
 public class YANG_RefineChoice extends MandatoryRefineNode {
 
-	private String refinechoice = null;
 	private YANG_Default ydefault = null;
-
-	private boolean bracked = false;
 
 	private boolean b_default = false;
 
@@ -38,36 +35,18 @@ public class YANG_RefineChoice extends MandatoryRefineNode {
 		super(p, id);
 	}
 
-	public void setRefineChoice(String c) {
-		refinechoice = c;
-	}
-
-	public String getBody() {
-		return getRefineChoice();
-	}
-
-	public String getRefineChoice() {
-		return refinechoice;
-	}
 
 	public void setDefault(YANG_Default d) throws YangParserException {
-		if (b_default)
-			throw new YangParserException(
-					"Default already defined in refin choice " + refinechoice,
-					d.getLine(), d.getCol());
-		b_default = true;
-		ydefault = d;
-		bracked = true;
+		if (!b_default) {
+			b_default = true;
+			ydefault = d;
+		} else
+			YangErrorManager.add(d.getLine(), d.getCol(),
+					YangErrorManager.messages.getString("default"));
 	}
 
 	public YANG_Default getDefault() {
 		return ydefault;
-	}
-	
-
-
-	public boolean isBracked() {
-		return bracked;
 	}
 
 	public void check(YangContext context, YANG_Choice choice, String ug)
@@ -86,17 +65,17 @@ public class YANG_RefineChoice extends MandatoryRefineNode {
 			YANG_DataDef ddef = edd.nextElement();
 			if (ddef instanceof YANG_Choice) {
 				choice = (YANG_Choice) ddef;
-				found = choice.getChoice().compareTo(getRefineChoice()) == 0;
+				found = choice.getChoice().compareTo(getRefineNodeId()) == 0;
 				if (found)
 					check(context, choice, usedgrouping);
 			}
 		}
 		if (!found)
 			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":refine choice " + getRefineChoice() + usedgrouping);
-//					+ " is not in the used grouping " + grouping.getGrouping()
-//					+ " at line " + grouping.getLine());
-		
+					+ ":refine choice " + getRefineNodeId() + usedgrouping);
+		// + " is not in the used grouping " + grouping.getGrouping()
+		// + " at line " + grouping.getLine());
+
 		YANG_Config parentConfig = getParentConfig();
 		if (b_config) {
 			if (parentConfig.getConfigStr().compareTo("false") == 0
@@ -115,37 +94,24 @@ public class YANG_RefineChoice extends MandatoryRefineNode {
 			}
 		}
 		/*
-		for (Enumeration<YANG_RefineCase> er = getRefineCases().elements(); er
-				.hasMoreElements();) {
-			YANG_RefineCase rcase = er.nextElement();
-			try {
-				rcase.setUsedGrouping(" from the used grouping "
-						+ grouping.getGrouping() + " at line "
-						+ grouping.getLine());
-				rcase.setParent(this);
-				rcase.check(context, choice);
-			} catch (YangParserException ye) {
-				throw new YangParserException(ye.getMessage() + usedgrouping);
-//						+ " from the used grouping " + grouping.getGrouping()
-//						+ " at line " + grouping.getLine());
-			}
-		}
-		*/
+		 * for (Enumeration<YANG_RefineCase> er = getRefineCases().elements();
+		 * er .hasMoreElements();) { YANG_RefineCase rcase = er.nextElement();
+		 * try { rcase.setUsedGrouping(" from the used grouping " +
+		 * grouping.getGrouping() + " at line " + grouping.getLine());
+		 * rcase.setParent(this); rcase.check(context, choice); } catch
+		 * (YangParserException ye) { throw new
+		 * YangParserException(ye.getMessage() + usedgrouping); // +
+		 * " from the used grouping " + grouping.getGrouping() // + " at line "
+		 * + grouping.getLine()); } }
+		 */
 	}
 
 	public String toString() {
-		String result = new String();
-		result += "choice " + refinechoice;
-		if (bracked) {
-			result += "{\n";
-			if (ydefault != null)
-				result += ydefault.toString() + "\n";
+		String result = "";
+		if (b_default)
+			result += ydefault.toString() + "\n";
+		result += super.toString() + "\n";
 
-			result += super.toString() + "\n";
-			
-			result += "}";
-		} else
-			result += super.toString() + ";";
 		return result;
 	}
 

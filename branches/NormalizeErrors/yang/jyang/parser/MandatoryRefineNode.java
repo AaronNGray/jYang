@@ -17,23 +17,19 @@ public abstract class MandatoryRefineNode extends ConfigRefineNode {
 	}
 
 	public void setMandatory(YANG_Mandatory m) {
-		if (b_mandatory)
-			YangErrorManager.add(m.getLine(), m.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("ad2"), "mandatory",
-					getBody()));
-		/*
-		 * throw new YangParserException( "Mandatory already defined in " +
-		 * getBody(), m .getLine(), m.getCol());
-		 */
-		b_mandatory = true;
-		mandatory = m;
+		if (!b_mandatory) {
+			b_mandatory = true;
+			mandatory = m;
+		} else
+			YangErrorManager.add(m.getLine(), m.getCol(),
+					YangErrorManager.messages.getString("mandatory"));
 	}
 
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
 
-	public String toString(){
+	public String toString() {
 		String result = "";
 		if (b_mandatory)
 			result += getMandatory().toString() + "\n";

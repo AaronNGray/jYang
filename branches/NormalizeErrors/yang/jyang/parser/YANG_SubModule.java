@@ -28,12 +28,7 @@ public class YANG_SubModule extends YANG_Specification {
 	 */
 	private int nbheader = 0;
 	private boolean b_yangversion = false, b_belong = false;
-	/**
-	 * Meta statement flags
-	 */
-	private int nbmeta = 0;
-	private boolean organization = false, contact = false, description = false,
-			reference = false;
+	
 
 	public YANG_SubModule(int id) {
 		super(id);
@@ -59,31 +54,27 @@ public class YANG_SubModule extends YANG_Specification {
 		return getSubModule();
 	}
 
-	public void addHeader(YANG_Header m) throws YangParserException {
+	public void addHeader(YANG_Header m)  {
 
-		if (nbheader == 2)
-			throw new YangParserException(
-					"No more than two headers in  submodule " + submodule, m
-							.getLine(), m.getCol());
 		if (m instanceof YANG_YangVersion) {
-			if (b_yangversion)
-				throw new YangParserException(
-						"Yang version already defined in submodule "
-								+ submodule, m.getLine(), m.getCol());
-			else
+			if (!b_yangversion) {
 				b_yangversion = true;
-			yangversion = (YANG_YangVersion) m;
+				yangversion = (YANG_YangVersion) m;
+			} else
+				YangErrorManager.add(m.getLine(), m.getCol(),
+						YangErrorManager.messages.getString("version"));
 		}
+			
 		if (m instanceof YANG_Belong) {
-			if (b_belong)
-				throw new YangParserException(
-						"Belonging module already defined in submodule "
-								+ submodule, m.getLine(), m.getCol());
-			else
+			if (!b_belong)
 				b_belong = true;
 			belong = (YANG_Belong) m;
-
 		}
+		else 
+			YangErrorManager.add(m.getLine(), m.getCol(),
+					YangErrorManager.messages.getString("belong"));
+
+		
 		headers.add(m);
 	}
 
@@ -91,46 +82,7 @@ public class YANG_SubModule extends YANG_Specification {
 		return belong;
 	}
 
-	public void addMeta(YANG_Meta m) throws YangParserException {
-		if (nbmeta == 4)
-			throw new YangParserException(
-					"No more than four meta statement in  submodule "
-							+ submodule, m.getLine(), m.getCol());
-		if (m instanceof YANG_Organization) {
-			if (organization)
-				throw new YangParserException(
-						"Organization already defined in  submodule "
-								+ submodule, m.getLine(), m.getCol());
-			else
-				organization = true;
-		}
-		if (m instanceof YANG_Contact) {
-			if (contact)
-				throw new YangParserException(
-						"Contact already defined in  submodule " + submodule, m
-								.getLine(), m.getCol());
-			else
-				contact = true;
-		}
-		if (m instanceof YANG_Description) {
-			if (description)
-				throw new YangParserException(
-						"Description already defined in submodule " + submodule,
-						m.getLine(), m.getCol());
-			else
-				description = true;
-		}
-		if (m instanceof YANG_Reference) {
-			if (reference)
-				throw new YangParserException(
-						"Reference already defined in  submodule " + submodule,
-						m.getLine(), m.getCol());
-			else
-				reference = true;
-		}
-		nbmeta++;
-		metas.add(m);
-	}
+	
 
 	/**
 	 * Check if the belongs-to statement is present and if it refers to an

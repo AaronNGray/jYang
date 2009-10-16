@@ -34,6 +34,12 @@ public abstract class YANG_Body extends DocumentedNode {
 	public YANG_Body(yang p, int id) {
 		super(p, id);
 	}
+	
+	public String toString() {
+		String result = "";
+		result = super.toString() + "\n";
+		return result;
+	}
 
 	protected void checkBody(YangContext context) throws YangParserException {
 

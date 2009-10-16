@@ -1,13 +1,11 @@
 package jyang.parser;
 
-
-public class YANG_Import extends SimpleYangNode implements YANG_Linkage {
+public class YANG_Import extends ImportIncludeNode implements YANG_Linkage {
 
 	private String importstr = null;
 	private YANG_Prefix prefix = null;
-	private YANG_Revision revision = null;
-	
-	private boolean b_prefix = false, b_revision = false;
+
+	private boolean b_prefix = false;
 
 	public YANG_Import(int id) {
 		super(id);
@@ -25,13 +23,13 @@ public class YANG_Import extends SimpleYangNode implements YANG_Linkage {
 		return importstr;
 	}
 
-	public void setPrefix(YANG_Prefix p)  throws YangParserException {
-		if (b_prefix)
-			throw new YangParserException(
-					"Prefix is already defined in import " + importstr, p
-							.getLine(), p.getCol());
-		prefix = p;
-		b_prefix = true;
+	public void setPrefix(YANG_Prefix p) {
+		if (!b_prefix) {
+			prefix = p;
+			b_prefix = true;
+		} else
+			YangErrorManager.add(p.getLine(), p.getCol(),
+					YangErrorManager.messages.getString("prefix"));
 	}
 
 	public YANG_Prefix getPrefix() {
@@ -39,25 +37,11 @@ public class YANG_Import extends SimpleYangNode implements YANG_Linkage {
 	}
 
 	public String toString() {
-		String result =  " import " + importstr + " {" + prefix.toString();
-		if (b_revision)
-			result += "\n" + revision.toString();
+		String result = " import " + importstr + " {" + prefix.toString();
+		result += super.toString() + "\n";
 		result += "}";
 		return result;
-		
-	}
 
-	public YANG_Revision getRevision() {
-		return revision;
-	}
-
-	public void setRevision(YANG_Revision r)  throws YangParserException  {
-		if (b_revision)
-			throw new YangParserException(
-					"Revision is already defined in import " + importstr, r
-							.getLine(), r.getCol());
-		this.revision = r;
-		b_revision = true;
 	}
 
 }

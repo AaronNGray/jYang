@@ -22,7 +22,7 @@ package jyang.parser;
 import java.util.*;
 
 
-public class YANG_Case extends StatuedNode {
+public class YANG_Case extends FeaturedNode {
 
 	private String ycase = null;
 	private Vector<YANG_CaseDataDef> casedatadefs = new Vector<YANG_CaseDataDef>();

@@ -1,16 +1,8 @@
 package jyang.parser;
 
-
 public class YANG_Must extends ErrorTagedNode {
 
 	private String must = null;
-	private YANG_ErrorMessage errmess = null;
-	private YANG_ErrorAppt errapptag = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
-
-	private boolean bracked = false;
-
 
 	public YANG_Must(int id) {
 		super(id);
@@ -28,19 +20,22 @@ public class YANG_Must extends ErrorTagedNode {
 		return must;
 	}
 
+	public boolean isBracked() {
+		return super.isBracked();
+	}
 
 	public void check(YangContext context) {
 	}
 
 	public String toString() {
-		String result = new String();
+		String result = "";
 		result += "must " + must;
-		if (bracked) {
+		if (isBracked()) {
 			result += "{\n";
 			result += super.toString();
+			result += "}";
 		} else
 			result += ";";
-
 		return result;
 	}
 

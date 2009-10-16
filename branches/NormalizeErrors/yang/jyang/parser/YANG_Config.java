@@ -15,15 +15,10 @@ public class YANG_Config extends SimpleYangNode {
 	}
 
 	public void setConfig(String c){
-
 		String ct = YangBuiltInTypes.removeQuotesAndTrim(c);
 		if (ct.compareTo("true") != 0 && ct.compareTo("false") != 0)
 			YangErrorManager.add(getLine(), getCol(), YangErrorManager.messages
-					.getString("cvnc"));
-		/*
-		throw new YangParserException("@" + getLine() + "." + getCol()
-				+ ":config value not correct : " + ct);
-			*/
+					.getString("config_expr"));
 		config = c;
 	}
 

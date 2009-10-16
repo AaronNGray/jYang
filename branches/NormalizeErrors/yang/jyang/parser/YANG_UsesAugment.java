@@ -5,7 +5,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class YANG_UsesAugment extends StatuedNode {
+public class YANG_UsesAugment extends FeaturedNode {
 
 	private String usesaugment = null;
 	private Vector<YANG_Case> cases = new Vector<YANG_Case>();
@@ -28,14 +28,14 @@ public class YANG_UsesAugment extends StatuedNode {
 		super(p, id);
 	}
 
-	public void setUsesAugment(String ua) throws YangParserException {
+	public void setUsesAugment(String ua)  {
 		String aa = YangBuiltInTypes.removeQuotesAndTrim(ua);
 		Matcher m = dsni.matcher(aa);
 		if (m.matches())
 			usesaugment = aa;
 		else
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":incorrect descendant schema node identifier expression :" + ua);
+			YangErrorManager.add(getLine(), getCol(),
+					YangErrorManager.messages.getString("uses_augment_exp"));
 	}
 
 	public String getUsesAugment() {
@@ -60,13 +60,16 @@ public class YANG_UsesAugment extends StatuedNode {
 
 	public String toString() {
 		String result = "";
-		result += "augment " + getUsesAugment() + " {\n";
+		result += "augment " + getUsesAugment();
 		if (isBracked()) {
+			result += "{\n";
 			result += super.toString() + "\n";
 			for (Enumeration<YANG_Case> ec = cases.elements(); ec
 					.hasMoreElements();)
 				result += ec.nextElement().toString() + "\n";
 		}
+		else
+			result += ";";
 		return result;
 	}
 
