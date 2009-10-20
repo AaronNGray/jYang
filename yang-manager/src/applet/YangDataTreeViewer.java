@@ -155,7 +155,7 @@ public class YangDataTreeViewer extends YangTreeViewer {
 			}
 
 			if (node instanceof ListNode || node instanceof LeafListNode) {
-				if (!(path.getParentPath().getLastPathComponent() instanceof RootNode)) {
+			//	if (!(path.getParentPath().getLastPathComponent() instanceof RootNode)) {
 					JMenuItem item = add("Delete this node");
 					item.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -165,7 +165,7 @@ public class YangDataTreeViewer extends YangTreeViewer {
 							applet.editionPerformed(path.getParentPath());
 						}
 					});
-				}
+			//	}
 			}
 			
 			if (node instanceof YangInnerNode){

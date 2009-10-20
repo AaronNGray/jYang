@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import javax.swing.ImageIcon;
 
-import jyang.parser.YANG_Case;
+import jyang.parser.CaseDataDef;
 
 
 @SuppressWarnings("serial")
@@ -14,7 +14,7 @@ public class CaseNode extends YangInnerNode {
 	private static ImageIcon icon = null;
 
 
-	public CaseNode(YANG_Case c) {
+	public CaseNode(CaseDataDef c) {
 		definition = c;
 	}
 
@@ -24,7 +24,7 @@ public class CaseNode extends YangInnerNode {
 
 	@Override
 	public CaseNode cloneBody() {
-		CaseNode clone = new CaseNode((YANG_Case) definition);
+		CaseNode clone = new CaseNode((CaseDataDef) definition);
 		return clone;
 	}
 	

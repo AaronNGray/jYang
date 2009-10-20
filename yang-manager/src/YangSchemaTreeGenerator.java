@@ -39,6 +39,7 @@ import yangtree.attributes.LeafType;
 import yangtree.attributes.NameSpace;
 import yangtree.attributes.builtinTypes.BuiltinType;
 import yangtree.nodes.*;
+import yangtree.nodes.YangNode;
 
 import jyang.parser.*;
 
@@ -215,6 +216,8 @@ public class YangSchemaTreeGenerator {
 		}
 		return rootNode;
 	}
+	
+	
 
 	public static YangNode buildModuleTree(YangTreeNode ytn) {
 
@@ -266,13 +269,14 @@ public class YangSchemaTreeGenerator {
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
+				
 				node.addChild(buildModuleTree(child));
 			}
 
 			return node;
 
-		} else if (body instanceof YANG_Case) {
-			YANG_Case ycase = (YANG_Case) body;
+		} else if (body instanceof CaseDataDef) {
+			CaseDataDef ycase = (CaseDataDef) body;
 			CaseNode node = new CaseNode(ycase);
 
 			Vector<YangTreeNode> childs = ytn.getChilds();

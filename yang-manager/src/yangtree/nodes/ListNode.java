@@ -277,8 +277,10 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 		if (nameSpace != null && nameSpace.getNameSpace() != null) {
 			result = result + nameSpace.getXMLArg();
 		}
+		/*
 		if (mustBeCreated)
 			result += " xmlns:xc=\"urn:ietf:params:xml:ns:netconf:base:1.0\" xc:operation=\"create\"";
+		*/
 		result += ">";
 		for (YangNode child : getDescendantNodes()) {
 			result += child.getXMLRepresentation();

@@ -16,7 +16,9 @@ public class Decimal64Type extends BuiltinType {
 		YANG_Decimal64Spec spec = type.getDec64Spec();
 		if (spec!=null){
 			if (spec.getFractionDigit()!=null) fractionDigits= new Integer(spec.getFractionDigit());
-			if (spec.getRange()!=null) restrictionsList.add(new RangeRestriction(spec.getRange()));
+			// add by manu 19/10/9
+			// decimal64 have no more range attribute
+			//if (spec.getRange()!=null) restrictionsList.add(new RangeRestriction(spec.getRange()));
 		}
 		
 	}

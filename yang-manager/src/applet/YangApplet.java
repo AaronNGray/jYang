@@ -383,7 +383,6 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 				horizontalScrollBar.setValue(verticalScrollBar.getMinimum());
 			}
 		});
-
 	}
 
 	private static String buildNetconfRequestFilter(YangNode[] path) {
