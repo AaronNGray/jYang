@@ -55,12 +55,13 @@ public class YANG_Container extends MustDataDef implements YANG_CaseDataDef,
 	}
 
 	public void setPresence(YANG_Presence p) {
-		if (b_presence)
+		if (!b_presence) {
+			b_presence = true;
+			presence = p;
+		} else
 			YangErrorManager.add(p.getLine(), p.getCol(),
 					YangErrorManager.messages.getString("presence"));
 
-		b_presence = true;
-		presence = p;
 	}
 
 	public YANG_Presence getPresence() {
@@ -103,10 +104,6 @@ public class YANG_Container extends MustDataDef implements YANG_CaseDataDef,
 					&& getConfig().getConfigStr().compareTo("true") == 0)
 				YangErrorManager.add(context.getSpec().getName(), getLine(),
 						getCol(), YangErrorManager.messages.getString("ctf"));
-			/*
-			 * throw new YangParserException("@" + getLine() + "." + getCol() +
-			 * ":config to true and parent config to false");
-			 */
 		}
 
 	}

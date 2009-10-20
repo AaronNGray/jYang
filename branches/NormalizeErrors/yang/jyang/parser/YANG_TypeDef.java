@@ -11,7 +11,7 @@ public class YANG_TypeDef extends StatuedBody {
 	private YANG_Default defaultstr = null;
 
 	private boolean b_type = false, b_units = false, b_default = false;
-	
+
 	private boolean used = false, correct = true;
 
 	public YANG_TypeDef(int id) {
@@ -46,41 +46,42 @@ public class YANG_TypeDef extends StatuedBody {
 		return ytype;
 	}
 
-	public void setUnits(YANG_Units u) throws YangParserException {
-		if (b_units)
-			throw new YangParserException("Units already defined in typedef "
-					+ typedef, u.getLine(), u.getCol());
-		b_units = true;
-		units = u;
+	public void setUnits(YANG_Units u) {
+		if (b_units) {
+			b_units = true;
+			units = u;
+		} else
+			YangErrorManager.add(u.getLine(), u.getCol(),
+					YangErrorManager.messages.getString("units"));
 	}
 
 	public YANG_Units getUnits() {
 		return units;
 	}
 
-	public void setDefault(YANG_Default d) throws YangParserException {
-		if (b_default)
-			throw new YangParserException("Default already defined in typedef "
-					+ typedef, d.getLine(), d.getCol());
+	public void setDefault(YANG_Default d) {
+		if (!b_default) {
 		b_default = true;
 		defaultstr = d;
+		}
+		else
+			YangErrorManager.add(d.getLine(), d.getCol(),
+					YangErrorManager.messages.getString("default"));
 	}
 
 	public YANG_Default getDefault() {
 		return defaultstr;
 	}
 
-
 	public void check(YangContext context) throws YangParserException {
-		
+
 		if (!isCorrect())
 			return;
-		
+
 		if (!b_type)
 			throw new YangParserException("Type statement expected in typedef "
 					+ typedef, getLine(), getCol());
 
-		
 		getType().check(context);
 
 		Vector<YANG_TypeDef> me = new Vector<YANG_TypeDef>();
@@ -116,7 +117,7 @@ public class YANG_TypeDef extends StatuedBody {
 			YangContext context) throws YangParserException {
 		if (zis == null)
 			return;
-		if (tds.contains(zis)){
+		if (tds.contains(zis)) {
 			setCorrect(false);
 			throw new YangParserException("@" + getLine() + "." + getCol()
 					+ ":recursive union from " + zis.getTypeDef());
@@ -155,7 +156,6 @@ public class YANG_TypeDef extends StatuedBody {
 		try {
 			ctd.setType(getType());
 		} catch (YangParserException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return ctd;

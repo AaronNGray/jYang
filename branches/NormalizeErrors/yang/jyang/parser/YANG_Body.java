@@ -34,7 +34,7 @@ public abstract class YANG_Body extends DocumentedNode {
 	public YANG_Body(yang p, int id) {
 		super(p, id);
 	}
-	
+
 	public String toString() {
 		String result = "";
 		result = super.toString() + "\n";
@@ -273,26 +273,33 @@ public abstract class YANG_Body extends DocumentedNode {
 			YANG_Choice choice = (YANG_Choice) this;
 			for (Enumeration<YANG_Case> ec = choice.getCases().elements(); ec
 					.hasMoreElements();) {
-				for (Enumeration<YANG_CaseDataDef> ecddef = ec.nextElement()
-						.getCaseDefs().elements(); ecddef.hasMoreElements();) {
-					YANG_CaseDataDef cddef = ecddef.nextElement();
-					if (cddef instanceof YANG_Leaf)
-						datadefs.add((YANG_Leaf)cddef);
-					else if (cddef instanceof YANG_LeafList)
-						datadefs.add((YANG_LeafList)cddef);
-					else if (cddef instanceof YANG_List)
-						datadefs.add((YANG_List)cddef);
-					else if (cddef instanceof YANG_Container)
-						datadefs.add((YANG_Container)cddef);
-					else if (cddef instanceof YANG_Uses)
-						datadefs.add((YANG_Uses)cddef);
-					else if (cddef instanceof YANG_AnyXml)
-						datadefs.add((YANG_AnyXml)cddef);
-				}
+				YANG_Case ycase = ec.nextElement();
+				CaseDataDef caseddef = new CaseDataDef(ycase);
+				datadefs.add(caseddef);
 			}
 			for (Enumeration<YANG_ShortCase> ec = choice.getShortCases()
 					.elements(); ec.hasMoreElements();) {
 				datadefs.add((YANG_DataDef) ec.nextElement());
+			}
+
+		} else if (this instanceof CaseDataDef) {
+			CaseDataDef caseddef = (CaseDataDef) this;
+
+			for (Enumeration<YANG_CaseDataDef> ecddef = caseddef.getCaseDefs()
+					.elements(); ecddef.hasMoreElements();) {
+				YANG_CaseDataDef cddef = ecddef.nextElement();
+				if (cddef instanceof YANG_Leaf)
+					datadefs.add((YANG_Leaf) cddef);
+				else if (cddef instanceof YANG_LeafList)
+					datadefs.add((YANG_LeafList) cddef);
+				else if (cddef instanceof YANG_List)
+					datadefs.add((YANG_List) cddef);
+				else if (cddef instanceof YANG_Container)
+					datadefs.add((YANG_Container) cddef);
+				else if (cddef instanceof YANG_Uses)
+					datadefs.add((YANG_Uses) cddef);
+				else if (cddef instanceof YANG_AnyXml)
+					datadefs.add((YANG_AnyXml) cddef);
 			}
 
 		} else if (this instanceof YANG_Uses) {

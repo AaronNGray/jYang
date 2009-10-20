@@ -32,12 +32,18 @@ public abstract class TypedefGroupingBody extends FeaturedBody {
 		return groupings;
 	}
 	
+	public boolean isBracked() {
+		return typedefs.size() != 0 || groupings.size() != 0 || super.isBracked();
+	}
+	
+	
 	public String toString() {
 		String result = "";
-		for (Enumeration<YANG_TypeDef> etd = typedefs.elements();etd.hasMoreElements();)
-			result += etd.nextElement().toString();
-		for (Enumeration<YANG_Grouping> eg = groupings.elements();eg.hasMoreElements();)
-			result += eg.nextElement().toString();
+		result += super.toString() + "\n";
+		for (YANG_TypeDef etd : typedefs)
+			result += etd.toString() + "\n";
+		for (YANG_Grouping eg : groupings)
+			result += eg.toString() + "\n";
 		return result;
 	}
 	

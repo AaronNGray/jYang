@@ -1,13 +1,13 @@
 package jyang.parser;
 
-public abstract class ListedDataDef extends MustDataDef 
-implements YANG_CaseDataDef, YANG_ShortCase {
-	
+public abstract class ListedDataDef extends MustDataDef implements
+		YANG_CaseDataDef, YANG_ShortCase {
+
 	private YANG_MinElement min = null;
 	private YANG_MaxElement max = null;
 	private YANG_OrderedBy ordered = null;
 	private boolean b_min = false, b_max = false, b_ordered = false;
-	
+
 	public ListedDataDef(int id) {
 		super(id);
 	}
@@ -15,7 +15,8 @@ implements YANG_CaseDataDef, YANG_ShortCase {
 	public ListedDataDef(yang p, int id) {
 		super(p, id);
 	}
-	public void setMinElement(YANG_MinElement m){
+
+	public void setMinElement(YANG_MinElement m) {
 		if (b_min)
 			YangErrorManager.add(m.getLine(), m.getCol(),
 					YangErrorManager.messages.getString("min"));
@@ -28,31 +29,45 @@ implements YANG_CaseDataDef, YANG_ShortCase {
 	}
 
 	public void setMaxElement(YANG_MaxElement m) {
-		if (b_max)
+		if (!b_max) {
+			b_max = true;
+			max = m;
+		} else
 			YangErrorManager.add(m.getLine(), m.getCol(),
 					YangErrorManager.messages.getString("max"));
-		b_max = true;
-		max = m;
 	}
 
 	public YANG_MaxElement getMaxElement() {
 		return max;
 	}
 
-	public void setOrderedBy(YANG_OrderedBy o) throws YangParserException {
-		if (b_ordered)
+	public void setOrderedBy(YANG_OrderedBy o) {
+		if (!b_ordered) {
+			b_ordered = true;
+			ordered = o;
+		} else
 			YangErrorManager.add(o.getLine(), o.getCol(),
 					YangErrorManager.messages.getString("ordered"));
-		b_ordered = true;
-		ordered = o;
 	}
 
 	public YANG_OrderedBy getOrderedBy() {
 		return ordered;
 	}
 
-	public boolean isBracked(){
+	public boolean isBracked() {
 		return super.isBracked() || b_ordered || b_min || b_max;
+	}
+
+	public String toString() {
+		String result = "";
+		result += super.toString() + "\n";
+		if (b_ordered)
+			result += ordered.toString() + "\n";
+		if (b_min)
+			result += min.toString() + "\n";
+		if (b_max)
+			result += max.toString() + "\n";
+		return result;
 	}
 
 }

@@ -72,9 +72,8 @@ public class YANG_Notification extends TypedefGroupingBody {
 		if (isBracked()) {
 			result += "{\n";
 			result += super.toString();
-			for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
-					.hasMoreElements();)
-				result += ed.nextElement().toString() + "\n";
+			for (YANG_DataDef ed : datadefs)
+				result += ed.toString() + "\n";
 			result += "}";
 		} else
 			result += ";";

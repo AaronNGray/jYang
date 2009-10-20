@@ -37,6 +37,20 @@ public class YANG_Feature extends FeaturedBody {
 			return feature;
 	}
 	
-	// TODO toString method
+	
+	
+	public String toString() {
+		String result = "";
+		result += "feature " + feature;
+		if (isBracked()) {
+			result += "\n{";
+			result += super.toString() + "\n";
+			result += "}";
+		}
+		else
+			result += ";";
+		return result;
+		
+	}
 
 }

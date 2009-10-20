@@ -22,5 +22,17 @@ public abstract class MustDataDef extends ConfigDataDef {
 		return musts;
 	}
 	
+	public boolean isBracked() {
+		return musts.size() != 0 || super.isBracked();
+	}
+	
+	public String toString() {
+		String result = "";
+		result += super.toString() + "\n";
+		for (YANG_Must m : musts)
+			result += m.toString() + "\n";
+		return result;
+	}
+	
 
 }

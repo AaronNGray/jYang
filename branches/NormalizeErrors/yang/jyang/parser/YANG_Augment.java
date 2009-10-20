@@ -71,12 +71,12 @@ public class YANG_Augment extends DataDefBody {
 	}
 
 	public void setWhen(YANG_When w) {
-		if (b_when)
-			YangErrorManager.add(w.getLine(), w.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("ad2"), "when",
-					getBody()));
-		b_when = true;
-		this.when = w;
+		if (!b_when) {
+			b_when = true;
+			this.when = w;
+		} else
+			YangErrorManager.add(w.getLine(), w.getCol(),
+					YangErrorManager.messages.getString("when"));
 	}
 
 	public boolean isAbsoluteSchemaNodeId() {
@@ -272,8 +272,8 @@ public class YANG_Augment extends DataDefBody {
 		String result = new String();
 		result += "augment " + augment + "{\n";
 		result += super.toString() + "\n";
-		for (Enumeration<YANG_Case> ec = cases.elements(); ec.hasMoreElements();)
-			result += ec.nextElement().toString() + "\n";
+		for (YANG_Case ec : cases)
+			result += ec.toString() + "\n";
 		result += "}";
 		return result;
 	}

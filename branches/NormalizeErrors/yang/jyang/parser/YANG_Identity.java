@@ -32,13 +32,18 @@ public class YANG_Identity extends StatuedBody {
 		identity = i;
 	}
 
-	public void setBase(YANG_Base b)  throws YangParserException {
-		if (b_base)
-			throw new YangParserException(
-					"Base is already defined in identity " + identity, b
-							.getLine(), b.getCol());
+	public void setBase(YANG_Base b)  {
+		if (!b_base) {
 		base = b;
 		b_base = true;
+		}
+		else
+			YangErrorManager.add(b.getLine(), b.getCol(),
+					YangErrorManager.messages.getString("base"));
+	}
+	
+	public boolean isBracked() {
+		return b_base || super.isBracked();
 	}
 
 	@Override
@@ -50,6 +55,19 @@ public class YANG_Identity extends StatuedBody {
 	@Override
 	public String getBody() {
 		return identity;
+	}
+	
+	public String toString() {
+		String result = "";
+		result += "identity " + identity;
+		if (isBracked()) {
+			result += "\n{";
+			result += super.toString() + "\n";
+			result += "}";
+		}
+		else
+			result += ";";
+		return result;
 	}
 
 }

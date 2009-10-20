@@ -1,25 +1,25 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
-
 
 public class YANG_Choice extends ConfigDataDef {
 
@@ -29,7 +29,7 @@ public class YANG_Choice extends ConfigDataDef {
 	private Vector<YANG_ShortCase> shorts = new Vector<YANG_ShortCase>();
 	private Vector<YANG_Case> cases = new Vector<YANG_Case>();
 
-	private boolean b_default = false,  b_mandatory = false;
+	private boolean b_default = false, b_mandatory = false;
 
 	public YANG_Choice(int id) {
 		super(id);
@@ -51,34 +51,33 @@ public class YANG_Choice extends ConfigDataDef {
 		return choice;
 	}
 
-	public void setDefault(YANG_Default d) throws YangParserException {
-		if (b_default)
-			throw new YangParserException("Default already defined in Choice "
-					+ choice, d.getLine(), d.getCol());
-		b_default = true;
-		ydefault = d;
+	public void setDefault(YANG_Default d) {
+		if (!b_default) {
+			b_default = true;
+			ydefault = d;
+		} else
+			YangErrorManager.add(d.getLine(), d.getCol(),
+					YangErrorManager.messages.getString("default"));
 	}
 
 	public YANG_Default getDefault() {
 		return ydefault;
 	}
-	
-	
-	public void setMandatory(YANG_Mandatory m) throws YangParserException {
-		if (b_mandatory)
-			throw new YangParserException(
-					"Mandatory already defined in Choice " + choice, m
-							.getLine(), m.getCol());
-		b_mandatory = true;
-		mandatory = m;
+
+	public void setMandatory(YANG_Mandatory m) {
+		if (!b_mandatory) {
+			b_mandatory = true;
+			mandatory = m;
+		} else
+			YangErrorManager.add(m.getLine(), m.getCol(),
+					YangErrorManager.messages.getString("mandatory"));
 	}
 
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
 
-	
-	public void addShortCase(YANG_ShortCase s) throws YangParserException {
+	public void addShortCase(YANG_ShortCase s) {
 
 		shorts.add(s);
 	}
@@ -96,7 +95,8 @@ public class YANG_Choice extends ConfigDataDef {
 	}
 
 	public boolean isBracked() {
-		return super.isBracked() || b_default || b_mandatory || cases.size() != 0 || shorts.size() != 0;
+		return super.isBracked() || b_default || b_mandatory
+				|| cases.size() != 0 || shorts.size() != 0;
 	}
 
 	private void trackMandatory(YANG_Case c) throws YangParserException {
@@ -166,9 +166,9 @@ public class YANG_Choice extends ConfigDataDef {
 			if (ddef instanceof YANG_AnyXml)
 				checkMandatory((YANG_AnyXml) ddef);
 			/*
-			else if (ddef instanceof YANG_Augment)
-				trackMandatory(((YANG_Augment) ddef).getDataDefs());
-				*/
+			 * else if (ddef instanceof YANG_Augment)
+			 * trackMandatory(((YANG_Augment) ddef).getDataDefs());
+			 */
 			else if (ddef instanceof YANG_Choice) {
 				YANG_Choice choice = (YANG_Choice) ddef;
 				if (choice.getMandatory() != null)
@@ -246,15 +246,14 @@ public class YANG_Choice extends ConfigDataDef {
 	}
 
 	public void check(YangContext context) throws YangParserException {
-		
-		if (b_config){
+
+		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig.getConfigStr().compareTo("false") == 0 &&
-					getConfig().getConfigStr().compareTo("true") == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol() +
-						":config to true and parent config to false");
+			if (parentConfig.getConfigStr().compareTo("false") == 0
+					&& getConfig().getConfigStr().compareTo("true") == 0)
+				throw new YangParserException("@" + getLine() + "." + getCol()
+						+ ":config to true and parent config to false");
 		}
-		
 
 		if (b_default)
 			checkDefault(context, getDefault());
@@ -271,7 +270,7 @@ public class YANG_Choice extends ConfigDataDef {
 			else
 				caseids.add(ycase.getCase());
 		}
-		
+
 	}
 
 	public String toString() {
@@ -284,12 +283,10 @@ public class YANG_Choice extends ConfigDataDef {
 			if (mandatory != null)
 				result += mandatory.toString() + "\n";
 			result += super.toString();
-			for (Enumeration<YANG_ShortCase> es = shorts.elements(); es
-					.hasMoreElements();)
-				result += es.nextElement().toString() + "\n";
-			for (Enumeration<YANG_Case> ec = cases.elements(); ec
-					.hasMoreElements();)
-				result += ec.nextElement().toString() + "\n";
+			for (YANG_ShortCase es : shorts)
+				result += es.toString() + "\n";
+			for (YANG_Case ec : cases)
+				result += ec.toString() + "\n";
 			result += "}";
 		} else
 			result += ";";

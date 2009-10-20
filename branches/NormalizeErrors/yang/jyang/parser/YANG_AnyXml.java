@@ -1,9 +1,7 @@
 package jyang.parser;
 
-
-
-public class YANG_AnyXml extends  MustDataDef implements
-		YANG_CaseDataDef, YANG_ShortCase {
+public class YANG_AnyXml extends MustDataDef implements YANG_CaseDataDef,
+		YANG_ShortCase {
 
 	private String anyxml = null;
 	private YANG_Mandatory mandatory = null;
@@ -28,37 +26,33 @@ public class YANG_AnyXml extends  MustDataDef implements
 	public String getAnyXml() {
 		return anyxml;
 	}
-	
-	public void setMandatory(YANG_Mandatory m) throws YangParserException {
-		if (b_mandatory)
-			throw new YangParserException(
-					"Mandatory already defined in Choice " , m
-							.getLine(), m.getCol());
-		b_mandatory = true;
-		mandatory = m;
+
+	public void setMandatory(YANG_Mandatory m) {
+		if (!b_mandatory) {
+			b_mandatory = true;
+			mandatory = m;
+		} else
+			YangErrorManager.add(m.getLine(), m.getCol(),
+					YangErrorManager.messages.getString("mandatory"));
 	}
 
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
 
-
-	
-	
-
 	public boolean isBracked() {
-		return super.isBracked();
+		return super.isBracked() || b_mandatory;
 	}
 
-	public void check(YangContext context) throws YangParserException{
-		if (b_config){
+	public void check(YangContext context) throws YangParserException {
+		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig.getConfigStr().compareTo("false") == 0 &&
-					getConfig().getConfigStr().compareTo("true") == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol() +
-						":config to true and parent config to false");
+			if (parentConfig.getConfigStr().compareTo("false") == 0
+					&& getConfig().getConfigStr().compareTo("true") == 0)
+				throw new YangParserException("@" + getLine() + "." + getCol()
+						+ ":config to true and parent config to false");
 		}
-		
+
 	}
 
 	public String toString() {
@@ -66,14 +60,16 @@ public class YANG_AnyXml extends  MustDataDef implements
 		result += "anyxml " + anyxml;
 		if (isBracked()) {
 			result += " {\n";
-			result += super.toString();
+			if (b_mandatory)
+				result += mandatory.toString() + "\n";
+			result += super.toString() + "\n";
 			result += "\n}";
 		} else
 			result += ";";
 
 		return result;
 	}
-	
+
 	public YANG_AnyXml clone() {
 		YANG_AnyXml ca = new YANG_AnyXml(parser, id);
 		ca.setAnyXml(getAnyXml());

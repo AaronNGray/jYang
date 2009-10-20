@@ -1,26 +1,25 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
-
-
 
 public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 		YANG_ShortCase {
@@ -31,7 +30,8 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 	private YANG_Mandatory mandatory = null;
 	private YANG_Default ydefault = null;
 
-	private boolean b_type = false, b_units = false, b_default = false, b_mandatory = false;
+	private boolean b_type = false, b_units = false, b_default = false,
+			b_mandatory = false;
 
 	public YANG_Leaf(int id) {
 		super(id);
@@ -53,77 +53,78 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 		return leaf;
 	}
 
-	public void setType(YANG_Type t) throws YangParserException {
-		if (b_type)
-			throw new YangParserException("Type already defined in leaf "
-					+ leaf, t.getLine(), t.getCol());
-		b_type = true;
-		type = t;
+	public void setType(YANG_Type t) {
+		if (!b_type) {
+			b_type = true;
+			type = t;
+		} else
+			YangErrorManager.add(t.getLine(), t.getCol(),
+					YangErrorManager.messages.getString("type"));
 	}
 
 	public YANG_Type getType() {
 		return type;
 	}
 
-	public void setUnits(YANG_Units u) throws YangParserException {
-		if (b_units)
-			throw new YangParserException("Unit already defined in leaf "
-					+ leaf, u.getLine(), u.getCol());
-		b_units = true;
-		units = u;
+	public void setUnits(YANG_Units u) {
+		if (!b_units) {
+			b_units = true;
+			units = u;
+		} else
+			YangErrorManager.add(u.getLine(), u.getCol(),
+					YangErrorManager.messages.getString("units"));
 	}
 
 	public YANG_Units getUnits() {
 		return units;
 	}
 
-	
-	public void setDefault(YANG_Default d) throws YangParserException {
-		if (b_default)
-			throw new YangParserException("Default already defined in leaf "
-					+ leaf, d.getLine(), d.getCol());
-		b_default = true;
-		ydefault = d;
+	public void setDefault(YANG_Default d) {
+		if (!b_default) {
+			b_default = true;
+			ydefault = d;
+		} else
+			YangErrorManager.add(d.getLine(), d.getCol(),
+					YangErrorManager.messages.getString("default"));
 	}
 
 	public YANG_Default getDefault() {
 		return ydefault;
 	}
 
-	public void setMandatory(YANG_Mandatory m) throws YangParserException {
-		if (b_mandatory)
-			throw new YangParserException(
-					"Mandatory already defined in Choice ", m
-							.getLine(), m.getCol());
-		b_mandatory = true;
-		mandatory = m;
+	public void setMandatory(YANG_Mandatory m) {
+		if (!b_mandatory) {
+			b_mandatory = true;
+			mandatory = m;
+		} else
+			YangErrorManager.add(m.getLine(), m.getCol(),
+					YangErrorManager.messages.getString("mandatory"));
 	}
 
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
 
-	public boolean isBracked(){
-		return super.isBracked() || b_default || b_type || b_units|| b_mandatory;
+	public boolean isBracked() {
+		return super.isBracked() || b_default || b_type || b_units
+				|| b_mandatory;
 	}
-
-	
 
 	public void check(YangContext context) throws YangParserException {
 		if (!b_type)
 			throw new YangParserException("Type statement not present in leaf "
 					+ leaf, getLine(), getCol());
-		
+
 		getType().check(context);
-		
-		if (b_config){
+
+		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig.getConfigStr().compareTo("false") == 0 &&
-					getConfig().getConfigStr().compareTo("true") == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol() +
-						":config to true and parent config to false");
+			if (parentConfig.getConfigStr().compareTo("false") == 0
+					&& getConfig().getConfigStr().compareTo("true") == 0)
+				throw new YangParserException("@" + getLine() + "." + getCol()
+						+ ":config to true and parent config to false");
 		}
-		
+
 		if (b_mandatory)
 			if (getMandatory().getMandatory().compareTo("true") == 0
 					&& b_default)
@@ -144,7 +145,8 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 						throw new YangParserException("@" + getLine() + "."
 								+ getCol() + ":default value "
 								+ defining.getDefault().getDefault()
-								+ " does no more match with current leaf " + getLeaf());
+								+ " does no more match with current leaf "
+								+ getLeaf());
 					}
 				} else {
 					defining = context.getBaseTypeDef(defining);
@@ -168,17 +170,12 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 
 		return result;
 	}
-	
+
 	public YANG_Leaf clone() {
 		YANG_Leaf cl = new YANG_Leaf(parser, id);
 		cl.setLeaf(getLeaf());
-		
-		try {
-			cl.setType(getType());
-			cl.setUnits(getUnits());
-		} catch (YangParserException e) {
-			e.printStackTrace();
-		}
+		cl.setType(getType());
+		cl.setUnits(getUnits());
 		return cl;
 	}
 

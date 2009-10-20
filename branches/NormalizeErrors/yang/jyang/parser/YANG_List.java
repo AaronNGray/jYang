@@ -30,8 +30,7 @@ public class YANG_List extends ListedDataDef {
 	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
 
-	private boolean b_key = false, b_min = false, b_max = false,
-			b_ordered = false;
+	private boolean b_key = false;
 
 	public YANG_List(int id) {
 		super(id);
@@ -53,13 +52,13 @@ public class YANG_List extends ListedDataDef {
 		return list;
 	}
 
-	public void setKey(YANG_Key t) throws YangParserException {
-		if (b_key)
-			throw new YangParserException(
-					"Key already defined in list " + list, t.getLine(), t
-							.getCol());
-		b_key = true;
-		key = t;
+	public void setKey(YANG_Key t) {
+		if (!b_key) {
+			b_key = true;
+			key = t;
+		} else
+			YangErrorManager.add(t.getLine(), t.getCol(),
+					YangErrorManager.messages.getString("key"));
 	}
 
 	public YANG_Key getKey() {
@@ -73,7 +72,6 @@ public class YANG_List extends ListedDataDef {
 	public Vector<YANG_Unique> getUniques() {
 		return uniques;
 	}
-
 
 	public void addTypeDef(YANG_TypeDef t) {
 		typedefs.add(t);
@@ -100,8 +98,8 @@ public class YANG_List extends ListedDataDef {
 	}
 
 	public boolean isBracked() {
-		return super.isBracked() || b_key || b_max || b_min || b_ordered
-				|| datadefs.size() != 0 || groupings.size() != 0;
+		return super.isBracked() || b_key || datadefs.size() != 0
+				|| groupings.size() != 0;
 	}
 
 	public void check(YangContext context) throws YangParserException {
@@ -254,7 +252,7 @@ public class YANG_List extends ListedDataDef {
 	public String toString() {
 		String result = new String();
 		result += "list " + list + "{\n";
-		if (key != null)
+		if (b_key)
 			result += key.toString() + "\n";
 		for (Enumeration<YANG_Unique> eu = uniques.elements(); eu
 				.hasMoreElements();)

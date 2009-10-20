@@ -186,9 +186,8 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
 		if (isBracked()) {
 			result += "{\n";
 			result += super.toString() + "\n";
-			for (Enumeration<YANG_UsesAugment> er = usesaugments.elements(); er
-					.hasMoreElements();)
-				result += er.nextElement().toString() + "\n";
+			for (YANG_UsesAugment er : usesaugments)
+				result += er.toString() + "\n";
 			result += "}";
 		} else
 			result += ";";

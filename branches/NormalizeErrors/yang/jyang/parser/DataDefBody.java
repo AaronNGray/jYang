@@ -22,5 +22,16 @@ public abstract class DataDefBody extends FeaturedBody {
 		return datadefs;
 	}
 
+	public boolean isBracked() {
+		return datadefs.size() != 0 || super.isBracked();
+	}
+	
+	public String toString() {
+		String result = "";
+		result += super.toString() + "\n";
+		for (YANG_DataDef ddef : datadefs)
+			result += ddef.toString() + "\n";
+		return result;
+	}
 
 }

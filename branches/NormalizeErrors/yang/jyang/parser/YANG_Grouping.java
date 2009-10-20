@@ -1,37 +1,34 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
-
-
 
 public class YANG_Grouping extends StatuedBody {
 
 	private String grouping = null;
 	private boolean checked = false;
-	
 
 	private Vector<YANG_TypeDef> typedefs = new Vector<YANG_TypeDef>();
 	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
-
 
 	private boolean bracked = false;
 
@@ -55,6 +52,9 @@ public class YANG_Grouping extends StatuedBody {
 		return grouping;
 	}
 
+	public boolean isBracked() {
+		return super.isBracked() || bracked;
+	}
 
 	public void addTypeDef(YANG_TypeDef t) {
 		typedefs.add(t);
@@ -83,15 +83,10 @@ public class YANG_Grouping extends StatuedBody {
 		return datadefs;
 	}
 
-	public boolean isBracked() {
-		return bracked;
-	}
-	
-
 	public void check(YangContext context) throws YangParserException {
 
 	}
-	
+
 	public boolean isChecked() {
 		return checked;
 	}
@@ -103,7 +98,7 @@ public class YANG_Grouping extends StatuedBody {
 	public String toString() {
 		String result = new String();
 		result += "grouping " + grouping;
-		if (bracked) {
+		if (isBracked()) {
 			result += " {\n";
 			result += super.toString();
 			for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
@@ -121,8 +116,8 @@ public class YANG_Grouping extends StatuedBody {
 
 		return result;
 	}
-	
-	public YANG_Grouping clone(){
+
+	public YANG_Grouping clone() {
 		YANG_Grouping cg = new YANG_Grouping(parser, id);
 		cg.setTypeDefs(getTypeDefs());
 		cg.setGroupings(getGroupings());
@@ -132,16 +127,16 @@ public class YANG_Grouping extends StatuedBody {
 
 	private void setDataDefs(Vector<YANG_DataDef> dataDefs2) {
 		datadefs = dataDefs2;
-		
+
 	}
 
 	private void setGroupings(Vector<YANG_Grouping> groupings2) {
 		groupings = groupings2;
-		
+
 	}
 
 	private void setTypeDefs(Vector<YANG_TypeDef> typeDefs2) {
 		typedefs = typeDefs2;
-		
+
 	}
 }
