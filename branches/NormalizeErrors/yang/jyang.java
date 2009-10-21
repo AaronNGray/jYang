@@ -22,6 +22,7 @@ import java.io.*;
 
 import jyang.parser.ParseException;
 import jyang.parser.YANG_Specification;
+import jyang.parser.YangErrorManager;
 import jyang.parser.yang;
 import jyang.tools.Yang2Applet;
 import jyang.tools.Yang2Ensuite;
@@ -100,11 +101,12 @@ public class jyang {
 		}
 
 		// Input yang specifications
-		Vector<InputStream> specs = new Vector<InputStream>();
+		//Vector<InputStream> specs = new Vector<InputStream>();
+		Hashtable<String, InputStream> specs = new Hashtable<String, InputStream>();
 		for (int f = i; f < args.length; f++) {
 			try {
 				FileInputStream specfile = new FileInputStream(args[f]);
-				specs.add(specfile);
+				specs.put(args[f], specfile);  
 			} catch (FileNotFoundException fnf) {
 				System.err.println(args[f] + " file not found, ignore it");
 			} catch (SecurityException se) {
@@ -205,15 +207,19 @@ public class jyang {
 
 		// Parse yang specs
 		
+		YangErrorManager.init();
+		
 		boolean reinit = false;
 		boolean noError = true;
-		for (Enumeration<InputStream> ei = specs.elements(); ei
+		for (Enumeration<String> ei = specs.keys(); ei
 				.hasMoreElements();) {
+			String fname = ei.nextElement();
+			YangErrorManager.setCurrentModule(fname);
 			if (!reinit) {
 				reinit = true;
-				new yang(ei.nextElement());
+				new yang(specs.get(fname));
 			} else {
-				yang.ReInit(ei.nextElement());
+				yang.ReInit(specs.get(fname));
 			}
 			try {
 				YANG_Specification yangspec = yang.Start();
@@ -240,6 +246,12 @@ public class jyang {
 				System.err.println(pe.getMessage());
 				System.exit(-1);
 			}
+		}
+		try {
+			YangErrorManager.print(System.out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		parsingOk = noError;
 		/*

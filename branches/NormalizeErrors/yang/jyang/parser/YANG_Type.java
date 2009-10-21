@@ -206,7 +206,7 @@ public class YANG_Type extends SimpleYangNode {
 
 	}
 
-	public void checkTypeSyntax() throws YangParserException {
+	public void checkTypeSyntax(YangContext context) throws YangParserException {
 
 		if (YangBuiltInTypes.union.compareTo(getType()) == 0)
 			if (getUnionSpec() == null)
@@ -223,7 +223,7 @@ public class YANG_Type extends SimpleYangNode {
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":enumeration must have at least one enum");
 
-			checkEnum();
+			checkEnum(context);
 		}
 
 		if (YangBuiltInTypes.bits.compareTo(getType()) == 0) {
@@ -235,7 +235,7 @@ public class YANG_Type extends SimpleYangNode {
 
 	}
 
-	public void checkTypeSyntax2() {
+	public void checkTypeSyntax2(YangContext c) {
 
 		if (YangBuiltInTypes.union.compareTo(getType()) == 0)
 			if (getUnionSpec() == null)
@@ -252,7 +252,7 @@ public class YANG_Type extends SimpleYangNode {
 				System.err.println("@" + getLine() + "." + getCol()
 						+ ":enumeration must have at least one enum");
 			try {
-				checkEnum();
+				checkEnum(c);
 			} catch (YangParserException e) {
 				System.err.println(e.getMessage());
 			}
@@ -273,7 +273,7 @@ public class YANG_Type extends SimpleYangNode {
 
 	public void check(YangContext context) throws YangParserException {
 
-		checkTypeSyntax();
+		checkTypeSyntax(context);
 
 		if (context.getBuiltInType(this) == null) {
 			throw new YangParserException("@" + getLine() + "." + getCol()
@@ -629,7 +629,7 @@ public class YANG_Type extends SimpleYangNode {
 					+ ":duplicate bit name");
 	}
 
-	private void checkEnum() throws YangParserException {
+	private void checkEnum(YangContext context) throws YangParserException {
 		int highest = 0;
 		int[] enumvalues = new int[getEnums().size()];
 		String[] enumnames = new String[getEnums().size()];
@@ -671,9 +671,11 @@ public class YANG_Type extends SimpleYangNode {
 				duplicate = enumvalues[j] == enumvalues[k];
 				dupvalue = enumvalues[j];
 			}
-		if (duplicate)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":duplicate enum value " + dupvalue);
+		if (duplicate){
+			YangErrorManager.add(context.getSpec().getName(), getLine(), getCol(),
+					YangErrorManager.messages.getString("dupp_enum_val"));
+			return;
+		}
 
 		for (int j = 0; j < enumnames.length && !duplicate; j++)
 			for (int k = j + 1; k < enumnames.length && !duplicate; k++) {
@@ -683,9 +685,11 @@ public class YANG_Type extends SimpleYangNode {
 										.removeQuotesAndTrim(enumnames[k])) == 0;
 				dupname = enumnames[j];
 			}
-		if (duplicate)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":duplicate enum name " + dupname);
+		if (duplicate){
+			YangErrorManager.add(context.getSpec().getName(), getLine(), getCol(),
+					YangErrorManager.messages.getString("dupp_enum_name"));
+			return;
+		}
 
 	}
 

@@ -61,10 +61,9 @@ public class YANG_TypeDef extends StatuedBody {
 
 	public void setDefault(YANG_Default d) {
 		if (!b_default) {
-		b_default = true;
-		defaultstr = d;
-		}
-		else
+			b_default = true;
+			defaultstr = d;
+		} else
 			YangErrorManager.add(d.getLine(), d.getCol(),
 					YangErrorManager.messages.getString("default"));
 	}
@@ -78,9 +77,11 @@ public class YANG_TypeDef extends StatuedBody {
 		if (!isCorrect())
 			return;
 
-		if (!b_type)
-			throw new YangParserException("Type statement expected in typedef "
-					+ typedef, getLine(), getCol());
+		if (!b_type) {
+			YangErrorManager.add(context.getSpec().getName(),getLine(), getCol(), YangErrorManager.messages
+					.getString("type_expec"));
+			return;
+		}
 
 		getType().check(context);
 

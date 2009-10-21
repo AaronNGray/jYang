@@ -28,7 +28,7 @@ import jyang.parser.YANG_Augment;
 import jyang.parser.YANG_Bit;
 import jyang.parser.YANG_Body;
 import jyang.parser.YANG_Case;
-import jyang.parser.YANG_CaseDef;
+import jyang.parser.YANG_CaseDataDef;
 import jyang.parser.YANG_Choice;
 import jyang.parser.YANG_Config;
 import jyang.parser.YANG_Contact;
@@ -71,7 +71,7 @@ import jyang.parser.YANG_RefineContainer;
 import jyang.parser.YANG_RefineLeaf;
 import jyang.parser.YANG_RefineLeafList;
 import jyang.parser.YANG_RefineList;
-import jyang.parser.YANG_Refinement;
+import jyang.parser.YANG_Refine;
 import jyang.parser.YANG_Revision;
 import jyang.parser.YANG_Rpc;
 import jyang.parser.YANG_ShortCase;
@@ -561,8 +561,8 @@ public class Yang2Yin {
 			result += gAnyXml((YANG_AnyXml) datadef, prefix);
 		else if (datadef instanceof YANG_Uses)
 			result += gUses((YANG_Uses) datadef, prefix);
-		else if (datadef instanceof YANG_Augment)
-			result += gAugment((YANG_Augment) datadef, prefix);
+	//	else if (datadef instanceof YANG_Augment)
+	//		result += gAugment((YANG_Augment) datadef, prefix);
 		return result;
 	}
 
@@ -773,7 +773,7 @@ public class Yang2Yin {
 						+ "\n";
 			if (c.getReference() != null)
 				result += gReference(c.getReference(), prefix + "  ") + "\n";
-			for (Enumeration<YANG_CaseDef> ec = c.getCaseDefs().elements(); ec
+			for (Enumeration<YANG_CaseDataDef> ec = c.getCaseDefs().elements(); ec
 					.hasMoreElements();)
 				result += gCaseDef(ec.nextElement(), prefix + "  ") + "\n";
 			result += prefix + "</case>";
@@ -782,7 +782,7 @@ public class Yang2Yin {
 		return result;
 	}
 
-	private String gCaseDef(YANG_CaseDef c, String prefix) {
+	private String gCaseDef(YANG_CaseDataDef c, String prefix) {
 		if (c instanceof YANG_Container)
 			return gContainer((YANG_Container) c, prefix);
 		if (c instanceof YANG_Leaf)
@@ -812,7 +812,7 @@ public class Yang2Yin {
 						+ "\n";
 			if (uses.getReference() != null)
 				result += gReference(uses.getReference(), prefix + "  ") + "\n";
-			for (Enumeration<YANG_Refinement> er = uses.getRefinements()
+			for (Enumeration<YANG_Refine> er = uses.getRefinements()
 					.elements(); er.hasMoreElements();)
 				result += gRefinement(er.nextElement(), prefix + "  ") + "\n";
 			result += prefix + "</uses>";
@@ -940,7 +940,7 @@ public class Yang2Yin {
 		return prefix + "<when condition=\"" + unquote(w.getWhen()) + "\"/>";
 	}
 
-	private String gRefinement(YANG_Refinement r, String prefix) {
+	private String gRefinement(YANG_Refine r, String prefix) {
 		if (r instanceof YANG_RefineContainer)
 			return gRefineContainer((YANG_RefineContainer) r, prefix);
 		if (r instanceof YANG_RefineLeaf)
@@ -959,8 +959,8 @@ public class Yang2Yin {
 	private String gRefineList(YANG_RefineList l, String prefix) {
 		String result = new String();
 		if (l.isBracked()) {
-			result += prefix + "<list name=\"" + unquote(l.getRefineList())
-					+ "\">\n";
+			//result += prefix + "<list name=\"" + unquote(l.getRefineList())
+			//		+ "\">\n";
 			for (Enumeration<YANG_Must> em = l.getMusts().elements(); em
 					.hasMoreElements();)
 				result += gMust(em.nextElement(), prefix + "  ") + "\n";
@@ -975,21 +975,22 @@ public class Yang2Yin {
 						+ "\n";
 			if (l.getReference() != null)
 				result += gReference(l.getReference(), prefix + "  ") + "\n";
-			for (Enumeration<YANG_Refinement> er = l.getRefinements()
-					.elements(); er.hasMoreElements();)
-				result += gRefinement(er.nextElement(), prefix + "  ") + "\n";
-			result += prefix + "</list>";
-		} else
-			result += prefix + "<list name=\"" + unquote(l.getRefineList())
-					+ "\"/>";
-		return result;
+		//	for (Enumeration<YANG_Refine> er = l.getRefinements()
+		//			.elements(); er.hasMoreElements();)
+		//		result += gRefinement(er.nextElement(), prefix + "  ") + "\n";
+		//	result += prefix + "</list>";
+	//	} else
+	//		result += prefix + "<list name=\"" + unquote(l.getRefineList())
+	//				+ "\"/>";
+		}
+			return result;
 	}
 
 	private String gRefineChoice(YANG_RefineChoice c, String prefix) {
 		String result = new String();
 		if (c.isBracked()) {
-			result += prefix + "<choice name=\"" + unquote(c.getRefineChoice())
-					+ "\">\n";
+	//		result += prefix + "<choice name=\"" + unquote(c.getRefineChoice())
+	//				+ "\">\n";
 			if (c.getDefault() != null)
 				result += gDefault(c.getDefault(), prefix + "  ") + "\n";
 			if (c.getMandatory() != null)
@@ -999,41 +1000,43 @@ public class Yang2Yin {
 						+ "\n";
 			if (c.getReference() != null)
 				result += gReference(c.getReference(), prefix + "  ") + "\n";
-			for (Enumeration<YANG_RefineCase> ec = c.getRefineCases()
-					.elements(); ec.hasMoreElements();)
-				result += gRefineCase(ec.nextElement(), prefix + "  ") + "\n";
-			result += prefix + "</choice>";
-		} else
-			result += prefix + "<choice name=\"" + unquote(c.getRefineChoice())
-					+ "\"/>";
+	//		for (Enumeration<YANG_RefineCase> ec = c.getRefineCases()
+	//				.elements(); ec.hasMoreElements();)
+	//			result += gRefineCase(ec.nextElement(), prefix + "  ") + "\n";
+	//		result += prefix + "</choice>";
+	//	} else
+	//		result += prefix + "<choice name=\"" + unquote(c.getRefineChoice())
+	//				+ "\"/>";
+		}
 		return result;
 	}
 
 	private String gRefineCase(YANG_RefineCase c, String prefix) {
 		String result = new String();
 		if (c.isBracked()) {
-			result += prefix + "<case name=\"" + unquote(c.getRefineCase())
-					+ "\">\n";
+	//		result += prefix + "<case name=\"" + unquote(c.getRefineCase())
+	//				+ "\">\n";
 			if (c.getDescription() != null)
 				result += gDescription(c.getDescription(), prefix + "  ")
 						+ "\n";
 			if (c.getReference() != null)
 				result += gReference(c.getReference(), prefix + "  ") + "\n";
-			for (Enumeration<YANG_Refinement> er = c.getRefinements()
-					.elements(); er.hasMoreElements();)
-				result += gRefinement(er.nextElement(), prefix + "  ") + "\n";
-			result += prefix + "</case>";
-		} else
-			result += prefix + "<case name=\"" + unquote(c.getRefineCase())
-					+ "\"/>";
+	//		for (Enumeration<YANG_Refine> er = c.getRefinements()
+	//				.elements(); er.hasMoreElements();)
+	//			result += gRefinement(er.nextElement(), prefix + "  ") + "\n";
+	//		result += prefix + "</case>";
+	//	} else
+	//		result += prefix + "<case name=\"" + unquote(c.getRefineCase())
+	//				+ "\"/>";
+		}
 		return result;
 	}
 
 	private String gRefineAnyXml(YANG_RefineAnyXml a, String prefix) {
 		String result = new String();
 		if (a.isBracked()) {
-			result += prefix + "<anyxml name=\"" + unquote(a.getRefineAnyXml())
-					+ "\">\n";
+	//		result += prefix + "<anyxml name=\"" + unquote(a.getRefineAnyXml())
+	//				+ "\">\n";
 			if (a.getConfig() != null)
 				result += gConfig(a.getConfig(), prefix + "  ") + "\n";
 			if (a.getMandatory() != null)
@@ -1044,17 +1047,19 @@ public class Yang2Yin {
 			if (a.getReference() != null)
 				result += gReference(a.getReference(), prefix + "  ") + "\n";
 			result += prefix + "</anyxml>";
-		} else
+	/*	} else
 			result += prefix + "<anyxml name=\"" + unquote(a.getRefineAnyXml())
 					+ "\"/>";
+					*/
+		}
 		return result;
 	}
 
 	private String gRefineLeafList(YANG_RefineLeafList l, String prefix) {
 		String result = new String();
 		if (l.isBracked()) {
-			result += prefix + "<leaf-list name=\""
-					+ unquote(l.getRefineLeafList()) + "\">\n";
+	//		result += prefix + "<leaf-list name=\""
+	//				+ unquote(l.getRefineLeafList()) + "\">\n";
 			for (Enumeration<YANG_Must> em = l.getMusts().elements(); em
 					.hasMoreElements();)
 				result += gMust(em.nextElement(), prefix + "  ") + "\n";
@@ -1070,17 +1075,19 @@ public class Yang2Yin {
 			if (l.getReference() != null)
 				result += gReference(l.getReference(), prefix + "  ") + "\n";
 			result += prefix + "</leaf-list>";
-		} else
+	/*	} else
 			result += prefix + "<leaf-list name=\""
 					+ unquote(l.getRefineLeafList()) + "\"/>";
+					*/
+		}
 		return result;
 	}
 
 	private String gRefineContainer(YANG_RefineContainer c, String prefix) {
 		String result = new String();
 		if (c.isBracked()) {
-			result += prefix + "<container name=\""
-					+ unquote(c.getRefineContainer()) + "\">\n";
+	//		result += prefix + "<container name=\""
+	//				+ unquote(c.getRefineContainer()) + "\">\n";
 			for (Enumeration<YANG_Must> em = c.getMusts().elements(); em
 					.hasMoreElements();)
 				result += gMust(em.nextElement(), prefix + "  ") + "\n";
@@ -1093,21 +1100,25 @@ public class Yang2Yin {
 						+ "\n";
 			if (c.getReference() != null)
 				result += gReference(c.getReference(), prefix + "  ") + "\n";
-			for (Enumeration<YANG_Refinement> er = c.getRefinements()
+			/*
+			for (Enumeration<YANG_Refine> er = c.getRefinements()
 					.elements(); er.hasMoreElements();)
 				result += gRefinement(er.nextElement(), prefix + "  ") + "\n";
+			*/
 			result += prefix + "</container>";
-		} else
+	/*	} else
 			result += prefix + "<container name=\""
 					+ unquote(c.getRefineContainer()) + "\"/>";
+					*/
+		}
 		return result;
 	}
 
 	private String gRefineLeaf(YANG_RefineLeaf l, String prefix) {
 		String result = new String();
 		if (l.isBracked()) {
-			result += prefix + "<leaf name=\"" + unquote(l.getRefineLeaf())
-					+ "\">\n";
+	//		result += prefix + "<leaf name=\"" + unquote(l.getRefineLeaf())
+	//				+ "\">\n";
 			for (Enumeration<YANG_Must> em = l.getMusts().elements(); em
 					.hasMoreElements();)
 				result += gMust(em.nextElement(), prefix + "  ") + "\n";
@@ -1123,9 +1134,11 @@ public class Yang2Yin {
 			if (l.getReference() != null)
 				result += gReference(l.getReference(), prefix + "  ") + "\n";
 			result += prefix + "</leaf>";
-		} else
+	/*	} else
 			result += prefix + "<leaf name=\"" + unquote(l.getRefineLeaf())
 					+ "\"/>";
+					*/
+		}
 		return result;
 	}
 
@@ -1192,7 +1205,7 @@ public class Yang2Yin {
 	}
 
 	private String gConfig(YANG_Config config, String prefix) {
-		return prefix + "<config value=\"" + unquote(config.getConfig())
+		return prefix + "<config value=\"" + unquote(config.getConfigStr())
 				+ "\"/>";
 	}
 

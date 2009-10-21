@@ -102,7 +102,7 @@ public class YangContext {
 		else if (b instanceof YANG_Extension)
 			addExtension((YANG_Extension) b);
 		else
-			specnodes.put(getModuleSpecName() + ":" + b.getBody(), b);
+			specnodes.put(getSpec().getName(), getModuleSpecName() + ":" + b.getBody(), b);
 	}
 
 	/**
@@ -288,10 +288,9 @@ public class YangContext {
 	 * Check if all typedefs have a resolved type and there is no circular
 	 * references
 	 * 
-	 * @throws YangParserException
-	 *             if a type is not defined or if there is a circular reference
+	 * 
 	 */
-	public void checkTypes() throws YangParserException {
+	public void checkTypes() {
 		spectypes.check(getModuleSpecName());
 	}
 
@@ -314,21 +313,22 @@ public class YangContext {
 
 	}
 
-	private void addGrouping(YANG_Grouping g) throws YangParserException {
+	private void addGrouping(YANG_Grouping g) {
 
 		// Are we trying to redefine a built-in type ?
 
-		if (YangBuiltInTypes.isBuiltIn(g.getGrouping()))
-			throw new YangParserException(spec.getName() + " : built-in type "
-					+ g.getGrouping() + " cannot be redefined", g.getLine(), g
-					.getCol());
+		if (YangBuiltInTypes.isBuiltIn(g.getGrouping())) {
+			YangErrorManager.add(spec.getName(), g.getLine(), g.getCol(),
+					YangErrorManager.messages.getString("grouping"));
+			return;
+		}
 
-		specnodes.put(getModuleSpecName() + ":" + g.getGrouping(), g);
+		specnodes.put(getSpec().getName(),getModuleSpecName() + ":" + g.getGrouping(), g);
 	}
 
 	private void addExtension(YANG_Extension e) throws YangParserException {
 
-		specnodes.put(getModuleSpecName() + ":" + e.getExtension(), e);
+		specnodes.put(getSpec().getName(),getModuleSpecName() + ":" + e.getExtension(), e);
 	}
 
 	private void addTypeDef(YANG_TypeDef td) throws YangParserException {
@@ -340,11 +340,20 @@ public class YangContext {
 					+ td.getTypeDef() + " cannot be redefined", td.getLine(),
 					td.getCol());
 
+		// Is there a type statement ?
+
+		if (td.getType() == null) {
+			YangErrorManager.add(getSpec().getName(), td.getLine(),
+					td.getCol(), YangErrorManager.messages
+							.getString("type_expec"));
+			return;
+		}
+
 		YANG_Type type = td.getType();
 
 		String typestr = canonicalTypeName(type, pendinguniontypes);
 
-		specnodes.put(getModuleSpecName() + ":" + td.getTypeDef(), td);
+		specnodes.put(getSpec().getName(),getModuleSpecName() + ":" + td.getTypeDef(), td);
 		spectypes.add(getModuleSpecName() + ":" + td.getTypeDef(), typestr, td);
 
 	}

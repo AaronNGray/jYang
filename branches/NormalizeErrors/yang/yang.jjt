@@ -10,7 +10,11 @@ PARSER_BEGIN(yang)
 package jyang.parser;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.io.*;
 public class yang {
+
+
+  
 }
 PARSER_END(yang)
 
@@ -453,7 +457,7 @@ YANG_Unknown un = null;
 YANG_Linkage linkagestmts()     :
 
 {
-Node n = null;
+YANG_Linkage n = null;
 YANG_Unknown un = null;
 }
 {
@@ -464,7 +468,7 @@ YANG_Unknown un = null;
 		n = includestmt() (LOOKAHEAD(2) un = unknownstatement() {n.addUnknown(un);})*
 	)
 		{
-			return (YANG_Linkage) n;
+			return  n;
 		}
 }
 
@@ -528,9 +532,9 @@ YANG_DataDef d = null;}
 		}
 }
 
-YANG_CaseDef casedatadefstmt()   : 
+YANG_CaseDataDef casedatadefstmt()   : 
 {
-YANG_CaseDef d = null;}
+YANG_CaseDataDef d = null;}
 {
 	(
 	d = containerstmt() 
@@ -820,7 +824,6 @@ YANG_Unknown un = null;}
 		}
     (
 	";" 
-	
 	|
 		(
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
@@ -1356,12 +1359,7 @@ YANG_Decimal64Spec decimal64specification()      #Decimal64Spec:
 		jjtThis.setLine(f.beginLine);
 		jjtThis.setCol(f.beginColumn);
 	}
-	[LOOKAHEAD(2)
-	  rg = rangestmt()
-	  	{
-	  		jjtThis.setRange(rg);
-	  	}
-	]
+	
 	{
 		return jjtThis;
 	}
@@ -1745,8 +1743,7 @@ YANG_Unknown un = null;}
 		{
 		jjtThis.addBit(b);
 		}
-	( 
-	 LOOKAHEAD(2) un = unknownstatement(){jjtThis.addUnknown(un);})*
+	(LOOKAHEAD(2) un = unknownstatement(){jjtThis.addUnknown(un);})*
 	)+
 		{
 		return jjtThis;
@@ -2920,7 +2917,7 @@ YANG_IfFeature iff = null;
 YANG_Status s = null;
 YANG_Description d = null;
 YANG_Reference r = null;
-YANG_CaseDef c = null;
+YANG_CaseDataDef c = null;
 YANG_Unknown un = null;}
 {
 	tcase = <casekeyword>  i = identifierstr() 
@@ -3056,7 +3053,7 @@ YANG_IfFeature iff = null;
 YANG_Status s = null;
 YANG_Description d = null;
 YANG_Reference r = null;
-YANG_Refinement re = null;
+YANG_Refine re = null;
 YANG_UsesAugment u = null;
 YANG_Unknown un = null;
 }
@@ -3115,12 +3112,13 @@ YANG_Unknown un = null;
 		}
 }
 
-YANG_Refinement refinementstmt()       #Refinement: 
+YANG_Refine refinementstmt()       : 
 {
-YANG_Refinement r = null;
+YANG_Refine r = null;
 Token t;
 String i = null;
 YANG_Unknown un = null;
+Vector<YANG_Unknown> vu = new Vector<YANG_Unknown>();
 }
 {
 	t = <refinekeyword> i = identifierstr()
@@ -3128,7 +3126,7 @@ YANG_Unknown un = null;
      (
 	 ";" 
 	 |
-	  "{"(LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
+	  "{"(LOOKAHEAD(2) un = unknownstatement() {vu.add(un);})*
 	  ( 
 			LOOKAHEAD(3) r = refinecontainerstmt()
 		|
@@ -3148,10 +3146,12 @@ YANG_Unknown un = null;
 	  )
 		{
 			
-			jjtThis.setLine(t.beginLine);
-			jjtThis.setCol(t.beginColumn);
-			jjtThis.setRefineNodeId(i);
-			return jjtThis;
+			r.setLine(t.beginLine);
+			r.setCol(t.beginColumn);
+			r.setRefineNodeId(i);
+			for (Enumeration<YANG_Unknown> eu = vu.elements(); eu.hasMoreElements();)
+				r.addUnknown(eu.nextElement());
+			return r;
 		}
 }
 
@@ -3290,7 +3290,7 @@ Token t;
 		{
 		jjtThis.setReference(r);
 		}
-	  )
+	  )*
 		{
 		return jjtThis;
 		}
