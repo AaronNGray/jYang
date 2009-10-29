@@ -21,8 +21,10 @@ public abstract class ConfigRefineNode extends YANG_Refine {
 			b_config = true;
 			config = c;
 		} else
-			YangErrorManager.add(c.getLine(), c.getCol(),
-					YangErrorManager.messages.getString("config"));
+			YangErrorManager
+			.add(filename, c.getLine(), c.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"config"));
 	}
 
 	public YANG_Config getConfig() {

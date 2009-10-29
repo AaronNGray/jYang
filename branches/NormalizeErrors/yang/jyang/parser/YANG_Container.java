@@ -59,8 +59,10 @@ public class YANG_Container extends MustDataDef implements YANG_CaseDataDef,
 			b_presence = true;
 			presence = p;
 		} else
-			YangErrorManager.add(p.getLine(), p.getCol(),
-					YangErrorManager.messages.getString("presence"));
+			YangErrorManager
+					.add(filename, p.getLine(), p.getCol(), MessageFormat.format(
+							YangErrorManager.messages.getString("unex_kw"),
+							"presence"));
 
 	}
 

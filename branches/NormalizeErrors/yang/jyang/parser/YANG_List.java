@@ -19,6 +19,7 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YANG_List extends ListedDataDef {
@@ -57,8 +58,9 @@ public class YANG_List extends ListedDataDef {
 			b_key = true;
 			key = t;
 		} else
-			YangErrorManager.add(t.getLine(), t.getCol(),
-					YangErrorManager.messages.getString("key"));
+			YangErrorManager.add(filename, t.getLine(), t.getCol(),
+					MessageFormat.format(YangErrorManager.messages
+							.getString("unex_kw"), "key"));
 	}
 
 	public YANG_Key getKey() {

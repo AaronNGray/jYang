@@ -48,7 +48,7 @@ public class YANG_Unique extends SimpleYangNode {
 		if (m.matches())
 			unique = un;
 		else
-			YangErrorManager.add(getLine(), getCol(),
+			YangErrorManager.add(filename, getLine(), getCol(),
 					YangErrorManager.messages.getString("unique_exp"));
 	}
 

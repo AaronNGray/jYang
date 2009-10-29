@@ -17,11 +17,13 @@ public abstract class StatuedNode extends DocumentedNode {
 	}
 
 	public void setStatus(YANG_Status s) {
-		if (b_status)
-			YangErrorManager.add(s.getLine(), s.getCol(),
-					YangErrorManager.messages.getString("status"));
-		b_status = true;
-		status = s;
+		if (b_status) {
+			b_status = true;
+			status = s;
+		} else
+			YangErrorManager.add(filename, s.getLine(), s.getCol(),
+					MessageFormat.format(YangErrorManager.messages
+							.getString("unex_kw"), "status"));
 	}
 
 	public YANG_Status getStatus() {

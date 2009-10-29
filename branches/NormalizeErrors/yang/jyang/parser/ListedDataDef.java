@@ -1,5 +1,7 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
+
 public abstract class ListedDataDef extends MustDataDef implements
 		YANG_CaseDataDef, YANG_ShortCase {
 
@@ -18,8 +20,10 @@ public abstract class ListedDataDef extends MustDataDef implements
 
 	public void setMinElement(YANG_MinElement m) {
 		if (b_min)
-			YangErrorManager.add(m.getLine(), m.getCol(),
-					YangErrorManager.messages.getString("min"));
+			YangErrorManager
+			.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"min"));
 		b_min = true;
 		min = m;
 	}
@@ -33,8 +37,10 @@ public abstract class ListedDataDef extends MustDataDef implements
 			b_max = true;
 			max = m;
 		} else
-			YangErrorManager.add(m.getLine(), m.getCol(),
-					YangErrorManager.messages.getString("max"));
+			YangErrorManager
+			.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"max"));
 	}
 
 	public YANG_MaxElement getMaxElement() {
@@ -46,8 +52,10 @@ public abstract class ListedDataDef extends MustDataDef implements
 			b_ordered = true;
 			ordered = o;
 		} else
-			YangErrorManager.add(o.getLine(), o.getCol(),
-					YangErrorManager.messages.getString("ordered"));
+			YangErrorManager
+			.add(filename, o.getLine(), o.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"ordered"));
 	}
 
 	public YANG_OrderedBy getOrderedBy() {

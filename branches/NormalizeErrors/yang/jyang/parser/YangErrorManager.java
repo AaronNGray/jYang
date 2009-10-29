@@ -87,9 +87,7 @@ public class YangErrorManager {
 		errors.add(error);
 	}
 
-	static public void add(int line, int col, String mess) {
-		add(module, line, col, mess);
-	}
+	
 	
 	static public void print(OutputStream out) throws IOException{
 		for (Iterator<Error> i = errors.iterator();i.hasNext();){

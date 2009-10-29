@@ -61,7 +61,7 @@ public class YANG_SubModule extends YANG_Specification {
 				b_yangversion = true;
 				yangversion = (YANG_YangVersion) m;
 			} else
-				YangErrorManager.add(m.getLine(), m.getCol(),
+				YangErrorManager.add(filename, m.getLine(), m.getCol(),
 						YangErrorManager.messages.getString("version"));
 		}
 			
@@ -71,7 +71,7 @@ public class YANG_SubModule extends YANG_Specification {
 			belong = (YANG_Belong) m;
 		}
 		else 
-			YangErrorManager.add(m.getLine(), m.getCol(),
+			YangErrorManager.add(filename, m.getLine(), m.getCol(),
 					YangErrorManager.messages.getString("belong"));
 
 		

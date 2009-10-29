@@ -1,5 +1,6 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -29,8 +30,10 @@ public abstract class FeaturedNode extends StatuedNode {
 
 	public void setWhen(YANG_When w) {
 		if (b_when)
-			YangErrorManager.add(w.getLine(), w.getCol(),
-					YangErrorManager.messages.getString("when"));
+			YangErrorManager
+			.add(filename, w.getLine(), w.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"when"));
 
 		b_when = true;
 		this.when = w;

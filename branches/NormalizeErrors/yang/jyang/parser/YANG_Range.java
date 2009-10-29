@@ -83,7 +83,7 @@ public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestrict
 				try {
 					ranges[j] = test[j].split("\\.\\.");
 					if (ranges[j].length != 2) {
-						YangErrorManager.add(getLine(), getCol(),
+						YangErrorManager.add(filename, getLine(), getCol(),
 								YangErrorManager.messages.getString("range_exp"));
 					}
 				} catch (PatternSyntaxException pe) {

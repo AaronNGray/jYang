@@ -1,5 +1,7 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
+
 public abstract class ImportIncludeNode extends SimpleYangNode {
 
 	private YANG_Revision revision = null;
@@ -22,8 +24,11 @@ public abstract class ImportIncludeNode extends SimpleYangNode {
 			this.revision = r;
 			b_revision = true;
 		}
-		YangErrorManager.add(r.getLine(), r.getCol(), YangErrorManager.messages
-				.getString("revision"));
+		else
+			YangErrorManager
+			.add(filename, r.getLine(), r.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"revision"));
 	}
 	
 	public boolean isBracked() {

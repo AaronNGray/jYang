@@ -2,6 +2,8 @@
 
 package jyang.parser;
 
+import java.text.MessageFormat;
+
 
 public class YANG_Identity extends StatuedBody {
 
@@ -38,8 +40,10 @@ public class YANG_Identity extends StatuedBody {
 		b_base = true;
 		}
 		else
-			YangErrorManager.add(b.getLine(), b.getCol(),
-					YangErrorManager.messages.getString("base"));
+			YangErrorManager
+			.add(filename, b.getLine(), b.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"base"));
 	}
 	
 	public boolean isBracked() {

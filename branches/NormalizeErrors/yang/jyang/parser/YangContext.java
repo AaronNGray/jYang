@@ -102,7 +102,7 @@ public class YangContext {
 		else if (b instanceof YANG_Extension)
 			addExtension((YANG_Extension) b);
 		else
-			specnodes.put(getSpec().getName(), getModuleSpecName() + ":" + b.getBody(), b);
+			specnodes.put(getModuleSpecName() + ":" + b.getBody(), b);
 	}
 
 	/**
@@ -291,7 +291,7 @@ public class YangContext {
 	 * 
 	 */
 	public void checkTypes() {
-		spectypes.check(getModuleSpecName());
+		spectypes.check();
 	}
 
 	/**
@@ -323,12 +323,12 @@ public class YangContext {
 			return;
 		}
 
-		specnodes.put(getSpec().getName(),getModuleSpecName() + ":" + g.getGrouping(), g);
+		specnodes.put(getModuleSpecName() + ":" + g.getGrouping(), g);
 	}
 
 	private void addExtension(YANG_Extension e) throws YangParserException {
 
-		specnodes.put(getSpec().getName(),getModuleSpecName() + ":" + e.getExtension(), e);
+		specnodes.put(getModuleSpecName() + ":" + e.getExtension(), e);
 	}
 
 	private void addTypeDef(YANG_TypeDef td) throws YangParserException {
@@ -353,7 +353,7 @@ public class YangContext {
 
 		String typestr = canonicalTypeName(type, pendinguniontypes);
 
-		specnodes.put(getSpec().getName(),getModuleSpecName() + ":" + td.getTypeDef(), td);
+		specnodes.put(getModuleSpecName() + ":" + td.getTypeDef(), td);
 		spectypes.add(getModuleSpecName() + ":" + td.getTypeDef(), typestr, td);
 
 	}

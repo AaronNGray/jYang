@@ -19,6 +19,7 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YANG_LeafList extends ListedDataDef {
@@ -54,7 +55,7 @@ public class YANG_LeafList extends ListedDataDef {
 			b_type = true;
 			type = t;
 		} else
-			YangErrorManager.add(t.getLine(), t.getCol(),
+			YangErrorManager.add(filename, t.getLine(), t.getCol(),
 					YangErrorManager.messages.getString("type"));
 	}
 
@@ -67,8 +68,8 @@ public class YANG_LeafList extends ListedDataDef {
 			b_units = true;
 			units = u;
 		} else
-			YangErrorManager.add(u.getLine(), u.getCol(),
-					YangErrorManager.messages.getString("units"));
+			YangErrorManager.add(filename, u.getLine(), u.getCol(),
+					MessageFormat.format(YangErrorManager.messages.getString("unex_kw"), "units"));
 	}
 
 	public YANG_Units getUnits() {

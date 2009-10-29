@@ -20,6 +20,7 @@ package jyang.parser;
 
  */
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YANG_Module extends YANG_Specification {
@@ -61,8 +62,10 @@ public class YANG_Module extends YANG_Specification {
 				b_yangversion = true;
 				yangversion = (YANG_YangVersion) m;
 			} else
-				YangErrorManager.add(m.getLine(), m.getCol(),
-						YangErrorManager.messages.getString("version"));
+				YangErrorManager
+				.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
+						YangErrorManager.messages.getString("unex_kw"),
+						"version"));
 
 		}
 		if (m instanceof YANG_NameSpace) {
@@ -70,8 +73,10 @@ public class YANG_Module extends YANG_Specification {
 				b_namespace = true;
 				namespace = (YANG_NameSpace) m;
 			} else
-				YangErrorManager.add(m.getLine(), m.getCol(),
-						YangErrorManager.messages.getString("namespace"));
+				YangErrorManager
+				.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
+						YangErrorManager.messages.getString("unex_kw"),
+						"namespace"));
 
 		}
 		if (m instanceof YANG_Prefix) {
@@ -79,8 +84,10 @@ public class YANG_Module extends YANG_Specification {
 				b_prefix = true;
 				prefix = (YANG_Prefix) m;
 			} else
-				YangErrorManager.add(m.getLine(), m.getCol(),
-						YangErrorManager.messages.getString("prefix"));
+				YangErrorManager
+				.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
+						YangErrorManager.messages.getString("unex_kw"),
+						"prefix"));
 
 		}
 		nbheader++;

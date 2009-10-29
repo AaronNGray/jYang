@@ -1,5 +1,7 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
+
 public abstract class ListedRefineNode extends MustRefineNode {
 
 	protected YANG_MinElement min = null;
@@ -16,8 +18,10 @@ public abstract class ListedRefineNode extends MustRefineNode {
 
 	public void setMinElement(YANG_MinElement m) {
 		if (b_min)
-			YangErrorManager.add(m.getLine(), m.getCol(),
-					YangErrorManager.messages.getString("min"));
+			YangErrorManager
+			.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"min"));
 		else {
 			b_min = true;
 			min = m;
@@ -30,8 +34,10 @@ public abstract class ListedRefineNode extends MustRefineNode {
 
 	public void setMaxElement(YANG_MaxElement m) {
 		if (b_max)
-			YangErrorManager.add(m.getLine(), m.getCol(),
-					YangErrorManager.messages.getString("max"));
+			YangErrorManager
+			.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"max"));
 		else {
 			b_max = true;
 			max = m;

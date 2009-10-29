@@ -2,10 +2,16 @@ package jyang.parser;
 
 import java.util.Vector;
 
-public abstract class SimpleYangNode extends SimpleNode {
+public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 
 	protected yang parser;
 	private Vector<YANG_Unknown> unknowns = new Vector<YANG_Unknown>();
+	protected String filename;
+
+	public void jjtAddChild(Node n, int i) {
+		((YangNode)n).setFileName(filename);System.out.println("add " + filename + " " + n);
+		super.jjtAddChild(n, i);
+	}
 
 	private boolean isRootNode = false;
 
@@ -43,15 +49,26 @@ public abstract class SimpleYangNode extends SimpleNode {
 	public int getCol() {
 		return col;
 	}
+
 	private SimpleYangNode parent = null;
 
 	public void setParent(SimpleYangNode b) {
 		parent = b;
 	}
 
+	public String getFileName() {
+		return filename;
+	}
+
+	public void setFileName(String f) {
+		filename = f;
+		System.out.println("setfilename " + f);
+	}
+
 	public SimpleYangNode getParent() {
 		return parent;
 	}
+
 	public void setRootNode(boolean b) {
 		isRootNode = b;
 	}
@@ -59,7 +76,6 @@ public abstract class SimpleYangNode extends SimpleNode {
 	public boolean isRootNode() {
 		return isRootNode;
 	}
-
 
 	public YANG_Config getParentConfig() {
 		if (this instanceof YANG_Grouping)
@@ -78,11 +94,10 @@ public abstract class SimpleYangNode extends SimpleNode {
 					return parent.getConfig();
 				else
 					return getParent().getParentConfig();
-			} 
+			}
 		}
 		return null;
 	}
-
 
 	public String unquote(String s) {
 		if (s.charAt(0) == '"')
@@ -91,7 +106,7 @@ public abstract class SimpleYangNode extends SimpleNode {
 			s = s.substring(0, s.length() - 1);
 		return s;
 	}
-	
+
 	public YANG_Config getConfig() {
 		return null;
 	}

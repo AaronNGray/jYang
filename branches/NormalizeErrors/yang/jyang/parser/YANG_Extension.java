@@ -34,8 +34,10 @@ public class YANG_Extension extends StatuedBody {
 			b_argument = true;
 			argument = a;
 		} else
-			YangErrorManager.add(a.getLine(), a.getCol(),
-					YangErrorManager.messages.getString("argument"));
+			YangErrorManager
+			.add(filename, a.getLine(), a.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"argument"));
 
 	}
 

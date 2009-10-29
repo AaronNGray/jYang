@@ -1,5 +1,6 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
 import java.util.Enumeration;
 
 public class YANG_DeviateReplace extends DeviateAddReplace {
@@ -24,8 +25,10 @@ public class YANG_DeviateReplace extends DeviateAddReplace {
 			this.type = t;
 			b_type = true;
 		} else
-			YangErrorManager.add(t.getLine(), t.getCol(),
-					YangErrorManager.messages.getString("type"));
+			YangErrorManager
+			.add(filename, t.getLine(), t.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"type"));
 	}
 
 	public boolean isBracked() {

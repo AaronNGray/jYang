@@ -28,7 +28,7 @@ public class YANG_Pattern extends ErrorTagedNode {
 					.removeQuotesAndTrim(pattern));
 		} catch (PatternSyntaxException pse) {
 
-			YangErrorManager.add(getLine(), getCol(), YangErrorManager.messages
+			YangErrorManager.add(filename, getLine(), getCol(), YangErrorManager.messages
 					.getString("pattern_exp"));
 		}
 	}

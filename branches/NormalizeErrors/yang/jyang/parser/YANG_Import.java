@@ -1,5 +1,7 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
+
 public class YANG_Import extends ImportIncludeNode implements YANG_Linkage {
 
 	private String importstr = null;
@@ -28,8 +30,10 @@ public class YANG_Import extends ImportIncludeNode implements YANG_Linkage {
 			prefix = p;
 			b_prefix = true;
 		} else
-			YangErrorManager.add(p.getLine(), p.getCol(),
-					YangErrorManager.messages.getString("prefix"));
+			YangErrorManager
+			.add(filename, p.getLine(), p.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"prefix"));
 	}
 
 	public YANG_Prefix getPrefix() {

@@ -19,6 +19,7 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
@@ -58,8 +59,8 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 			b_type = true;
 			type = t;
 		} else
-			YangErrorManager.add(t.getLine(), t.getCol(),
-					YangErrorManager.messages.getString("type"));
+			YangErrorManager.add(filename, t.getLine(), t.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"), "type"));
 	}
 
 	public YANG_Type getType() {
@@ -71,8 +72,8 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 			b_units = true;
 			units = u;
 		} else
-			YangErrorManager.add(u.getLine(), u.getCol(),
-					YangErrorManager.messages.getString("units"));
+			YangErrorManager.add(filename, u.getLine(), u.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"), "units"));
 	}
 
 	public YANG_Units getUnits() {
@@ -84,8 +85,8 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 			b_default = true;
 			ydefault = d;
 		} else
-			YangErrorManager.add(d.getLine(), d.getCol(),
-					YangErrorManager.messages.getString("default"));
+			YangErrorManager.add(filename, d.getLine(), d.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"), "default"));
 	}
 
 	public YANG_Default getDefault() {
@@ -97,8 +98,9 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager.add(m.getLine(), m.getCol(),
-					YangErrorManager.messages.getString("mandatory"));
+			YangErrorManager.add(filename, m.getLine(), m.getCol(), MessageFormat
+					.format(YangErrorManager.messages.getString("unex_kw"),
+							"mandatory"));
 	}
 
 	public YANG_Mandatory getMandatory() {

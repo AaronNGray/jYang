@@ -101,12 +101,12 @@ public class jyang {
 		}
 
 		// Input yang specifications
-		//Vector<InputStream> specs = new Vector<InputStream>();
+		// Vector<InputStream> specs = new Vector<InputStream>();
 		Hashtable<String, InputStream> specs = new Hashtable<String, InputStream>();
 		for (int f = i; f < args.length; f++) {
 			try {
 				FileInputStream specfile = new FileInputStream(args[f]);
-				specs.put(args[f], specfile);  
+				specs.put(args[f], specfile);
 			} catch (FileNotFoundException fnf) {
 				System.err.println(args[f] + " file not found, ignore it");
 			} catch (SecurityException se) {
@@ -206,13 +206,11 @@ public class jyang {
 		}
 
 		// Parse yang specs
-		
+
 		YangErrorManager.init();
-		
 		boolean reinit = false;
 		boolean noError = true;
-		for (Enumeration<String> ei = specs.keys(); ei
-				.hasMoreElements();) {
+		for (Enumeration<String> ei = specs.keys(); ei.hasMoreElements();) {
 			String fname = ei.nextElement();
 			YangErrorManager.setCurrentModule(fname);
 			if (!reinit) {
@@ -222,6 +220,7 @@ public class jyang {
 				yang.ReInit(specs.get(fname));
 			}
 			try {
+				yang.setFileName(fname);
 				YANG_Specification yangspec = yang.Start();
 				Vector<String> checkeds = new Vector<String>();
 				yangspec.check(paths, checkeds);
@@ -231,15 +230,15 @@ public class jyang {
 					if (format != null) {
 						if (format.compareTo("yin") == 0) {
 							new Yang2Yin(yangspec, paths, out);
-						} /*else if (format.compareTo("ensuite") == 0) {
-							new Yang2Ensuite(yangspec, paths, out);
-						}  */ 
+						} /*
+						 * else if (format.compareTo("ensuite") == 0) { new
+						 * Yang2Ensuite(yangspec, paths, out); }
+						 */
 						else
 							System.err
 									.println("only yin (incomplete),  dsdl format will be possible");
 					}
-				}
-				else
+				} else
 					noError = false;
 
 			} catch (ParseException pe) {
@@ -255,9 +254,9 @@ public class jyang {
 		}
 		parsingOk = noError;
 		/*
-		if (format.compareTo("applet") == 0) {
-			new Yang2Applet(yangsSpecs, paths, out);
-		}*/
+		 * if (format.compareTo("applet") == 0) { new Yang2Applet(yangsSpecs,
+		 * paths, out); }
+		 */
 	}
 
 	public boolean isParsingOk() {

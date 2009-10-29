@@ -34,7 +34,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 		if (m.matches())
 			usesaugment = aa;
 		else
-			YangErrorManager.add(getLine(), getCol(),
+			YangErrorManager.add(filename, getLine(), getCol(),
 					YangErrorManager.messages.getString("uses_augment_exp"));
 	}
 

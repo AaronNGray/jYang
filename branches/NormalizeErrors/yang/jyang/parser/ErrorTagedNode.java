@@ -1,5 +1,7 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
+
 public abstract class ErrorTagedNode extends DocumentedNode {
 
 	private YANG_ErrorMessage errmess = null;
@@ -12,8 +14,10 @@ public abstract class ErrorTagedNode extends DocumentedNode {
 			b_errmess = true;
 			errmess = e;
 		} else
-			YangErrorManager.add(e.getLine(), e.getCol(),
-					YangErrorManager.messages.getString("errmess"));
+			YangErrorManager
+			.add(filename, e.getLine(), e.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"error-message"));
 	}
 
 	public YANG_ErrorMessage getErrMess() {
@@ -25,8 +29,10 @@ public abstract class ErrorTagedNode extends DocumentedNode {
 			b_errapptag = true;
 			errapptag = e;
 		} else
-			YangErrorManager.add(e.getLine(), e.getCol(),
-					YangErrorManager.messages.getString("errapp"));
+			YangErrorManager
+			.add(filename, e.getLine(), e.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"error-appt"));
 	}
 
 	public YANG_ErrorAppt getErrAppTag() {

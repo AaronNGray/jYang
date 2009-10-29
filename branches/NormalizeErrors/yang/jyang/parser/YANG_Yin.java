@@ -20,7 +20,7 @@ public class YANG_Yin extends SimpleYangNode {
 		if (!(y.compareTo("true") == 0 || y.compareTo("false") == 0
 				|| y.compareTo("\"true\"") == 0 || y.compareTo("\"false\"") == 0))
 
-			YangErrorManager.add(getLine(), getCol(), YangErrorManager.messages
+			YangErrorManager.add(filename, getLine(), getCol(), YangErrorManager.messages
 					.getString("yin_exp"));
 		yin = y;
 	}

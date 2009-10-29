@@ -19,6 +19,7 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YANG_RefineChoice extends MandatoryRefineNode {
@@ -41,8 +42,10 @@ public class YANG_RefineChoice extends MandatoryRefineNode {
 			b_default = true;
 			ydefault = d;
 		} else
-			YangErrorManager.add(d.getLine(), d.getCol(),
-					YangErrorManager.messages.getString("default"));
+			YangErrorManager
+			.add(filename, d.getLine(), d.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"default"));
 	}
 
 	public YANG_Default getDefault() {

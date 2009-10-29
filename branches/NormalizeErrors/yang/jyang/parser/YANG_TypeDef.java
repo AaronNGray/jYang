@@ -1,5 +1,6 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -35,11 +36,12 @@ public class YANG_TypeDef extends StatuedBody {
 	}
 
 	public void setType(YANG_Type t) throws YangParserException {
-		if (b_type)
-			throw new YangParserException("Type already defined in typedef "
-					+ typedef, t.getLine(), t.getCol());
-		b_type = true;
-		ytype = t;
+		if (!b_type) {
+			b_type = true;
+			ytype = t;
+		} else
+			YangErrorManager.add(filename,t.getLine(), t.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"), "type"));
 	}
 
 	public YANG_Type getType() {
@@ -51,7 +53,7 @@ public class YANG_TypeDef extends StatuedBody {
 			b_units = true;
 			units = u;
 		} else
-			YangErrorManager.add(u.getLine(), u.getCol(),
+			YangErrorManager.add(filename, u.getLine(), u.getCol(),
 					YangErrorManager.messages.getString("units"));
 	}
 
@@ -64,7 +66,7 @@ public class YANG_TypeDef extends StatuedBody {
 			b_default = true;
 			defaultstr = d;
 		} else
-			YangErrorManager.add(d.getLine(), d.getCol(),
+			YangErrorManager.add(filename, d.getLine(), d.getCol(),
 					YangErrorManager.messages.getString("default"));
 	}
 
@@ -78,8 +80,9 @@ public class YANG_TypeDef extends StatuedBody {
 			return;
 
 		if (!b_type) {
-			YangErrorManager.add(context.getSpec().getName(),getLine(), getCol(), YangErrorManager.messages
-					.getString("type_expec"));
+			YangErrorManager
+					.add(context.getSpec().getName(), getLine(), getCol(),
+							YangErrorManager.messages.getString("type_expec"));
 			return;
 		}
 

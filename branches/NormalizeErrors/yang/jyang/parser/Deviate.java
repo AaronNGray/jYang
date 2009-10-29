@@ -1,5 +1,7 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
+
 public abstract class Deviate extends SimpleYangNode {
 
 	private YANG_Units units = null;
@@ -24,8 +26,10 @@ public abstract class Deviate extends SimpleYangNode {
 			this.units = u;
 			b_units = true;
 		} else
-			YangErrorManager.add(u.getLine(), u.getCol(),
-					YangErrorManager.messages.getString("units"));
+			YangErrorManager
+			.add(filename, u.getLine(), u.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"units"));
 	}
 
 	public YANG_Default getDefault() {
@@ -37,8 +41,10 @@ public abstract class Deviate extends SimpleYangNode {
 			this.ydefault = d;
 			b_default = true;
 		} else
-			YangErrorManager.add(d.getLine(), d.getCol(),
-					YangErrorManager.messages.getString("default"));
+			YangErrorManager
+			.add(filename, d.getLine(), d.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"default"));
 	}
 	
 	public boolean isBracked() {

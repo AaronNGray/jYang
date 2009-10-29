@@ -1,5 +1,7 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
+
 public class YANG_Bit extends StatuedNode {
 
 	private String bit = null;
@@ -28,8 +30,10 @@ public class YANG_Bit extends StatuedNode {
 			position = p;
 			b_position = true;
 		} else
-			YangErrorManager.add(p.getLine(), p.getCol(),
-					YangErrorManager.messages.getString("position"));
+			YangErrorManager
+			.add(filename, p.getLine(), p.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"position"));
 	}
 
 	public YANG_Position getPosition() {

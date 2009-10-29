@@ -20,6 +20,7 @@ package jyang.parser;
 
  */
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YANG_RefineLeaf extends MustRefineNode {
@@ -43,8 +44,10 @@ public class YANG_RefineLeaf extends MustRefineNode {
 			b_default = true;
 			ydefault = d;
 		} else
-			YangErrorManager.add(d.getLine(), d.getCol(),
-					YangErrorManager.messages.getString("default"));
+			YangErrorManager
+			.add(filename, d.getLine(), d.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"default"));
 	}
 
 	public YANG_Default getDefault() {
@@ -56,8 +59,10 @@ public class YANG_RefineLeaf extends MustRefineNode {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager.add(m.getLine(), m.getCol(),
-					YangErrorManager.messages.getString("mandatory"));
+			YangErrorManager
+			.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"mandatory"));
 	}
 
 	public YANG_Mandatory getMandatory() {

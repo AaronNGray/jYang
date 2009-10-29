@@ -19,6 +19,7 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YANG_Choice extends ConfigDataDef {
@@ -56,8 +57,10 @@ public class YANG_Choice extends ConfigDataDef {
 			b_default = true;
 			ydefault = d;
 		} else
-			YangErrorManager.add(d.getLine(), d.getCol(),
-					YangErrorManager.messages.getString("default"));
+			YangErrorManager
+			.add(filename, d.getLine(), d.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"default"));
 	}
 
 	public YANG_Default getDefault() {
@@ -69,8 +72,10 @@ public class YANG_Choice extends ConfigDataDef {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager.add(m.getLine(), m.getCol(),
-					YangErrorManager.messages.getString("mandatory"));
+			YangErrorManager
+			.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"mandatory"));
 	}
 
 	public YANG_Mandatory getMandatory() {

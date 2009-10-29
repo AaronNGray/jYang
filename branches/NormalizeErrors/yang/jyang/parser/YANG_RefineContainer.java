@@ -19,6 +19,7 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YANG_RefineContainer extends MustRefineNode {
@@ -41,8 +42,10 @@ public class YANG_RefineContainer extends MustRefineNode {
 			b_presence = true;
 			presence = p;
 		} else
-			YangErrorManager.add(p.getLine(), p.getCol(),
-					YangErrorManager.messages.getString("presence"));
+			YangErrorManager
+			.add(filename, p.getLine(), p.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"presence"));
 	}
 
 	public YANG_Presence getPresence() {

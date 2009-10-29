@@ -19,6 +19,7 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YANG_Rpc extends TypedefGroupingBody {
@@ -54,8 +55,9 @@ public class YANG_Rpc extends TypedefGroupingBody {
 			b_input = true;
 			input = i;
 		} else
-			YangErrorManager.add(i.getLine(), i.getCol(),
-					YangErrorManager.messages.getString("input"));
+			YangErrorManager.add(filename, i.getLine(), i.getCol(),
+					MessageFormat.format(YangErrorManager.messages
+							.getString("unex_kw"), "input"));
 	}
 
 	public YANG_Input getInput() {
@@ -67,8 +69,9 @@ public class YANG_Rpc extends TypedefGroupingBody {
 			b_output = true;
 			output = o;
 		} else
-			YangErrorManager.add(o.getLine(), o.getCol(),
-					YangErrorManager.messages.getString("output"));
+			YangErrorManager.add(filename, o.getLine(), o.getCol(),
+					MessageFormat.format(YangErrorManager.messages
+							.getString("unex_kw"), "output"));
 	}
 
 	public YANG_Output getOutput() {

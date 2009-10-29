@@ -19,6 +19,7 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YangSpecNode {
@@ -120,24 +121,30 @@ public class YangSpecNode {
 	 * @param b
 	 *            the body node
 	 */
-	public void put(String module, String name, YANG_Body b) {
-
+	public void put(String name, YANG_Body b) {
+		String modulefilename = b.getFileName();
 		if (b instanceof YANG_TypeDef) {
 			if (isDefinedAsTypeDef(name)) {
-				YangErrorManager.add(module, b.getLine(), b.getCol(),
-						YangErrorManager.messages.getString("typedef"));
+				YangErrorManager.add(modulefilename, b.getLine(), b.getCol(),
+						MessageFormat.format(YangErrorManager.messages
+								.getString("typedef"), b.getBody(), modulefilename, get(name)
+								.getLine()));
 				return;
 			}
 		} else if (b instanceof YANG_Grouping) {
 			if (isDefinedAsGrouping(name)) {
-				YangErrorManager.add(module, b.getLine(), b.getCol(),
-						YangErrorManager.messages.getString("grouping"));
+				YangErrorManager.add(modulefilename, b.getLine(), b.getCol(),
+						MessageFormat.format(YangErrorManager.messages
+								.getString("grouping"), b.getBody(), modulefilename, get(name)
+								.getLine()));
 				return;
 			}
 		} else if (b instanceof YANG_Extension) {
 			if (isDefinedAsExtension(name)) {
-				YangErrorManager.add(module, b.getLine(), b.getCol(),
-						YangErrorManager.messages.getString("extension"));
+				YangErrorManager.add(modulefilename, b.getLine(), b.getCol(),
+						MessageFormat.format(YangErrorManager.messages
+								.getString("extension"), b.getBody(), modulefilename, get(name)
+								.getLine()));
 				return;
 			}
 		} else {
@@ -157,8 +164,9 @@ public class YangSpecNode {
 					found = true;
 			}
 			if (found) {
-				YangErrorManager.add(module, b.getLine(), b.getCol(),
-						YangErrorManager.messages.getString("dupp_child"));
+				YangErrorManager.add(modulefilename, b.getLine(), b.getCol(),
+						MessageFormat.format(YangErrorManager.messages
+								.getString("dup_child"), b.getBody()));
 				return;
 			}
 		}

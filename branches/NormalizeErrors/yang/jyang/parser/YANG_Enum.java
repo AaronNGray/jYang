@@ -1,5 +1,7 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
+
 public class YANG_Enum extends StatuedNode {
 
 	private String enumid = null;
@@ -28,8 +30,10 @@ public class YANG_Enum extends StatuedNode {
 			value = v;
 			b_value = true;
 		} else
-			YangErrorManager.add(v.getLine(), v.getCol(),
-					YangErrorManager.messages.getString("value"));
+			YangErrorManager
+			.add(filename, v.getLine(), v.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"value"));
 	}
 
 	public YANG_Value getValue() {

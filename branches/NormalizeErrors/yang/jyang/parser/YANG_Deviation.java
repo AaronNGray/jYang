@@ -1,5 +1,6 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -47,8 +48,10 @@ public class YANG_Deviation extends YANG_Body {
 			this.deviateNotSupported = d;
 			b_deviatenotsupported = true;
 		} else
-			YangErrorManager.add(d.getLine(), d.getCol(),
-					YangErrorManager.messages.getString("deviatenotsupported"));
+			YangErrorManager
+			.add(filename, d.getLine(), d.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"deviate-not-supported"));
 	}
 
 	public void addDeviateAdd(YANG_DeviateAdd da) {

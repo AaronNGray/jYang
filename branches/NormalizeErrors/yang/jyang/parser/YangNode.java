@@ -10,6 +10,10 @@ public interface YangNode extends Node {
 
     /** Return the column of the node **/
     public int getCol();
+    
+    public String getFileName();
+    
+    public void setFileName(String f);
 
 
 }

@@ -13,6 +13,11 @@ import java.util.Vector;
 import java.io.*;
 public class yang {
 
+static private String filename;
+
+static public void setFileName(String f){
+  filename = f;
+}
 
   
 }
@@ -278,7 +283,7 @@ YANG_Specification n = null;
 	n = submodule()
 	)
 		{
-		return n;
+			return n;
 		}
 }
 
@@ -296,6 +301,7 @@ String mname = null;
 {
  	<modulekeyword>  (t = <IDENTIFIER>  
 		{
+		  jjtThis.setFileName(filename);
 		jjtThis.setName(t.image);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
@@ -317,7 +323,7 @@ String mname = null;
                 (
 		l = linkagestmts()
 			{
-			jjtThis.addLinkage(l);
+				jjtThis.addLinkage(l);
 			}
 
 		)*
@@ -358,6 +364,7 @@ Token t;
 {
 	<submodulekeyword>  t = <IDENTIFIER> 
 		{
+		  jjtThis.setFileName(filename);	
 		jjtThis.setSubModule(t.image);
 		}
 	"{" (LOOKAHEAD(2)un = unknownstatement() {jjtThis.addUnknown(un);})*
@@ -504,7 +511,7 @@ YANG_Unknown un = null;
 	  ) (LOOKAHEAD(2) un = unknownstatement() {b.addUnknown(un);})*
 	)
 		{
-		return b;
+			return b;
 		}
 }
 
@@ -528,7 +535,7 @@ YANG_DataDef d = null;}
 	d = usesstmt() 
 	)
 		{
-		return d;
+			return d;
 		}
 }
 

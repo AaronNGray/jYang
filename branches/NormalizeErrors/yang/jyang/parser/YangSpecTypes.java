@@ -109,7 +109,7 @@ public class YangSpecTypes {
 		return true;
 	}
 
-	public void check(String module)  {
+	public void check() {
 		for (Enumeration<String> et = deriveds.elements(); et.hasMoreElements();) {
 			String basetype = et.nextElement();
 			if (!YangBuiltInTypes.isBuiltIn(basetype)) {
@@ -128,22 +128,21 @@ public class YangSpecTypes {
 					}
 					if (td != null) {
 						td.setCorrect(false);
-						YangErrorManager.add(module, td.getLine(), td.getCol(),
-								YangErrorManager.messages
-										.getString("unknown_type"));
+						YangErrorManager.add(td.getFileName(), td.getLine(), td
+								.getCol(), YangErrorManager.messages
+								.getString("unknown_type"));
 					}
-				} else {
-					String der = deriveds.get(basetype);
-					if (der.compareTo(basetype) == 0) {
-						YANG_TypeDef td = typedefs.get(basetype);
-						td.setCorrect(false);
-						YangErrorManager
-								.add(module, td.getLine(), td.getCol(),
-										YangErrorManager.messages
-												.getString("circ_dep"));
-
-					}
-				}
+				} /*
+				 * else { String der = deriveds.get(basetype); if
+				 * (der.compareTo(basetype) == 0) { YANG_TypeDef td =
+				 * typedefs.get(basetype); td.setCorrect(false);
+				 * YangErrorManager .add(td.getFileName(), td.getLine(),
+				 * td.getCol(),
+				 * MessageFormat.format(YangErrorManager.messages.getString
+				 * ("circ_dep"),basetype));
+				 * 
+				 * } }
+				 */
 			}
 		}
 		for (Enumeration<String> et = deriveds.elements(); et.hasMoreElements();) {
@@ -151,31 +150,39 @@ public class YangSpecTypes {
 			if (!YangBuiltInTypes.isBuiltIn(basetype)) {
 				Vector<String> chain = new Vector<String>();
 				chain.add(basetype);
-				checkChain(module, chain, deriveds.get(basetype));
+				checkChain(chain, deriveds.get(basetype));
 			}
 		}
 	}
 
-	protected boolean checkChain(String module, Vector<String> b, String d) {
+	protected boolean checkChain(Vector<String> b, String d) {
 		if (b.contains(d)) {
 			YANG_TypeDef bt = typedefs.get(d);
-			bt.setCorrect(false);
-			for (Enumeration<String> es = b.elements(); es.hasMoreElements();) {
-				String tn = es.nextElement();
-				YANG_TypeDef td = typedefs.get(tn);
-				td.setCorrect(false);
-			}
+			if (bt.isCorrect()) {
+				bt.setCorrect(false);
+				for (Enumeration<String> es = b.elements(); es
+						.hasMoreElements();) {
+					String tn = es.nextElement();
+					YANG_TypeDef td = typedefs.get(tn);
+					td.setCorrect(false);
+				}
 
-			YangErrorManager.add(module, bt.getLine(), bt.getCol(),
-					YangErrorManager.messages.getString("circ_dep"));
+				YangErrorManager.add(bt.getFileName(), bt.getLine(), bt
+						.getCol(), MessageFormat.format(
+						YangErrorManager.messages.getString("circ_dep"), unprefix(d)));
 
-			return false;
+				return false;
+			} else return false;
 		}
 		if (!YangBuiltInTypes.isBuiltIn(d)) {
 			b.add(d);
-			return checkChain(module, b, deriveds.get(d));
+			return checkChain(b, deriveds.get(d));
 		}
 		return true;
+	}
+	
+	private String unprefix(String s){
+		return s.substring(s.indexOf(':')+1);
 	}
 
 	public String getBuiltInType(String t) {

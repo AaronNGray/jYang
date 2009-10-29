@@ -1,5 +1,7 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
+
 public abstract class DeviateAddReplace extends Deviate {
 
 	private YANG_Config config = null;
@@ -27,8 +29,9 @@ public abstract class DeviateAddReplace extends Deviate {
 			this.config = c;
 			b_config = true;
 		} else
-			YangErrorManager.add(c.getLine(), c.getCol(),
-					YangErrorManager.messages.getString("config"));
+			YangErrorManager.add(filename, c.getLine(), c.getCol(),
+					MessageFormat.format(YangErrorManager.messages
+							.getString("unex_kw"), "config"));
 	}
 
 	public YANG_Mandatory getMandatory() {
@@ -40,8 +43,9 @@ public abstract class DeviateAddReplace extends Deviate {
 			this.mandatory = m;
 			b_mandatory = true;
 		} else
-			YangErrorManager.add(m.getLine(), m.getCol(),
-					YangErrorManager.messages.getString("mandatory"));
+			YangErrorManager.add(filename, m.getLine(), m.getCol(),
+					MessageFormat.format(YangErrorManager.messages
+							.getString("unex_kw"), "mandatory"));
 	}
 
 	public YANG_MinElement getMinElement() {
@@ -52,9 +56,10 @@ public abstract class DeviateAddReplace extends Deviate {
 		if (!b_min) {
 			this.min = m;
 			b_min = true;
-		}
-		YangErrorManager.add(m.getLine(), m.getCol(), YangErrorManager.messages
-				.getString("min"));
+		} else
+			YangErrorManager.add(filename, m.getLine(), m.getCol(),
+					MessageFormat.format(YangErrorManager.messages
+							.getString("unex_kw"), "min"));
 	}
 
 	public YANG_MaxElement getMaxElement() {
@@ -65,15 +70,16 @@ public abstract class DeviateAddReplace extends Deviate {
 		if (!b_max) {
 			this.max = m;
 			b_max = true;
-		}
-		YangErrorManager.add(m.getLine(), m.getCol(), YangErrorManager.messages
-				.getString("max"));
+		} else
+			YangErrorManager.add(filename, m.getLine(), m.getCol(),
+					MessageFormat.format(YangErrorManager.messages
+							.getString("unex_kw"), "max"));
 	}
-	
+
 	public boolean isBracked() {
 		return b_config || b_mandatory || b_min || b_max || super.isBracked();
 	}
-	
+
 	public String toString() {
 		String result = "";
 		if (b_config)

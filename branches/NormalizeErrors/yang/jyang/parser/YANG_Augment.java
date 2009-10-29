@@ -75,8 +75,10 @@ public class YANG_Augment extends DataDefBody {
 			b_when = true;
 			this.when = w;
 		} else
-			YangErrorManager.add(w.getLine(), w.getCol(),
-					YangErrorManager.messages.getString("when"));
+			YangErrorManager
+			.add(filename, w.getLine(), w.getCol(), MessageFormat.format(
+					YangErrorManager.messages.getString("unex_kw"),
+					"when"));
 	}
 
 	public boolean isAbsoluteSchemaNodeId() {
