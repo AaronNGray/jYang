@@ -21,9 +21,12 @@ package jyang.parser;
  */
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 
 public class YANG_Type extends SimpleYangNode {
 
@@ -283,54 +286,80 @@ public class YANG_Type extends SimpleYangNode {
 
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getBitSpec().getLine()
-						+ "." + getBitSpec().getCol()
-						+ ":numeric type can not have bit specification");
+				YangErrorManager.add(filename, getLine(),
+						getCol(), MessageFormat.format(
+								YangErrorManager.messages
+										.getString("not_alw"), "bit specification",
+								getType()));
+				
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":numeric type can not have enum specification");
+				YangErrorManager.add(filename, getLine(),
+						getCol(), MessageFormat.format(
+								YangErrorManager.messages
+										.getString("not_alw"), "enum specification",
+								getType()));
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLeafRef().getLine()
-								+ "."
-								+ getLeafRef().getCol()
-								+ ":numeric type can not have key reference specification");
-			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getStringRest().getLine()
-								+ "."
-								+ getStringRest().getCol()
-								+ ":numeric type can not have length or pattern specification");
+				YangErrorManager.add(filename, getLine(),
+						getCol(), MessageFormat.format(
+								YangErrorManager.messages
+										.getString("not_alw"), "key reference specification",
+								getType()));
+			if (getStringRest() != null) {
+				YANG_StringRestriction ysr = getStringRest();
+				if (ysr.getLength() != null)
+					YangErrorManager.add(filename, getStringRest().getLine(),
+							getStringRest().getCol(), MessageFormat.format(
+									YangErrorManager.messages
+											.getString("not_alw"), "restriction length",
+									getType()));
+				if (ysr.getPatterns().size() != 0)
+					YangErrorManager.add(filename, getStringRest().getLine(),
+							getStringRest().getCol(), MessageFormat.format(
+									YangErrorManager.messages
+											.getString("not_alw"), "restriction pattern",
+									getType()));
+			}
+
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":numeric type can not have type specification");
+				YangErrorManager.add(filename, getLine(),
+						getCol(), MessageFormat.format(
+								YangErrorManager.messages
+										.getString("not_alw"), "union specification",
+								getType()));
 
 			checkRange(context);
 		} else if (YangBuiltInTypes.string.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getBitSpec().getLine()
-						+ "." + getBitSpec().getCol()
-						+ ":string type can not have bit specification");
+				YangErrorManager.add(filename, getLine(),
+						getCol(), MessageFormat.format(
+								YangErrorManager.messages
+										.getString("not_alw"), "bit specification",
+								getType()));
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":string type can not have enum specification");
+				YangErrorManager.add(filename, getLine(),
+						getCol(), MessageFormat.format(
+								YangErrorManager.messages
+										.getString("not_alw"), "enum specification",
+								getType()));
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLeafRef().getLine()
-								+ "."
-								+ getLeafRef().getCol()
-								+ ":string type can not have key reference specification");
+				YangErrorManager.add(filename, getLine(),
+						getCol(), MessageFormat.format(
+								YangErrorManager.messages
+										.getString("not_alw"), "key reference specification",
+								getType()));
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getUnionSpec().getLine()
-						+ "." + getUnionSpec().getCol()
-						+ ":string type can not have type specification");
+				YangErrorManager.add(filename, getLine(),
+						getCol(), MessageFormat.format(
+								YangErrorManager.messages
+										.getString("not_alw"), "union specification",
+								getType()));
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":string type can not have numeric restriction");
+				YangErrorManager.add(filename, getLine(),
+						getCol(), MessageFormat.format(
+								YangErrorManager.messages
+										.getString("not_alw"), "numerical restriction",
+								getType()));
 
 			checkStringLength(context);
 			checkPattern(context);
@@ -507,7 +536,8 @@ public class YANG_Type extends SimpleYangNode {
 								+ getCol()
 								+ ":union type can not have key reference specification");
 
-			checkEmptyUnion(context, new Vector<YANG_Type>(), getUnionSpec().getTypes());
+			checkEmptyUnion(context, new Vector<YANG_Type>(), getUnionSpec()
+					.getTypes());
 
 		} else if (YangBuiltInTypes.instanceidentifier.compareTo(context
 				.getBuiltInType(this)) == 0) {
@@ -671,9 +701,10 @@ public class YANG_Type extends SimpleYangNode {
 				duplicate = enumvalues[j] == enumvalues[k];
 				dupvalue = enumvalues[j];
 			}
-		if (duplicate){
-			YangErrorManager.add(context.getSpec().getName(), getLine(), getCol(),
-					YangErrorManager.messages.getString("dupp_enum_val"));
+		if (duplicate) {
+			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
+					.format(YangErrorManager.messages
+							.getString("dupp_enum_val"), dupvalue));
 			return;
 		}
 
@@ -685,9 +716,10 @@ public class YANG_Type extends SimpleYangNode {
 										.removeQuotesAndTrim(enumnames[k])) == 0;
 				dupname = enumnames[j];
 			}
-		if (duplicate){
-			YangErrorManager.add(context.getSpec().getName(), getLine(), getCol(),
-					YangErrorManager.messages.getString("dupp_enum_name"));
+		if (duplicate) {
+			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
+					.format(YangErrorManager.messages
+							.getString("dupp_enum_name"), dupname));
 			return;
 		}
 
@@ -1656,31 +1688,33 @@ public class YANG_Type extends SimpleYangNode {
 
 	}
 
-	private void checkEmptyUnion(YangContext context, Vector<YANG_Type> chain, Vector<YANG_Type> unions)
-			throws YangParserException {
+	private void checkEmptyUnion(YangContext context, Vector<YANG_Type> chain,
+			Vector<YANG_Type> unions) throws YangParserException {
 
 		for (Enumeration<YANG_Type> et = unions.elements(); et
 				.hasMoreElements();) {
 			YANG_Type utype = et.nextElement();
 			if (context.getBuiltInType(utype).compareTo(YangBuiltInTypes.empty) == 0)
 				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":union type " + getType() + " can not have empty type");
+						+ ":union type " + getType()
+						+ " can not have empty type");
 			else if (context.getBuiltInType(utype).compareTo(
 					YangBuiltInTypes.union) == 0) {
-				if (utype.getUnionSpec() != null){
+				if (utype.getUnionSpec() != null) {
 					chain.add(utype);
-					checkEmptyUnion(context, chain, utype.getUnionSpec().getTypes());
-				}
-				else {
+					checkEmptyUnion(context, chain, utype.getUnionSpec()
+							.getTypes());
+				} else {
 					while (utype.getUnionSpec() == null) {
 						YANG_TypeDef suptype = context.getTypeDef(utype);
 						if (!suptype.isCorrect())
 							return;
 						utype = suptype.getType();
 					}
-					if (!chain.contains(utype)){
+					if (!chain.contains(utype)) {
 						chain.add(utype);
-						checkEmptyUnion(context, chain, utype.getUnionSpec().getTypes());
+						checkEmptyUnion(context, chain, utype.getUnionSpec()
+								.getTypes());
 					}
 				}
 			}

@@ -8,10 +8,6 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 	private Vector<YANG_Unknown> unknowns = new Vector<YANG_Unknown>();
 	protected String filename;
 
-	public void jjtAddChild(Node n, int i) {
-		((YangNode)n).setFileName(filename);System.out.println("add " + filename + " " + n);
-		super.jjtAddChild(n, i);
-	}
 
 	private boolean isRootNode = false;
 
@@ -62,7 +58,6 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 
 	public void setFileName(String f) {
 		filename = f;
-		System.out.println("setfilename " + f);
 	}
 
 	public SimpleYangNode getParent() {

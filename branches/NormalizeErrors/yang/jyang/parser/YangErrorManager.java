@@ -19,12 +19,16 @@ public class YangErrorManager {
 		String messageId;
 
 		public Error(String m, int l, int c, String mi) {
-			module = m;
+			if (m.contains("/"))
+				module = m.substring(m.lastIndexOf('/') + 1);
+			else
+				module = m;
 			line = l;
 			column = c;
 			messageId = mi;
 		}
-		public String toString(){
+
+		public String toString() {
 			return module + ":" + line + ";" + column + ":" + messageId;
 		}
 	}
@@ -63,7 +67,7 @@ public class YangErrorManager {
 		return properties;
 	}
 
-	 static public void init() {
+	static public void init() {
 
 		messages = null;
 
@@ -76,21 +80,20 @@ public class YangErrorManager {
 					mre);
 		}
 	}
-	 static private String module;
-	 
-	 static public void setCurrentModule(String m){
-		 module = m;
-	 }
+
+	static private String module;
+
+	static public void setCurrentModule(String m) {
+		module = m;
+	}
 
 	static public void add(String module, int line, int col, String mess) {
 		Error error = new Error(module, line, col, mess);
 		errors.add(error);
 	}
 
-	
-	
-	static public void print(OutputStream out) throws IOException{
-		for (Iterator<Error> i = errors.iterator();i.hasNext();){
+	static public void print(OutputStream out) throws IOException {
+		for (Iterator<Error> i = errors.iterator(); i.hasNext();) {
 			out.write((i.next().toString() + "\n").getBytes());
 		}
 	}

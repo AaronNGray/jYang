@@ -366,6 +366,8 @@ Token t;
 		{
 		  jjtThis.setFileName(filename);	
 		jjtThis.setSubModule(t.image);
+		jjtThis.setLine(t.beginLine);
+		jjtThis.setCol(t.beginColumn);
 		}
 	"{" (LOOKAHEAD(2)un = unknownstatement() {jjtThis.addUnknown(un);})*
  	(
@@ -572,6 +574,7 @@ YANG_Unknown un = null;
                                                                                                         
 		{
 		jjtThis.setVersion(t.image);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		return jjtThis;
@@ -590,6 +593,7 @@ YANG_Unknown un = null;
 	t = <importkeyword>  i = identifierstr() 
 		{
 		jjtThis.setIdentifier(i);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		}
@@ -610,7 +614,7 @@ YANG_Unknown un = null;
 		
 		"}"
 		{
-			
+			//jjtThis.setFileName("import " + filename);
 			return jjtThis;
 		}
 }
@@ -626,6 +630,7 @@ YANG_Unknown un = null;
 	t = <includekeyword>  i = identifierstr()
 		{
 		jjtThis.setIdentifier(i);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		}
@@ -658,6 +663,7 @@ YANG_Unknown un = null;
 		
 		{
 		jjtThis.setNameSpace(uri);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		return jjtThis;
@@ -690,6 +696,7 @@ YANG_Unknown un = null;
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 
 		{
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		jjtThis.setPrefix(s);
@@ -714,6 +721,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setBelong(b);
 		jjtThis.setPrefix(p);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		return jjtThis;
@@ -731,6 +739,7 @@ YANG_Unknown un = null;
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setOrganization(s);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		return jjtThis;
@@ -749,6 +758,7 @@ YANG_Unknown un = null;
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setContact(c);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		return jjtThis;
@@ -766,6 +776,7 @@ YANG_Unknown un = null;
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setDescription(d);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		return jjtThis;
@@ -783,6 +794,7 @@ YANG_Unknown un = null;
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setReference(r);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		return jjtThis;
@@ -809,6 +821,7 @@ YANG_Unknown un = null;
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setUnits(u);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 
@@ -826,6 +839,7 @@ YANG_Unknown un = null;}
 	t = <revisionkeyword>  da = dateexprstr() 
 		{
 		jjtThis.setDate(da);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		}
@@ -858,6 +872,7 @@ YANG_Unknown un = null;}
 	t = <revisiondatekeyword>  da = dateexprstr() 
 		{
 		jjtThis.setDate(da);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		}
@@ -892,6 +907,7 @@ YANG_Unknown un = null;
 	t = <extensionkeyword>  s = identifierstr() 
 		{
 		jjtThis.setExtension(s);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		}
@@ -939,6 +955,7 @@ Token t, a;
 {
 	t = <argumentkeyword>   i = identifierstr()
 		{
+		jjtThis.setFileName(filename);
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
 			jjtThis.setArgument(i);
@@ -972,6 +989,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		jjtThis.setYin(y);
 		return jjtThis;
 		}
@@ -1023,6 +1041,7 @@ YANG_Unknown un = null;
 		{
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 			jjtThis.setIdentity(i);
 		}
 		( 
@@ -1068,6 +1087,7 @@ YANG_Base basestmt()	#Base :
 	t = <basekeyword> i = identifierrefstr() (";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setBase(i);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		return jjtThis;
@@ -1088,6 +1108,7 @@ YANG_Feature featurestmt()	#Feature	:
 	t = <featurekeyword> f = identifierstr()
 		{
 			jjtThis.setFeature(f);
+		jjtThis.setFileName(filename);
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
 		}
@@ -1133,6 +1154,7 @@ YANG_IfFeature iffeaturestmt() #IfFeature	:
 	t = <iffeaturekeyword> i = identifierrefstr() (";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 			jjtThis.setIfFeature(i);
+		jjtThis.setFileName(filename);
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
 			return jjtThis;
@@ -1156,6 +1178,7 @@ YANG_Unknown un = null;
 	t = <typedefkeyword>  i = identifierstr() 
 		{
 			jjtThis.setTypedef(i);
+		jjtThis.setFileName(filename);
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
 		}
@@ -1219,6 +1242,7 @@ YANG_Unknown un = null;
 	t = <typekeyword>  it = identifierrefstr()
 		{
 		jjtThis.setType(it);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		} 
@@ -1317,6 +1341,7 @@ Token rt;
 		{
 		jjtThis.setLine(rt.beginLine);
 		jjtThis.setCol(rt.beginColumn);
+		jjtThis.setFileName(filename);
 		jjtThis.setRange(r);
 		}
         (
@@ -1363,6 +1388,7 @@ YANG_Decimal64Spec decimal64specification()      #Decimal64Spec:
 	f = <fractiondigitskeyword> s = fractiondigitstmt()
 	{
 		jjtThis.setFractionDigit(s);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(f.beginLine);
 		jjtThis.setCol(f.beginColumn);
 	}
@@ -1397,6 +1423,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(l.getLine());
 		jjtThis.setCol(l.getCol());
+		jjtThis.setFileName(filename);
 		jjtThis.setLength(l);
 		}
 	//[LOOKAHEAD(2)
@@ -1405,6 +1432,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(p.getLine());
 		jjtThis.setCol(p.getCol());
+		jjtThis.setFileName(filename);
 		jjtThis.addPattern(p);
 		}
 	 )*
@@ -1419,6 +1447,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(p.getLine());
 		jjtThis.setCol(p.getCol());
+		jjtThis.setFileName(filename);
 		jjtThis.addPattern(p);
 		}
 	)*
@@ -1427,6 +1456,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(l.getLine());
 		jjtThis.setCol(l.getCol());
+		jjtThis.setFileName(filename);
 		jjtThis.setLength(l);
 		}
 	]
@@ -1454,6 +1484,7 @@ Token lk;
 		{
 		jjtThis.setLine(lk.beginLine);
 		jjtThis.setCol(lk.beginColumn);
+		jjtThis.setFileName(filename);
 		jjtThis.setLength(l);
 		}
         (
@@ -1512,6 +1543,7 @@ Token t, pt;
 		{
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		jjtThis.setPattern(p);
 		}
         (
@@ -1567,6 +1599,7 @@ YANG_Unknown un = null;
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setDefault(d);
+		jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		return jjtThis;
@@ -1602,6 +1635,7 @@ Token t,te;
 		{
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 			jjtThis.setEnum(e);
 		}
         (
@@ -1647,6 +1681,7 @@ String r = null;
 	p =  pathstmt() (LOOKAHEAD(2) un = unknownstatement() {p.addUnknown(un);})*
 		{
 			jjtThis.setPath(p);
+		jjtThis.setFileName(filename);
 		}
 	[	LOOKAHEAD(2)
 	r =  requireinstancestmt() (LOOKAHEAD(2) un = unknownstatement() {p.addUnknown(un);})*
@@ -1674,6 +1709,7 @@ Token t;
 		{
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		jjtThis.setPath(p);
 		return jjtThis;
 		}
@@ -1736,6 +1772,7 @@ YANG_Unknown un = null;
 		}
 	)+
 		{
+		jjtThis.setFileName(filename);
 			return jjtThis;
 		}
 }
@@ -1753,6 +1790,7 @@ YANG_Unknown un = null;}
 	(LOOKAHEAD(2) un = unknownstatement(){jjtThis.addUnknown(un);})*
 	)+
 		{
+		jjtThis.setFileName(filename);
 		return jjtThis;
 		}
 }
@@ -1765,11 +1803,15 @@ YANG_Status s = null;
 YANG_Description d = null;
 YANG_Reference r = null;
 YANG_Unknown un = null;
+Token t = null;
 }
 {
-	<bitkeyword>  i = identifierstr() 
+	t = <bitkeyword>  i = identifierstr() 
 		{
 		jjtThis.setBit(i);
+		jjtThis.setLine(t.beginLine);
+		jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		}
 	(
 	";"
@@ -1810,12 +1852,16 @@ YANG_Position positionstmt()     #Position     :
 {
 String p = null;
 YANG_Unknown un = null;
+Token t = null;
 }
 {
-	<positionkeyword>  p = positionvaluestr() 
+	t = <positionkeyword>  p = positionvaluestr() 
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
 		jjtThis.setPosition(p);
+		jjtThis.setLine(t.beginLine);
+		jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		return jjtThis;
 		}
 }
@@ -1860,6 +1906,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		jjtThis.setStatus(s);
 		return jjtThis;
 		}
@@ -1910,6 +1957,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		jjtThis.setConfig(c);
 		return jjtThis;
 		}
@@ -1960,6 +2008,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		jjtThis.setMandatory(m);
 		return jjtThis;
 		}
@@ -1999,6 +2048,7 @@ YANG_Unknown un = null;
 	t = <presencekeyword>  p = string()
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
+		  jjtThis.setFileName(filename);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
 		jjtThis.setPresence(p);
@@ -2018,6 +2068,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		jjtThis.setOrderedBy(o);
 		return jjtThis;
 		}
@@ -2066,6 +2117,7 @@ YANG_Unknown un = null;
 			{
 			jjtThis.setLine(must.beginLine);
 			jjtThis.setCol(must.beginColumn);
+		jjtThis.setFileName(filename);
 			jjtThis.setMust(m);
 			}
 	(
@@ -2114,6 +2166,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		jjtThis.setErrorMessage(e);
 		return jjtThis;
 		}
@@ -2131,6 +2184,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		jjtThis.setErrorAppt(e);
 		return jjtThis;
 		}
@@ -2150,6 +2204,7 @@ YANG_Unknown un = null;
 		jjtThis.setMinElement(m);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
+		jjtThis.setFileName(filename);
 		return jjtThis;
 		}
 }
@@ -2190,6 +2245,7 @@ YANG_Unknown un = null;
 
 //;
 		{
+			jjtThis.setFileName(filename);
 		jjtThis.setMaxElement(m);
 		jjtThis.setLine(t.beginLine);
 		jjtThis.setCol(t.beginColumn);
@@ -2231,11 +2287,15 @@ YANG_Value valuestmt()      #Value       :
 {
 String d = null;
 YANG_Unknown un = null;
+Token t = null;
 }
 {
-	<valuekeyword>  d = integervalue()
+	t = <valuekeyword>  d = integervalue()
 	(";" | "{" (un = unknownstatement() {jjtThis.addUnknown(un);})* "}")
 		{
+		jjtThis.setLine(t.beginLine);
+		jjtThis.setCol(t.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setValue(d);
 		return jjtThis;
 		}
@@ -2256,6 +2316,7 @@ YANG_Unknown un = null;
 {
 	to = <groupingkeyword>  i = identifierstr() 
 			{
+			 jjtThis.setFileName(filename);
 			 jjtThis.setLine(to.beginLine);
 			 jjtThis.setCol(to.beginColumn);
 			 jjtThis.setGrouping(i);
@@ -2328,6 +2389,7 @@ YANG_Unknown un = null;
 {
 	to = <containerkeyword>  i = identifierstr() 
 			{
+			jjtThis.setFileName(filename);
 			jjtThis.setLine(to.beginLine);
 			jjtThis.setCol(to.beginColumn);
 			jjtThis.setContainer(i);
@@ -2426,6 +2488,7 @@ YANG_Unknown un = null;
 			{
 			jjtThis.setLine(leaf.beginLine);
 			jjtThis.setCol(leaf.beginColumn);
+			jjtThis.setFileName(filename);
 			jjtThis.setLeaf(i);
 			}
 	"{" 
@@ -2518,6 +2581,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(leaflist.beginLine);
 		jjtThis.setCol(leaflist.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setLeafList(i);
 		}
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
@@ -2615,6 +2679,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(list.beginLine);
 		jjtThis.setCol(list.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setList(i);
 		}
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
@@ -2713,6 +2778,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(key.beginLine);
 		jjtThis.setCol(key.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setKey(k);
 		return jjtThis;
 		}
@@ -2765,6 +2831,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(unique.beginLine);
 		jjtThis.setCol(unique.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setUnique(u);
 		return jjtThis;
 		}
@@ -2825,6 +2892,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(choice.beginLine);
 		jjtThis.setCol(choice.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setChoice(i);
 		}
         (
@@ -2931,6 +2999,7 @@ YANG_Unknown un = null;}
 		{
 		jjtThis.setLine(tcase.beginLine);
 		jjtThis.setCol(tcase.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setCase(i);
 		}
         (
@@ -2995,6 +3064,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(any.beginLine);
 		jjtThis.setCol(any.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setAnyXml(i);
 		}
         (
@@ -3069,6 +3139,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(uses.beginLine);
 		jjtThis.setCol(uses.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setUses(i);
 		}
         (
@@ -3200,6 +3271,7 @@ YANG_Unknown un = null;
 		}
 	 )
 		{
+			jjtThis.setFileName(filename);
 		return jjtThis;
 		}
 }
@@ -3248,6 +3320,7 @@ YANG_Unknown un = null;
 		}
 	)
 		{
+			jjtThis.setFileName(filename);
 		return jjtThis;
 		}
 }
@@ -3299,6 +3372,7 @@ Token t;
 		}
 	  )*
 		{
+			jjtThis.setFileName(filename);
 		return jjtThis;
 		}
 }
@@ -3350,6 +3424,7 @@ Token t;
 		}	
 	 )
 		{
+			jjtThis.setFileName(filename);
 		return jjtThis;
 		}
 }
@@ -3396,6 +3471,7 @@ Token t;
 		}	
 	  )
 		{
+			jjtThis.setFileName(filename);
 		return jjtThis;
 		}
 }
@@ -3421,6 +3497,7 @@ Token t;
 		}
 	 )
 		{
+			jjtThis.setFileName(filename);
 		return jjtThis;
 		}
 }
@@ -3463,6 +3540,7 @@ Token t;
 		}
 	 )
 		{
+			jjtThis.setFileName(filename);
 		return jjtThis;
 		}
 }
@@ -3487,6 +3565,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(aug.beginLine);
 		jjtThis.setCol(aug.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setUsesAugment(a);
 		}
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
@@ -3567,6 +3646,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(aug.beginLine);
 		jjtThis.setCol(aug.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setAugment(a);
 		}
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
@@ -3648,6 +3728,7 @@ YANG_Unknown unknown = null;
 					jjtThis.setExtension(i.image);
 					jjtThis.setLine(i.beginLine);
 					jjtThis.setCol(i.beginColumn);
+			jjtThis.setFileName(filename);
 				}  
 		
 				[ 
@@ -3682,6 +3763,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(when.beginLine);
 		jjtThis.setCol(when.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setWhen(w);
 		return jjtThis;
 		}
@@ -3706,6 +3788,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(to.beginLine);
 		jjtThis.setCol(to.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setRpc(i);
 		} 
         (
@@ -3776,6 +3859,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(to.beginLine);
 		jjtThis.setCol(to.beginColumn);
+			jjtThis.setFileName(filename);
 		}
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	(
@@ -3819,6 +3903,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(to.beginLine);
 		jjtThis.setCol(to.beginColumn);
+			jjtThis.setFileName(filename);
 		}
         "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 	(
@@ -3863,6 +3948,7 @@ YANG_Unknown un = null;
 		{
 		jjtThis.setLine(to.beginLine);
 		jjtThis.setCol(to.beginColumn);
+			jjtThis.setFileName(filename);
 		jjtThis.setNotification(i);
 		}
 	
@@ -3934,6 +4020,7 @@ YANG_Deviation deviationstmt()  #Deviation :
 		{
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
+			jjtThis.setFileName(filename);
 			jjtThis.setDeviation(dev);
 		}
 	"{"
@@ -3984,6 +4071,7 @@ YANG_DeviateNotSupported deviatenotsupportedstmt() #DeviateNotSupported :
 		{
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
+			jjtThis.setFileName(filename);
 		}
 	(
 			";"
@@ -4015,6 +4103,7 @@ YANG_DeviateAdd deviateaddstmt() #DeviateAdd :
 		{
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
+			jjtThis.setFileName(filename);
 		}
 		(
 			";"
@@ -4083,6 +4172,7 @@ YANG_DeviateDelete deviatedeletestmt() #DeviateDelete :
 		{
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
+			jjtThis.setFileName(filename);
 		}
 		(
 			";"
@@ -4134,6 +4224,7 @@ YANG_DeviateReplace deviatereplacestmt() #DeviateReplace :
 		{
 			jjtThis.setLine(t.beginLine);
 			jjtThis.setCol(t.beginColumn);
+			jjtThis.setFileName(filename);
 		}
 		(
 			";"

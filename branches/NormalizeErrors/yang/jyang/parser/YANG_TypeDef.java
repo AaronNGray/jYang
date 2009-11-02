@@ -40,8 +40,9 @@ public class YANG_TypeDef extends StatuedBody {
 			b_type = true;
 			ytype = t;
 		} else
-			YangErrorManager.add(filename,t.getLine(), t.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"), "type"));
+			YangErrorManager.add(filename, t.getLine(), t.getCol(),
+					MessageFormat.format(YangErrorManager.messages
+							.getString("unex_kw"), "type"));
 	}
 
 	public YANG_Type getType() {
@@ -104,11 +105,18 @@ public class YANG_TypeDef extends StatuedBody {
 								defining.getDefault().getDefault());
 						defining = null;
 					} catch (YangParserException ye) {
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":default value "
-								+ defining.getDefault().getDefault()
-								+ " does no more match with current typedef "
-								+ getTypeDef());
+						YangErrorManager.add(filename, getLine(), getCol(),
+								MessageFormat.format(YangErrorManager.messages
+										.getString("match_fail"), defining
+										.getDefault().getDefault(), defining.getBody(), ye
+										.getMessage()));
+						defining = null;
+						//						
+						// throw new YangParserException("@" + getLine() + "."
+						// + getCol() + ":default value "
+						// + defining.getDefault().getDefault()
+						// + " does no more match with current typedef "
+						// + getTypeDef());
 					}
 				} else
 					defining = context.getBaseTypeDef(defining);
@@ -123,8 +131,10 @@ public class YANG_TypeDef extends StatuedBody {
 			return;
 		if (tds.contains(zis)) {
 			setCorrect(false);
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":recursive union from " + zis.getTypeDef());
+			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
+					.format(YangErrorManager.messages.getString("circ_dep"),
+							zis.getBody()));
+			return;
 		}
 
 		if (YangBuiltInTypes.union.compareTo(context.getBuiltInType(zis
