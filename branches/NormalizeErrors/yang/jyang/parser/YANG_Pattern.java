@@ -1,5 +1,6 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -28,8 +29,9 @@ public class YANG_Pattern extends ErrorTagedNode {
 					.removeQuotesAndTrim(pattern));
 		} catch (PatternSyntaxException pse) {
 
-			YangErrorManager.add(filename, getLine(), getCol(), YangErrorManager.messages
-					.getString("pattern_exp"));
+			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
+					.format(YangErrorManager.messages.getString("pattern_exp"),
+							pattern));
 		}
 	}
 
@@ -37,13 +39,13 @@ public class YANG_Pattern extends ErrorTagedNode {
 		return pattern;
 	}
 
-	public void checkExp(String exp) throws YangParserException {
+	public boolean checkExp(String exp) throws YangParserException {
 		Matcher m = regexp.matcher(exp);
 		if (!m.matches())
-
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":incorrect expression : \"" + exp
-					+ "\" does not match with  regular expression " + pattern);
+			return false;
+		else
+			return true;
+		
 	}
 
 	public boolean isBracked() {

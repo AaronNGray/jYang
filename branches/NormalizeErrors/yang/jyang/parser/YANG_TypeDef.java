@@ -93,7 +93,19 @@ public class YANG_TypeDef extends StatuedBody {
 		chainUnions(this, me, context);
 
 		if (b_default)
-			getDefault().check(context, getType());
+			try {
+				getDefault().check(context, getType());
+			} catch (YangParserException ye) {
+				YangErrorManager.add(filename, getLine(), getCol(),
+						MessageFormat.format(YangErrorManager.messages
+								.getString("direct_default_match_fail"),
+								YangBuiltInTypes.removeQuotes(getDefault()
+										.getDefault()), ye.getMessage(), ye
+										.getMessage().substring(0,
+												ye.getMessage().indexOf(' ')),
+								getType().getFileName() + ":"
+										+ getType().getStringRest().getLine()));
+			}
 
 		else {
 			YANG_TypeDef defining = context.getBaseTypeDef(this);
@@ -107,16 +119,19 @@ public class YANG_TypeDef extends StatuedBody {
 					} catch (YangParserException ye) {
 						YangErrorManager.add(filename, getLine(), getCol(),
 								MessageFormat.format(YangErrorManager.messages
-										.getString("match_fail"), defining
-										.getDefault().getDefault(), defining.getBody(), ye
-										.getMessage()));
+										.getString("default_match_fail"),
+										YangBuiltInTypes.removeQuotes(defining
+												.getDefault().getDefault()), ye
+												.getMessage(), ye.getMessage()
+												.substring(
+														0,
+														ye.getMessage()
+																.indexOf(' ')),
+										getType().getFileName()
+												+ ":"
+												+ getType().getNumRest()
+														.getLine()));
 						defining = null;
-						//						
-						// throw new YangParserException("@" + getLine() + "."
-						// + getCol() + ":default value "
-						// + defining.getDefault().getDefault()
-						// + " does no more match with current typedef "
-						// + getTypeDef());
 					}
 				} else
 					defining = context.getBaseTypeDef(defining);
