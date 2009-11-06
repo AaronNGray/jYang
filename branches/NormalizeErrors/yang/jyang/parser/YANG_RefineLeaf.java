@@ -73,7 +73,7 @@ public class YANG_RefineLeaf extends MustRefineNode {
 	public void check(YangContext context, YANG_Leaf leaf)
 			throws YangParserException {
 		if (getDefault() != null)
-			getDefault().check(context, leaf.getType());
+			leaf.getType().checkDefaultValue(context, this, getDefault());
 
 		YANG_Config parentConfig = getParentConfig();
 		if (b_config) {

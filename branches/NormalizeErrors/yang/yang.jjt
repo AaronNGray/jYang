@@ -1334,7 +1334,7 @@ YANG_ErrorAppt eat = null;
 YANG_Description d = null;
 YANG_Reference re = null;
 YANG_Unknown un = null;
-Token rt;
+Token rt = null;
 }
 {
 	rt = <rangekeyword>  r = rangeexprstr() 

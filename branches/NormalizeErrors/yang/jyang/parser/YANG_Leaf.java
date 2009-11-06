@@ -133,15 +133,14 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":no default value permitted when mandatory is true");
 		if (b_default)
-			getDefault().check(context, getType());
-
+			getType().checkDefaultValue(context, this, getDefault());
 		else {
-			YANG_TypeDef defining = context.getBaseType(getType());
+			YANG_TypeDef defining = context.getTypeDef(getType());
 			while (defining != null) {
 				if (defining.getDefault() != null) {
 					try {
-						getType().checkValue(context,
-								defining.getDefault().getDefault());
+						getType().checkDefaultValue(context,this,
+								defining.getDefault());
 						defining = null;
 					} catch (YangParserException ye) {
 						throw new YangParserException("@" + getLine() + "."

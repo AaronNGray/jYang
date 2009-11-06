@@ -282,7 +282,7 @@ public class YANG_Type extends SimpleYangNode {
 			throw new YangParserException("@" + getLine() + "." + getCol()
 					+ ":type " + getType() + " is not defined");
 		}
-		typedef = context.getBaseType(this);
+		typedef = context.getTypeDef(this);
 
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			if (getBitSpec() != null)
@@ -653,12 +653,14 @@ public class YANG_Type extends SimpleYangNode {
 	private void checkEnum(YangContext context) throws YangParserException {
 		int highest = 0;
 		int[] enumvalues = new int[getEnums().size()];
+		YANG_Enum[] tenums = new YANG_Enum[getEnums().size()];
 		String[] enumnames = new String[getEnums().size()];
 		int i = 0;
 		for (Enumeration<YANG_Enum> ee = getEnums().elements(); ee
 				.hasMoreElements();) {
 			YANG_Enum yenum = ee.nextElement();
 			enumnames[i] = yenum.getEnum();
+			tenums[i] = yenum;
 			if (yenum.getValue() == null) {
 				enumvalues[i++] = highest;
 				highest++;
@@ -687,30 +689,48 @@ public class YANG_Type extends SimpleYangNode {
 		boolean duplicate = false;
 		int dupvalue = 0;
 		String dupname = "";
+		YANG_Enum dupenum = null;
+		YANG_Enum firstenum = null;
 		for (int j = 0; j < enumvalues.length && !duplicate; j++)
 			for (int k = j + 1; k < enumvalues.length && !duplicate; k++) {
-				duplicate = enumvalues[j] == enumvalues[k];
-				dupvalue = enumvalues[j];
+				if (enumvalues[j] == enumvalues[k]) {
+					duplicate = true;
+					dupvalue = enumvalues[j];
+					dupenum = tenums[j].getLine() > tenums[k].getLine() ? tenums[j]
+							: tenums[k];
+					firstenum = tenums[j].getLine() <= tenums[k].getLine() ? tenums[j]
+							: tenums[k];
+				}
 			}
 		if (duplicate) {
-			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
-					.format(YangErrorManager.messages
-							.getString("dupp_enum_val"), dupvalue));
+			YangErrorManager.add(filename, dupenum.getLine(), dupenum.getCol(),
+					MessageFormat.format(YangErrorManager.messages
+							.getString("dupp_enum_val"), dupvalue,
+							getFileName() + ":" + getLine()));
 			return;
 		}
 
 		for (int j = 0; j < enumnames.length && !duplicate; j++)
 			for (int k = j + 1; k < enumnames.length && !duplicate; k++) {
-				duplicate = YangBuiltInTypes.removeQuotesAndTrim(enumnames[j])
+				if (YangBuiltInTypes.removeQuotesAndTrim(enumnames[j])
 						.compareTo(
 								YangBuiltInTypes
-										.removeQuotesAndTrim(enumnames[k])) == 0;
-				dupname = enumnames[j];
+										.removeQuotesAndTrim(enumnames[k])) == 0) {
+					duplicate = true;
+					dupname = enumnames[j];
+					dupvalue = enumvalues[j];
+					dupenum = tenums[j].getLine() > tenums[k].getLine() ? tenums[j]
+							: tenums[k];
+					firstenum = tenums[j].getLine() <= tenums[k].getLine() ? tenums[j]
+							: tenums[k];
+				}
+
 			}
 		if (duplicate) {
-			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
-					.format(YangErrorManager.messages
-							.getString("dupp_enum_name"), dupname));
+			YangErrorManager.add(filename, dupenum.getLine(), dupenum.getCol(),
+					MessageFormat.format(YangErrorManager.messages
+							.getString("dupp_enum_name"), dupname,
+							getFileName() + ":" + getLine()));
 			return;
 		}
 
@@ -840,6 +860,45 @@ public class YANG_Type extends SimpleYangNode {
 			if (typedef != null) {
 				if (typedef.getType().getStringRest() != null)
 					if (typedef.getType().getStringRest().getLength() != null)
+						return typedef.getType();
+
+				oldtd = typedef;
+			} else
+				end = true;
+		}
+		return null;
+
+	}
+
+	/**
+	 * Get the first type with a pattern restriction from the type used by the
+	 * given typedef and to the bases typedef until a built-in type
+	 * 
+	 * @param context
+	 * @param td
+	 *            the typedef
+	 * @return the first type with a pattern restriction or null either if the
+	 *         typedef has a length restriction or a built-in type is reached.
+	 * @throws YangParserException
+	 */
+	private YANG_Type getFirstPatternDefined(YangContext context,
+			YANG_TypeDef td) throws YangParserException {
+
+		YANG_Type basetype = td.getType();
+		YANG_TypeDef typedef = null;
+		YANG_TypeDef oldtd = null;
+		boolean end = false;
+
+		if (basetype.getStringRest() != null) {
+			if (basetype.getStringRest().getPatterns().size() != 0)
+				return basetype;
+		}
+		oldtd = td;
+		while (!end) {
+			typedef = context.getBaseTypeDef(oldtd);
+			if (typedef != null) {
+				if (typedef.getType().getStringRest() != null)
+					if (typedef.getType().getStringRest().getPatterns().size() != 0)
 						return typedef.getType();
 
 				oldtd = typedef;
@@ -1232,15 +1291,17 @@ public class YANG_Type extends SimpleYangNode {
 		return birange;
 	}
 
-	public void checkValue(YangContext context, String value)
-			throws YangParserException {
+	public void checkDefaultValue(YangContext context, YangNode usernode,
+			YANG_Default ydefault) throws YangParserException {
+		String value = YangBuiltInTypes.removeQuotesAndTrim(ydefault
+				.getDefault());
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
-			value = YangBuiltInTypes.removeQuotesAndTrim(value);
 			String[][] ranges = null;
+
 			if (getNumRest() != null) {
 				ranges = getRanges(context);
 			} else {
-				YANG_TypeDef td = context.getBaseType(this);
+				YANG_TypeDef td = context.getTypeDef(this);
 				if (td != null) {
 					YANG_Type bt = getFirstRangeDefined(context, td);
 					if (bt != null)
@@ -1408,13 +1469,35 @@ public class YANG_Type extends SimpleYangNode {
 							inside = (bilb.compareTo(bi) <= 0 && biub
 									.compareTo(bi) >= 0);
 						}
-						if (!inside)
-							throw new YangParserException("range error");
+						if (!inside) {
+							YANG_Type t = this;
+							if (getFirstRangeDefined(context, context
+									.getTypeDef(this)) != this)
+								t = getFirstRangeDefined(context, context
+										.getTypeDef(this));
+							String message = "";
+							if (t == this)
+								message = "direct_default_match_fail";
+							else
+								message = "default_match_fail";
+
+							YangErrorManager.add(filename, usernode.getLine(),
+									usernode.getCol(), MessageFormat.format(
+											YangErrorManager.messages
+													.getString(message),
+											YangBuiltInTypes
+													.removeQuotes(value),
+											"range error", "range",
+											getFileName() + ":"
+													+ getNumRest().getLine()));
+						}
+
 					} catch (NumberFormatException ne) {
 						throw new YangParserException("illegal integer value");
 					}
 				}
 			} else if (YangBuiltInTypes.isFloat(context.getBuiltInType(this))) {
+
 				if (value.compareTo("min") == 0 || value.compareTo("-INF") == 0) {
 					if (ranges[0][0].compareTo("min") != 0
 							&& ranges[0][0].compareTo("-INF") != 0)
@@ -1461,7 +1544,23 @@ public class YANG_Type extends SimpleYangNode {
 								inside = true;
 						}
 						if (!inside)
-							throw new YangParserException("range error");
+							YangErrorManager
+									.add(
+											filename,
+											usernode.getLine(),
+											usernode.getCol(),
+											MessageFormat
+													.format(
+															YangErrorManager.messages
+																	.getString("direct_default_match_fail"),
+															YangBuiltInTypes
+																	.removeQuotes(value),
+															"range error",
+															"range",
+															this.getFileName()
+																	+ ":"
+																	+ getNumRest()
+																			.getLine()));
 					} catch (NumberFormatException ne) {
 						throw new YangParserException("@" + getLine() + "."
 								+ getCol() + ": " + value + " is not a float");
@@ -1472,15 +1571,20 @@ public class YANG_Type extends SimpleYangNode {
 				.getBuiltInType(this)) == 0
 				|| YangBuiltInTypes.binary.compareTo(context
 						.getBuiltInType(this)) == 0) {
-			value = YangBuiltInTypes.removeQuotes(value);
+			value = YangBuiltInTypes.removeQuotes(ydefault.getDefault());
+
 			String[][] ranges = null;
 			boolean isStringRestricted = false;
+			boolean isPatternRestricted = false;
+
 			Enumeration<YANG_Pattern> patterns = null;
+
 			if (getStringRest() != null) {
 				if (getStringRest().getLength() != null)
 					isStringRestricted = true;
 				else
 					isStringRestricted = false;
+
 				patterns = getStringRest().getPatterns().elements();
 
 			} else
@@ -1489,7 +1593,7 @@ public class YANG_Type extends SimpleYangNode {
 			if (isStringRestricted) {
 				ranges = getLength(context);
 			} else {
-				YANG_TypeDef td = context.getBaseType(this);
+				YANG_TypeDef td = context.getTypeDef(this);
 				if (td != null) {
 					YANG_Type bt = getFirstLengthDefined(context, td);
 					if (bt != null)
@@ -1499,6 +1603,27 @@ public class YANG_Type extends SimpleYangNode {
 				} else {
 					ranges = getLength(context);
 				}
+			}
+
+			if (patterns != null) {
+				if (getStringRest().getPatterns().size() == 0) {
+					YANG_TypeDef td = context.getTypeDef(this);
+					if (td != null) {
+						YANG_Type bt = getFirstPatternDefined(context, td);
+						if (bt != null)
+							patterns = bt.getStringRest().getPatterns()
+									.elements();
+					}
+
+				}
+			} else {
+				YANG_TypeDef td = context.getTypeDef(this);
+				if (td != null) {
+					YANG_Type bt = getFirstPatternDefined(context, td);
+					if (bt != null)
+						patterns = bt.getStringRest().getPatterns().elements();
+				}
+
 			}
 
 			BigInteger bi = new BigInteger(new Integer(value.length())
@@ -1526,13 +1651,35 @@ public class YANG_Type extends SimpleYangNode {
 				}
 			}
 			if (!inside)
-				throw new YangParserException("length error");
+				YangErrorManager.add(filename, ydefault.getLine(), ydefault
+						.getCol(), MessageFormat.format(
+						YangErrorManager.messages
+								.getString("direct_default_match_fail"),
+						YangBuiltInTypes.removeQuotes(value), "length error",
+						"length", this.getFileName() + ":"
+								+ getStringRest().getLine()));
 
 			if (patterns != null)
 				while (patterns.hasMoreElements()) {
 					YANG_Pattern pattern = patterns.nextElement();
 					if (!pattern.checkExp(value))
-						throw new YangParserException("pattern mismatch");
+						YangErrorManager
+								.add(
+										filename,
+										ydefault.getLine(),
+										ydefault.getCol(),
+										MessageFormat
+												.format(
+														YangErrorManager.messages
+																.getString("direct_default_match_fail"),
+														YangBuiltInTypes
+																.removeQuotes(value),
+														"pattern mismatch",
+														"pattern",
+														this.getFileName()
+																+ ":"
+																+ pattern
+																		.getLine()));
 				}
 
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
@@ -1568,7 +1715,7 @@ public class YANG_Type extends SimpleYangNode {
 					.elements(); et.hasMoreElements() && !found;) {
 				YANG_Type type = et.nextElement();
 				try {
-					type.checkValue(context, value);
+					type.checkDefaultValue(context, ut, ydefault);
 					found = true;
 				} catch (YangParserException ye) {
 					// nothing to do; try an other union type

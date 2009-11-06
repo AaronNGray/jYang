@@ -94,17 +94,8 @@ public class YANG_TypeDef extends StatuedBody {
 
 		if (b_default)
 			try {
-				getDefault().check(context, getType());
+				getType().checkDefaultValue(context, this, getDefault());
 			} catch (YangParserException ye) {
-				YangErrorManager.add(filename, getLine(), getCol(),
-						MessageFormat.format(YangErrorManager.messages
-								.getString("direct_default_match_fail"),
-								YangBuiltInTypes.removeQuotes(getDefault()
-										.getDefault()), ye.getMessage(), ye
-										.getMessage().substring(0,
-												ye.getMessage().indexOf(' ')),
-								getType().getFileName() + ":"
-										+ getType().getStringRest().getLine()));
 			}
 
 		else {
@@ -113,25 +104,10 @@ public class YANG_TypeDef extends StatuedBody {
 			while (defining != null) {
 				if (defining.getDefault() != null) {
 					try {
-						getType().checkValue(context,
-								defining.getDefault().getDefault());
-						defining = null;
+						getType().checkDefaultValue(context,
+								this, defining.getDefault());
+						defining = context.getBaseTypeDef(defining);
 					} catch (YangParserException ye) {
-						YangErrorManager.add(filename, getLine(), getCol(),
-								MessageFormat.format(YangErrorManager.messages
-										.getString("default_match_fail"),
-										YangBuiltInTypes.removeQuotes(defining
-												.getDefault().getDefault()), ye
-												.getMessage(), ye.getMessage()
-												.substring(
-														0,
-														ye.getMessage()
-																.indexOf(' ')),
-										getType().getFileName()
-												+ ":"
-												+ getType().getNumRest()
-														.getLine()));
-						defining = null;
 					}
 				} else
 					defining = context.getBaseTypeDef(defining);

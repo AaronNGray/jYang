@@ -22,11 +22,6 @@ public class YANG_Default extends SimpleYangNode {
 		return defaultstr;
 	}
 
-	public void check(YangContext context, YANG_Type t)
-			throws YangParserException {
-		t.checkValue(context, getDefault());
-	}
-
 	public void check(YangContext context, YANG_RefineLeaf rleaf) {
 
 	}
