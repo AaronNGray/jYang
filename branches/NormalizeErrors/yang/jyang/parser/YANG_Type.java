@@ -581,14 +581,18 @@ public class YANG_Type extends SimpleYangNode {
 		if (getBitSpec() == null)
 			throw new YangParserException("@" + getLine() + "." + getCol()
 					+ ":bits must have at least one bit");
+		YANG_Bit bit = null;
 		YANG_BitSpecification bs = getBitSpec();
+		YANG_Bit[] bits = new YANG_Bit[bs.getBits().size()];
 		BigInteger highest = new BigInteger("0");
 		Vector<BigInteger> bitspos = new Vector<BigInteger>();
 		String[] bitnames = new String[bs.getBits().size()];
+
 		int i = 0;
 		for (Enumeration<YANG_Bit> eb = bs.getBits().elements(); eb
 				.hasMoreElements();) {
-			YANG_Bit bit = eb.nextElement();
+			bit = eb.nextElement();
+			bits[i] = bit;
 			bitnames[i++] = bit.getBit();
 			if (bit.getPosition() == null) {
 				if (highest.compareTo(YangBuiltInTypes.uint32ub
@@ -626,28 +630,39 @@ public class YANG_Type extends SimpleYangNode {
 			}
 		}
 		boolean duplicate = false;
+		int position = 0;
 		for (Enumeration<BigInteger> eb = bitspos.elements(); eb
 				.hasMoreElements()
 				&& !duplicate;) {
+			position = 0;
 			BigInteger bi = eb.nextElement();
 			for (Enumeration<BigInteger> eb2 = bitspos.elements(); eb2
 					.hasMoreElements()
 					&& !duplicate;) {
 				BigInteger bi2 = eb2.nextElement();
 				duplicate = (bi.compareTo(bi2) == 0 && bi != bi2);
+				position++;
 			}
 		}
 		if (duplicate)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":position must be unique");
+			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
+					.format(YangErrorManager.messages.getString("dup_value"),
+							"position", position, "bit", bits[position - 1]
+									.getPosition().getFileName()
+									+ ":"
+									+ bits[position - 1].getPosition()
+											.getLine()));
 
 		for (int j = 0; j < bitnames.length && !duplicate; j++)
 			for (int k = j + 1; k < bitnames.length && !duplicate; k++) {
 				duplicate = bitnames[j].compareTo(bitnames[k]) == 0;
 			}
 		if (duplicate)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":duplicate bit name");
+			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
+					.format(YangErrorManager.messages.getString("dup_value"),
+							"position", "trailing whitespace"));
+		throw new YangParserException("@" + getLine() + "." + getCol()
+				+ ":duplicate bit name");
 	}
 
 	private void checkEnum(YangContext context) throws YangParserException {
