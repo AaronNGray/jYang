@@ -10,6 +10,7 @@ public class YANG_Argument extends SimpleYangNode {
 	
 	private String argument = null;
     private YANG_Yin yin = null;
+    private String added = "";
 
     private boolean bracked = false;
 
@@ -41,6 +42,11 @@ public class YANG_Argument extends SimpleYangNode {
     public boolean isBracked(){
 	return bracked;
     }
+    
+    public void addArgument(String a){
+    	added += " " + a;
+    }
+    
 
     public String toString(){
 	String result = new String();

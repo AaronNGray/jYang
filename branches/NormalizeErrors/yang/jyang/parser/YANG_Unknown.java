@@ -38,6 +38,7 @@ public class YANG_Unknown extends YANG_Body {
 	}
 
 	public void setExtension(String p) throws YangParserException {
+		/*
 		String[]  splitted =  p.split(":");
 		if (splitted != null){
 			if (splitted.length == 2){
@@ -53,6 +54,7 @@ public class YANG_Unknown extends YANG_Body {
 					+ ":extension syntax error " + p);
 			
 		}
+		*/
 	}
 
 	public String getExtension() {

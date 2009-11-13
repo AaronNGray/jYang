@@ -223,7 +223,7 @@ public abstract class YANG_Body extends DocumentedNode {
 				body.setParent(this);
 				YangContext clcts = context.clone();
 				try {
-					body.checkBody(clcts);
+					body.checkBody(clcts); 
 				} catch (YangParserException e) {
 					System.err.println(context.getSpec().getName()
 							+ e.getMessage());
@@ -236,12 +236,13 @@ public abstract class YANG_Body extends DocumentedNode {
 			YANG_Body body = (YANG_Body) eu.nextElement();
 			body.setParent(this);
 			YangContext clcts = context.clone();
+			/*
 			try {
 				body.checkBody(clcts);
 			} catch (YangParserException e) {
 				System.err
 						.println(context.getSpec().getName() + e.getMessage());
-			}
+			}*/
 		}
 
 		try {

@@ -951,6 +951,7 @@ YANG_Yin y = null;
 String i = null;
 YANG_Unknown un = null;
 Token t, a;
+String any = "";
 }
 {
 	t = <argumentkeyword>   i = identifierstr()
@@ -963,18 +964,56 @@ Token t, a;
         (
 	 ";" 
 	|
- 	 "{" (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
-             [
+ 	 "{"
+       any = anyArgument()
+         {           jjtThis.addArgument(any);
+        }
+		[LOOKAHEAD(2)
 		y = yinelementstmt() (LOOKAHEAD(2) un = unknownstatement() {jjtThis.addUnknown(un);})*
 			{
 			jjtThis.setYin(y);
 			}
 	     ]
+     
          "}"
 	)
 		{
 		return jjtThis;
 		}
+}
+
+String anyArgument() :
+{  String s = "", any = "";
+  Token a;
+}
+{
+    (
+    any = anykeyword() 
+		  {
+		    s = s + any;
+		  }
+	|
+	a   = <IDENTIFIER> 
+		 {
+		    s = s + a.image;
+		  }
+	| 
+	a = <ID_SEMI_COL_ID> 
+		  {
+		    s = s + a.image;
+		  }
+    
+    )+
+    
+	(	  ";"
+	|	 s = anyArgument() 
+	|
+	  "{"
+	  s = anyArgument()
+	  "}"
+	)+
+	{		return s;
+	}	  
 }
 
 YANG_Yin yinelementstmt()     #Yin  : 
@@ -3728,7 +3767,7 @@ YANG_Unknown unknown = null;
 					jjtThis.setExtension(i.image);
 					jjtThis.setLine(i.beginLine);
 					jjtThis.setCol(i.beginColumn);
-			jjtThis.setFileName(filename);
+					jjtThis.setFileName(filename);
 				}  
 		
 				[ 
@@ -3744,6 +3783,7 @@ YANG_Unknown unknown = null;
 						"}"
 			   	   )
 			)
+
 			
 				{
 					
