@@ -616,19 +616,26 @@ public class YANG_Type extends SimpleYangNode {
 					throw new YangParserException("@" + bit.getLine() + "."
 							+ bit.getCol() + ":" + biginteger
 							+ " is a too much higher position");
-				if (biginteger.compareTo(highest) >= 0) {
+				if (biginteger.compareTo(highest) > 0) {
 					highest = biginteger;
 					bitspos.add(highest);
 					highest = highest.add(new BigInteger("1"));
-				} else if (biginteger.compareTo(highest) == -1) {
+				}  else if (biginteger.add(new BigInteger("1")).compareTo(highest) == 0) {
+					YangErrorManager.add(filename, bit.getLine(), bit.getCol(), MessageFormat
+							.format(YangErrorManager.messages.getString("dup_value"),
+									"position", biginteger, "bit", bits[biginteger.subtract(new BigInteger("1")).intValue()]
+											.getPosition().getFileName()
+											+ ":"
+											+ bits[biginteger.subtract(new BigInteger("1")).intValue()].getPosition()
+													.getLine()));
+					return;
+				}else if (biginteger.compareTo(highest) == -1) {
 					bitspos.add(biginteger);
-				} else if (biginteger.compareTo(highest) == 0) {
-					throw new YangParserException("@" + bit.getLine() + "."
-							+ bit.getCol()
-							+ ":ambigous; a position must be specified");
 				}
 			}
 		}
+		
+		/*
 		boolean duplicate = false;
 		int position = 0;
 		for (Enumeration<BigInteger> eb = bitspos.elements(); eb
@@ -663,6 +670,7 @@ public class YANG_Type extends SimpleYangNode {
 							"position", "trailing whitespace"));
 		throw new YangParserException("@" + getLine() + "." + getCol()
 				+ ":duplicate bit name");
+				*/
 	}
 
 	private void checkEnum(YangContext context) throws YangParserException {
