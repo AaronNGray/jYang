@@ -54,11 +54,10 @@ public abstract class YANG_Body extends DocumentedNode {
 
 			YANG_Grouping grouping = (YANG_Grouping) this;
 
-			/*
-			 * grouping.setChecked(true); typedefs = grouping.getTypeDefs();
-			 * groupings = grouping.getGroupings(); datadefs =
-			 * grouping.getDataDefs();
-			 */
+			//grouping.setChecked(true);
+			typedefs = grouping.getTypeDefs();
+			groupings = grouping.getGroupings();
+			datadefs = grouping.getDataDefs();
 
 		} else if (this instanceof YANG_Container) {
 			YANG_Container container = (YANG_Container) this;
@@ -223,7 +222,7 @@ public abstract class YANG_Body extends DocumentedNode {
 				body.setParent(this);
 				YangContext clcts = context.clone();
 				try {
-					body.checkBody(clcts); 
+					body.checkBody(clcts);
 				} catch (YangParserException e) {
 					System.err.println(context.getSpec().getName()
 							+ e.getMessage());
@@ -237,12 +236,10 @@ public abstract class YANG_Body extends DocumentedNode {
 			body.setParent(this);
 			YangContext clcts = context.clone();
 			/*
-			try {
-				body.checkBody(clcts);
-			} catch (YangParserException e) {
-				System.err
-						.println(context.getSpec().getName() + e.getMessage());
-			}*/
+			 * try { body.checkBody(clcts); } catch (YangParserException e) {
+			 * System.err .println(context.getSpec().getName() +
+			 * e.getMessage()); }
+			 */
 		}
 
 		try {
@@ -344,6 +341,7 @@ public abstract class YANG_Body extends DocumentedNode {
 				}
 			}
 		} else {
+			YANG_Uses uses = (YANG_Uses) this;
 			for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
 					.hasMoreElements();) {
 				YANG_Body body = (YANG_Body) ed.nextElement();
@@ -354,7 +352,8 @@ public abstract class YANG_Body extends DocumentedNode {
 					root.addChild(n);
 					body.builtTreeNode(n);
 				} else {
-					body.builtTreeNode(root);
+					if (((YANG_Uses) body).isChecked())
+						body.builtTreeNode(root);
 				}
 			}
 		}

@@ -166,7 +166,7 @@ public class YangSpecNode {
 			if (found) {
 				YangErrorManager.add(modulefilename, b.getLine(), b.getCol(),
 						MessageFormat.format(YangErrorManager.messages
-								.getString("dup_child"), b.getBody()));
+								.getString("dup_child"), b.getBody(), get(name).getFileName(), get(name).getLine()));
 				return;
 			}
 		}

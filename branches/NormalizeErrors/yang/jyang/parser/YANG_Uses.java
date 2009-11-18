@@ -19,6 +19,7 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
 public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
@@ -31,9 +32,11 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
 	 * Grouping used reference
 	 */
 	private YANG_Grouping grouping = null;
+
 	public YANG_Grouping getGrouping() {
 		return grouping;
 	}
+
 	public void setGrouping(YANG_Grouping g) {
 		this.grouping = g;
 	}
@@ -79,8 +82,7 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
 	private boolean checked = false;
 
 	public void check(YangContext context) throws YangParserException {
-		// if (checked)
-		// return;
+
 		if (!context.isGroupingDefined(this)) {
 			System.err
 					.println(context.getSpec().getName() + "@" + getLine()
@@ -152,7 +154,22 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
 					body.setParent(getParent());
 					YangContext clcts = context.clone();
 					try {
-						body.checkBody(clcts);
+						if (body instanceof YANG_Uses) {
+							YANG_Uses used = (YANG_Uses) body;
+							Set<YANG_Grouping> s = new HashSet<YANG_Grouping>();
+							s.add(grouping);
+							if (checkRecursiveUses(context, s, used))
+								body.checkBody(clcts);
+							else {
+								YangErrorManager.add(used.getFileName(), used
+										.getParent().getLine(), used
+										.getParent().getCol(), MessageFormat
+										.format(YangErrorManager.messages
+												.getString("rec_grouping"),
+												used.getParent().toString()));
+							}
+						} else
+							body.checkBody(clcts);
 					} catch (YangParserException e) {
 						System.err.println(context.getSpec().getName()
 								+ e.getMessage());
@@ -178,6 +195,27 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
 			}
 			checked = true;
 		}
+	}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	private boolean checkRecursiveUses(YangContext context,
+			Set<YANG_Grouping> setG, YANG_Uses used) {
+		if (used.checked)
+			return true;
+		YANG_Grouping g = context.getUsedGrouping(used);
+		if (setG.contains(g)) {
+			checked = false;
+		} else {
+			setG.add(g);
+			for (YANG_DataDef ddef : g.getDataDefs()) {
+				if (ddef instanceof YANG_Uses)
+					return checkRecursiveUses(context, setG, (YANG_Uses) ddef);
+			}
+		}
+		return false;
 	}
 
 	public String toString() {

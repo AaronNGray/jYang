@@ -620,57 +620,48 @@ public class YANG_Type extends SimpleYangNode {
 					highest = biginteger;
 					bitspos.add(highest);
 					highest = highest.add(new BigInteger("1"));
-				}  else if (biginteger.add(new BigInteger("1")).compareTo(highest) == 0) {
-					YangErrorManager.add(filename, bit.getLine(), bit.getCol(), MessageFormat
-							.format(YangErrorManager.messages.getString("dup_value"),
-									"position", biginteger, "bit", bits[biginteger.subtract(new BigInteger("1")).intValue()]
-											.getPosition().getFileName()
+				} else if (biginteger.add(new BigInteger("1")).compareTo(
+						highest) == 0) {
+					YangErrorManager.add(filename, bit.getLine(), bit.getCol(),
+							MessageFormat.format(YangErrorManager.messages
+									.getString("dup_value"), "position",
+									biginteger, "bit", bits[biginteger
+											.subtract(new BigInteger("1"))
+											.intValue()].getPosition()
+											.getFileName()
 											+ ":"
-											+ bits[biginteger.subtract(new BigInteger("1")).intValue()].getPosition()
+											+ bits[biginteger.subtract(
+													new BigInteger("1"))
+													.intValue()].getPosition()
 													.getLine()));
 					return;
-				}else if (biginteger.compareTo(highest) == -1) {
+				} else if (biginteger.compareTo(highest) == -1) {
 					bitspos.add(biginteger);
 				}
 			}
 		}
-		
-		/*
-		boolean duplicate = false;
-		int position = 0;
-		for (Enumeration<BigInteger> eb = bitspos.elements(); eb
-				.hasMoreElements()
-				&& !duplicate;) {
-			position = 0;
-			BigInteger bi = eb.nextElement();
-			for (Enumeration<BigInteger> eb2 = bitspos.elements(); eb2
-					.hasMoreElements()
-					&& !duplicate;) {
-				BigInteger bi2 = eb2.nextElement();
-				duplicate = (bi.compareTo(bi2) == 0 && bi != bi2);
-				position++;
-			}
-		}
-		if (duplicate)
-			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
-					.format(YangErrorManager.messages.getString("dup_value"),
-							"position", position, "bit", bits[position - 1]
-									.getPosition().getFileName()
-									+ ":"
-									+ bits[position - 1].getPosition()
-											.getLine()));
 
-		for (int j = 0; j < bitnames.length && !duplicate; j++)
-			for (int k = j + 1; k < bitnames.length && !duplicate; k++) {
-				duplicate = bitnames[j].compareTo(bitnames[k]) == 0;
-			}
-		if (duplicate)
-			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
-					.format(YangErrorManager.messages.getString("dup_value"),
-							"position", "trailing whitespace"));
-		throw new YangParserException("@" + getLine() + "." + getCol()
-				+ ":duplicate bit name");
-				*/
+		/*
+		 * boolean duplicate = false; int position = 0; for
+		 * (Enumeration<BigInteger> eb = bitspos.elements(); eb
+		 * .hasMoreElements() && !duplicate;) { position = 0; BigInteger bi =
+		 * eb.nextElement(); for (Enumeration<BigInteger> eb2 =
+		 * bitspos.elements(); eb2 .hasMoreElements() && !duplicate;) {
+		 * BigInteger bi2 = eb2.nextElement(); duplicate = (bi.compareTo(bi2) ==
+		 * 0 && bi != bi2); position++; } } if (duplicate)
+		 * YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
+		 * .format(YangErrorManager.messages.getString("dup_value"), "position",
+		 * position, "bit", bits[position - 1] .getPosition().getFileName() +
+		 * ":" + bits[position - 1].getPosition() .getLine()));
+		 * 
+		 * for (int j = 0; j < bitnames.length && !duplicate; j++) for (int k =
+		 * j + 1; k < bitnames.length && !duplicate; k++) { duplicate =
+		 * bitnames[j].compareTo(bitnames[k]) == 0; } if (duplicate)
+		 * YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
+		 * .format(YangErrorManager.messages.getString("dup_value"), "position",
+		 * "trailing whitespace")); throw new YangParserException("@" +
+		 * getLine() + "." + getCol() + ":duplicate bit name");
+		 */
 	}
 
 	private void checkEnum(YangContext context) throws YangParserException {
@@ -1849,9 +1840,10 @@ public class YANG_Type extends SimpleYangNode {
 				.hasMoreElements();) {
 			YANG_Type utype = et.nextElement();
 			if (context.getBuiltInType(utype).compareTo(YangBuiltInTypes.empty) == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":union type " + getType()
-						+ " can not have empty type");
+				YangErrorManager.add(utype.getFileName(), getLine(), getCol(),
+						MessageFormat.format(YangErrorManager.messages.getString("empty_union"),
+								utype.getFileName(), utype.getLine()));
+
 			else if (context.getBuiltInType(utype).compareTo(
 					YangBuiltInTypes.union) == 0) {
 				if (utype.getUnionSpec() != null) {

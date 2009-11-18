@@ -168,7 +168,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	public void check(String[] p, Vector<String> checked)
 			throws YangParserException {
 		check(p, checked, null);
-		if (isCheckOk)
+		//if (isCheckOk)
 			checkTreeNode(p);
 
 	}
