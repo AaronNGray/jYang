@@ -1730,7 +1730,11 @@ public class YANG_Type extends SimpleYangNode {
 			if (patterns != null)
 				while (patterns.hasMoreElements()) {
 					YANG_Pattern pattern = patterns.nextElement();
-					if (!pattern.checkExp(value))
+					if (!pattern.checkExp(value)){
+						System.out.println(getTypedef());
+						YANG_Type t = getFirstPatternDefined(context, context.getTypeDef(this));
+						if (t == this) {
+						
 						YangErrorManager
 								.add(
 										filename,
@@ -1748,6 +1752,30 @@ public class YANG_Type extends SimpleYangNode {
 																+ ":"
 																+ pattern
 																		.getLine()));
+						}
+						else  {
+							YANG_TypeDef td = context.getTypeDef(t);
+							YangErrorManager
+							.add(
+									filename,
+									ydefault.getLine(),
+									ydefault.getCol(),
+									MessageFormat
+											.format(
+													YangErrorManager.messages
+															.getString("default_match_fail"),
+													YangBuiltInTypes
+															.removeQuotes(value),
+															td.getFileName() + ":" + td.getLine(),
+													"pattern mismatch",
+													"pattern",
+													this.getFileName()
+															+ ":"
+															+ pattern
+																	.getLine()));
+						}
+							
+				}
 				}
 
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
