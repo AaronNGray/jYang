@@ -150,12 +150,13 @@ public class YangSpecTypes {
 			if (!YangBuiltInTypes.isBuiltIn(basetype)) {
 				Vector<String> chain = new Vector<String>();
 				chain.add(basetype);
-				checkChain(chain, deriveds.get(basetype));
+				YANG_TypeDef origin = typedefs.get(deriveds.get(basetype));
+				checkChain(origin, chain, deriveds.get(basetype));
 			}
 		}
 	}
 
-	protected boolean checkChain(Vector<String> b, String d) {
+	protected boolean checkChain(YANG_TypeDef o, Vector<String> b, String d) {
 		if (b.contains(d)) {
 			YANG_TypeDef bt = typedefs.get(d);
 			if (bt.isCorrect()) {
@@ -167,7 +168,7 @@ public class YangSpecTypes {
 					td.setCorrect(false);
 				}
 
-				YangErrorManager.add(bt.getFileName(), bt.getLine(), bt
+				YangErrorManager.add(o.getFileName(), o.getLine(), o
 						.getCol(), MessageFormat.format(
 						YangErrorManager.messages.getString("circ_dep"), unprefix(d)));
 
@@ -176,7 +177,7 @@ public class YangSpecTypes {
 		}
 		if (!YangBuiltInTypes.isBuiltIn(d)) {
 			b.add(d);
-			return checkChain(b, deriveds.get(d));
+			return checkChain(o, b, deriveds.get(d));
 		}
 		return true;
 	}

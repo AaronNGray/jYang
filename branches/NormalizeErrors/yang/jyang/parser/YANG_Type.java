@@ -1490,20 +1490,39 @@ public class YANG_Type extends SimpleYangNode {
 								t = getFirstRangeDefined(context, context
 										.getTypeDef(this));
 							String message = "";
-							if (t == this)
+							if (t == this) {
 								message = "direct_default_match_fail";
-							else
+								YangErrorManager.add(ydefault.filename,
+										ydefault.getLine(), ydefault.getCol(),
+										MessageFormat.format(
+												YangErrorManager.messages
+														.getString(message),
+												YangBuiltInTypes
+														.removeQuotes(value),
+												"range error", "range",
+												getFileName()
+														+ ":"
+														+ getNumRest()
+																.getLine()));
+							} else {
 								message = "default_match_fail";
+								YANG_TypeDef td = t.getTypedef();
+								YangErrorManager.add(ydefault.filename,
+										ydefault.getLine(), ydefault.getCol(),
+										MessageFormat.format(
+												YangErrorManager.messages
+														.getString(message),
+												YangBuiltInTypes
+														.removeQuotes(value),
+												td.getFileName() + ":"
+														+ td.getLine(),
+												"range error", "range",
+												getFileName()
+														+ ":"
+														+ getNumRest()
+																.getLine()));
+							}
 
-							YangErrorManager.add(filename, usernode.getLine(),
-									usernode.getCol(), MessageFormat.format(
-											YangErrorManager.messages
-													.getString(message),
-											YangBuiltInTypes
-													.removeQuotes(value),
-											"range error", "range",
-											getFileName() + ":"
-													+ getNumRest().getLine()));
 						}
 
 					} catch (NumberFormatException ne) {
@@ -1557,24 +1576,59 @@ public class YANG_Type extends SimpleYangNode {
 							} else
 								inside = true;
 						}
-						if (!inside)
-							YangErrorManager
-									.add(
-											filename,
-											usernode.getLine(),
-											usernode.getCol(),
-											MessageFormat
-													.format(
-															YangErrorManager.messages
-																	.getString("direct_default_match_fail"),
-															YangBuiltInTypes
-																	.removeQuotes(value),
-															"range error",
-															"range",
-															this.getFileName()
-																	+ ":"
-																	+ getNumRest()
-																			.getLine()));
+						if (!inside) {
+							YANG_Type t = this;
+							if (getFirstRangeDefined(context, context
+									.getTypeDef(this)) != this)
+								t = getFirstRangeDefined(context, context
+										.getTypeDef(this));
+							String message = "";
+							if (t == this) {
+								YangErrorManager
+										.add(
+												filename,
+												usernode.getLine(),
+												usernode.getCol(),
+												MessageFormat
+														.format(
+																YangErrorManager.messages
+																		.getString("direct_default_match_fail"),
+																YangBuiltInTypes
+																		.removeQuotes(value),
+																"range error",
+																"range",
+																this
+																		.getFileName()
+																		+ ":"
+																		+ getNumRest()
+																				.getLine()));
+							} else {
+								YANG_TypeDef td = t.getTypedef();
+								YangErrorManager
+										.add(
+												filename,
+												usernode.getLine(),
+												usernode.getCol(),
+												MessageFormat
+														.format(
+																YangErrorManager.messages
+																		.getString("default_match_fail"),
+																YangBuiltInTypes
+																		.removeQuotes(value),
+																td
+																		.getFileName()
+																		+ ":"
+																		+ td
+																				.getLine(),
+																"range error",
+																"range",
+																this
+																		.getFileName()
+																		+ ":"
+																		+ getNumRest()
+																				.getLine()));
+							}
+						}
 					} catch (NumberFormatException ne) {
 						throw new YangParserException("@" + getLine() + "."
 								+ getCol() + ": " + value + " is not a float");
@@ -1841,8 +1895,9 @@ public class YANG_Type extends SimpleYangNode {
 			YANG_Type utype = et.nextElement();
 			if (context.getBuiltInType(utype).compareTo(YangBuiltInTypes.empty) == 0)
 				YangErrorManager.add(utype.getFileName(), getLine(), getCol(),
-						MessageFormat.format(YangErrorManager.messages.getString("empty_union"),
-								utype.getFileName(), utype.getLine()));
+						MessageFormat.format(YangErrorManager.messages
+								.getString("empty_union"), utype.getFileName(),
+								utype.getLine()));
 
 			else if (context.getBuiltInType(utype).compareTo(
 					YangBuiltInTypes.union) == 0) {

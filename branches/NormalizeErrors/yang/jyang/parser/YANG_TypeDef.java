@@ -122,6 +122,8 @@ public class YANG_TypeDef extends StatuedBody {
 			return;
 		if (tds.contains(zis)) {
 			setCorrect(false);
+			for (YANG_TypeDef ytd : tds)
+				ytd.setCorrect(false);
 			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
 					.format(YangErrorManager.messages.getString("circ_dep"),
 							zis.getBody()));
@@ -132,9 +134,7 @@ public class YANG_TypeDef extends StatuedBody {
 				.getType())) == 0) {
 			YANG_Type ut = zis.getType();
 			if (ut.getUnionSpec() != null) {
-				for (Enumeration<YANG_Type> eus = ut.getUnionSpec().getTypes()
-						.elements(); eus.hasMoreElements();) {
-					YANG_Type utt = eus.nextElement();
+				for (YANG_Type utt : ut.getUnionSpec().getTypes()){
 					tds.add(zis);
 					chainUnions(context.getTypeDef(utt), tds, context);
 				}
