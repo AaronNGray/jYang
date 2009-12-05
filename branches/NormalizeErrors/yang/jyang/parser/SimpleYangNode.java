@@ -54,7 +54,7 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 
 	public String getFileName() {
 		if (filename.indexOf('/') != -1)
-			return filename.substring(filename.indexOf('/')+1);
+			return filename.substring(filename.lastIndexOf('/')+1);
 		return filename;
 	}
 
