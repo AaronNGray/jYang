@@ -35,7 +35,7 @@ public class YangErrorManager {
 
 	static private class ErrorsComparator implements Comparator {
 
-		@Override
+		//@Override
 		public int compare(Object o0, Object o1) {
 			Error e0 = (Error) o0, e1 = (Error) o1;
 			if (e0.module.compareTo(e1.module) != 0)
