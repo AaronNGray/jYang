@@ -1486,14 +1486,14 @@ public class YANG_Type extends SimpleYangNode {
 						if (!inside) {
 							YANG_Type t = this;
 							if (getFirstRangeDefined(context, context
-									.getTypeDef(this)) != this)
+									.getBaseType(this)) != null)
 								t = getFirstRangeDefined(context, context
-										.getTypeDef(this));
+										.getBaseType(this));
 							String message = "";
 							if (t == this) {
 								message = "direct_default_match_fail";
-								YangErrorManager.add(ydefault.filename,
-										ydefault.getLine(), ydefault.getCol(),
+								YangErrorManager.add(filename,
+										getLine(), getCol(),
 										MessageFormat.format(
 												YangErrorManager.messages
 														.getString(message),
@@ -1506,9 +1506,9 @@ public class YANG_Type extends SimpleYangNode {
 																.getLine()));
 							} else {
 								message = "default_match_fail";
-								YANG_TypeDef td = t.getTypedef();
-								YangErrorManager.add(ydefault.filename,
-										ydefault.getLine(), ydefault.getCol(),
+								YANG_TypeDef td = this.getTypedef();
+								YangErrorManager.add(filename,
+										getLine(), getCol(),
 										MessageFormat.format(
 												YangErrorManager.messages
 														.getString(message),
@@ -1673,27 +1673,6 @@ public class YANG_Type extends SimpleYangNode {
 				}
 			}
 
-			if (patterns != null) {
-				if (getStringRest().getPatterns().size() == 0) {
-					YANG_TypeDef td = context.getTypeDef(this);
-					if (td != null) {
-						YANG_Type bt = getFirstPatternDefined(context, td);
-						if (bt != null)
-							patterns = bt.getStringRest().getPatterns()
-									.elements();
-					}
-
-				}
-			} else {
-				YANG_TypeDef td = context.getTypeDef(this);
-				if (td != null) {
-					YANG_Type bt = getFirstPatternDefined(context, td);
-					if (bt != null)
-						patterns = bt.getStringRest().getPatterns().elements();
-				}
-
-			}
-
 			BigInteger bi = new BigInteger(new Integer(value.length())
 					.toString());
 			BigInteger bilb = null;
@@ -1727,55 +1706,78 @@ public class YANG_Type extends SimpleYangNode {
 						"length", this.getFileName() + ":"
 								+ getStringRest().getLine()));
 
+			boolean direct = true;
+			YANG_TypeDef indirectTd = null;
+			if (patterns != null) {
+				if (getStringRest().getPatterns().size() == 0) {
+					YANG_TypeDef td = context.getTypeDef(this);
+					if (td != null) {
+						YANG_Type bt = getFirstPatternDefined(context, td);
+						if (bt != null)
+							patterns = bt.getStringRest().getPatterns()
+									.elements();
+					}
+
+				}
+			} else {
+				direct = false;
+				indirectTd = context.getTypeDef(this);
+				if (indirectTd != null) {
+					YANG_Type bt = getFirstPatternDefined(context, indirectTd);
+					if (bt != null)
+						patterns = bt.getStringRest().getPatterns().elements();
+				}
+
+			}
+
 			if (patterns != null)
 				while (patterns.hasMoreElements()) {
 					YANG_Pattern pattern = patterns.nextElement();
-					if (!pattern.checkExp(value)){
-						System.out.println(getTypedef());
-						YANG_Type t = getFirstPatternDefined(context, context.getTypeDef(this));
-						if (t == this) {
-						
-						YangErrorManager
-								.add(
-										filename,
-										ydefault.getLine(),
-										ydefault.getCol(),
-										MessageFormat
-												.format(
-														YangErrorManager.messages
-																.getString("direct_default_match_fail"),
-														YangBuiltInTypes
-																.removeQuotes(value),
-														"pattern mismatch",
-														"pattern",
-														this.getFileName()
-																+ ":"
-																+ pattern
-																		.getLine()));
-						}
-						else  {
-							YANG_TypeDef td = context.getTypeDef(t);
+					if (!pattern.checkExp(value)) {
+						if (direct) {
 							YangErrorManager
-							.add(
-									filename,
-									ydefault.getLine(),
-									ydefault.getCol(),
-									MessageFormat
-											.format(
-													YangErrorManager.messages
-															.getString("default_match_fail"),
-													YangBuiltInTypes
-															.removeQuotes(value),
-															td.getFileName() + ":" + td.getLine(),
-													"pattern mismatch",
-													"pattern",
-													this.getFileName()
-															+ ":"
-															+ pattern
-																	.getLine()));
+									.add(
+											filename,
+											ydefault.getLine(),
+											ydefault.getCol(),
+											MessageFormat
+													.format(
+															YangErrorManager.messages
+																	.getString("direct_default_match_fail"),
+															YangBuiltInTypes
+																	.removeQuotes(value),
+															"pattern mismatch",
+															"pattern",
+															this.getFileName()
+																	+ ":"
+																	+ pattern
+																			.getLine()));
+						} else {
+							YangErrorManager
+									.add(
+											filename,
+											ydefault.getLine(),
+											ydefault.getCol(),
+											MessageFormat
+													.format(
+															YangErrorManager.messages
+																	.getString("default_match_fail"),
+															YangBuiltInTypes
+																	.removeQuotes(value),
+															indirectTd
+																	.getFileName()
+																	+ ":"
+																	+ indirectTd
+																			.getLine(),
+															"pattern mismatch",
+															"pattern",
+															this.getFileName()
+																	+ ":"
+																	+ pattern
+																			.getLine()));
 						}
-							
-				}
+
+					}
 				}
 
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
