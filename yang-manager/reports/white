@@ -9,6 +9,3 @@ Par exemple :  les intervalles de valeur, leur types (entier, réels,...)
 La spécification en Yang de données obligatoires (mandatory) ou non associée à la possiblité de définir 
 des valeur par défaut permet de gagner sur le trafic résau, 
 l'absence de valeur signifiant la valeur par défaut.
-
-Tout n'es pas modélisable, par exemple une contrainte sur une valeur par défaut, mais on peut définir 
-une contrainte sur plusieurs valeurs
