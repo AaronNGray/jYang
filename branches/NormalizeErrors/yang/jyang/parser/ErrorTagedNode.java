@@ -14,10 +14,8 @@ public abstract class ErrorTagedNode extends DocumentedNode {
 			b_errmess = true;
 			errmess = e;
 		} else
-			YangErrorManager
-			.add(filename, e.getLine(), e.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"error-message"));
+			YangErrorManager.tadd(filename, e.getLine(), e.getCol(), "unex_kw",
+					"error-message");
 	}
 
 	public YANG_ErrorMessage getErrMess() {
@@ -29,10 +27,8 @@ public abstract class ErrorTagedNode extends DocumentedNode {
 			b_errapptag = true;
 			errapptag = e;
 		} else
-			YangErrorManager
-			.add(filename, e.getLine(), e.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"error-appt"));
+			YangErrorManager.tadd(filename, e.getLine(), e.getCol(), "unex_kw",
+					"error-appt");
 	}
 
 	public YANG_ErrorAppt getErrAppTag() {

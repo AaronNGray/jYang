@@ -2,6 +2,7 @@ package jyang.parser;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.MissingResourceException;
@@ -87,7 +88,12 @@ public class YangErrorManager {
 		module = m;
 	}
 
-	static public void add(String module, int line, int col, String mess) {
+	static public void tadd(String module,int line, int col, String mess,Object... parameters ) {
+		_add(module, line, col,MessageFormat.format(YangErrorManager.messages
+				.getString(mess),parameters));
+		
+	}
+	static private void _add(String module, int line, int col, String mess) {
 		Error error = new Error(module, line, col, mess);
 		errors.add(error);
 	}

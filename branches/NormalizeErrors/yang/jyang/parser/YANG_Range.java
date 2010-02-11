@@ -1,34 +1,33 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
 import java.util.regex.PatternSyntaxException;
 
-
-
-public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestriction {
+public class YANG_Range extends ErrorTagedNode implements
+		YANG_NumericalRestriction {
 
 	private String range = null;
 
 	private String[][] ranges = null;
-
 
 	public YANG_Range(int id) {
 		super(id);
@@ -46,7 +45,7 @@ public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestrict
 	public String getRange() {
 		return range;
 	}
-	
+
 	public boolean isBracked() {
 		return super.isBracked();
 	}
@@ -63,7 +62,7 @@ public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestrict
 		return result;
 	}
 
-	private void setRanges()  {
+	private void setRanges() {
 
 		String range = YangBuiltInTypes.removeQuotes(getRange());
 		String[] test = null;
@@ -83,8 +82,8 @@ public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestrict
 				try {
 					ranges[j] = test[j].split("\\.\\.");
 					if (ranges[j].length != 2) {
-						YangErrorManager.add(filename, getLine(), getCol(),
-								YangErrorManager.messages.getString("range_exp"));
+						YangErrorManager.tadd(filename, getLine(), getCol(),
+								"range_exp");
 					}
 				} catch (PatternSyntaxException pe) {
 					// Cannot occurs
@@ -101,6 +100,5 @@ public class YANG_Range extends ErrorTagedNode implements YANG_NumericalRestrict
 	public String[][] getRangeIntervals() {
 		return ranges;
 	}
-	
-	
+
 }

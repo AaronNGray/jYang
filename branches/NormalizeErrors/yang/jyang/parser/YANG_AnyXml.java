@@ -34,10 +34,8 @@ public class YANG_AnyXml extends MustDataDef implements YANG_CaseDataDef,
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager
-			.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"mandatory"));
+			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+					"mandatory");
 	}
 
 	public YANG_Mandatory getMandatory() {

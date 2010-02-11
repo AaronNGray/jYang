@@ -106,37 +106,29 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 		if (m instanceof YANG_Organization) {
 			if (organization)
-				YangErrorManager
-						.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-								YangErrorManager.messages.getString("unex_kw"),
-								"organization"));
+				YangErrorManager.tadd(filename, m.getLine(), m.getCol(),
+						"unex_kw", "organization");
 			else
 				organization = true;
 		}
 		if (m instanceof YANG_Contact) {
 			if (contact)
-				YangErrorManager
-				.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-						YangErrorManager.messages.getString("unex_kw"),
-						"contact"));
+				YangErrorManager.tadd(filename, m.getLine(), m.getCol(),
+						"unex_kw", "contact");
 			else
 				contact = true;
 		}
 		if (m instanceof YANG_Description) {
 			if (description)
-				YangErrorManager
-				.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-						YangErrorManager.messages.getString("unex_kw"),
-						"description"));
+				YangErrorManager.tadd(filename, m.getLine(), m.getCol(),
+						"unex_kw", "description");
 			else
 				description = true;
 		}
 		if (m instanceof YANG_Reference) {
 			if (reference)
-				YangErrorManager
-				.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-						YangErrorManager.messages.getString("unex_kw"),
-						"reference"));
+				YangErrorManager.tadd(filename, m.getLine(), m.getCol(),
+						"unex_kw", "reference");
 			else
 				reference = true;
 		}
@@ -168,8 +160,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	public void check(String[] p, Vector<String> checked)
 			throws YangParserException {
 		check(p, checked, null);
-		//if (isCheckOk)
-			checkTreeNode(p);
+		// if (isCheckOk)
+		checkTreeNode(p);
 
 	}
 
@@ -440,8 +432,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				YANG_Specification importedspec = getExternal(paths,
 						importedspecname);
 				if (!(importedspec instanceof YANG_Module))
-					YangErrorManager.add(filename, imported.getLine(), imported.getCol(),
-							YangErrorManager.messages.getString("not_module"));
+					YangErrorManager.tadd(filename, imported.getLine(),
+							imported.getCol(), "not_module");
 				else
 					importeds.add((YANG_Module) importedspec);
 			}
@@ -451,7 +443,6 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	protected abstract void checkInclude(String[] paths)
 			throws YangParserException;
 
-	
 	protected YANG_Specification getExternal(String[] paths,
 			String externalmodulename) {
 		int i = 0;
@@ -484,7 +475,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		if (!found)
 			System.err.println("@external yang specification "
 					+ externalmodulename + " not found");
-		
+
 		checkedSpecs.put(externalmodulename, externalspec);
 		return externalspec;
 	}

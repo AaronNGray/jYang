@@ -30,10 +30,8 @@ public class YANG_Bit extends StatuedNode {
 			position = p;
 			b_position = true;
 		} else
-			YangErrorManager
-			.add(filename, p.getLine(), p.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"position"));
+			YangErrorManager.tadd(filename, p.getLine(), p.getCol(), "unex_kw",
+					"position");
 	}
 
 	public YANG_Position getPosition() {
@@ -49,12 +47,11 @@ public class YANG_Bit extends StatuedNode {
 		result += "bit " + bit;
 		if (isBracked()) {
 			result += "{\n";
-		if (b_position)
-			result += position.toString() + "\n";
-		result += super.toString() + "\n";
-		result += "}";
-		}
-		else
+			if (b_position)
+				result += position.toString() + "\n";
+			result += super.toString() + "\n";
+			result += "}";
+		} else
 			result += ";";
 		return result;
 	}

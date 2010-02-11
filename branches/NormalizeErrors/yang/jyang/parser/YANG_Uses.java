@@ -161,12 +161,10 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
 							if (checkRecursiveUses(context, s, used))
 								body.checkBody(clcts);
 							else {
-								YangErrorManager.add(used.getFileName(), used
+								YangErrorManager.tadd(used.getFileName(), used
 										.getParent().getLine(), used
-										.getParent().getCol(), MessageFormat
-										.format(YangErrorManager.messages
-												.getString("rec_grouping"),
-												used.getParent().toString()));
+										.getParent().getCol(), "rec_grouping",
+										used.getParent().toString());
 							}
 						} else
 							body.checkBody(clcts);

@@ -48,10 +48,8 @@ public class YANG_Deviation extends YANG_Body {
 			this.deviateNotSupported = d;
 			b_deviatenotsupported = true;
 		} else
-			YangErrorManager
-			.add(filename, d.getLine(), d.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"deviate-not-supported"));
+			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "unex_kw",
+					"deviate-not-supported");
 	}
 
 	public void addDeviateAdd(YANG_DeviateAdd da) {
@@ -77,16 +75,19 @@ public class YANG_Deviation extends YANG_Body {
 	public Vector<YANG_DeviateReplace> getDeviateReplaces() {
 		return deviatereplaces;
 	}
-	
+
 	public String toString() {
 		String result = "";
 		if (b_deviatenotsupported)
 			result += deviateNotSupported.toString() + "\n";
-		for (Enumeration<YANG_DeviateAdd> eda = deviateadds.elements(); eda.hasMoreElements();)
+		for (Enumeration<YANG_DeviateAdd> eda = deviateadds.elements(); eda
+				.hasMoreElements();)
 			result += eda.nextElement().toString() + "\n";
-		for (Enumeration<YANG_DeviateDelete> eda = deviatedeletes.elements(); eda.hasMoreElements();)
+		for (Enumeration<YANG_DeviateDelete> eda = deviatedeletes.elements(); eda
+				.hasMoreElements();)
 			result += eda.nextElement().toString() + "\n";
-		for (Enumeration<YANG_DeviateReplace> eda = deviatereplaces.elements(); eda.hasMoreElements();)
+		for (Enumeration<YANG_DeviateReplace> eda = deviatereplaces.elements(); eda
+				.hasMoreElements();)
 			result += eda.nextElement().toString() + "\n";
 		return result;
 	}

@@ -25,10 +25,8 @@ public class YANG_DeviateReplace extends DeviateAddReplace {
 			this.type = t;
 			b_type = true;
 		} else
-			YangErrorManager
-			.add(filename, t.getLine(), t.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"type"));
+			YangErrorManager.tadd(filename, t.getLine(), t.getCol(), "unex_kw",
+					"type");
 	}
 
 	public boolean isBracked() {

@@ -58,9 +58,8 @@ public class YANG_List extends ListedDataDef {
 			b_key = true;
 			key = t;
 		} else
-			YangErrorManager.add(filename, t.getLine(), t.getCol(),
-					MessageFormat.format(YangErrorManager.messages
-							.getString("unex_kw"), "key"));
+			YangErrorManager.tadd(filename, t.getLine(), t.getCol(), "unex_kw",
+					"key");
 	}
 
 	public YANG_Key getKey() {

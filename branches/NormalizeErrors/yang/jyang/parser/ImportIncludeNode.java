@@ -23,14 +23,11 @@ public abstract class ImportIncludeNode extends SimpleYangNode {
 		if (!b_revision) {
 			this.revision = r;
 			b_revision = true;
-		}
-		else
-			YangErrorManager
-			.add(filename, r.getLine(), r.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"revision"));
+		} else
+			YangErrorManager.tadd(filename, r.getLine(), r.getCol(), "unex_kw",
+					"revision");
 	}
-	
+
 	public boolean isBracked() {
 		return b_revision;
 	}

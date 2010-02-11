@@ -21,10 +21,8 @@ public abstract class ConfigDataDef extends YANG_DataDef {
 			b_config = true;
 			config = c;
 		} else
-			YangErrorManager
-			.add(filename, c.getLine(), c.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"config"));
+			YangErrorManager.tadd(filename, c.getLine(), c.getCol(), "unex_kw",
+					"config");
 
 	}
 

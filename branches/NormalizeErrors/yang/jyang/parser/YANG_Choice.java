@@ -57,10 +57,8 @@ public class YANG_Choice extends ConfigDataDef {
 			b_default = true;
 			ydefault = d;
 		} else
-			YangErrorManager
-			.add(filename, d.getLine(), d.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"default"));
+			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "unex_kw",
+					"default");
 	}
 
 	public YANG_Default getDefault() {
@@ -72,10 +70,8 @@ public class YANG_Choice extends ConfigDataDef {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager
-			.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"mandatory"));
+			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+					"mandatory");
 	}
 
 	public YANG_Mandatory getMandatory() {

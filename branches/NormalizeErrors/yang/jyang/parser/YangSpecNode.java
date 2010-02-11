@@ -125,26 +125,23 @@ public class YangSpecNode {
 		String modulefilename = b.getFileName();
 		if (b instanceof YANG_TypeDef) {
 			if (isDefinedAsTypeDef(name)) {
-				YangErrorManager.add(modulefilename, b.getLine(), b.getCol(),
-						MessageFormat.format(YangErrorManager.messages
-								.getString("typedef"), b.getBody(), modulefilename, get(name)
-								.getLine()));
+				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
+						"typedef", b.getBody(), modulefilename, get(name)
+								.getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Grouping) {
 			if (isDefinedAsGrouping(name)) {
-				YangErrorManager.add(modulefilename, b.getLine(), b.getCol(),
-						MessageFormat.format(YangErrorManager.messages
-								.getString("grouping"), b.getBody(), modulefilename, get(name)
-								.getLine()));
+				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
+						"grouping", b.getBody(), modulefilename, get(name)
+								.getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Extension) {
 			if (isDefinedAsExtension(name)) {
-				YangErrorManager.add(modulefilename, b.getLine(), b.getCol(),
-						MessageFormat.format(YangErrorManager.messages
-								.getString("extension"), b.getBody(), modulefilename, get(name)
-								.getLine()));
+				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
+						"extension", b.getBody(), modulefilename, get(name)
+								.getLine());
 				return;
 			}
 		} else {
@@ -164,9 +161,9 @@ public class YangSpecNode {
 					found = true;
 			}
 			if (found) {
-				YangErrorManager.add(modulefilename, b.getLine(), b.getCol(),
-						MessageFormat.format(YangErrorManager.messages
-								.getString("dup_child"), b.getBody(), get(name).getFileName(), get(name).getLine()));
+				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
+						"dup_child", b.getBody(), get(name).getFileName(), get(
+								name).getLine());
 				return;
 			}
 		}

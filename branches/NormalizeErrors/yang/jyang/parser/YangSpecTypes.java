@@ -128,9 +128,8 @@ public class YangSpecTypes {
 					}
 					if (td != null) {
 						td.setCorrect(false);
-						YangErrorManager.add(td.getFileName(), td.getLine(), td
-								.getCol(), YangErrorManager.messages
-								.getString("unknown_type"));
+						YangErrorManager.tadd(td.getFileName(), td.getLine(),
+								td.getCol(), "unknown_type");
 					}
 				} /*
 				 * else { String der = deriveds.get(basetype); if
@@ -168,12 +167,12 @@ public class YangSpecTypes {
 					td.setCorrect(false);
 				}
 
-				YangErrorManager.add(o.getFileName(), o.getLine(), o
-						.getCol(), MessageFormat.format(
-						YangErrorManager.messages.getString("circ_dep"), unprefix(d)));
+				YangErrorManager.tadd(o.getFileName(), o.getLine(), o.getCol(),
+						"circ_dep", unprefix(d));
 
 				return false;
-			} else return false;
+			} else
+				return false;
 		}
 		if (!YangBuiltInTypes.isBuiltIn(d)) {
 			b.add(d);
@@ -181,9 +180,9 @@ public class YangSpecTypes {
 		}
 		return true;
 	}
-	
-	private String unprefix(String s){
-		return s.substring(s.indexOf(':')+1);
+
+	private String unprefix(String s) {
+		return s.substring(s.indexOf(':') + 1);
 	}
 
 	public String getBuiltInType(String t) {

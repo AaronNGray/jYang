@@ -29,9 +29,8 @@ public abstract class DeviateAddReplace extends Deviate {
 			this.config = c;
 			b_config = true;
 		} else
-			YangErrorManager.add(filename, c.getLine(), c.getCol(),
-					MessageFormat.format(YangErrorManager.messages
-							.getString("unex_kw"), "config"));
+			YangErrorManager.tadd(filename, c.getLine(), c.getCol(), "unex_kw",
+					"config");
 	}
 
 	public YANG_Mandatory getMandatory() {
@@ -43,9 +42,8 @@ public abstract class DeviateAddReplace extends Deviate {
 			this.mandatory = m;
 			b_mandatory = true;
 		} else
-			YangErrorManager.add(filename, m.getLine(), m.getCol(),
-					MessageFormat.format(YangErrorManager.messages
-							.getString("unex_kw"), "mandatory"));
+			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+					"mandatory");
 	}
 
 	public YANG_MinElement getMinElement() {
@@ -57,9 +55,8 @@ public abstract class DeviateAddReplace extends Deviate {
 			this.min = m;
 			b_min = true;
 		} else
-			YangErrorManager.add(filename, m.getLine(), m.getCol(),
-					MessageFormat.format(YangErrorManager.messages
-							.getString("unex_kw"), "min"));
+			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+					"min");
 	}
 
 	public YANG_MaxElement getMaxElement() {
@@ -71,9 +68,8 @@ public abstract class DeviateAddReplace extends Deviate {
 			this.max = m;
 			b_max = true;
 		} else
-			YangErrorManager.add(filename, m.getLine(), m.getCol(),
-					MessageFormat.format(YangErrorManager.messages
-							.getString("unex_kw"), "max"));
+			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+					"max");
 	}
 
 	public boolean isBracked() {

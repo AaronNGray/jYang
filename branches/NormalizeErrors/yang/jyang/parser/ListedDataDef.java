@@ -20,10 +20,8 @@ public abstract class ListedDataDef extends MustDataDef implements
 
 	public void setMinElement(YANG_MinElement m) {
 		if (b_min)
-			YangErrorManager
-			.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"min"));
+			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+					"min");
 		b_min = true;
 		min = m;
 	}
@@ -37,10 +35,8 @@ public abstract class ListedDataDef extends MustDataDef implements
 			b_max = true;
 			max = m;
 		} else
-			YangErrorManager
-			.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"max"));
+			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+					"max");
 	}
 
 	public YANG_MaxElement getMaxElement() {
@@ -52,10 +48,8 @@ public abstract class ListedDataDef extends MustDataDef implements
 			b_ordered = true;
 			ordered = o;
 		} else
-			YangErrorManager
-			.add(filename, o.getLine(), o.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"ordered"));
+			YangErrorManager.tadd(filename, o.getLine(), o.getCol(), "unex_kw",
+					"ordered");
 	}
 
 	public YANG_OrderedBy getOrderedBy() {

@@ -3,7 +3,8 @@ package jyang.parser;
 import java.text.MessageFormat;
 import java.util.Vector;
 
-public abstract class YANG_DataDef extends FeaturedBody {
+public abstract class YANG_DataDef extends FeaturedBody implements
+		YANG_CaseDataDef {
 
 	private YANG_When when = null;
 
@@ -30,10 +31,8 @@ public abstract class YANG_DataDef extends FeaturedBody {
 			b_when = true;
 			this.when = w;
 		} else
-			YangErrorManager
-			.add(filename, w.getLine(), w.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"when"));
+			YangErrorManager.tadd(filename, w.getLine(), w.getCol(), "unex_kw",
+					"when");
 	}
 
 	public String toString() {

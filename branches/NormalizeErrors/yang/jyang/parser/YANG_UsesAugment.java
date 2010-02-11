@@ -14,28 +14,28 @@ public class YANG_UsesAugment extends FeaturedNode {
 
 	public YANG_UsesAugment(int id) {
 		super(id);
-		
+
 		try {
 			dsni = Pattern
 					.compile("([_A-Za-z][._\\-A-Za-z0-9]*:)?[_A-Za-z][._\\-A-Za-z0-9]*((/([_A-Za-z][._A-Za-z0-9]*:)?[_A-Za-z][._A-Za-z0-9]*)+)?");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public YANG_UsesAugment(yang p, int id) {
 		super(p, id);
 	}
 
-	public void setUsesAugment(String ua)  {
+	public void setUsesAugment(String ua) {
 		String aa = YangBuiltInTypes.removeQuotesAndTrim(ua);
 		Matcher m = dsni.matcher(aa);
 		if (m.matches())
 			usesaugment = aa;
 		else
-			YangErrorManager.add(filename, getLine(), getCol(),
-					YangErrorManager.messages.getString("uses_augment_exp"));
+			YangErrorManager.tadd(filename, getLine(), getCol(),
+					"uses_augment_exp");
 	}
 
 	public String getUsesAugment() {
@@ -55,7 +55,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 	}
 
 	public boolean isBracked() {
-		return super.isBracked() ||  cases.size() != 0;
+		return super.isBracked() || cases.size() != 0;
 	}
 
 	public String toString() {
@@ -67,8 +67,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 			for (Enumeration<YANG_Case> ec = cases.elements(); ec
 					.hasMoreElements();)
 				result += ec.nextElement().toString() + "\n";
-		}
-		else
+		} else
 			result += ";";
 		return result;
 	}

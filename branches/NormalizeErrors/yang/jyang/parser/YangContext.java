@@ -318,8 +318,8 @@ public class YangContext {
 		// Are we trying to redefine a built-in type ?
 
 		if (YangBuiltInTypes.isBuiltIn(g.getGrouping())) {
-			YangErrorManager.add(spec.getName(), g.getLine(), g.getCol(),
-					YangErrorManager.messages.getString("grouping"));
+			YangErrorManager.tadd(spec.getName(), g.getLine(), g.getCol(),
+					"grouping");
 			return;
 		}
 
@@ -343,9 +343,8 @@ public class YangContext {
 		// Is there a type statement ?
 
 		if (td.getType() == null) {
-			YangErrorManager.add(getSpec().getName(), td.getLine(),
-					td.getCol(), YangErrorManager.messages
-							.getString("type_expec"));
+			YangErrorManager.tadd(getSpec().getName(), td.getLine(), td
+					.getCol(), "type_expec");
 			return;
 		}
 

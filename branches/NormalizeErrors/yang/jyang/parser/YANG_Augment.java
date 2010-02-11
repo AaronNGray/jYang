@@ -75,10 +75,8 @@ public class YANG_Augment extends DataDefBody {
 			b_when = true;
 			this.when = w;
 		} else
-			YangErrorManager
-			.add(filename, w.getLine(), w.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"when"));
+			YangErrorManager.tadd(filename, w.getLine(), w.getCol(), "unex_kw",
+					"when");
 	}
 
 	public boolean isAbsoluteSchemaNodeId() {
@@ -118,10 +116,8 @@ public class YANG_Augment extends DataDefBody {
 				found = yimport.getPrefix().getPrefix().compareTo(prefix) == 0;
 			}
 			if (!found) {
-				YangErrorManager.add(context.getSpec().getName(), getLine(),
-						getCol(), MessageFormat.format(
-								YangErrorManager.messages.getString("ipnf"),
-								prefix));
+				YangErrorManager.tadd(context.getSpec().getName(), getLine(),
+						getCol(), "ipnf", prefix);
 				return;
 			}
 			/*
@@ -132,10 +128,8 @@ public class YANG_Augment extends DataDefBody {
 				if (nids[i].indexOf(':') != -1) {
 					if (prefix.compareTo(nids[i].substring(0, nids[i]
 							.indexOf(':'))) != 0) {
-						YangErrorManager.add(context.getSpec().getName(),
-								getLine(), getCol(), MessageFormat.format(
-										YangErrorManager.messages
-												.getString("cp"), getBody()));
+						YangErrorManager.tadd(context.getSpec().getName(),
+								getLine(), getCol(), "cp", getBody());
 						return;
 					}
 					/*
@@ -145,10 +139,8 @@ public class YANG_Augment extends DataDefBody {
 					 */
 				} else {
 					if (!localprefix) {
-						YangErrorManager.add(context.getSpec().getName(),
-								getLine(), getCol(), MessageFormat.format(
-										YangErrorManager.messages
-												.getString("cp"), getBody()));
+						YangErrorManager.tadd(context.getSpec().getName(),
+								getLine(), getCol(), "cp", getBody());
 						return;
 					}
 					/*
@@ -169,10 +161,8 @@ public class YANG_Augment extends DataDefBody {
 				 * throw new YangParserException("case " + ycase.getCase() +
 				 * " already defined", ycase.getLine(), ycase.getCol());
 				 */
-				YangErrorManager.add(context.getSpec().getName(), ycase
-						.getLine(), ycase.getCol(), MessageFormat.format(
-						YangErrorManager.messages.getString("ad"), ycase
-								.getBody()));
+				YangErrorManager.tadd(context.getSpec().getName(), ycase
+						.getLine(), ycase.getCol(), "ad", ycase.getBody());
 			} else
 				caseids.add(ycase.getCase());
 		}

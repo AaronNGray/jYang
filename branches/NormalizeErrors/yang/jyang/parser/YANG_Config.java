@@ -14,11 +14,10 @@ public class YANG_Config extends SimpleYangNode {
 		super(p, id);
 	}
 
-	public void setConfig(String c){
+	public void setConfig(String c) {
 		String ct = YangBuiltInTypes.removeQuotesAndTrim(c);
 		if (ct.compareTo("true") != 0 && ct.compareTo("false") != 0)
-			YangErrorManager.add(filename,getLine(), getCol(), YangErrorManager.messages
-					.getString("config_expr"));
+			YangErrorManager.tadd(filename, getLine(), getCol(), "config_expr");
 		config = c;
 	}
 

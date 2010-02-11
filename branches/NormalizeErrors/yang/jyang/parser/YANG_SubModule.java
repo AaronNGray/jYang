@@ -28,7 +28,6 @@ public class YANG_SubModule extends YANG_Specification {
 	 */
 	private int nbheader = 0;
 	private boolean b_yangversion = false, b_belong = false;
-	
 
 	public YANG_SubModule(int id) {
 		super(id);
@@ -54,35 +53,30 @@ public class YANG_SubModule extends YANG_Specification {
 		return getSubModule();
 	}
 
-	public void addHeader(YANG_Header m)  {
+	public void addHeader(YANG_Header m) {
 
 		if (m instanceof YANG_YangVersion) {
 			if (!b_yangversion) {
 				b_yangversion = true;
 				yangversion = (YANG_YangVersion) m;
 			} else
-				YangErrorManager.add(filename, m.getLine(), m.getCol(),
-						YangErrorManager.messages.getString("version"));
+				YangErrorManager.tadd(filename, m.getLine(), m.getCol(),
+						"version");
 		}
-			
+
 		if (m instanceof YANG_Belong) {
 			if (!b_belong)
 				b_belong = true;
 			belong = (YANG_Belong) m;
-		}
-		else 
-			YangErrorManager.add(filename, m.getLine(), m.getCol(),
-					YangErrorManager.messages.getString("belong"));
+		} else
+			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "belong");
 
-		
 		headers.add(m);
 	}
 
 	public YANG_Belong getBelong() {
 		return belong;
 	}
-
-	
 
 	/**
 	 * Check if the belongs-to statement is present and if it refers to an

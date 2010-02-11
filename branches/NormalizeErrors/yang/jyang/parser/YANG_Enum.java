@@ -22,20 +22,14 @@ public class YANG_Enum extends StatuedNode {
 			enumid = e.trim();
 		else {
 			if (e.charAt(e.indexOf('\"') + 1) == ' ')
-				YangErrorManager.add(filename, getLine(), getCol(),
-						MessageFormat.format(YangErrorManager.messages
-								.getString("bad_value"),"enum", e,
-								"leading whitespace"));
+				YangErrorManager.tadd(filename, getLine(), getCol(),
+						"bad_value", "enum", e, "leading whitespace");
 			else if (e.charAt(e.lastIndexOf('\"') - 1) == ' ')
-				YangErrorManager.add(filename, getLine(), getCol(),
-						MessageFormat.format(YangErrorManager.messages
-								.getString("bad_value"), "enum", e,
-								"trailing whitespace"));
+				YangErrorManager.tadd(filename, getLine(), getCol(),
+						"bad_value", "enum", e, "trailing whitespace");
 			else if (e.equals("\"\""))
-				YangErrorManager.add(filename, getLine(), getCol(),
-						MessageFormat.format(YangErrorManager.messages
-								.getString("bad_value"), "enum", e, 
-								"empty string"));
+				YangErrorManager.tadd(filename, getLine(), getCol(),
+						"bad_value", "enum", e, "empty string");
 			// even its a bad value
 			// to provide something if asked
 			enumid = e;
@@ -51,9 +45,8 @@ public class YANG_Enum extends StatuedNode {
 			value = v;
 			b_value = true;
 		} else
-			YangErrorManager.add(filename, v.getLine(), v.getCol(),
-					MessageFormat.format(YangErrorManager.messages
-							.getString("unex_kw"), "value"));
+			YangErrorManager.tadd(filename, v.getLine(), v.getCol(), "unex_kw",
+					"value");
 	}
 
 	public YANG_Value getValue() {

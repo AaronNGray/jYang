@@ -59,10 +59,8 @@ public class YANG_Container extends MustDataDef implements YANG_CaseDataDef,
 			b_presence = true;
 			presence = p;
 		} else
-			YangErrorManager
-					.add(filename, p.getLine(), p.getCol(), MessageFormat.format(
-							YangErrorManager.messages.getString("unex_kw"),
-							"presence"));
+			YangErrorManager.tadd(filename, p.getLine(), p.getCol(), "unex_kw",
+					"presence");
 
 	}
 
@@ -104,8 +102,8 @@ public class YANG_Container extends MustDataDef implements YANG_CaseDataDef,
 			YANG_Config parentConfig = getParentConfig();
 			if (parentConfig.getConfigStr().compareTo("false") == 0
 					&& getConfig().getConfigStr().compareTo("true") == 0)
-				YangErrorManager.add(context.getSpec().getName(), getLine(),
-						getCol(), YangErrorManager.messages.getString("ctf"));
+				YangErrorManager.tadd(context.getSpec().getName(), getLine(),
+						getCol(), "ctf");
 		}
 
 	}

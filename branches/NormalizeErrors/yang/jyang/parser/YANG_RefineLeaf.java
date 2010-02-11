@@ -38,16 +38,13 @@ public class YANG_RefineLeaf extends MustRefineNode {
 		super(p, id);
 	}
 
-
 	public void setDefault(YANG_Default d) {
 		if (!b_default) {
 			b_default = true;
 			ydefault = d;
 		} else
-			YangErrorManager
-			.add(filename, d.getLine(), d.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"default"));
+			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "unex_kw",
+					"default");
 	}
 
 	public YANG_Default getDefault() {
@@ -59,16 +56,13 @@ public class YANG_RefineLeaf extends MustRefineNode {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager
-			.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"mandatory"));
+			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+					"mandatory");
 	}
 
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
-
 
 	public void check(YangContext context, YANG_Leaf leaf)
 			throws YangParserException {

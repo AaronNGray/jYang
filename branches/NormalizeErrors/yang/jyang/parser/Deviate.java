@@ -26,10 +26,8 @@ public abstract class Deviate extends SimpleYangNode {
 			this.units = u;
 			b_units = true;
 		} else
-			YangErrorManager
-			.add(filename, u.getLine(), u.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"units"));
+			YangErrorManager.tadd(filename, u.getLine(), u.getCol(), "unex_kw",
+					"units");
 	}
 
 	public YANG_Default getDefault() {
@@ -41,16 +39,14 @@ public abstract class Deviate extends SimpleYangNode {
 			this.ydefault = d;
 			b_default = true;
 		} else
-			YangErrorManager
-			.add(filename, d.getLine(), d.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"default"));
+			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "unex_kw",
+					"default");
 	}
-	
+
 	public boolean isBracked() {
 		return b_units || b_default;
 	}
-	
+
 	public String toString() {
 		String result = "";
 		if (b_units)

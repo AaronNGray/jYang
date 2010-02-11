@@ -40,9 +40,8 @@ public class YANG_TypeDef extends StatuedBody {
 			b_type = true;
 			ytype = t;
 		} else
-			YangErrorManager.add(filename, t.getLine(), t.getCol(),
-					MessageFormat.format(YangErrorManager.messages
-							.getString("unex_kw"), "type"));
+			YangErrorManager.tadd(filename, t.getLine(), t.getCol(), "unex_kw",
+					"type");
 	}
 
 	public YANG_Type getType() {
@@ -54,8 +53,7 @@ public class YANG_TypeDef extends StatuedBody {
 			b_units = true;
 			units = u;
 		} else
-			YangErrorManager.add(filename, u.getLine(), u.getCol(),
-					YangErrorManager.messages.getString("units"));
+			YangErrorManager.tadd(filename, u.getLine(), u.getCol(), "units");
 	}
 
 	public YANG_Units getUnits() {
@@ -67,8 +65,7 @@ public class YANG_TypeDef extends StatuedBody {
 			b_default = true;
 			defaultstr = d;
 		} else
-			YangErrorManager.add(filename, d.getLine(), d.getCol(),
-					YangErrorManager.messages.getString("default"));
+			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "default");
 	}
 
 	public YANG_Default getDefault() {
@@ -81,9 +78,8 @@ public class YANG_TypeDef extends StatuedBody {
 			return;
 
 		if (!b_type) {
-			YangErrorManager
-					.add(context.getSpec().getName(), getLine(), getCol(),
-							YangErrorManager.messages.getString("type_expec"));
+			YangErrorManager.tadd(context.getSpec().getName(), getLine(),
+					getCol(), "type_expec");
 			return;
 		}
 
@@ -104,8 +100,8 @@ public class YANG_TypeDef extends StatuedBody {
 			while (defining != null) {
 				if (defining.getDefault() != null) {
 					try {
-						getType().checkDefaultValue(context,
-								this, defining.getDefault());
+						getType().checkDefaultValue(context, this,
+								defining.getDefault());
 						defining = context.getBaseTypeDef(defining);
 					} catch (YangParserException ye) {
 					}
@@ -124,9 +120,8 @@ public class YANG_TypeDef extends StatuedBody {
 			setCorrect(false);
 			for (YANG_TypeDef ytd : tds)
 				ytd.setCorrect(false);
-			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
-					.format(YangErrorManager.messages.getString("circ_dep"),
-							zis.getBody()));
+			YangErrorManager.tadd(filename, getLine(), getCol(), "circ_dep",
+					zis.getBody());
 			return;
 		}
 
@@ -134,7 +129,7 @@ public class YANG_TypeDef extends StatuedBody {
 				.getType())) == 0) {
 			YANG_Type ut = zis.getType();
 			if (ut.getUnionSpec() != null) {
-				for (YANG_Type utt : ut.getUnionSpec().getTypes()){
+				for (YANG_Type utt : ut.getUnionSpec().getTypes()) {
 					tds.add(zis);
 					chainUnions(context.getTypeDef(utt), tds, context);
 				}

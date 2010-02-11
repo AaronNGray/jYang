@@ -36,16 +36,13 @@ public class YANG_RefineContainer extends MustRefineNode {
 		super(p, id);
 	}
 
-
 	public void setPresence(YANG_Presence p) {
 		if (!b_presence) {
 			b_presence = true;
 			presence = p;
 		} else
-			YangErrorManager
-			.add(filename, p.getLine(), p.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"presence"));
+			YangErrorManager.tadd(filename, p.getLine(), p.getCol(), "unex_kw",
+					"presence");
 	}
 
 	public YANG_Presence getPresence() {
@@ -72,8 +69,7 @@ public class YANG_RefineContainer extends MustRefineNode {
 			YANG_DataDef ddef = edd.nextElement();
 			if (ddef instanceof YANG_Container) {
 				container = (YANG_Container) ddef;
-				found = container.getContainer()
-						.compareTo(getRefineNodeId()) == 0;
+				found = container.getContainer().compareTo(getRefineNodeId()) == 0;
 			}
 		}
 		if (!found)

@@ -29,9 +29,8 @@ public class YANG_Pattern extends ErrorTagedNode {
 					.removeQuotesAndTrim(pattern));
 		} catch (PatternSyntaxException pse) {
 
-			YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
-					.format(YangErrorManager.messages.getString("pattern_exp"),
-							pattern));
+			YangErrorManager.tadd(filename, getLine(), getCol(), "pattern_exp",
+					pattern);
 		}
 	}
 
@@ -45,7 +44,7 @@ public class YANG_Pattern extends ErrorTagedNode {
 			return false;
 		else
 			return true;
-		
+
 	}
 
 	public boolean isBracked() {

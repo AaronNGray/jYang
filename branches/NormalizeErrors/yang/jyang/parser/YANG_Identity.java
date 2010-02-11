@@ -4,13 +4,11 @@ package jyang.parser;
 
 import java.text.MessageFormat;
 
-
 public class YANG_Identity extends StatuedBody {
 
 	private String identity = null;
 
 	private YANG_Base base = null;
-
 
 	public String getIdentity() {
 		return identity;
@@ -34,18 +32,15 @@ public class YANG_Identity extends StatuedBody {
 		identity = i;
 	}
 
-	public void setBase(YANG_Base b)  {
+	public void setBase(YANG_Base b) {
 		if (!b_base) {
-		base = b;
-		b_base = true;
-		}
-		else
-			YangErrorManager
-			.add(filename, b.getLine(), b.getCol(), MessageFormat.format(
-					YangErrorManager.messages.getString("unex_kw"),
-					"base"));
+			base = b;
+			b_base = true;
+		} else
+			YangErrorManager.tadd(filename, b.getLine(), b.getCol(), "unex_kw",
+					"base");
 	}
-	
+
 	public boolean isBracked() {
 		return b_base || super.isBracked();
 	}
@@ -53,14 +48,14 @@ public class YANG_Identity extends StatuedBody {
 	@Override
 	public void check(YangContext context) throws YangParserException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public String getBody() {
 		return identity;
 	}
-	
+
 	public String toString() {
 		String result = "";
 		result += "identity " + identity;
@@ -68,8 +63,7 @@ public class YANG_Identity extends StatuedBody {
 			result += "\n{";
 			result += super.toString() + "\n";
 			result += "}";
-		}
-		else
+		} else
 			result += ";";
 		return result;
 	}

@@ -33,7 +33,6 @@ public class YANG_Module extends YANG_Specification {
 	private int nbheader = 0;
 	private boolean b_yangversion = false, b_namespace = false,
 			b_prefix = false;
-	
 
 	public YANG_Module(int id) {
 		super(id);
@@ -55,17 +54,15 @@ public class YANG_Module extends YANG_Specification {
 		return getModule();
 	}
 
-	public void addHeader(YANG_Header m)  {
+	public void addHeader(YANG_Header m) {
 
 		if (m instanceof YANG_YangVersion) {
 			if (!b_yangversion) {
 				b_yangversion = true;
 				yangversion = (YANG_YangVersion) m;
 			} else
-				YangErrorManager
-				.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-						YangErrorManager.messages.getString("unex_kw"),
-						"version"));
+				YangErrorManager.tadd(filename, m.getLine(), m.getCol(),
+						"unex_kw", "version");
 
 		}
 		if (m instanceof YANG_NameSpace) {
@@ -73,10 +70,8 @@ public class YANG_Module extends YANG_Specification {
 				b_namespace = true;
 				namespace = (YANG_NameSpace) m;
 			} else
-				YangErrorManager
-				.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-						YangErrorManager.messages.getString("unex_kw"),
-						"namespace"));
+				YangErrorManager.tadd(filename, m.getLine(), m.getCol(),
+						"unex_kw", "namespace");
 
 		}
 		if (m instanceof YANG_Prefix) {
@@ -84,17 +79,13 @@ public class YANG_Module extends YANG_Specification {
 				b_prefix = true;
 				prefix = (YANG_Prefix) m;
 			} else
-				YangErrorManager
-				.add(filename, m.getLine(), m.getCol(), MessageFormat.format(
-						YangErrorManager.messages.getString("unex_kw"),
-						"prefix"));
+				YangErrorManager.tadd(filename, m.getLine(), m.getCol(),
+						"unex_kw", "prefix");
 
 		}
 		nbheader++;
 		headers.add(m);
 	}
-
-	
 
 	/**
 	 * Check the presence of the namespace and the prefix statements

@@ -55,8 +55,7 @@ public class YANG_LeafList extends ListedDataDef {
 			b_type = true;
 			type = t;
 		} else
-			YangErrorManager.add(filename, t.getLine(), t.getCol(),
-					YangErrorManager.messages.getString("type"));
+			YangErrorManager.tadd(filename, t.getLine(), t.getCol(), "type");
 	}
 
 	public YANG_Type getType() {
@@ -68,8 +67,8 @@ public class YANG_LeafList extends ListedDataDef {
 			b_units = true;
 			units = u;
 		} else
-			YangErrorManager.add(filename, u.getLine(), u.getCol(),
-					MessageFormat.format(YangErrorManager.messages.getString("unex_kw"), "units"));
+			YangErrorManager.tadd(filename, u.getLine(), u.getCol(), "unex_kw",
+					"units");
 	}
 
 	public YANG_Units getUnits() {
@@ -85,7 +84,13 @@ public class YANG_LeafList extends ListedDataDef {
 			throw new YangParserException(
 					"Type statement not present in leaf-list " + leaflist,
 					getLine(), getCol());
-		getType().check(context);
+
+		if (!YangBuiltInTypes.isBuiltIn(getType().getType()))
+			if (!context.isTypeDefined(getType())) {
+				YangErrorManager.tadd(filename, getType().getLine(), getType()
+						.getCol(), "unknown_type", getType().getType());
+			} else
+				context.getTypeDef(getType()).check(context);
 
 		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();

@@ -34,7 +34,7 @@ public class YANG_Length extends ErrorTagedNode {
 		super(p, id);
 	}
 
-	public void setLength(String l)  {
+	public void setLength(String l) {
 		length = l;
 		setLengths();
 	}
@@ -43,7 +43,7 @@ public class YANG_Length extends ErrorTagedNode {
 		return length;
 	}
 
-	private void setLengths(){
+	private void setLengths() {
 
 		String length = YangBuiltInTypes.removeQuotes(getLength());
 		String[] test = null;
@@ -68,9 +68,8 @@ public class YANG_Length extends ErrorTagedNode {
 					lengths[j] = test[j].split("\\.\\.");
 					if (lengths[j].length != 2) {
 
-						YangErrorManager.add(filename, getLine(), getCol(),
-								YangErrorManager.messages
-										.getString("length_exp"));
+						YangErrorManager.tadd(filename, getLine(), getCol(),
+								"length_exp");
 					}
 				}
 			} catch (PatternSyntaxException pe) {
