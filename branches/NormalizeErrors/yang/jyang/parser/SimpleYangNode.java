@@ -26,6 +26,10 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 		unknowns.add(u);
 	}
 
+//	public void addUnknowns(Vector<YANG_Unknown> uns){
+//		unknowns.addAll(uns);
+//	}
+	
 	public Vector<YANG_Unknown> getUnknowns() {
 		return unknowns;
 	}

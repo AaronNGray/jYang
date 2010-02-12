@@ -241,9 +241,8 @@ public class YANG_Choice extends ConfigDataDef {
 				trackMandatory(scase);
 		}
 		if (!found)
-			throw new YangParserException("@" + ydefault.getLine() + "."
-					+ ydefault.getCol() + ":default case " + defval
-					+ " is not a case of choice " + getChoice());
+			YangErrorManager.tadd(filename, ydefault.getLine(), ydefault
+					.getCol(), "default_case_not_found", defval, getChoice());
 	}
 
 	public void check(YangContext context) throws YangParserException {
