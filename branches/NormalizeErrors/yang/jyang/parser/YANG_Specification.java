@@ -461,7 +461,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				try {
 					yang.setFileName(yangspecfilename);
 					externalspec = yang.Start();
-					externalspec.check();
+					//externalspec.check();
+					Vector<String> checkeds = new Vector<String>();
+					externalspec.check(paths, checkeds);
 				} catch (ParseException p) {
 					System.err.println(externalmodulename + ":"
 							+ p.getMessage());

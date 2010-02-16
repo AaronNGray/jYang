@@ -138,7 +138,6 @@ public class YANG_List extends ListedDataDef {
 								+ getCol() + ":dupplicate key leaf in list "
 								+ getList());
 				boolean found = false;
-				boolean wasfound = false;
 				String configlist = null;
 				if (!b_config) {
 					YANG_Config pconfig = getParentConfig();
@@ -148,55 +147,50 @@ public class YANG_List extends ListedDataDef {
 						configlist = null;
 				} else
 					configlist = getConfig().getConfigStr();
-				if (configlist != null)
-					for (Enumeration<YANG_DataDef> ed = getDataDefs()
-							.elements(); !found && ed.hasMoreElements();) {
-						YANG_DataDef dd = ed.nextElement();
-						found = findKey(context, kleafs[i], dd);
-						if (found) {
-							wasfound = true;
-							if (dd instanceof YANG_Leaf) {
-								YANG_Leaf leaf = (YANG_Leaf) dd;
-								if (context.getBuiltInType(leaf.getType()) != null) {
-									if (YangBuiltInTypes.empty
-											.compareTo(context
-													.getBuiltInType(leaf
-															.getType())) == 0)
-										throw new YangParserException(
-												"@"
-														+ getLine()
-														+ "."
-														+ getCol()
-														+ ":key leaf "
-														+ kleafs[i]
-														+ " can not be of the empty type in list "
-														+ getList());
-									String configkeyleaf = null;
-									if (leaf.getConfig() == null)
-										configkeyleaf = configlist;
-									else
-										configkeyleaf = YangBuiltInTypes
-												.removeQuotesAndTrim(leaf
-														.getConfig()
-														.getConfigStr());
+				for (Enumeration<YANG_DataDef> ed = getDataDefs().elements(); !found
+						&& ed.hasMoreElements();) {
+					YANG_DataDef dd = ed.nextElement();
+					found = findKey(context, kleafs[i], dd);
+					if (found) {
+						if (dd instanceof YANG_Leaf) {
+							YANG_Leaf leaf = (YANG_Leaf) dd;
+							if (context.getBuiltInType(leaf.getType()) != null) {
+								if (YangBuiltInTypes.empty.compareTo(context
+										.getBuiltInType(leaf.getType())) == 0)
+									throw new YangParserException(
+											"@"
+													+ getLine()
+													+ "."
+													+ getCol()
+													+ ":key leaf "
+													+ kleafs[i]
+													+ " can not be of the empty type in list "
+													+ getList());
+								String configkeyleaf = null;
+								if (leaf.getConfig() == null)
+									configkeyleaf = configlist;
+								else
+									configkeyleaf = YangBuiltInTypes
+											.removeQuotesAndTrim(leaf
+													.getConfig().getConfigStr());
+								if (configlist != null) {
 									if (configlist.compareTo(configkeyleaf) != 0)
-										throw new YangParserException(
-												"@"
-														+ getLine()
-														+ "."
-														+ getCol()
-														+ ":key leaf "
-														+ kleafs[i]
-														+ " has not the same config of the list "
-														+ getList());
-								}
+
+										YangErrorManager.tadd(filename,
+												getLine(), getCol(),
+												"key_config", kleafs[i],
+												getList());
+								} else if (configkeyleaf != null)
+									YangErrorManager.tadd(filename, getLine(),
+											getCol(), "key_config", kleafs[i],
+											getList());
 							}
 						}
 					}
-				if (!wasfound)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":key leaf " + kleafs[i]
-							+ " not found in list " + getList());
+				}
+				if (!found)
+					YangErrorManager.tadd(filename, getLine(), getCol(),
+							"key_not_found", kleafs[i], getList());
 			}
 		}
 		/*
