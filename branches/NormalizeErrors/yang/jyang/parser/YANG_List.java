@@ -138,9 +138,14 @@ public class YANG_List extends ListedDataDef {
 								+ getCol() + ":dupplicate key leaf in list "
 								+ getList());
 				boolean found = false;
+				boolean wasfound = false;
 				String configlist = null;
 				if (!b_config) {
-					configlist = getParentConfig().getConfigStr();
+					YANG_Config pconfig = getParentConfig();
+					if (pconfig != null)
+						configlist = getParentConfig().getConfigStr();
+					else
+						configlist = null;
 				} else
 					configlist = getConfig().getConfigStr();
 				if (configlist != null)
@@ -149,6 +154,7 @@ public class YANG_List extends ListedDataDef {
 						YANG_DataDef dd = ed.nextElement();
 						found = findKey(context, kleafs[i], dd);
 						if (found) {
+							wasfound = true;
 							if (dd instanceof YANG_Leaf) {
 								YANG_Leaf leaf = (YANG_Leaf) dd;
 								if (context.getBuiltInType(leaf.getType()) != null) {
@@ -187,7 +193,7 @@ public class YANG_List extends ListedDataDef {
 							}
 						}
 					}
-				if (!found)
+				if (!wasfound)
 					throw new YangParserException("@" + getLine() + "."
 							+ getCol() + ":key leaf " + kleafs[i]
 							+ " not found in list " + getList());
