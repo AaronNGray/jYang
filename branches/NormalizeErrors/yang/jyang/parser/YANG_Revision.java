@@ -1,9 +1,8 @@
 package jyang.parser;
 
-public class YANG_Revision extends SimpleYangNode {
+public class YANG_Revision extends DocumentedNode {
 
 	private String date = null;
-	private YANG_Description description = null;
 
 
 	public YANG_Revision(int id) {
@@ -22,21 +21,11 @@ public class YANG_Revision extends SimpleYangNode {
 		return date;
 	}
 
-	public void setDescription(YANG_Description d) {
-			description = d;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
 
 	public String toString() {
 		String result = new String();
 		result += "revision " + date;
-		if (description != null)
-			result += "{\n" + description.toString() + "\n}";
-		else
-			result += ";";
+		result += super.toString();
 		return result;
 	}
 
