@@ -3,6 +3,16 @@ package jyang.parser;
 public class YANG_Decimal64Spec extends SimpleYangNode {
 
 	private String fractionDigit = null;
+	
+	private YANG_Range range = null;
+
+	public YANG_Range getRange() {
+		return range;
+	}
+
+	public void setRange(YANG_Range range) {
+		this.range = range;
+	}
 
 	public YANG_Decimal64Spec(int id) {
 		super(id);
