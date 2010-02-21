@@ -105,6 +105,10 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 			s = s.substring(1);
 		if (s.charAt(s.length() - 1) == '"')
 			s = s.substring(0, s.length() - 1);
+		if (s.charAt(0) == '\'')
+			s = s.substring(1);
+		if (s.charAt(s.length() - 1) == '\'')
+			s = s.substring(0, s.length() - 1);
 		return s;
 	}
 

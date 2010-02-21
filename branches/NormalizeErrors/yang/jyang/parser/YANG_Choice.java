@@ -41,7 +41,7 @@ public class YANG_Choice extends ConfigDataDef {
 	}
 
 	public void setChoice(String c) {
-		choice = c;
+		choice = unquote(c);
 	}
 
 	public String getBody() {

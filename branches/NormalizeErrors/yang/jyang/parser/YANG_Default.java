@@ -15,7 +15,7 @@ public class YANG_Default extends SimpleYangNode {
 	}
 
 	public void setDefault(String d) {
-		defaultstr = d;
+		defaultstr = unquote(d);
 	}
 
 	public String getDefault() {

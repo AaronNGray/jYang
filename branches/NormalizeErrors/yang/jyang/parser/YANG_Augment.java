@@ -49,7 +49,7 @@ public class YANG_Augment extends DataDefBody {
 	}
 
 	public void setAugment(String a) throws YangParserException {
-		String aa = YangBuiltInTypes.removeQuotesAndTrim(a);
+		String aa = unquote(a);
 		Matcher m = nid.matcher(aa);
 		if (m.matches())
 			augment = aa;

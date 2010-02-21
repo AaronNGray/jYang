@@ -14,7 +14,7 @@ public class YANG_Belong extends SimpleYangNode implements YANG_Header {
 	}
 
 	public void setBelong(String b) {
-		belong = b;
+		belong = unquote(b);
 	}
 
 	public void setPrefix(YANG_Prefix p) {

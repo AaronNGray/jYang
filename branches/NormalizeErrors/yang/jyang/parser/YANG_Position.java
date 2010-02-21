@@ -13,7 +13,7 @@ public class YANG_Position extends SimpleYangNode {
 	}
 
 	public void setPosition(String p) {
-		position = p;
+		position = unquote(p);
 	}
 
 	public String getPosition() {

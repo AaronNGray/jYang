@@ -50,7 +50,7 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
 	}
 
 	public void setUses(String u) {
-		uses = u;
+		uses = unquote(u);
 	}
 
 	public String getBody() {

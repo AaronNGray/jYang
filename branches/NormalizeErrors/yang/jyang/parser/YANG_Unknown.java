@@ -38,6 +38,7 @@ public class YANG_Unknown extends YANG_Body {
 	}
 
 	public void setExtension(String p) throws YangParserException {
+		extension = unquote(p);
 		/*
 		String[]  splitted =  p.split(":");
 		if (splitted != null){

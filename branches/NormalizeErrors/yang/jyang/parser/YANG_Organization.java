@@ -14,7 +14,7 @@ public class YANG_Organization extends SimpleYangNode implements YANG_Meta{
   }
 
     public void setOrganization(String o){
-	organization = o;
+	organization = unquote(o);
     }
 
     public String getOrganization(){

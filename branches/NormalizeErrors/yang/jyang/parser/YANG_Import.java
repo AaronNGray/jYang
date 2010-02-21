@@ -18,7 +18,7 @@ public class YANG_Import extends ImportIncludeNode implements YANG_Linkage {
 	}
 
 	public void setIdentifier(String s) {
-		importstr = s;
+		importstr = unquote(s);
 	}
 
 	public String getImportedModule() {

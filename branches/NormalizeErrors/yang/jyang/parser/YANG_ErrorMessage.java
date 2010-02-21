@@ -14,7 +14,7 @@ public class YANG_ErrorMessage extends SimpleYangNode {
   }
   
   public void setErrorMessage(String e){
-	  errormessage = e;
+	  errormessage = unquote(e);
   }
   
   public String getErrorMessage() {

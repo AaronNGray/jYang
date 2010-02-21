@@ -35,7 +35,7 @@ public class YANG_Length extends ErrorTagedNode {
 	}
 
 	public void setLength(String l) {
-		length = l;
+		length = unquote(l);
 		setLengths();
 	}
 
@@ -45,7 +45,6 @@ public class YANG_Length extends ErrorTagedNode {
 
 	private void setLengths() {
 
-		String length = YangBuiltInTypes.removeQuotes(getLength());
 		String[] test = null;
 
 		if (length.indexOf('|') == -1) {

@@ -38,7 +38,7 @@ public class YANG_Case extends FeaturedNode {
 	}
 
 	public void setCase(String c) {
-		ycase = c;
+		ycase = unquote(c);
 	}
 
 	public String getCase() {

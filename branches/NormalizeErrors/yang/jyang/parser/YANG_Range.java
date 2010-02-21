@@ -38,7 +38,7 @@ public class YANG_Range extends ErrorTagedNode implements
 	}
 
 	public void setRange(String r) {
-		range = r;
+		range = unquote(r);
 		setRanges();
 	}
 
@@ -64,7 +64,6 @@ public class YANG_Range extends ErrorTagedNode implements
 
 	private void setRanges() {
 
-		String range = YangBuiltInTypes.removeQuotes(getRange());
 		String[] test = null;
 		try {
 			test = range.split("\\|");

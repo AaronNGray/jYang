@@ -18,7 +18,7 @@ public class YANG_Base extends SimpleYangNode {
 	}
 
 	public void setBase(String base) {
-		this.base = base;
+		this.base = unquote(base);
 	}
 	
 	public String toString() {

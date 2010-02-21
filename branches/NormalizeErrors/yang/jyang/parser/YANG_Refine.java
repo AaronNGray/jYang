@@ -42,7 +42,7 @@ public  abstract class YANG_Refine extends DocumentedNode {
 			throws YangParserException;
 
 	public void setUsedGrouping(String g){
-		usedgrouping = g;
+		usedgrouping = unquote(g);
 	}
 	
 	public String getRefineNodeId() {

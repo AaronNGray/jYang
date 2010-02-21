@@ -13,7 +13,7 @@ public class YANG_Value extends SimpleYangNode {
 	}
 
 	public void setValue(String v) {
-		value = v;
+		value = unquote(v);
 	}
 
 	public String getValue() {

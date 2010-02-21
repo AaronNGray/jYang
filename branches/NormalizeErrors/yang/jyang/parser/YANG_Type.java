@@ -84,11 +84,11 @@ public class YANG_Type extends SimpleYangNode {
 	}
 
 	public void setType(String t) {
-		type = t;
+		type = unquote(t);
 	}
 
 	public String getType() {
-		return unquote(type);
+		return type;
 	}
 
 	public void addEnum(YANG_Enum e) {

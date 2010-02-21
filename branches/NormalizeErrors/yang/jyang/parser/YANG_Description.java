@@ -14,7 +14,7 @@ public class YANG_Description extends SimpleYangNode implements YANG_Meta{
   }
 
     public void setDescription(String d){
-	description = d;
+	description = unquote(d);
     }
 
     public String getDescription(){

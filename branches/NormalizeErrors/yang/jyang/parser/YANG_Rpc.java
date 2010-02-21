@@ -39,7 +39,7 @@ public class YANG_Rpc extends TypedefGroupingBody {
 	}
 
 	public void setRpc(String r) {
-		rpc = r;
+		rpc = unquote(r);
 	}
 
 	public String getBody() {

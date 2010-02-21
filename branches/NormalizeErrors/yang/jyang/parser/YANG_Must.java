@@ -13,7 +13,7 @@ public class YANG_Must extends ErrorTagedNode {
 	}
 
 	public void setMust(String m) {
-		must = m;
+		must = unquote(m);
 	}
 
 	public String getMust() {

@@ -43,7 +43,7 @@ public class YANG_Container extends MustDataDef implements YANG_CaseDataDef,
 	}
 
 	public void setContainer(String c) {
-		container = c;
+		container = unquote(c);
 	}
 
 	public String getBody() {

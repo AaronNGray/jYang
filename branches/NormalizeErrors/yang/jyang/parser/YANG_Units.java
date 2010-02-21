@@ -13,7 +13,7 @@ public class YANG_Units extends SimpleYangNode {
 	}
 
 	public void setUnits(String u) {
-		units = u;
+		units = unquote(u);
 	}
 
 	public String getUnits() {

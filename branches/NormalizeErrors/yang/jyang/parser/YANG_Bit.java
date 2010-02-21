@@ -18,7 +18,7 @@ public class YANG_Bit extends StatuedNode {
 	}
 
 	public void setBit(String b) {
-		bit = b;
+		bit = unquote(b);
 	}
 
 	public String getBit() {

@@ -14,7 +14,7 @@ public class YANG_OrderedBy extends SimpleYangNode {
 
 	public void setOrderedBy(String o) {
 
-		String ot = YangBuiltInTypes.removeQuotesAndTrim(o);
+		String ot = unquote(o);
 		if (ot.compareTo("system") != 0 && ot.compareTo("user") != 0)
 			YangErrorManager.tadd(filename, getLine(), getCol(), "ordered_exp");
 		orderedby = ot;

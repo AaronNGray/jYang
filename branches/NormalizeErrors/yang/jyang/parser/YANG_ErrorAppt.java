@@ -14,7 +14,7 @@ public class YANG_ErrorAppt extends SimpleYangNode {
 	}
 
 	public void setErrorAppt(String e) {
-		errorappt = e;
+		errorappt = unquote(e);
 	}
 
 	public String getErrorAppt() {

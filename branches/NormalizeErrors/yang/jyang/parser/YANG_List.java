@@ -42,7 +42,7 @@ public class YANG_List extends ListedDataDef {
 	}
 
 	public void setList(String l) {
-		list = l;
+		list = unquote(l);
 	}
 
 	public String getBody() {

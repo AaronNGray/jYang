@@ -38,7 +38,7 @@ public class YANG_Notification extends TypedefGroupingBody {
 	}
 
 	public void setNotification(String n) {
-		notification = n;
+		notification = unquote(n);
 	}
 
 	public String getBody() {

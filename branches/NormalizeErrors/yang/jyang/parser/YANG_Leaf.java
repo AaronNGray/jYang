@@ -43,7 +43,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 	}
 
 	public void setLeaf(String l) {
-		leaf = l;
+		leaf = unquote(l);
 	}
 
 	public String getBody() {

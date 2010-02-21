@@ -29,7 +29,7 @@ public class YANG_Identity extends StatuedBody {
 	}
 
 	public void setIdentity(String i) {
-		identity = i;
+		identity = unquote(i);
 	}
 
 	public void setBase(YANG_Base b) {

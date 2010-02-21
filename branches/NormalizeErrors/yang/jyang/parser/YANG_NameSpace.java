@@ -13,7 +13,7 @@ public class YANG_NameSpace extends SimpleYangNode implements YANG_Header {
 	}
 
 	public void setNameSpace(String n) {
-		namespace = n;
+		namespace = unquote(n);
 	}
 
 	public String getNameSpace() {

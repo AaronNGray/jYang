@@ -18,7 +18,7 @@ public class YANG_Extension extends StatuedBody {
 	}
 
 	public void setExtension(String e) {
-		extension = e;
+		extension = unquote(e);
 	}
 
 	public String getBody() {

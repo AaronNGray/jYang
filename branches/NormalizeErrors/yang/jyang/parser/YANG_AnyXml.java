@@ -18,7 +18,7 @@ public class YANG_AnyXml extends MustDataDef implements YANG_CaseDataDef,
 	}
 
 	public void setAnyXml(String a) {
-		anyxml = a;
+		anyxml = unquote(a);
 	}
 
 	public String getBody() {

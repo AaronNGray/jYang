@@ -23,7 +23,7 @@ public class YANG_Feature extends FeaturedBody {
 	}
 
 	public void setFeature(String feature) {
-		this.feature = feature;
+		this.feature = unquote(feature);
 	}
 
 	@Override

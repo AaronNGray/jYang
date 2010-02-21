@@ -13,7 +13,7 @@ public class YANG_When extends DocumentedNode {
 	}
 
 	public void setWhen(String w) {
-		when = w;
+		when = unquote(w);
 	}
 
 	public String getWhen() {

@@ -17,8 +17,8 @@ public class YANG_Yin extends SimpleYangNode {
 	}
 
 	public void setYin(String y) {
-		if (!(y.compareTo("true") == 0 || y.compareTo("false") == 0
-				|| y.compareTo("\"true\"") == 0 || y.compareTo("\"false\"") == 0))
+		yin = unquote(y);
+		if (!(yin.compareTo("true") == 0 || yin.compareTo("false") == 0))
 
 			YangErrorManager.tadd(filename, getLine(), getCol(), "yin_exp");
 		yin = y;

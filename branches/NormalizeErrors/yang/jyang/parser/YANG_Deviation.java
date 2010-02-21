@@ -20,7 +20,7 @@ public class YANG_Deviation extends YANG_Body {
 	}
 
 	public void setDeviation(String deviation) {
-		this.deviation = deviation;
+		this.deviation = unquote(deviation);
 	}
 
 	public YANG_Deviation(int id) {

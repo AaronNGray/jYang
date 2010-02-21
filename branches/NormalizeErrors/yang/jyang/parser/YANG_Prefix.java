@@ -47,7 +47,7 @@ public class YANG_Prefix extends SimpleYangNode implements YANG_Header {
 	}
 
 	private void checkPrefix(String p) throws YangParserException {
-		String lp = YangBuiltInTypes.removeQuotes(p);
+		String lp = unquote(p);
 		lp = lp.trim();
 		if (lp.length() > YangBuiltInTypes.idlength)
 			throw new YangParserException("@" + getLine() + ":" + getCol()

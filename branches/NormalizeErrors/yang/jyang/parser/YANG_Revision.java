@@ -14,7 +14,7 @@ public class YANG_Revision extends DocumentedNode {
 	}
 
 	public void setDate(String d) {
-		date = d;
+		date = unquote(d);
 	}
 
 	public String getDate() {

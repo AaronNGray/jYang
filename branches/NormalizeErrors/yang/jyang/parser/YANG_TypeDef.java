@@ -24,7 +24,7 @@ public class YANG_TypeDef extends StatuedBody {
 	}
 
 	public void setTypedef(String t) {
-		typedef = t;
+		typedef = unquote(t);
 	}
 
 	public String getBody() {
@@ -155,6 +155,7 @@ public class YANG_TypeDef extends StatuedBody {
 		YANG_TypeDef ctd = new YANG_TypeDef(parser, id);
 		try {
 			ctd.setType(getType());
+			ctd.setFileName(filename);
 		} catch (YangParserException e) {
 			e.printStackTrace();
 		}

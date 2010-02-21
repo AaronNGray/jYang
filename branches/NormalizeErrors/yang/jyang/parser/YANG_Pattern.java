@@ -21,7 +21,7 @@ public class YANG_Pattern extends ErrorTagedNode {
 
 	public void setPattern(String p) {
 
-		pattern = p;
+		pattern = unquote(p);
 		String canopattern = pattern.replaceAll("IsBasicLatin", "InBasicLatin");
 		pattern = canopattern;
 		try {

@@ -44,7 +44,7 @@ public class YANG_Path extends SimpleYangNode {
 	}
 
 	public void setPath(String p) {
-		String pa = YangBuiltInTypes.removeQuotesAndTrim(p);
+		String pa = unquote(p);
 		Matcher m = path_arg.matcher(pa);
 		path = pa;
 	}

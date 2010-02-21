@@ -43,7 +43,7 @@ public class YANG_Module extends YANG_Specification {
 	}
 
 	public void setName(String n) {
-		name = n;
+		name = unquote(n);
 	}
 
 	public String getModule() {

@@ -39,7 +39,7 @@ public class YANG_LeafList extends ListedDataDef {
 	}
 
 	public void setLeafList(String l) {
-		leaflist = l;
+		leaflist = unquote(l);
 	}
 
 	public String getBody() {

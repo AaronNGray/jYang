@@ -13,7 +13,7 @@ public class YANG_Status extends SimpleYangNode {
 	}
 
 	public void setStatus(String s) throws YangParserException {
-		String st = YangBuiltInTypes.removeQuotesAndTrim(s);
+		String st = unquote(s);
 		if (st.compareTo("current") != 0 && st.compareTo("obsolete") != 0
 				&& st.compareTo("deprecated") != 0)
 			YangErrorManager.tadd(filename, getLine(), getCol(), "status_exp");

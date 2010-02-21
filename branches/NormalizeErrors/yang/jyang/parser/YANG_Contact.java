@@ -14,7 +14,7 @@ public class YANG_Contact extends SimpleYangNode implements YANG_Meta{
   }
 
     public void setContact(String c){
-	contact = c;
+	contact = unquote(c);
     }
 
     public String getContact(){

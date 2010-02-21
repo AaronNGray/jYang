@@ -29,7 +29,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 	}
 
 	public void setUsesAugment(String ua) {
-		String aa = YangBuiltInTypes.removeQuotesAndTrim(ua);
+		String aa = unquote(ua);
 		Matcher m = dsni.matcher(aa);
 		if (m.matches())
 			usesaugment = aa;

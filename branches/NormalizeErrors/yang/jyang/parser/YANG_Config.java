@@ -15,7 +15,7 @@ public class YANG_Config extends SimpleYangNode {
 	}
 
 	public void setConfig(String c) {
-		String ct = YangBuiltInTypes.removeQuotesAndTrim(c);
+		String ct = unquote(c);
 		if (ct.compareTo("true") != 0 && ct.compareTo("false") != 0)
 			YangErrorManager.tadd(filename, getLine(), getCol(), "config_expr");
 		config = c;

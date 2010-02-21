@@ -13,7 +13,7 @@ public class YANG_YangVersion extends SimpleYangNode implements YANG_Header {
 	}
 
 	public void setVersion(String v) {
-		version = v;
+		version = unquote(v);
 	}
 
 	public String getYangVersion() {

@@ -23,7 +23,7 @@ public class YANG_Argument extends SimpleYangNode {
   }
 
     public void setArgument(String a){
-	argument = a;
+	argument = unquote(a);
     }
 
     public String getArgument(){

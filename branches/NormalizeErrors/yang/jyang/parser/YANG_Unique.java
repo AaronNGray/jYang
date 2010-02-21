@@ -43,7 +43,7 @@ public class YANG_Unique extends SimpleYangNode {
 	}
 
 	public void setUnique(String u) throws YangParserException {
-		String un = YangBuiltInTypes.removeQuotesAndTrim(u);
+		String un = unquote(u);
 		Matcher m = desc_sch_nid.matcher(un);
 		if (m.matches())
 			unique = un;

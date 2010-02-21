@@ -41,7 +41,7 @@ public class YANG_Grouping extends StatuedBody {
 	}
 
 	public void setGrouping(String g) {
-		grouping = g;
+		grouping = unquote(g);
 	}
 
 	public String getBody() {
@@ -123,6 +123,7 @@ public class YANG_Grouping extends StatuedBody {
 		cg.setTypeDefs(getTypeDefs());
 		cg.setGroupings(getGroupings());
 		cg.setDataDefs(getDataDefs());
+		cg.setFileName(filename);
 		return cg;
 	}
 

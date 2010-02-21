@@ -17,7 +17,7 @@ public class YANG_IfFeature extends SimpleYangNode {
 	}
 
 	public void setIfFeature(String iffeature) {
-		this.iffeature = iffeature;
+		this.iffeature = unquote(iffeature);
 	}
 	
 	public String toString() {
