@@ -49,7 +49,7 @@ public class YANG_TypeDef extends StatuedBody {
 	}
 
 	public void setUnits(YANG_Units u) {
-		if (b_units) {
+		if (!b_units) {
 			b_units = true;
 			units = u;
 		} else
