@@ -160,11 +160,11 @@ public class YangTreeNode implements java.io.Serializable {
 				YANG_Unique unique = eu.nextElement();
 				String[] uniques = unique.getUnique().split("\\s");
 				for (int i = 0; i < uniques.length; i++)
-					if (isInTree(module, root, importeds, uniques[i].trim()) == null)
-						System.err.println(module.getName() + "@"
-								+ unique.getLine() + "." + unique.getCol()
-								+ ":unique reference not found " + uniques[i]
-								+ " in list " + node.getBody());
+					if (isInTree(module, root, importeds, uniques[i].trim()) == null){
+						YangErrorManager.tadd(node.getFileName(), unique
+								.getLine(), unique.getCol(), "unique_not_found",
+								uniques[i], node.getBody());
+					}
 			}
 		}
 		for (Enumeration<YangTreeNode> ey = childs.elements(); ey

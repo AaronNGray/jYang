@@ -260,17 +260,19 @@ public class YANG_Choice extends ConfigDataDef {
 		if (b_default)
 			checkDefault(context, getDefault());
 
-		Vector<String> caseids = new Vector<String>();
+		Hashtable<String, YANG_Case> caseids = new Hashtable<String, YANG_Case>();
 
 		for (Enumeration<YANG_Case> ec = cases.elements(); ec.hasMoreElements();) {
 			YANG_Case ycase = ec.nextElement();
 
-			if (caseids.contains(ycase.getCase()))
-				throw new YangParserException("@" + ycase.getLine() + "."
-						+ ycase.getCol() + ":case " + ycase.getCase()
-						+ " already defined");
-			else
-				caseids.add(ycase.getCase());
+			if (caseids.containsKey(ycase.getCase())) {
+				YANG_Case c = caseids.get(ycase.getCase());
+				YangErrorManager.tadd(filename, ycase.getLine(),
+						ycase.getCol(), "dup_child", "case " + c.getCase(), c
+								.getFileName(), c.getLine());
+
+			} else
+				caseids.put(ycase.getCase(), ycase);
 		}
 
 	}

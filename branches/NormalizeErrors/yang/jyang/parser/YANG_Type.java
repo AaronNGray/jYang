@@ -80,7 +80,6 @@ public class YANG_Type extends SimpleYangNode {
 		return checked;
 	}
 
-
 	public YANG_Type(int id) {
 		super(id);
 	}
@@ -667,8 +666,9 @@ public class YANG_Type extends SimpleYangNode {
 				try {
 					integer = Integer.parseInt(strenum);
 				} catch (NumberFormatException n) {
-					throw new YangParserException("@" + yenum.getLine() + "."
-							+ yenum.getCol() + ":enum value is not an integer");
+					YangErrorManager.tadd(filename, yenum.getLine(), yenum
+							.getCol(), "enum_expr", strenum);
+					return;
 				}
 				if (integer.compareTo(new Integer(highest)) >= 0) {
 					highest = integer.intValue();
@@ -1289,7 +1289,7 @@ public class YANG_Type extends SimpleYangNode {
 			YANG_Default ydefault) throws YangParserException {
 		String value = YangBuiltInTypes.removeQuotesAndTrim(ydefault
 				.getDefault());
-		
+
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			String[][] ranges = null;
 
@@ -1476,8 +1476,11 @@ public class YANG_Type extends SimpleYangNode {
 								YangErrorManager.tadd(filename, getLine(),
 										getCol(), message, YangBuiltInTypes
 												.removeQuotes(value),
-										"range error", "range", context.getTypeDef(this).getFileName()
-												+ ":" + context.getTypeDef(this).getLine());
+										"range error", "range", context
+												.getTypeDef(this).getFileName()
+												+ ":"
+												+ context.getTypeDef(this)
+														.getLine());
 							} else {
 								message = "default_match_fail";
 								YANG_TypeDef td = this.getTypedef();
@@ -1487,13 +1490,17 @@ public class YANG_Type extends SimpleYangNode {
 												.getFileName()
 												+ ":" + td.getLine(),
 										"range error", "range", getFileName()
-												+ ":" + context.getTypeDef(this).getLine());
+												+ ":"
+												+ context.getTypeDef(this)
+														.getLine());
 							}
 
 						}
 
-					} catch (NumberFormatException ne) {//ne.printStackTrace();
-						//throw new YangParserException(" illegal integer value : " + this);
+					} catch (NumberFormatException ne) {// ne.printStackTrace();
+						// throw new
+						// YangParserException(" illegal integer value : " +
+						// this);
 					}
 				}
 			} else if (YangBuiltInTypes.isFloat(context.getBuiltInType(this))) {

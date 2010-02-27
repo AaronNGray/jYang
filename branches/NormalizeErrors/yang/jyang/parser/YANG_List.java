@@ -114,9 +114,8 @@ public class YANG_List extends ListedDataDef {
 				YANG_Config parentConfig = getParentConfig();
 				if (parentConfig != null)
 					if (parentConfig.getConfigStr().compareTo("true") == 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":key not present in list "
-								+ getList() + " with parent config true");
+						YangErrorManager.tadd(filename, getLine(), getCol(),
+								"key_exp", getList());
 			}
 		} else {
 
@@ -157,15 +156,10 @@ public class YANG_List extends ListedDataDef {
 							if (context.getBuiltInType(leaf.getType()) != null) {
 								if (YangBuiltInTypes.empty.compareTo(context
 										.getBuiltInType(leaf.getType())) == 0)
-									throw new YangParserException(
-											"@"
-													+ getLine()
-													+ "."
-													+ getCol()
-													+ ":key leaf "
-													+ kleafs[i]
-													+ " can not be of the empty type in list "
-													+ getList());
+									YangErrorManager.tadd(filename, getLine(),
+											getCol(), "key_empty", kleafs[i],
+											getList());
+
 								String configkeyleaf = null;
 								if (leaf.getConfig() == null)
 									configkeyleaf = configlist;

@@ -36,7 +36,7 @@ public class YangErrorManager {
 
 	static private class ErrorsComparator implements Comparator {
 
-		//@Override
+		// @Override
 		public int compare(Object o0, Object o1) {
 			Error e0 = (Error) o0, e1 = (Error) o1;
 			if (e0.module.compareTo(e1.module) != 0)
@@ -88,11 +88,12 @@ public class YangErrorManager {
 		module = m;
 	}
 
-	static public void tadd(String module,int line, int col, String mess,Object... parameters ) {
-		_add(module, line, col,MessageFormat.format(YangErrorManager.messages
-				.getString(mess),parameters));
-		
+	static public void tadd(String module, int line, int col, String mess,
+			Object... parameters) {
+		_add(module, line, col, MessageFormat.format(YangErrorManager.messages
+				.getString(mess), parameters));
 	}
+
 	static private void _add(String module, int line, int col, String mess) {
 		Error error = new Error(module, line, col, mess);
 		errors.add(error);

@@ -130,9 +130,9 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 			if (parentConfig != null) {
 				if (parentConfig.getConfigStr().compareTo("false") == 0
 						&& getConfig().getConfigStr().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol()
-							+ ":config to true and parent config to false");
+					YangErrorManager.tadd(filename, getLine(), getCol(),
+							"config_parent", "leaf", getBody());
+
 			}
 		}
 
