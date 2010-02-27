@@ -176,7 +176,7 @@ public abstract class YANG_Body extends DocumentedNode {
 		for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
 				.hasMoreElements();) {
 			YANG_Body body = (YANG_Body) ed.nextElement();
-
+/*
 			if (body instanceof YANG_Uses) {
 				YangContext lusedcontext = new YangContext(context.getImports(), context
 						.getSpec());
@@ -221,7 +221,9 @@ public abstract class YANG_Body extends DocumentedNode {
 
 				context.addSubContext(lusedcontext);
 
-			} else {
+			} else {*/
+			
+			//if (!(body instanceof YANG_Uses)){
 				body.setParent(this);
 				YangContext clcts = context.clone();
 				try {
@@ -230,7 +232,8 @@ public abstract class YANG_Body extends DocumentedNode {
 					System.err.println(context.getSpec().getName()
 							+ e.getMessage());
 				}
-			}
+			//}
+			//}
 		}
 
 		for (Enumeration<YANG_Unknown> eu = getUnknowns().elements(); eu

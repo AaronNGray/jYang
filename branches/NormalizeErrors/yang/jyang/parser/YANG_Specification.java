@@ -394,6 +394,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			if (linkage instanceof YANG_Include) {
 				YANG_Include included = (YANG_Include) linkage;
 				String includedspecname = included.getIncludedModule();
+				YANG_Revision revision = included.getRevision();
+				if (revision != null)
+					includedspecname += "." + revision.getDate();
 				YANG_Specification includedspec = getExternal(paths,
 						includedspecname);
 				is.add(includedspec);
@@ -429,6 +432,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			if (link instanceof YANG_Import) {
 				YANG_Import imported = (YANG_Import) link;
 				String importedspecname = imported.getImportedModule();
+				YANG_Revision revision = imported.getRevision();
+				if (revision != null)
+					importedspecname += "." + revision.getDate();
 				YANG_Specification importedspec = getExternal(paths,
 						importedspecname);
 				if (!(importedspec instanceof YANG_Module))

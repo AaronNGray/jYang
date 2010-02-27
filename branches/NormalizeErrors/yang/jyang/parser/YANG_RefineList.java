@@ -55,22 +55,27 @@ public class YANG_RefineList extends ListedRefineNode {
 					+ " is not in the used grouping " + grouping.getGrouping());
 
 		YANG_Config parentConfig = getParentConfig();
-		if (b_config) {
-			if (parentConfig.getConfigStr().compareTo("false") == 0
-					&& config.getConfigStr().compareTo("true") == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":config to true and parent config to false");
-		} else {
-			if (list.getConfig() != null) {
-				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& list.getConfig().getConfigStr().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":config to true in the grouping "
-							+ grouping.getBody() + " at line "
-							+ grouping.getLine() + "but parent config to false");
 
+		if (parentConfig != null)
+			if (b_config) {
+				if (parentConfig.getConfigStr().compareTo("false") == 0
+						&& config.getConfigStr().compareTo("true") == 0)
+					throw new YangParserException("@" + getLine() + "."
+							+ getCol()
+							+ ":config to true and parent config to false");
+			} else {
+				if (list.getConfig() != null) {
+					if (parentConfig.getConfigStr().compareTo("false") == 0
+							&& list.getConfig().getConfigStr()
+									.compareTo("true") == 0)
+						throw new YangParserException("@" + getLine() + "."
+								+ getCol() + ":config to true in the grouping "
+								+ grouping.getBody() + " at line "
+								+ grouping.getLine()
+								+ "but parent config to false");
+
+				}
 			}
-		}
 
 	}
 

@@ -120,12 +120,14 @@ public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
 			if (!context.isTypeDefined(getType())) {
 				YangErrorManager.tadd(filename, getType().getLine(), getType()
 						.getCol(), "unknown_type", getType().getType());
-			} else
-				context.getTypeDef(getType()).check(context);
+			} else {
+				if (!context.getTypeDef(getType()).isChecked())
+					context.getTypeDef(getType()).check(context);
+			}
 
 		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig != null){
+			if (parentConfig != null) {
 				if (parentConfig.getConfigStr().compareTo("false") == 0
 						&& getConfig().getConfigStr().compareTo("true") == 0)
 					throw new YangParserException("@" + getLine() + "."

@@ -50,7 +50,7 @@ public abstract class DocumentedNode extends SimpleYangNode {
 	public String toString() {
 		String result = "";
 		if (b_description)
-			result += getDescription() + "\n";
+			result +=  getDescription() + "\n";
 		if (b_reference)
 			result += getReference() + "\n";
 		return result;

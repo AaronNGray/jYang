@@ -46,12 +46,14 @@ public class YANG_AnyXml extends MustDataDef implements YANG_CaseDataDef,
 		return super.isBracked() || b_mandatory;
 	}
 
-	public void check(YangContext context)  {
+	public void check(YangContext context) {
 		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig.getConfigStr().compareTo("false") == 0
-					&& getConfig().getConfigStr().compareTo("true") == 0)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "config_parent", "anyxml", anyxml);
+			if (parentConfig != null)
+				if (parentConfig.getConfigStr().compareTo("false") == 0
+						&& getConfig().getConfigStr().compareTo("true") == 0)
+					YangErrorManager.tadd(filename, getLine(), getCol(),
+							"config_parent", "anyxml", anyxml);
 		}
 
 	}

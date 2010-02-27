@@ -103,7 +103,7 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
 						+ ":a built-in type cannot be used : " + uses);
 				return;
 			}
-
+/*
 			if (!grouping.isChecked()) {
 
 				Vector<YANG_TypeDef> typedefs = grouping.getTypeDefs();
@@ -176,7 +176,7 @@ public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
 					grouping.setChecked(true);
 				}
 			}
-
+*/
 			for (Enumeration<YANG_Refine> er = refinements.elements(); er
 					.hasMoreElements();) {
 				YANG_Refine ref = er.nextElement();

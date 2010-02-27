@@ -35,7 +35,8 @@ public abstract class StatuedBody extends YANG_Body {
 
 	public String toString() {
 		String result = "";
-		result += "status " + status + ";";
+		if (status != null)
+			result += "status " + status + ";";
 		return result;
 	}
 

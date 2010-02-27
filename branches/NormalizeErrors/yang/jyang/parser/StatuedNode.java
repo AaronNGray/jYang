@@ -17,7 +17,7 @@ public abstract class StatuedNode extends DocumentedNode {
 	}
 
 	public void setStatus(YANG_Status s) {
-		if (b_status) {
+		if (!b_status) {
 			b_status = true;
 			status = s;
 		} else

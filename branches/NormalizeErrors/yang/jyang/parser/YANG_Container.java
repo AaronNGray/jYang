@@ -100,10 +100,11 @@ public class YANG_Container extends MustDataDef implements YANG_CaseDataDef,
 	public void check(YangContext context) {
 		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig.getConfigStr().compareTo("false") == 0
-					&& getConfig().getConfigStr().compareTo("true") == 0)
-				YangErrorManager.tadd(context.getSpec().getName(), getLine(),
-						getCol(), "ctf");
+			if (parentConfig != null)
+				if (parentConfig.getConfigStr().compareTo("false") == 0
+						&& getConfig().getConfigStr().compareTo("true") == 0)
+					YangErrorManager.tadd(context.getSpec().getName(),
+							getLine(), getCol(), "ctf");
 		}
 
 	}

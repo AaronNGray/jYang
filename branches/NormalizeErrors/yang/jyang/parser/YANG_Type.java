@@ -74,6 +74,12 @@ public class YANG_Type extends SimpleYangNode {
 	}
 
 	private boolean bracked = false;
+	private boolean checked;
+
+	public boolean isChecked() {
+		return checked;
+	}
+
 
 	public YANG_Type(int id) {
 		super(id);
@@ -553,6 +559,7 @@ public class YANG_Type extends SimpleYangNode {
 								+ getCol()
 								+ ":instance-identifier type can not have key reference specification");
 		}
+		checked = true;
 	}
 
 	private void checkBits() throws YangParserException {
@@ -1282,6 +1289,7 @@ public class YANG_Type extends SimpleYangNode {
 			YANG_Default ydefault) throws YangParserException {
 		String value = YangBuiltInTypes.removeQuotesAndTrim(ydefault
 				.getDefault());
+		
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			String[][] ranges = null;
 
@@ -1468,8 +1476,8 @@ public class YANG_Type extends SimpleYangNode {
 								YangErrorManager.tadd(filename, getLine(),
 										getCol(), message, YangBuiltInTypes
 												.removeQuotes(value),
-										"range error", "range", getFileName()
-												+ ":" + getNumRest().getLine());
+										"range error", "range", context.getTypeDef(this).getFileName()
+												+ ":" + context.getTypeDef(this).getLine());
 							} else {
 								message = "default_match_fail";
 								YANG_TypeDef td = this.getTypedef();
@@ -1479,13 +1487,13 @@ public class YANG_Type extends SimpleYangNode {
 												.getFileName()
 												+ ":" + td.getLine(),
 										"range error", "range", getFileName()
-												+ ":" + getNumRest().getLine());
+												+ ":" + context.getTypeDef(this).getLine());
 							}
 
 						}
 
-					} catch (NumberFormatException ne) {
-						throw new YangParserException("illegal integer value");
+					} catch (NumberFormatException ne) {//ne.printStackTrace();
+						//throw new YangParserException(" illegal integer value : " + this);
 					}
 				}
 			} else if (YangBuiltInTypes.isFloat(context.getBuiltInType(this))) {

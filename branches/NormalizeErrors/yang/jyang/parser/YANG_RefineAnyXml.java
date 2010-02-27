@@ -34,19 +34,22 @@ public class YANG_RefineAnyXml extends MandatoryRefineNode {
 	public void check(YangContext context, YANG_AnyXml ax)
 			throws YangParserException {
 		YANG_Config parentConfig = getParentConfig();
-		if (b_config) {
-			if (parentConfig.getConfigStr().compareTo("false") == 0
-					&& config.getConfigStr().compareTo("true") == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":config to true and parent config to false");
-		} else {
-			if (ax.getConfig() != null) {
+		if (parentConfig != null) {
+			if (b_config) {
 				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& ax.getConfig().getConfigStr().compareTo("true") == 0)
+						&& config.getConfigStr().compareTo("true") == 0)
 					throw new YangParserException("@" + getLine() + "."
 							+ getCol()
-							+ ":config to true but parent config to false");
+							+ ":config to true and parent config to false");
+			} else {
+				if (ax.getConfig() != null) {
+					if (parentConfig.getConfigStr().compareTo("false") == 0
+							&& ax.getConfig().getConfigStr().compareTo("true") == 0)
+						throw new YangParserException("@" + getLine() + "."
+								+ getCol()
+								+ ":config to true but parent config to false");
 
+				}
 			}
 		}
 
@@ -71,20 +74,24 @@ public class YANG_RefineAnyXml extends MandatoryRefineNode {
 					+ " is not in the used grouping " + grouping.getGrouping());
 
 		YANG_Config parentConfig = getParentConfig();
-		if (b_config) {
-			if (parentConfig.getConfigStr().compareTo("false") == 0
-					&& config.getConfigStr().compareTo("true") == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":config to true and parent config to false");
-		} else {
-			if (ax.getConfig() != null) {
+		if (parentConfig != null) {
+			if (b_config) {
 				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& ax.getConfig().getConfigStr().compareTo("true") == 0)
+						&& config.getConfigStr().compareTo("true") == 0)
 					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":config to true in the grouping "
-							+ grouping.getBody() + " at line "
-							+ grouping.getLine() + "but parent config to false");
+							+ getCol()
+							+ ":config to true and parent config to false");
+			} else {
+				if (ax.getConfig() != null) {
+					if (parentConfig.getConfigStr().compareTo("false") == 0
+							&& ax.getConfig().getConfigStr().compareTo("true") == 0)
+						throw new YangParserException("@" + getLine() + "."
+								+ getCol() + ":config to true in the grouping "
+								+ grouping.getBody() + " at line "
+								+ grouping.getLine()
+								+ "but parent config to false");
 
+				}
 			}
 		}
 

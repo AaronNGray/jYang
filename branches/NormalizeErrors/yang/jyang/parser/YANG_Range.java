@@ -90,8 +90,18 @@ public class YANG_Range extends ErrorTagedNode implements
 			}
 		}
 		for (int i = 0; i < ranges.length; i++) {
-			ranges[i][0] = ranges[i][0].trim();
-			ranges[i][1] = ranges[i][1].trim();
+			String bi = ranges[i][0].trim();
+			if (bi.startsWith("+", 0)){
+				bi = bi.substring(1);
+				bi = bi.trim();
+			}
+			ranges[i][0] = bi;
+			String bs = ranges[i][1].trim();
+			if (bs.startsWith("+", 0)){
+				bs = bs.substring(1);
+				bs = bs.trim();
+			}
+			ranges[i][1] = bs;
 		}
 
 	}

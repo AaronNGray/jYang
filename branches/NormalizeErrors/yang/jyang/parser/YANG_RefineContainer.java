@@ -79,24 +79,26 @@ public class YANG_RefineContainer extends MustRefineNode {
 					+ " at line " + grouping.getLine());
 
 		YANG_Config parentConfig = getParentConfig();
-		if (b_config) {
-			if (parentConfig.getConfigStr().compareTo("false") == 0
-					&& config.getConfigStr().compareTo("true") == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":config to true and parent config to false");
-		} else {
-			if (container.getConfig() != null) {
+		if (parentConfig != null)
+			if (b_config) {
 				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& container.getConfig().getConfigStr().compareTo(
-								"true") == 0)
+						&& config.getConfigStr().compareTo("true") == 0)
 					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":config to true in the grouping "
-							+ grouping.getBody() + " at line "
-							+ grouping.getLine()
-							+ " but parent config to false");
+							+ getCol()
+							+ ":config to true and parent config to false");
+			} else {
+				if (container.getConfig() != null) {
+					if (parentConfig.getConfigStr().compareTo("false") == 0
+							&& container.getConfig().getConfigStr().compareTo(
+									"true") == 0)
+						throw new YangParserException("@" + getLine() + "."
+								+ getCol() + ":config to true in the grouping "
+								+ grouping.getBody() + " at line "
+								+ grouping.getLine()
+								+ " but parent config to false");
 
+				}
 			}
-		}
 		/*
 		 * for (Enumeration<YANG_Refine> er = getRefinements().elements(); er
 		 * .hasMoreElements();) { YANG_Refine refine = er.nextElement(); try {

@@ -14,6 +14,11 @@ public class YANG_TypeDef extends StatuedBody {
 	private boolean b_type = false, b_units = false, b_default = false;
 
 	private boolean used = false, correct = true;
+	private boolean checked;
+
+	public boolean isChecked() {
+		return checked;
+	}
 
 	public YANG_TypeDef(int id) {
 		super(id);
@@ -110,6 +115,8 @@ public class YANG_TypeDef extends StatuedBody {
 			}
 		}
 
+		checked = true;
+
 	}
 
 	private void chainUnions(YANG_TypeDef zis, Vector<YANG_TypeDef> tds,
@@ -124,17 +131,17 @@ public class YANG_TypeDef extends StatuedBody {
 					zis.getBody());
 			return;
 		}
-
-		if (YangBuiltInTypes.union.compareTo(context.getBuiltInType(zis
-				.getType())) == 0) {
-			YANG_Type ut = zis.getType();
-			if (ut.getUnionSpec() != null) {
-				for (YANG_Type utt : ut.getUnionSpec().getTypes()) {
-					tds.add(zis);
-					chainUnions(context.getTypeDef(utt), tds, context);
+		String builtin = context.getBuiltInType(zis.getType());
+		if (builtin != null)
+			if (YangBuiltInTypes.union.compareTo(builtin) == 0) {
+				YANG_Type ut = zis.getType();
+				if (ut.getUnionSpec() != null) {
+					for (YANG_Type utt : ut.getUnionSpec().getTypes()) {
+						tds.add(zis);
+						chainUnions(context.getTypeDef(utt), tds, context);
+					}
 				}
 			}
-		}
 	}
 
 	public String toString() {

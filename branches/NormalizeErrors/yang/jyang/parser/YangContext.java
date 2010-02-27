@@ -405,14 +405,14 @@ public class YangContext {
 					&& !found;) {
 				YANG_Import impo = ei.nextElement();
 
-				if (impo.getPrefix().getPrefix().equals(prefix)) {
+				if (impo.getPrefix().getPrefix().compareTo(prefix) == 0) {
 					result = impo.getImportedModule() + ":" + suffix;
 					found = true;
 				}
 			}
 			if (!found) {
 				if (spec instanceof YANG_Module) {
-					if (spec.getPrefix().getPrefix().equals(prefix)) {
+					if (spec.getPrefix().getPrefix().compareTo(prefix) == 0) {
 						found = true;
 						result = spec.getName() + ":" + suffix;
 					}
