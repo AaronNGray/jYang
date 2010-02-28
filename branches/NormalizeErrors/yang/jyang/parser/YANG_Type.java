@@ -606,15 +606,17 @@ public class YANG_Type extends SimpleYangNode {
 					highest = highest.add(new BigInteger("1"));
 				} else if (biginteger.add(new BigInteger("1")).compareTo(
 						highest) == 0) {
-					YangErrorManager.tadd(filename, bit.getLine(),
-							bit.getCol(), "dup_value", "position", biginteger,
-							"bit", bits[biginteger
-									.subtract(new BigInteger("1")).intValue()]
-									.getPosition().getFileName()
+					System.out.println(bits.length);
+					YangErrorManager.tadd(filename,
+							bit.getPosition().getLine(), bit.getPosition()
+									.getCol(), "dup_value", "position",
+							biginteger, "bit", bits[biginteger.subtract(
+									new BigInteger("2")).intValue()]
+									.getFileName()
 									+ ":"
 									+ bits[biginteger.subtract(
-											new BigInteger("1")).intValue()]
-											.getPosition().getLine());
+											new BigInteger("2")).intValue()]
+											.getLine());
 					return;
 				} else if (biginteger.compareTo(highest) == -1) {
 					bitspos.add(biginteger);
@@ -699,12 +701,12 @@ public class YANG_Type extends SimpleYangNode {
 				}
 			}
 		if (duplicate) {
-			YangErrorManager.tadd(filename, dupenum.getLine(),
-					dupenum.getCol(), "dupp_enum_val", dupvalue, getFileName()
-							+ ":" + getLine());
-			return;
+			YangErrorManager.tadd(filename, dupenum.getValue().getLine(),
+					dupenum.getValue().getCol(), "dupp_enum_val", dupvalue,
+					getFileName() + ":" + firstenum.getLine());
+			// return;
 		}
-
+		duplicate = false;
 		for (int j = 0; j < enumnames.length && !duplicate; j++)
 			for (int k = j + 1; k < enumnames.length && !duplicate; k++) {
 				if (YangBuiltInTypes.removeQuotesAndTrim(enumnames[j])
@@ -724,7 +726,7 @@ public class YANG_Type extends SimpleYangNode {
 		if (duplicate) {
 			YangErrorManager.tadd(filename, dupenum.getLine(),
 					dupenum.getCol(), "dupp_enum_name", dupname, getFileName()
-							+ ":" + getLine());
+							+ ":" + firstenum.getLine());
 			return;
 		}
 
@@ -1292,13 +1294,16 @@ public class YANG_Type extends SimpleYangNode {
 
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			String[][] ranges = null;
+			YANG_NumericalRestriction numrest = null;
 
 			if (getNumRest() != null) {
 				ranges = getRanges(context);
+				numrest = getNumRest();
 			} else {
 				YANG_TypeDef td = context.getTypeDef(this);
 				if (td != null) {
 					YANG_Type bt = getFirstRangeDefined(context, td);
+					numrest = bt.getNumRest();
 					if (bt != null)
 						ranges = bt.getRanges(context);
 					else
@@ -1473,9 +1478,9 @@ public class YANG_Type extends SimpleYangNode {
 							String message = "";
 							if (t == this) {
 								message = "direct_default_match_fail";
-								YangErrorManager.tadd(filename, getLine(),
-										getCol(), message, YangBuiltInTypes
-												.removeQuotes(value),
+								YangErrorManager.tadd(filename, numrest
+										.getLine(), numrest.getCol(), message,
+										YangBuiltInTypes.removeQuotes(value),
 										"range error", "range", context
 												.getTypeDef(this).getFileName()
 												+ ":"
@@ -1484,11 +1489,10 @@ public class YANG_Type extends SimpleYangNode {
 							} else {
 								message = "default_match_fail";
 								YANG_TypeDef td = this.getTypedef();
-								YangErrorManager.tadd(filename, getLine(),
-										getCol(), message, YangBuiltInTypes
-												.removeQuotes(value), td
-												.getFileName()
-												+ ":" + td.getLine(),
+								YangErrorManager.tadd(filename, numrest
+										.getLine(), numrest.getCol(), message,
+										YangBuiltInTypes.removeQuotes(value),
+										td.getFileName() + ":" + td.getLine(),
 										"range error", "range", getFileName()
 												+ ":"
 												+ context.getTypeDef(this)
@@ -1558,24 +1562,24 @@ public class YANG_Type extends SimpleYangNode {
 										.getTypeDef(this));
 							String message = "";
 							if (t == this) {
-								YangErrorManager.tadd(filename, usernode
-										.getLine(), usernode.getCol(),
+								YangErrorManager.tadd(filename, numrest
+										.getLine(), numrest.getCol(),
 										"direct_default_match_fail",
 										YangBuiltInTypes.removeQuotes(value),
 										"range error", "range", this
 												.getFileName()
-												+ ":" + getNumRest().getLine());
+												+ ":" + getLine());
 							} else {
 								YANG_TypeDef td = t.getTypedef();
-								YangErrorManager.tadd(filename, usernode
-										.getLine(), usernode.getCol(),
+								YangErrorManager.tadd(filename, numrest
+										.getLine(), numrest.getCol(),
 										"default_match_fail", YangBuiltInTypes
 												.removeQuotes(value), td
 												.getFileName()
 												+ ":" + td.getLine(),
 										"range error", "range", this
 												.getFileName()
-												+ ":" + getNumRest().getLine());
+												+ ":" + getLine());
 							}
 						}
 					} catch (NumberFormatException ne) {
@@ -1842,35 +1846,56 @@ public class YANG_Type extends SimpleYangNode {
 
 	private void checkEmptyUnion(YangContext context, Vector<YANG_Type> chain,
 			Vector<YANG_Type> unions) throws YangParserException {
-
 		for (Enumeration<YANG_Type> et = unions.elements(); et
 				.hasMoreElements();) {
+			boolean empty = false;
 			YANG_Type utype = et.nextElement();
-			if (context.getBuiltInType(utype).compareTo(YangBuiltInTypes.empty) == 0)
-				YangErrorManager.tadd(utype.getFileName(), getLine(), getCol(),
-						"empty_union", utype.getFileName(), utype.getLine());
-
-			else if (context.getBuiltInType(utype).compareTo(
-					YangBuiltInTypes.union) == 0) {
-				if (utype.getUnionSpec() != null) {
-					chain.add(utype);
-					checkEmptyUnion(context, chain, utype.getUnionSpec()
-							.getTypes());
+			empty = checkRecEmptyUnion(context, chain, utype);
+			if (empty) {
+				if (context.getTypeDef(utype) != null) {
+					YANG_TypeDef td = context.getTypeDef(utype);
+					YangErrorManager.tadd(utype.getFileName(), utype.getLine(), utype
+							.getCol(), "empty_union", td.getFileName(), td
+							.getLine());
 				} else {
-					while (utype.getUnionSpec() == null) {
-						YANG_TypeDef suptype = context.getTypeDef(utype);
-						if (!suptype.isCorrect())
-							return;
-						utype = suptype.getType();
-					}
-					if (!chain.contains(utype)) {
-						chain.add(utype);
-						checkEmptyUnion(context, chain, utype.getUnionSpec()
-								.getTypes());
-					}
+					YangErrorManager.tadd(utype.getFileName(), utype.getLine(),
+							utype.getCol(), "empty_union", utype.getFileName(),
+							utype.getLine());
 				}
 			}
+			
 		}
+	}
+
+	private boolean checkRecEmptyUnion(YangContext context,
+			Vector<YANG_Type> chain, YANG_Type utype)
+			throws YangParserException {
+
+		boolean empty = false;
+		if (context.getBuiltInType(utype).compareTo(YangBuiltInTypes.empty) == 0) {
+			return true;
+		} else if (context.getBuiltInType(utype).compareTo(
+				YangBuiltInTypes.union) == 0) {
+			if (utype.getUnionSpec() != null) {
+				chain.add(utype);
+				for (YANG_Type t : utype.getUnionSpec().getTypes())
+					empty = empty || checkRecEmptyUnion(context, chain, t);
+			} else {
+				while (utype.getUnionSpec() == null) {
+					YANG_TypeDef suptype = context.getTypeDef(utype);
+					// if (!suptype.isCorrect())
+					// return;
+					utype = suptype.getType();
+				}
+				if (!chain.contains(utype)) {
+					chain.add(utype);
+					for (YANG_Type t : utype.getUnionSpec().getTypes())
+						empty = empty || checkRecEmptyUnion(context, chain, t);
+				}
+			}
+
+		}
+		return empty;
 
 	}
 

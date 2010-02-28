@@ -121,14 +121,16 @@ public class YANG_TypeDef extends StatuedBody {
 
 	private void chainUnions(YANG_TypeDef zis, Vector<YANG_TypeDef> tds,
 			YangContext context) throws YangParserException {
+		
 		if (zis == null)
 			return;
 		if (tds.contains(zis)) {
 			setCorrect(false);
-			for (YANG_TypeDef ytd : tds)
+			for (YANG_TypeDef ytd : tds) {
 				ytd.setCorrect(false);
-			YangErrorManager.tadd(filename, getLine(), getCol(), "circ_dep",
-					zis.getBody());
+				YangErrorManager.tadd(ytd.getFileName(), ytd.getLine(), ytd.getCol(),
+						"circ_dep", ytd.getBody());
+			}
 			return;
 		}
 		String builtin = context.getBuiltInType(zis.getType());
