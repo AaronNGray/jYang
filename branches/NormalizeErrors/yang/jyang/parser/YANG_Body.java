@@ -142,10 +142,28 @@ public abstract class YANG_Body extends DocumentedNode {
 			lcontext.addNode(g);
 		}
 
+		for (YANG_DataDef ddef : datadefs){
+			if (ddef instanceof YANG_Choice){
+				YANG_Choice choice = (YANG_Choice)ddef;
+				lcontext.addNode(choice);
+				for (YANG_Case ycase : choice.getCases()){
+					for (YANG_DataDef cdef : ycase.getDataDefs()){
+						lcontext.addNode(cdef);
+					}
+				}
+				for (YANG_ShortCase scase : choice.getShortCases()){
+					lcontext.addNode((YANG_DataDef)scase);
+				}
+			}
+			else
+				lcontext.addNode(ddef);
+		}
+		/*
 		for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
-				.hasMoreElements();)
+				.hasMoreElements();){
 			lcontext.addNode(ed.nextElement());
-
+		}*/
+		
 		context.addSubContext(lcontext);
 
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
