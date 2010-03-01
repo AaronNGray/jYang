@@ -49,7 +49,7 @@ public class YANG_Case extends FeaturedNode {
 		return getCase();
 	}
 
-	
+	/*
 	public void addCaseDef(YANG_CaseDataDef c) {
 		casedatadefs.add(c);
 	}
@@ -57,7 +57,7 @@ public class YANG_Case extends FeaturedNode {
 	public Vector<YANG_CaseDataDef> getCaseDefs() {
 		return casedatadefs;
 	}
-
+*/
 	public boolean isBracked() {
 		return super.isBracked() || casedatadefs.size() != 0;
 	}

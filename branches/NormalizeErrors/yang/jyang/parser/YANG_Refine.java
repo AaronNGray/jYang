@@ -159,8 +159,8 @@ public  abstract class YANG_Refine extends DocumentedNode {
 	public void check(YangContext context, YANG_Case yc)
 			throws YangParserException {
 		boolean found = false;
-		YANG_CaseDataDef cdef = null;
-		for (Enumeration<YANG_CaseDataDef> ec = yc.getCaseDefs().elements(); ec
+		YANG_DataDef cdef = null;
+		for (Enumeration<YANG_DataDef> ec = yc.getDataDefs().elements(); ec
 				.hasMoreElements()
 				&& !found;) {
 			cdef = ec.nextElement();

@@ -773,7 +773,7 @@ public class Yang2Yin {
 						+ "\n";
 			if (c.getReference() != null)
 				result += gReference(c.getReference(), prefix + "  ") + "\n";
-			for (Enumeration<YANG_CaseDataDef> ec = c.getCaseDefs().elements(); ec
+			for (Enumeration<YANG_DataDef> ec = c.getDataDefs().elements(); ec
 					.hasMoreElements();)
 				result += gCaseDef(ec.nextElement(), prefix + "  ") + "\n";
 			result += prefix + "</case>";

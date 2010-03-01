@@ -231,9 +231,9 @@ public class YANG_List extends ListedDataDef {
 			for (Enumeration<YANG_Case> ecases = c.getCases().elements(); ecases
 					.hasMoreElements();) {
 				YANG_Case ca = ecases.nextElement();
-				for (Enumeration<YANG_CaseDataDef> ecdef = ca.getCaseDefs()
+				for (Enumeration<YANG_DataDef> ecdef = ca.getDataDefs()
 						.elements(); ecdef.hasMoreElements();) {
-					YANG_CaseDataDef cdef = ecdef.nextElement();
+					YANG_DataDef cdef = ecdef.nextElement();
 					if (cdef instanceof YANG_DataDef)
 						if (findKey(context, k, (YANG_DataDef) cdef))
 							return true;

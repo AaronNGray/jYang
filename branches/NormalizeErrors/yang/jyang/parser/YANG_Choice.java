@@ -101,7 +101,7 @@ public class YANG_Choice extends ConfigDataDef {
 	}
 
 	private void trackMandatory(YANG_Case c) throws YangParserException {
-		for (Enumeration<YANG_CaseDataDef> ecd = c.getCaseDefs().elements(); ecd
+		for (Enumeration<YANG_DataDef> ecd = c.getDataDefs().elements(); ecd
 				.hasMoreElements();) {
 			YANG_CaseDataDef cdef = ecd.nextElement();
 			if (cdef instanceof YANG_AnyXml) {
@@ -260,19 +260,28 @@ public class YANG_Choice extends ConfigDataDef {
 		if (b_default)
 			checkDefault(context, getDefault());
 
-		Hashtable<String, YANG_Case> caseids = new Hashtable<String, YANG_Case>();
-
-		for (Enumeration<YANG_Case> ec = cases.elements(); ec.hasMoreElements();) {
-			YANG_Case ycase = ec.nextElement();
-
+		Hashtable<String, Integer> caseids = new Hashtable<String, Integer>();
+		
+		for (YANG_Case ycase : cases){		
 			if (caseids.containsKey(ycase.getCase())) {
-				YANG_Case c = caseids.get(ycase.getCase());
+				Integer c = caseids.get(ycase.getCase());
 				YangErrorManager.tadd(filename, ycase.getLine(),
-						ycase.getCol(), "dup_child", "case " + c.getCase(), c
-								.getFileName(), c.getLine());
+						ycase.getCol(), "dup_child", "case " + ycase.getBody(), ycase
+								.getFileName(), c);
 
 			} else
-				caseids.put(ycase.getCase(), ycase);
+				caseids.put(ycase.getCase(), new Integer(ycase.getLine()));
+		}
+		for (YANG_ShortCase ddef : shorts){	
+			if (caseids.containsKey(ddef.getBody())) {
+				Integer c = caseids.get(ddef.getBody());
+				YangErrorManager.tadd(filename, ddef.getLine(),
+						ddef.getCol(), "dup_child", "case " + ddef.getBody(), ddef
+								.getFileName(), c);
+
+			} else
+				caseids.put(ddef.getBody(), new Integer(ddef.getLine()));
+			
 		}
 
 	}

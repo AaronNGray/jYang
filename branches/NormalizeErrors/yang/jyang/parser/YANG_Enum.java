@@ -32,7 +32,7 @@ public class YANG_Enum extends StatuedNode {
 						"bad_value", "enum", e, "empty string");
 			// even its a bad value
 			// to provide something if asked
-			enumid = e;
+			enumid = unquote(e);
 		}
 	}
 

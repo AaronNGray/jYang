@@ -23,12 +23,12 @@ public class CaseDataDef extends YANG_DataDef {
 		return ycase.getCase();
 	}
 	
-	public void addCaseDef(YANG_CaseDataDef c) {
-		ycase.getCaseDefs().add(c);
+	public void addDataDef(YANG_DataDef c) {
+		ycase.getDataDefs().add(c);
 	}
 
-	public Vector<YANG_CaseDataDef> getCaseDefs() {
-		return ycase.getCaseDefs();
+	public Vector<YANG_DataDef> getDataDefs() {
+		return ycase.getDataDefs();
 	}
 
 

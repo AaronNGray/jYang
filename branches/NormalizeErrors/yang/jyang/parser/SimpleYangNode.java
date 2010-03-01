@@ -8,7 +8,6 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 	private Vector<YANG_Unknown> unknowns = new Vector<YANG_Unknown>();
 	protected String filename;
 
-
 	private boolean isRootNode = false;
 
 	private int line, col;
@@ -26,10 +25,10 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 		unknowns.add(u);
 	}
 
-//	public void addUnknowns(Vector<YANG_Unknown> uns){
-//		unknowns.addAll(uns);
-//	}
-	
+	// public void addUnknowns(Vector<YANG_Unknown> uns){
+	// unknowns.addAll(uns);
+	// }
+
 	public Vector<YANG_Unknown> getUnknowns() {
 		return unknowns;
 	}
@@ -58,7 +57,7 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 
 	public String getFileName() {
 		if (filename.indexOf('/') != -1)
-			return filename.substring(filename.lastIndexOf('/')+1);
+			return filename.substring(filename.lastIndexOf('/') + 1);
 		return filename;
 	}
 
@@ -101,14 +100,15 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 	}
 
 	public String unquote(String s) {
-		if (s.charAt(0) == '"')
+		if (s.charAt(0) == '"') {
 			s = s.substring(1);
-		if (s.charAt(s.length() - 1) == '"')
-			s = s.substring(0, s.length() - 1);
-		if (s.charAt(0) == '\'')
+			if (s.charAt(s.length() - 1) == '"')
+				s = s.substring(0, s.length() - 1);
+		} else if (s.charAt(0) == '\'') {
 			s = s.substring(1);
-		if (s.charAt(s.length() - 1) == '\'')
-			s = s.substring(0, s.length() - 1);
+			if (s.charAt(s.length() - 1) == '\'')
+				s = s.substring(0, s.length() - 1);
+		}
 		return s;
 	}
 

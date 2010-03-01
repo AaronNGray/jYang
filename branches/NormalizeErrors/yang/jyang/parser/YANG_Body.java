@@ -51,14 +51,10 @@ public abstract class YANG_Body extends DocumentedNode {
 				.getSpec());
 
 		if (this instanceof YANG_Grouping) {
-
 			YANG_Grouping grouping = (YANG_Grouping) this;
-
-			//grouping.setChecked(true);
 			typedefs = grouping.getTypeDefs();
 			groupings = grouping.getGroupings();
 			datadefs = grouping.getDataDefs();
-
 		} else if (this instanceof YANG_Container) {
 			YANG_Container container = (YANG_Container) this;
 			typedefs = container.getTypeDefs();
@@ -71,22 +67,22 @@ public abstract class YANG_Body extends DocumentedNode {
 			datadefs = list.getDataDefs();
 		} else if (this instanceof YANG_Choice) {
 			YANG_Choice choice = (YANG_Choice) this;
-			Vector<YANG_Case> cases = choice.getCases();
-			for (Enumeration<YANG_Case> ec = cases.elements(); ec
-					.hasMoreElements();) {
-				YANG_Case ycase = ec.nextElement();
-				Vector<YANG_CaseDataDef> vcases = ycase.getCaseDefs();
-				for (Enumeration<YANG_CaseDataDef> ecd = vcases.elements(); ecd
-						.hasMoreElements();) {
-					YANG_CaseDataDef cdef = ecd.nextElement();
+
+			for (YANG_Case ycase : choice.getCases()) {
+				for (YANG_ShortCase ysc : choice.getShortCases()) {
+					if (ysc.getBody().compareTo(ycase.getBody()) == 0) {
+						YangErrorManager.tadd(ysc.getFileName(), ysc.getLine(),
+								ysc.getCol(), "dup_child", ysc.getBody(),
+								ycase.getFileName(), ycase.getLine());
+					}
+				}
+
+				for (YANG_CaseDataDef cdef : ycase.getDataDefs()) {
 					YANG_DataDef ddef = (YANG_DataDef) cdef;
 					datadefs.add(ddef);
 				}
 			}
-			Vector<YANG_ShortCase> scases = choice.getShortCases();
-			for (Enumeration<YANG_ShortCase> esc = scases.elements(); esc
-					.hasMoreElements();) {
-				YANG_ShortCase ysc = esc.nextElement();
+			for (YANG_ShortCase ysc : choice.getShortCases()) {
 				YANG_DataDef ddef = (YANG_DataDef) ysc;
 				datadefs.add(ddef);
 			}
@@ -103,8 +99,8 @@ public abstract class YANG_Body extends DocumentedNode {
 			for (Enumeration<YANG_Case> ec = augment.getCases().elements(); ec
 					.hasMoreElements();) {
 				YANG_Case ycase = ec.nextElement();
-				Vector<YANG_CaseDataDef> vcases = ycase.getCaseDefs();
-				for (Enumeration<YANG_CaseDataDef> ecd = vcases.elements(); ecd
+				Vector<YANG_DataDef> vcases = ycase.getDataDefs();
+				for (Enumeration<YANG_DataDef> ecd = vcases.elements(); ecd
 						.hasMoreElements();) {
 					YANG_CaseDataDef cdef = ecd.nextElement();
 					YANG_DataDef ddef = (YANG_DataDef) cdef;
@@ -176,64 +172,48 @@ public abstract class YANG_Body extends DocumentedNode {
 		for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
 				.hasMoreElements();) {
 			YANG_Body body = (YANG_Body) ed.nextElement();
-/*
-			if (body instanceof YANG_Uses) {
-				YangContext lusedcontext = new YangContext(context.getImports(), context
-						.getSpec());
+			/*
+			 * if (body instanceof YANG_Uses) { YangContext lusedcontext = new
+			 * YangContext(context.getImports(), context .getSpec());
+			 * 
+			 * body.setParent(this); YANG_Uses uses = (YANG_Uses) body;
+			 * uses.check(context); YANG_Grouping g = uses.getGrouping();
+			 * Vector<YANG_Grouping> usedgroupings = g.getGroupings();
+			 * Vector<YANG_TypeDef> usedtypedefs = g.getTypeDefs();
+			 * Vector<YANG_DataDef> useddatadefs = g.getDataDefs(); try {
+			 * 
+			 * for (Enumeration<YANG_TypeDef> et = usedtypedefs.elements(); et
+			 * .hasMoreElements();) { YANG_TypeDef typedef = (YANG_TypeDef)
+			 * et.nextElement(); lusedcontext.addNode(typedef.clone()); } for
+			 * (Enumeration<YANG_Grouping> eg = usedgroupings .elements();
+			 * eg.hasMoreElements();) { YANG_Grouping ug = (YANG_Grouping)
+			 * eg.nextElement(); lusedcontext.addNode(ug.clone()); } for
+			 * (Enumeration<YANG_DataDef> ued = useddatadefs .elements();
+			 * ued.hasMoreElements();) { YANG_DataDef ddef = ued.nextElement();
+			 * ddef.setParent(this); lusedcontext.addNode(ddef); } } catch
+			 * (YangParserException e) { System.err
+			 * .println(context.getSpec().getName() + "@" + body.getLine() + "."
+			 * + body.getCol() + " used grouping " + g.getBody() +
+			 * " is already used  or one common node is in this context");
+			 * 
+			 * }
+			 * 
+			 * context.addSubContext(lusedcontext);
+			 * 
+			 * } else {
+			 */
 
-				body.setParent(this);
-				YANG_Uses uses = (YANG_Uses) body;
-				uses.check(context);
-				YANG_Grouping g = uses.getGrouping();
-				Vector<YANG_Grouping> usedgroupings = g.getGroupings();
-				Vector<YANG_TypeDef> usedtypedefs = g.getTypeDefs();
-				Vector<YANG_DataDef> useddatadefs = g.getDataDefs();
-				try {
-
-					for (Enumeration<YANG_TypeDef> et = usedtypedefs.elements(); et
-							.hasMoreElements();) {
-						YANG_TypeDef typedef = (YANG_TypeDef) et.nextElement();
-						lusedcontext.addNode(typedef.clone());
-					}
-					for (Enumeration<YANG_Grouping> eg = usedgroupings
-							.elements(); eg.hasMoreElements();) {
-						YANG_Grouping ug = (YANG_Grouping) eg.nextElement();
-						lusedcontext.addNode(ug.clone());
-					}
-					for (Enumeration<YANG_DataDef> ued = useddatadefs
-							.elements(); ued.hasMoreElements();) {
-						YANG_DataDef ddef = ued.nextElement();
-						ddef.setParent(this);
-						lusedcontext.addNode(ddef);
-					}
-				} catch (YangParserException e) {
-					System.err
-							.println(context.getSpec().getName()
-									+ "@"
-									+ body.getLine()
-									+ "."
-									+ body.getCol()
-									+ " used grouping "
-									+ g.getBody()
-									+ " is already used  or one common node is in this context");
-
-				}
-
-				context.addSubContext(lusedcontext);
-
-			} else {*/
-			
-			//if (!(body instanceof YANG_Uses)){
-				body.setParent(this);
-				YangContext clcts = context.clone();
-				try {
-					body.checkBody(clcts);
-				} catch (YangParserException e) {
-					System.err.println(context.getSpec().getName()
-							+ e.getMessage());
-				}
-			//}
-			//}
+			// if (!(body instanceof YANG_Uses)){
+			body.setParent(this);
+			YangContext clcts = context.clone();
+			try {
+				body.checkBody(clcts);
+			} catch (YangParserException e) {
+				System.err
+						.println(context.getSpec().getName() + e.getMessage());
+			}
+			// }
+			// }
 		}
 
 		for (Enumeration<YANG_Unknown> eu = getUnknowns().elements(); eu
@@ -289,7 +269,7 @@ public abstract class YANG_Body extends DocumentedNode {
 		} else if (this instanceof CaseDataDef) {
 			CaseDataDef caseddef = (CaseDataDef) this;
 
-			for (Enumeration<YANG_CaseDataDef> ecddef = caseddef.getCaseDefs()
+			for (Enumeration<YANG_DataDef> ecddef = caseddef.getDataDefs()
 					.elements(); ecddef.hasMoreElements();) {
 				YANG_CaseDataDef cddef = ecddef.nextElement();
 				if (cddef instanceof YANG_Leaf)
@@ -319,8 +299,8 @@ public abstract class YANG_Body extends DocumentedNode {
 			for (Enumeration<YANG_Case> ec = augment.getCases().elements(); ec
 					.hasMoreElements();) {
 				YANG_Case ycase = ec.nextElement();
-				Vector<YANG_CaseDataDef> vcases = ycase.getCaseDefs();
-				for (Enumeration<YANG_CaseDataDef> ecd = vcases.elements(); ecd
+				Vector<YANG_DataDef> vcases = ycase.getDataDefs();
+				for (Enumeration<YANG_DataDef> ecd = vcases.elements(); ecd
 						.hasMoreElements();) {
 					YANG_CaseDataDef cdef = ecd.nextElement();
 					YANG_DataDef ddef = (YANG_DataDef) cdef;

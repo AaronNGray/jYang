@@ -653,17 +653,22 @@ public class YANG_Type extends SimpleYangNode {
 		YANG_Enum[] tenums = new YANG_Enum[getEnums().size()];
 		String[] enumnames = new String[getEnums().size()];
 		int i = 0;
+		boolean maxraised = false;
 		for (Enumeration<YANG_Enum> ee = getEnums().elements(); ee
 				.hasMoreElements();) {
 			YANG_Enum yenum = ee.nextElement();
 			enumnames[i] = yenum.getEnum();
 			tenums[i] = yenum;
 			if (yenum.getValue() == null) {
-				enumvalues[i++] = highest;
+				if (maxraised)
+					YangErrorManager.tadd(filename, yenum.getLine(), yenum
+							.getCol(), "enum_auto_too_big", yenum.getEnum());
+				if (highest == 2147483647)
+					maxraised = true;
+				enumvalues[i++] = (int)highest;
 				highest++;
 			} else {
-				String strenum = YangBuiltInTypes.removeQuotesAndTrim(yenum
-						.getValue().getValue());
+				String strenum = yenum.getValue().getValue();
 				Integer integer = null;
 				try {
 					integer = Integer.parseInt(strenum);
@@ -672,12 +677,12 @@ public class YANG_Type extends SimpleYangNode {
 							.getCol(), "enum_expr", strenum);
 					return;
 				}
-				if (integer.compareTo(new Integer(highest)) >= 0) {
+				if (integer.compareTo(new Integer((int)highest)) >= 0) {
 					highest = integer.intValue();
-					enumvalues[i++] = highest++;
-				} else if (integer.compareTo(new Integer(highest)) == -1) {
+					enumvalues[i++] = (int)highest++;
+				} else if (integer.compareTo(new Integer((int)highest)) == -1) {
 					enumvalues[i++] = integer.intValue();
-				} else if (integer.compareTo(new Integer(highest)) == 0) {
+				} else if (integer.compareTo(new Integer((int)highest)) == 0) {
 					throw new YangParserException("@" + yenum.getLine() + "."
 							+ yenum.getCol() + highest
 							+ ":ambigous; a value must be specified");
@@ -709,10 +714,7 @@ public class YANG_Type extends SimpleYangNode {
 		duplicate = false;
 		for (int j = 0; j < enumnames.length && !duplicate; j++)
 			for (int k = j + 1; k < enumnames.length && !duplicate; k++) {
-				if (YangBuiltInTypes.removeQuotesAndTrim(enumnames[j])
-						.compareTo(
-								YangBuiltInTypes
-										.removeQuotesAndTrim(enumnames[k])) == 0) {
+				if (enumnames[j].compareTo(enumnames[k]) == 0) {
 					duplicate = true;
 					dupname = enumnames[j];
 					dupvalue = enumvalues[j];
@@ -1294,19 +1296,19 @@ public class YANG_Type extends SimpleYangNode {
 
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			String[][] ranges = null;
-			YANG_NumericalRestriction numrest = null;
+			YANG_NumericalRestriction lnumrest = null;
 
 			if (getNumRest() != null) {
 				ranges = getRanges(context);
-				numrest = getNumRest();
+				lnumrest = getNumRest();
 			} else {
 				YANG_TypeDef td = context.getTypeDef(this);
 				if (td != null) {
 					YANG_Type bt = getFirstRangeDefined(context, td);
-					numrest = bt.getNumRest();
-					if (bt != null)
+					if (bt != null) {
 						ranges = bt.getRanges(context);
-					else
+						lnumrest = bt.getNumRest();
+					} else
 						ranges = getRanges(context);
 				} else {
 					ranges = getRanges(context);
@@ -1478,8 +1480,8 @@ public class YANG_Type extends SimpleYangNode {
 							String message = "";
 							if (t == this) {
 								message = "direct_default_match_fail";
-								YangErrorManager.tadd(filename, numrest
-										.getLine(), numrest.getCol(), message,
+								YangErrorManager.tadd(filename, lnumrest
+										.getLine(), lnumrest.getCol(), message,
 										YangBuiltInTypes.removeQuotes(value),
 										"range error", "range", context
 												.getTypeDef(this).getFileName()
@@ -1489,8 +1491,8 @@ public class YANG_Type extends SimpleYangNode {
 							} else {
 								message = "default_match_fail";
 								YANG_TypeDef td = this.getTypedef();
-								YangErrorManager.tadd(filename, numrest
-										.getLine(), numrest.getCol(), message,
+								YangErrorManager.tadd(filename, lnumrest
+										.getLine(), lnumrest.getCol(), message,
 										YangBuiltInTypes.removeQuotes(value),
 										td.getFileName() + ":" + td.getLine(),
 										"range error", "range", getFileName()
@@ -1498,7 +1500,6 @@ public class YANG_Type extends SimpleYangNode {
 												+ context.getTypeDef(this)
 														.getLine());
 							}
-
 						}
 
 					} catch (NumberFormatException ne) {// ne.printStackTrace();
@@ -1560,10 +1561,9 @@ public class YANG_Type extends SimpleYangNode {
 									.getTypeDef(this)) != this)
 								t = getFirstRangeDefined(context, context
 										.getTypeDef(this));
-							String message = "";
 							if (t == this) {
-								YangErrorManager.tadd(filename, numrest
-										.getLine(), numrest.getCol(),
+								YangErrorManager.tadd(filename, lnumrest
+										.getLine(), lnumrest.getCol(),
 										"direct_default_match_fail",
 										YangBuiltInTypes.removeQuotes(value),
 										"range error", "range", this
@@ -1571,8 +1571,8 @@ public class YANG_Type extends SimpleYangNode {
 												+ ":" + getLine());
 							} else {
 								YANG_TypeDef td = t.getTypedef();
-								YangErrorManager.tadd(filename, numrest
-										.getLine(), numrest.getCol(),
+								YangErrorManager.tadd(filename, lnumrest
+										.getLine(), lnumrest.getCol(),
 										"default_match_fail", YangBuiltInTypes
 												.removeQuotes(value), td
 												.getFileName()
@@ -1596,7 +1596,6 @@ public class YANG_Type extends SimpleYangNode {
 
 			String[][] ranges = null;
 			boolean isStringRestricted = false;
-			boolean isPatternRestricted = false;
 
 			Enumeration<YANG_Pattern> patterns = null;
 
@@ -1854,16 +1853,16 @@ public class YANG_Type extends SimpleYangNode {
 			if (empty) {
 				if (context.getTypeDef(utype) != null) {
 					YANG_TypeDef td = context.getTypeDef(utype);
-					YangErrorManager.tadd(utype.getFileName(), utype.getLine(), utype
-							.getCol(), "empty_union", td.getFileName(), td
-							.getLine());
+					YangErrorManager.tadd(utype.getFileName(), utype.getLine(),
+							utype.getCol(), "empty_union", td.getFileName(), td
+									.getLine());
 				} else {
 					YangErrorManager.tadd(utype.getFileName(), utype.getLine(),
 							utype.getCol(), "empty_union", utype.getFileName(),
 							utype.getLine());
 				}
 			}
-			
+
 		}
 	}
 
