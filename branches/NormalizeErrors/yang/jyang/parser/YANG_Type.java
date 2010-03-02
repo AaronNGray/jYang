@@ -606,7 +606,6 @@ public class YANG_Type extends SimpleYangNode {
 					highest = highest.add(new BigInteger("1"));
 				} else if (biginteger.add(new BigInteger("1")).compareTo(
 						highest) == 0) {
-					System.out.println(bits.length);
 					YangErrorManager.tadd(filename,
 							bit.getPosition().getLine(), bit.getPosition()
 									.getCol(), "dup_value", "position",

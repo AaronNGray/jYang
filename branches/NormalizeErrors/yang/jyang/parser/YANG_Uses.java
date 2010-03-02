@@ -67,7 +67,6 @@ public class YANG_Uses extends YANG_DataDef  {
 	}
 
 	public void addRefinement(YANG_Refine r) throws YangParserException {
-
 		refinements.add(r);
 	}
 

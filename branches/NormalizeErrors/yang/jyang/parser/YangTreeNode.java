@@ -165,7 +165,7 @@ public class YangTreeNode implements java.io.Serializable {
 								"unique_not_found", uniques[i], node.getBody());
 					}
 			}
-		} 
+		}
 		for (Enumeration<YangTreeNode> ey = childs.elements(); ey
 				.hasMoreElements();)
 			ey.nextElement().check(module, root, subroot, importeds);
