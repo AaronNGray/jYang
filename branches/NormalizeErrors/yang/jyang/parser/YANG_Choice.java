@@ -103,7 +103,7 @@ public class YANG_Choice extends ConfigDataDef {
 	private void trackMandatory(YANG_Case c) throws YangParserException {
 		for (Enumeration<YANG_DataDef> ecd = c.getDataDefs().elements(); ecd
 				.hasMoreElements();) {
-			YANG_CaseDataDef cdef = ecd.nextElement();
+			YANG_DataDef cdef = ecd.nextElement();
 			if (cdef instanceof YANG_AnyXml) {
 				try {
 					checkMandatory((YANG_AnyXml) cdef);
@@ -120,10 +120,7 @@ public class YANG_Choice extends ConfigDataDef {
 							+ getCol() + ":no mandatory leaf in default case ");
 				}
 
-			} else if (cdef instanceof YANG_Augment) {
-				YANG_Augment augment = (YANG_Augment) cdef;
-				trackMandatory(augment.getDataDefs());
-			} else if (cdef instanceof YANG_Container) {
+			}  else if (cdef instanceof YANG_Container) {
 				YANG_Container container = (YANG_Container) cdef;
 				trackMandatory(container.getDataDefs());
 			} else if (cdef instanceof YANG_List) {

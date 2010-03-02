@@ -22,7 +22,7 @@ package jyang.parser;
 import java.text.MessageFormat;
 import java.util.*;
 
-public class YANG_Uses extends YANG_DataDef implements YANG_CaseDataDef {
+public class YANG_Uses extends YANG_DataDef  {
 
 	private String uses = null;
 	private Vector<YANG_Refine> refinements = new Vector<YANG_Refine>();

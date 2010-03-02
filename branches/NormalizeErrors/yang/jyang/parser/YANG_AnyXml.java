@@ -2,7 +2,7 @@ package jyang.parser;
 
 import java.text.MessageFormat;
 
-public class YANG_AnyXml extends MustDataDef implements YANG_CaseDataDef,
+public class YANG_AnyXml extends MustDataDef implements 
 		YANG_ShortCase {
 
 	private String anyxml = null;

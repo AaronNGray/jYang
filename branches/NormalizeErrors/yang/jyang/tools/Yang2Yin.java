@@ -28,7 +28,6 @@ import jyang.parser.YANG_Augment;
 import jyang.parser.YANG_Bit;
 import jyang.parser.YANG_Body;
 import jyang.parser.YANG_Case;
-import jyang.parser.YANG_CaseDataDef;
 import jyang.parser.YANG_Choice;
 import jyang.parser.YANG_Config;
 import jyang.parser.YANG_Contact;
@@ -782,7 +781,7 @@ public class Yang2Yin {
 		return result;
 	}
 
-	private String gCaseDef(YANG_CaseDataDef c, String prefix) {
+	private String gCaseDef(YANG_DataDef c, String prefix) {
 		if (c instanceof YANG_Container)
 			return gContainer((YANG_Container) c, prefix);
 		if (c instanceof YANG_Leaf)
@@ -795,8 +794,6 @@ public class Yang2Yin {
 			return gAnyXml((YANG_AnyXml) c, prefix);
 		if (c instanceof YANG_Uses)
 			return gUses((YANG_Uses) c, prefix);
-		if (c instanceof YANG_Augment)
-			return gAugment((YANG_Augment) c, prefix);
 		return "";
 	}
 

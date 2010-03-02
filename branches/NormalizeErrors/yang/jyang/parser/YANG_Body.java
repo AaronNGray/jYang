@@ -77,7 +77,7 @@ public abstract class YANG_Body extends DocumentedNode {
 					}
 				}
 
-				for (YANG_CaseDataDef cdef : ycase.getDataDefs()) {
+				for (YANG_DataDef cdef : ycase.getDataDefs()) {
 					YANG_DataDef ddef = (YANG_DataDef) cdef;
 					datadefs.add(ddef);
 				}
@@ -87,11 +87,15 @@ public abstract class YANG_Body extends DocumentedNode {
 				datadefs.add(ddef);
 			}
 		} else if (this instanceof YANG_Uses) {
-			/**
-			 * There is nothing to do for uses statement The enclosing statement
-			 * of this uses has already expanded the used grouping and check if
-			 * no overlapping exists
-			 */
+
+			YANG_Uses uses = (YANG_Uses) this;
+			uses.check(context);
+			YANG_Grouping g = uses.getGrouping();
+			if (g != null) {
+				groupings = g.getGroupings();
+				typedefs = g.getTypeDefs();
+				datadefs = g.getDataDefs();
+			}
 
 		} else if (this instanceof YANG_Augment) {
 			YANG_Augment augment = (YANG_Augment) this;
@@ -102,7 +106,7 @@ public abstract class YANG_Body extends DocumentedNode {
 				Vector<YANG_DataDef> vcases = ycase.getDataDefs();
 				for (Enumeration<YANG_DataDef> ecd = vcases.elements(); ecd
 						.hasMoreElements();) {
-					YANG_CaseDataDef cdef = ecd.nextElement();
+					YANG_DataDef cdef = ecd.nextElement();
 					YANG_DataDef ddef = (YANG_DataDef) cdef;
 					datadefs.add(ddef);
 				}
@@ -302,7 +306,7 @@ public abstract class YANG_Body extends DocumentedNode {
 
 			for (Enumeration<YANG_DataDef> ecddef = caseddef.getDataDefs()
 					.elements(); ecddef.hasMoreElements();) {
-				YANG_CaseDataDef cddef = ecddef.nextElement();
+				YANG_DataDef cddef = ecddef.nextElement();
 				if (cddef instanceof YANG_Leaf)
 					datadefs.add((YANG_Leaf) cddef);
 				else if (cddef instanceof YANG_LeafList)
@@ -320,10 +324,11 @@ public abstract class YANG_Body extends DocumentedNode {
 		} else if (this instanceof YANG_Uses) {
 			YANG_Uses uses = (YANG_Uses) this;
 			YANG_Grouping g = uses.getGrouping();
-			for (Enumeration<YANG_DataDef> eddef = g.getDataDefs().elements(); eddef
-					.hasMoreElements();) {
-				datadefs.add(eddef.nextElement());
-			}
+			if (g != null)
+				for (Enumeration<YANG_DataDef> eddef = g.getDataDefs()
+						.elements(); eddef.hasMoreElements();) {
+					datadefs.add(eddef.nextElement());
+				}
 		} else if (this instanceof YANG_Augment) {
 			YANG_Augment augment = (YANG_Augment) this;
 			datadefs = augment.getDataDefs();
@@ -333,7 +338,7 @@ public abstract class YANG_Body extends DocumentedNode {
 				Vector<YANG_DataDef> vcases = ycase.getDataDefs();
 				for (Enumeration<YANG_DataDef> ecd = vcases.elements(); ecd
 						.hasMoreElements();) {
-					YANG_CaseDataDef cdef = ecd.nextElement();
+					YANG_DataDef cdef = ecd.nextElement();
 					YANG_DataDef ddef = (YANG_DataDef) cdef;
 					datadefs.add(ddef);
 				}

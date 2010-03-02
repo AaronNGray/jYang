@@ -22,7 +22,7 @@ package jyang.parser;
 import java.text.MessageFormat;
 import java.util.*;
 
-public class YANG_Leaf extends MustDataDef implements YANG_CaseDataDef,
+public class YANG_Leaf extends MustDataDef implements 
 		YANG_ShortCase {
 
 	private String leaf = null;

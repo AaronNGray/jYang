@@ -3,7 +3,7 @@ package jyang.parser;
 import java.text.MessageFormat;
 
 public abstract class ListedDataDef extends MustDataDef implements
-		YANG_CaseDataDef, YANG_ShortCase {
+		 YANG_ShortCase {
 
 	private YANG_MinElement min = null;
 	private YANG_MaxElement max = null;

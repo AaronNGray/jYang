@@ -25,7 +25,6 @@ import java.util.*;
 public class YANG_Case extends FeaturedNode {
 
 	private String ycase = null;
-	private Vector<YANG_CaseDataDef> casedatadefs = new Vector<YANG_CaseDataDef>();
 
 
 
@@ -49,17 +48,8 @@ public class YANG_Case extends FeaturedNode {
 		return getCase();
 	}
 
-	/*
-	public void addCaseDef(YANG_CaseDataDef c) {
-		casedatadefs.add(c);
-	}
-
-	public Vector<YANG_CaseDataDef> getCaseDefs() {
-		return casedatadefs;
-	}
-*/
 	public boolean isBracked() {
-		return super.isBracked() || casedatadefs.size() != 0;
+		return super.isBracked();
 	}
 
 	public String toString() {
@@ -68,9 +58,6 @@ public class YANG_Case extends FeaturedNode {
 		if (isBracked()) {
 			result += " {\n";
 			result += super.toString() + "\n";
-			for (Enumeration<YANG_CaseDataDef> ec = casedatadefs.elements(); ec
-					.hasMoreElements();)
-				result += ec.nextElement().toString() + "\n";
 			result += "}";
 		} else
 			result += ";";

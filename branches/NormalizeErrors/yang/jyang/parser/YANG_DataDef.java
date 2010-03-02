@@ -3,8 +3,7 @@ package jyang.parser;
 import java.text.MessageFormat;
 import java.util.Vector;
 
-public abstract class YANG_DataDef extends FeaturedBody implements
-		YANG_CaseDataDef {
+public abstract class YANG_DataDef extends FeaturedBody  {
 
 	private YANG_When when = null;
 
