@@ -104,6 +104,18 @@ public class YangContext {
 		else
 			specnodes.put(getModuleSpecName() + ":" + b.getBody(), b);
 	}
+	
+	public void addUsedNode(YANG_Uses u, YANG_Body b) throws YangParserException {
+
+		if (b instanceof YANG_TypeDef)
+			addTypeDef((YANG_TypeDef) b);
+		else if (b instanceof YANG_Grouping)
+			addGrouping((YANG_Grouping) b);
+		else if (b instanceof YANG_Extension)
+			addExtension((YANG_Extension) b);
+		else
+			specnodes.putUsed(u, getModuleSpecName() + ":" + b.getBody(), b);
+	}
 
 	/**
 	 * Ask if a node is defined

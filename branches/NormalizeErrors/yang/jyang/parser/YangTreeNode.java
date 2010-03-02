@@ -124,6 +124,7 @@ public class YangTreeNode implements java.io.Serializable {
 
 	public void check(YANG_Specification module, YangTreeNode root,
 			YangTreeNode subroot, Hashtable<String, YangTreeNode> importeds) {
+
 		if (node instanceof YANG_Augment) {
 			YANG_Augment augment = (YANG_Augment) node;
 			YANG_Body body = isInTree(module, root, importeds, augment
@@ -141,8 +142,7 @@ public class YangTreeNode implements java.io.Serializable {
 				}
 
 			}
-		}
-		if (node instanceof YANG_Leaf) {
+		} else if (node instanceof YANG_Leaf) {
 			YANG_Leaf leaf = (YANG_Leaf) node;
 			YANG_Type type = leaf.getType();
 			if (type.getLeafRef() != null) {
@@ -152,21 +152,20 @@ public class YangTreeNode implements java.io.Serializable {
 					isInTree(module, root, importeds, path.getPath());
 				}
 			}
-		}
-		if (node instanceof YANG_List) {
+		} else if (node instanceof YANG_List) {
 			YANG_List list = (YANG_List) node;
 			for (Enumeration<YANG_Unique> eu = list.getUniques().elements(); eu
 					.hasMoreElements();) {
 				YANG_Unique unique = eu.nextElement();
 				String[] uniques = unique.getUnique().split("\\s");
 				for (int i = 0; i < uniques.length; i++)
-					if (isInTree(module, root, importeds, uniques[i].trim()) == null){
+					if (isInTree(module, root, importeds, uniques[i].trim()) == null) {
 						YangErrorManager.tadd(node.getFileName(), unique
-								.getLine(), unique.getCol(), "unique_not_found",
-								uniques[i], node.getBody());
+								.getLine(), unique.getCol(),
+								"unique_not_found", uniques[i], node.getBody());
 					}
 			}
-		}
+		} 
 		for (Enumeration<YangTreeNode> ey = childs.elements(); ey
 				.hasMoreElements();)
 			ey.nextElement().check(module, root, subroot, importeds);

@@ -112,6 +112,7 @@ public class YANG_Uses extends YANG_DataDef  {
 						if (!checkRecursiveUses(context, s, used)) {
 							YangErrorManager.tadd(getFileName(), getLine(),
 									getCol(), "rec_grouping", uses);
+							setGrouping(null);
 						}
 					}
 				}

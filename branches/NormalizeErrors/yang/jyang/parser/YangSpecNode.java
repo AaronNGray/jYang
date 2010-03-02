@@ -192,6 +192,77 @@ public class YangSpecNode {
 			bodies.put(eprefix + name, b);
 	}
 
+	public void putUsed(YANG_Uses uses, String name, YANG_Body b) {
+		String modulefilename = b.getFileName();
+		if (b instanceof YANG_TypeDef) {
+			if (isDefinedAsTypeDef(name)) {
+				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
+						"typedef", b.getBody(), modulefilename, get(name)
+								.getLine());
+				return;
+			}
+		} else if (b instanceof YANG_Grouping) {
+			if (isDefinedAsGrouping(name)) {
+				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
+						"grouping", b.getBody(), modulefilename, get(name)
+								.getLine());
+				return;
+			}
+		} else if (b instanceof YANG_Extension) {
+			if (isDefinedAsExtension(name)) {
+				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
+						"extension", b.getBody(), modulefilename, get(name)
+								.getLine());
+				return;
+			}
+		} else {
+			boolean found = false;
+			if (isDefinedAsNode(name)) {
+				if (b instanceof YANG_Leaf)
+					found = true;
+				else if (b instanceof YANG_List)
+					found = true;
+				else if (b instanceof YANG_LeafList)
+					found = true;
+				else if (b instanceof YANG_Choice)
+					found = true;
+				else if (b instanceof YANG_AnyXml)
+					found = true;
+				else if (b instanceof YANG_Container)
+					found = true;
+			}
+			if (found) {
+				YangErrorManager.tadd(uses.getFileName(), uses.getLine(), uses
+						.getCol(), "dup_child_used", b.getBody(), get(name)
+						.getFileName(), get(name).getLine(), uses.getUses());
+				return;
+			}
+		}
+
+		if (b instanceof YANG_Leaf)
+			bodies.put(lprefix + name, b);
+		else if (b instanceof YANG_Container)
+			bodies.put(cprefix + name, b);
+		else if (b instanceof YANG_List)
+			bodies.put(liprefix + name, b);
+		else if (b instanceof YANG_LeafList)
+			bodies.put(leprefix + name, b);
+		else if (b instanceof YANG_Choice)
+			bodies.put(chprefix + name, b);
+		else if (b instanceof YANG_AnyXml)
+			bodies.put(aprefix + name, b);
+		else if (b instanceof YANG_Rpc)
+			bodies.put(rprefix + name, b);
+		else if (b instanceof YANG_Notification)
+			bodies.put(notprefix + name, b);
+		else if (b instanceof YANG_Grouping)
+			bodies.put(gprefix + name, b);
+		else if (b instanceof YANG_TypeDef)
+			bodies.put(tprefix + name, b);
+		else if (b instanceof YANG_Extension)
+			bodies.put(eprefix + name, b);
+	}
+
 	public YANG_Body get(String k) {
 		if (isDefined(k))
 			if (bodies.containsKey(lprefix + k))
