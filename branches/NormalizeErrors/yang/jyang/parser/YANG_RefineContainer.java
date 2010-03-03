@@ -59,6 +59,10 @@ public class YANG_RefineContainer extends MustRefineNode {
 		 */
 	}
 
+	public void check(YANG_Container container){
+		
+	}
+	
 	public void check(YangContext context, YANG_Grouping grouping)
 			throws YangParserException {
 		boolean found = false;

@@ -3,7 +3,7 @@ package jyang.parser;
 import java.text.MessageFormat;
 import java.util.Vector;
 
-public abstract class YANG_DataDef extends FeaturedBody  {
+public abstract class YANG_DataDef extends FeaturedBody {
 
 	private YANG_When when = null;
 
@@ -36,7 +36,9 @@ public abstract class YANG_DataDef extends FeaturedBody  {
 
 	public String toString() {
 		String result = "";
-		result += "when " + when + ";";
+		if (when != null)
+			result += "when " + when + ";";
+		result += super.toString();
 		return result;
 	}
 

@@ -31,8 +31,9 @@ public class YANG_RefineLeafList extends ListedRefineNode {
 		super(p, id);
 	}
 
-	public void check(YangContext context, YANG_LeafList leaflist)
+	public void check(YANG_LeafList leaflist)
 			throws YangParserException {
+		YangContext context = leaflist.getContext();
 		YANG_Config parentConfig = getParentConfig();
 		if (parentConfig != null)
 			if (b_config) {

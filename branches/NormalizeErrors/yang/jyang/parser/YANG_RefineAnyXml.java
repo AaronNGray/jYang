@@ -31,8 +31,9 @@ public class YANG_RefineAnyXml extends MandatoryRefineNode {
 		super(p, id);
 	}
 
-	public void check(YangContext context, YANG_AnyXml ax)
+	public void check(YANG_AnyXml ax)
 			throws YangParserException {
+		YangContext context = ax.getContext();
 		YANG_Config parentConfig = getParentConfig();
 		if (parentConfig != null) {
 			if (b_config) {

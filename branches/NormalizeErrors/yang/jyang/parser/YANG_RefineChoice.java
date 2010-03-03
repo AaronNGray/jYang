@@ -36,7 +36,7 @@ public class YANG_RefineChoice extends MandatoryRefineNode {
 		super(p, id);
 	}
 
-	public void setDefault(YANG_Default d) throws YangParserException {
+	public void setDefault(YANG_Default d) {
 		if (!b_default) {
 			b_default = true;
 			ydefault = d;
@@ -49,12 +49,14 @@ public class YANG_RefineChoice extends MandatoryRefineNode {
 		return ydefault;
 	}
 
-	public void check(YangContext context, YANG_Choice choice, String ug)
+	public void check(YANG_Choice choice)
 			throws YangParserException {
+		YangContext context = choice.getContext();
 		if (getDefault() != null)
 			getDefault().check(context, choice);
 	}
 
+	/*
 	public void check(YangContext context, YANG_Grouping grouping)
 			throws YangParserException {
 		boolean found = false;
@@ -96,7 +98,7 @@ public class YANG_RefineChoice extends MandatoryRefineNode {
 								+ "but parent config to false");
 
 				}
-			}
+			}*/
 		/*
 		 * for (Enumeration<YANG_RefineCase> er = getRefineCases().elements();
 		 * er .hasMoreElements();) { YANG_RefineCase rcase = er.nextElement();
@@ -108,7 +110,7 @@ public class YANG_RefineChoice extends MandatoryRefineNode {
 		 * " from the used grouping " + grouping.getGrouping() // + " at line "
 		 * + grouping.getLine()); } }
 		 */
-	}
+//	}
 
 	public String toString() {
 		String result = "";

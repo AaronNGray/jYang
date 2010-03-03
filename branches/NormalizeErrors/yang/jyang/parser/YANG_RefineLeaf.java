@@ -64,12 +64,14 @@ public class YANG_RefineLeaf extends MustRefineNode {
 		return mandatory;
 	}
 
-	public void check(YangContext context, YANG_Leaf leaf)
+	public void check(YANG_Leaf leaf)
 			throws YangParserException {
+		YangContext context = leaf.getContext();
 		if (getDefault() != null)
 			leaf.getType().checkDefaultValue(context, this, getDefault());
 
 		YANG_Config parentConfig = getParentConfig();
+		
 		if (parentConfig != null)
 			if (b_config) {
 				if (parentConfig.getConfigStr().compareTo("false") == 0
@@ -94,6 +96,8 @@ public class YANG_RefineLeaf extends MustRefineNode {
 
 	}
 
+	/*
+	
 	public void check(YangContext context, YANG_Grouping grouping)
 			throws YangParserException {
 		try {
@@ -146,6 +150,8 @@ public class YANG_RefineLeaf extends MustRefineNode {
 			}
 
 	}
+	
+	*/
 
 	public String toString() {
 		String result = "";

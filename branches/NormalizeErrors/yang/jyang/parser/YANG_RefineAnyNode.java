@@ -20,6 +20,10 @@ public YANG_RefineAnyNode(int id) {
     super(p, id);
   }
   
+  public String getRefineNodeId(){
+	  return refineAnyNodeId;
+  }
+  
   public void setRefineAnyNodeId(
 		  String r) {
 	  refineAnyNodeId = r;
@@ -136,11 +140,103 @@ public YANG_RefineAnyNode(int id) {
 		return config;
 	}
 
-	@Override
-	public void check(YangContext context, YANG_Grouping g)
-			throws YangParserException {
-		// TODO Auto-generated method stub
+	public YANG_RefineLeaf getRefineLeaf(){
+		YANG_RefineLeaf rl = new YANG_RefineLeaf(0);
+		rl.setCol(getCol());
+		rl.setConfig(getConfig());
+		rl.setDefault(getDefault());
+		rl.setDescription(getDescription());
+		rl.setFileName(getFileName());
+		rl.setLine(getLine());
+		rl.setMandatory(getMandatory());
+		rl.setReference(getReference());
+		rl.setRefineNodeId(getRefineNodeId());
 		
+		return rl;
+	}
+	
+	public YANG_RefineContainer getRefineContainer(){
+		YANG_RefineContainer rc = new YANG_RefineContainer(0);
+		rc.setCol(getCol());
+		rc.setConfig(getConfig());
+		rc.setDescription(getDescription());
+		rc.setFileName(getFileName());
+		rc.setLine(getLine());
+		rc.setReference(getReference());
+		rc.setRefineNodeId(getRefineNodeId());
+		
+		return rc;
+	}
+	
+	public YANG_RefineAnyXml getRefineAnyXml(){
+		YANG_RefineAnyXml ra = new YANG_RefineAnyXml(0);
+		ra.setCol(getCol());
+		ra.setConfig(getConfig());
+		ra.setDescription(getDescription());
+		ra.setFileName(getFileName());
+		ra.setLine(getLine());
+		ra.setMandatory(getMandatory());
+		ra.setReference(getReference());
+		ra.setRefineNodeId(getRefineNodeId());
+		
+		return ra;
+	}
+
+	public YANG_RefineLeafList getRefineLeafList() {
+		YANG_RefineLeafList rl = new YANG_RefineLeafList(0);
+		rl.setCol(getCol());
+		rl.setConfig(getConfig());
+		rl.setDescription(getDescription());
+		rl.setFileName(getFileName());
+		rl.setLine(getLine());
+		rl.setMaxElement(getMaxElement());
+		rl.setMinElement(getMinElement());
+		rl.setReference(getReference());
+		rl.setRefineNodeId(getRefineNodeId());
+		
+		return rl;
+	}
+
+	public YANG_RefineList getRefineList() {
+		YANG_RefineList rl = new YANG_RefineList(0);
+		rl.setCol(getCol());
+		rl.setConfig(getConfig());
+		rl.setDescription(getDescription());
+		rl.setFileName(getFileName());
+		rl.setLine(getLine());
+		rl.setMaxElement(getMaxElement());
+		rl.setMinElement(getMinElement());
+		rl.setReference(getReference());
+		rl.setRefineNodeId(getRefineNodeId());
+		
+		return rl;
+	}
+
+	public YANG_RefineChoice getRefineChoice() {
+		YANG_RefineChoice rc = new YANG_RefineChoice(0);
+		rc.setCol(getCol());
+		rc.setConfig(getConfig());
+		rc.setDefault(getDefault());
+		rc.setDescription(getDescription());
+		rc.setFileName(getFileName());
+		rc.setLine(getLine());
+		rc.setMandatory(getMandatory());
+		rc.setReference(getReference());
+		rc.setRefineNodeId(getRefineNodeId());
+		
+		return rc;
+	}
+
+	public YANG_RefineCase getRefineCase() {
+		YANG_RefineCase rc = new YANG_RefineCase(0);
+		rc.setCol(getCol());
+		rc.setDescription(getDescription());
+		rc.setFileName(getFileName());
+		rc.setLine(getLine());
+		rc.setReference(getReference());
+		rc.setRefineNodeId(getRefineNodeId());
+		
+		return rc;
 	}
 
 }

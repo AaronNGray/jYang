@@ -664,7 +664,7 @@ public class YANG_Type extends SimpleYangNode {
 							.getCol(), "enum_auto_too_big", yenum.getEnum());
 				if (highest == 2147483647)
 					maxraised = true;
-				enumvalues[i++] = (int)highest;
+				enumvalues[i++] = (int) highest;
 				highest++;
 			} else {
 				String strenum = yenum.getValue().getValue();
@@ -676,12 +676,12 @@ public class YANG_Type extends SimpleYangNode {
 							.getCol(), "enum_expr", strenum);
 					return;
 				}
-				if (integer.compareTo(new Integer((int)highest)) >= 0) {
+				if (integer.compareTo(new Integer((int) highest)) >= 0) {
 					highest = integer.intValue();
-					enumvalues[i++] = (int)highest++;
-				} else if (integer.compareTo(new Integer((int)highest)) == -1) {
+					enumvalues[i++] = (int) highest++;
+				} else if (integer.compareTo(new Integer((int) highest)) == -1) {
 					enumvalues[i++] = integer.intValue();
-				} else if (integer.compareTo(new Integer((int)highest)) == 0) {
+				} else if (integer.compareTo(new Integer((int) highest)) == 0) {
 					throw new YangParserException("@" + yenum.getLine() + "."
 							+ yenum.getCol() + highest
 							+ ":ambigous; a value must be specified");
@@ -1290,8 +1290,7 @@ public class YANG_Type extends SimpleYangNode {
 
 	public void checkDefaultValue(YangContext context, YangNode usernode,
 			YANG_Default ydefault) throws YangParserException {
-		String value = YangBuiltInTypes.removeQuotesAndTrim(ydefault
-				.getDefault());
+		String value = ydefault.getDefault();
 
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			String[][] ranges = null;
@@ -1501,10 +1500,9 @@ public class YANG_Type extends SimpleYangNode {
 							}
 						}
 
-					} catch (NumberFormatException ne) {// ne.printStackTrace();
-						// throw new
-						// YangParserException(" illegal integer value : " +
-						// this);
+					} catch (NumberFormatException ne) {
+						YangErrorManager.tadd(filename, ydefault.getLine(),
+								ydefault.getCol(), "not_alw", value, getType());
 					}
 				}
 			} else if (YangBuiltInTypes.isFloat(context.getBuiltInType(this))) {

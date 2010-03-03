@@ -33,7 +33,10 @@ public class YANG_RefineCase extends YANG_Refine {
 	}
 
 
-
+	public void check(YANG_Case yc){
+	
+	}
+	
 	public void check(YangContext c, YANG_Grouping g) throws YangParserException {}
 	
 	
@@ -69,10 +72,10 @@ public class YANG_RefineCase extends YANG_Refine {
 		return result;
 	}
 
-	@Override
-	public void check(YangContext context) throws YangParserException {
-		// TODO Auto-generated method stub
+	//@Override
+//	public void check(YangContext context) throws YangParserException {
 		
-	}
+		
+	//}
 
 }

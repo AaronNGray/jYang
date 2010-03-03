@@ -38,8 +38,8 @@ public  abstract class YANG_Refine extends DocumentedNode {
 
 	public  String getBody(){return "";}
 
-	public  abstract void check(YangContext context, YANG_Grouping g)
-			throws YangParserException;
+	//public  abstract void check(YangContext context, YANG_Grouping g)
+	//		throws YangParserException;
 
 	public void setUsedGrouping(String g){
 		usedgrouping = unquote(g);
@@ -53,6 +53,7 @@ public  abstract class YANG_Refine extends DocumentedNode {
 		this.refineNodeId = nodeId;
 	}
 	
+	/*
 	public void check(YangContext context, YANG_Container container)
 			throws YangParserException {
 		boolean found = false;
@@ -104,7 +105,10 @@ public  abstract class YANG_Refine extends DocumentedNode {
 					+ ":container " + container.getContainer() + " at line "
 					+ container.getLine() + " does not defines " + getBody());
 	}
-
+	*/
+	
+	
+/*
 	public void check(YangContext context, YANG_List list)
 			throws YangParserException {
 		boolean found = false;
@@ -167,17 +171,7 @@ public  abstract class YANG_Refine extends DocumentedNode {
 			found = cdef.getBody().compareTo(getBody()) == 0;
 			if (found)
 				try {
-					if (this instanceof YANG_RefineContainer
-							&& cdef instanceof YANG_Container) {
-						YANG_RefineContainer rcontainer = (YANG_RefineContainer) this;
-						YANG_Container gcontainer = (YANG_Container) cdef;
-						rcontainer.icheck(context, gcontainer, usedgrouping);
-					} else if (this instanceof YANG_RefineLeaf
-							&& cdef instanceof YANG_Leaf) {
-						YANG_RefineLeaf rleaf = (YANG_RefineLeaf) this;
-						YANG_Leaf leaf = (YANG_Leaf) cdef;
-						rleaf.check(context, leaf);
-					} else if (this instanceof YANG_RefineList
+					 if (this instanceof YANG_RefineList
 							&& cdef instanceof YANG_List) {
 						YANG_RefineList rlist = (YANG_RefineList) this;
 						YANG_List list = (YANG_List) cdef;
@@ -255,6 +249,7 @@ public  abstract class YANG_Refine extends DocumentedNode {
 		// TODO Auto-generated method stub
 		
 	}
+	*/
 	
 
 }

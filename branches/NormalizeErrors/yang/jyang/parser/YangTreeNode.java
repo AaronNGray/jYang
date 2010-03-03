@@ -30,6 +30,8 @@ public class YangTreeNode implements java.io.Serializable {
 	private Vector<YangTreeNode> childs = new Vector<YangTreeNode>();
 	private YANG_Body node = null;
 
+	private YANG_Case casenode = null;
+
 	public void setParent(YangTreeNode p) {
 		parent = p;
 	}
@@ -48,6 +50,14 @@ public class YangTreeNode implements java.io.Serializable {
 
 	public void setNode(YANG_Body n) {
 		node = n;
+	}
+
+	public YANG_Case getCasenode() {
+		return casenode;
+	}
+
+	public void setCasenode(YANG_Case casenode) {
+		this.casenode = casenode;
 	}
 
 	public YANG_Body getNode() {
@@ -125,6 +135,77 @@ public class YangTreeNode implements java.io.Serializable {
 	public void check(YANG_Specification module, YangTreeNode root,
 			YangTreeNode subroot, Hashtable<String, YangTreeNode> importeds) {
 
+		if (node instanceof YANG_Uses) {
+			YANG_Uses uses = (YANG_Uses) node;
+			for (YANG_Refine ref : uses.getRefinements()) {
+				String refnode = ref.getRefineNodeId();
+				YANG_Body body = isInTree(module, root, importeds, refnode);
+				if (body == null) {
+					YangErrorManager.tadd(ref.getFileName(), ref.getLine(), ref
+							.getCol(), "unknown", "node", refnode);
+				} else {
+					if (body instanceof YANG_Leaf) {
+						YANG_Leaf refinedleaf = (YANG_Leaf) body;
+						YANG_RefineLeaf refiningleaf = ((YANG_RefineAnyNode) ref)
+								.getRefineLeaf();
+						try {
+							refiningleaf.check(refinedleaf);
+						} catch (YangParserException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} else if (body instanceof YANG_Container) {
+						YANG_Container refinedcontainer = (YANG_Container) body;
+						YANG_RefineContainer refiningcontainer = ((YANG_RefineAnyNode) ref)
+								.getRefineContainer();
+						refiningcontainer.check(refinedcontainer);
+					} else if (body instanceof YANG_AnyXml) {
+						YANG_AnyXml refinedanyxml = (YANG_AnyXml) body;
+						YANG_RefineAnyXml refininganyxml = ((YANG_RefineAnyNode) ref)
+								.getRefineAnyXml();
+						try {
+							refininganyxml.check(refinedanyxml);
+						} catch (YangParserException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} else if (body instanceof CaseDataDef) {
+						CaseDataDef cddef = (CaseDataDef) body;
+						YANG_Case refinedcase = cddef.getCase();
+						YANG_RefineCase refiningcase = ((YANG_RefineAnyNode) ref)
+								.getRefineCase();
+						refiningcase.check(refinedcase);
+					} else if (body instanceof YANG_Choice) {
+						YANG_Choice refinedchoice = (YANG_Choice) body;
+						YANG_RefineChoice refiningchoice = ((YANG_RefineAnyNode) ref)
+								.getRefineChoice();
+						try {
+							refiningchoice.check(refinedchoice);
+						} catch (YangParserException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} else if (body instanceof YANG_List) {
+						YANG_List refinedlist = (YANG_List) body;
+						YANG_RefineList refininglist = ((YANG_RefineAnyNode) ref)
+								.getRefineList();
+
+						refininglist.check(refinedlist);
+					} else if (body instanceof YANG_LeafList) {
+						YANG_LeafList refinedleaflist = (YANG_LeafList) body;
+						YANG_RefineLeafList refiningleaflist = ((YANG_RefineAnyNode) ref)
+								.getRefineLeafList();
+						try {
+							refiningleaflist.check(refinedleaflist);
+						} catch (YangParserException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+
+			}
+		}
 		if (node instanceof YANG_Augment) {
 			YANG_Augment augment = (YANG_Augment) node;
 			YANG_Body body = isInTree(module, root, importeds, augment

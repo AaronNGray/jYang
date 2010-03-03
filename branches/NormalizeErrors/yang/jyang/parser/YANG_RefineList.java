@@ -31,9 +31,7 @@ public class YANG_RefineList extends ListedRefineNode {
 		super(p, id);
 	}
 
-	public void check(YangContext context, YANG_List list, String ug)
-			throws YangParserException {
-
+	public void check(YANG_List list){
 	}
 
 	public void check(YangContext context, YANG_Grouping grouping)

@@ -23,6 +23,8 @@ import java.util.*;
 
 public abstract class YANG_Body extends DocumentedNode {
 
+	private YangContext context;
+
 	public abstract void check(YangContext context) throws YangParserException;
 
 	public abstract String getBody();
@@ -157,16 +159,16 @@ public abstract class YANG_Body extends DocumentedNode {
 				for (YANG_ShortCase scase : choice.getShortCases()) {
 					lcontext.addNode((YANG_DataDef) scase);
 				}
-			} else if (ddef instanceof YANG_Uses){
+			} else if (ddef instanceof YANG_Uses) {
 				YANG_Uses uses = (YANG_Uses) ddef;
 				uses.check(context);
 				YANG_Grouping g = uses.getGrouping();
 				if (g != null) {
-					for (YANG_DataDef uddef : g.getDataDefs()){
+					for (YANG_DataDef uddef : g.getDataDefs()) {
 						lcontext.addUsedNode(uses, uddef);
 					}
 				}
-				
+
 			} else
 				lcontext.addNode(ddef);
 		}
@@ -258,9 +260,19 @@ public abstract class YANG_Body extends DocumentedNode {
 
 		try {
 			check(context);
+			setContext(context.clone());
 		} catch (YangParserException e) {
 			System.err.println(context.getSpec().getName() + e.getMessage());
 		}
+	}
+
+	private void setContext(YangContext clone) {
+		context = clone;
+
+	}
+
+	public YangContext getContext() {
+		return context;
 	}
 
 	public void builtTreeNode(YangTreeNode root) {
@@ -296,7 +308,7 @@ public abstract class YANG_Body extends DocumentedNode {
 
 		} else if (this instanceof CaseDataDef) {
 			CaseDataDef caseddef = (CaseDataDef) this;
-
+			// datadefs.add(caseddef);
 			for (Enumeration<YANG_DataDef> ecddef = caseddef.getDataDefs()
 					.elements(); ecddef.hasMoreElements();) {
 				YANG_DataDef cddef = ecddef.nextElement();
@@ -341,36 +353,38 @@ public abstract class YANG_Body extends DocumentedNode {
 		}
 
 		if (!(this instanceof YANG_Uses)) {
-			for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
-					.hasMoreElements();) {
-				YANG_Body body = (YANG_Body) ed.nextElement();
-				if (!(body instanceof YANG_Uses)) {
-					YangTreeNode n = new YangTreeNode();
-					n.setNode(body);
-					n.setParent(root);
-					root.addChild(n);
-					body.builtTreeNode(n);
-				} else {
-					body.builtTreeNode(root);
-				}
+			YangTreeNode n = new YangTreeNode();
+			for (YANG_DataDef ddef : datadefs) {
+				YANG_Body body = (YANG_Body) ddef;
+				n.setNode(body);
+				n.setParent(root);
+				root.addChild(n);
+				body.builtTreeNode(n);
 			}
 		} else {
-			// YANG_Uses uses = (YANG_Uses) this;
+			YANG_Uses uses = (YANG_Uses) this;
+			Hashtable<String, YANG_Refine> refnds = new Hashtable<String, YANG_Refine>();
+			for (YANG_Refine ref : uses.getRefinements()) {
+				String refnid = ref.getRefineNodeId();
+				if (refnds.containsKey(refnid)) {
+					YANG_Refine firstref = refnds.get(refnid);
+					YangErrorManager.tadd(filename, ref.getLine(),
+							ref.getCol(), "dup_child", refnid, firstref
+									.getFileName(), firstref.getLine());
+				} else
+					refnds.put(ref.getRefineNodeId(), ref);
+			}
 			for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
 					.hasMoreElements();) {
 				YANG_Body body = (YANG_Body) ed.nextElement();
-				if (!(body instanceof YANG_Uses)) {
-					YangTreeNode n = new YangTreeNode();
-					n.setNode(body);
-					n.setParent(root);
-					root.addChild(n);
-					body.builtTreeNode(n);
-				} else {
-					if (((YANG_Uses) body).isChecked())
-						body.builtTreeNode(root);
-				}
+				YangTreeNode n = new YangTreeNode();
+				n.setNode(body);
+				n.setParent(root);
+				root.addChild(n);
+				body.builtTreeNode(n);
+
 			}
+
 		}
 	}
-
 }

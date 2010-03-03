@@ -161,7 +161,7 @@ public class YANG_Uses extends YANG_DataDef  {
 				 * grouping.setChecked(true); }
 				 */
 			}
-
+/*
 			for (Enumeration<YANG_Refine> er = refinements.elements(); er
 					.hasMoreElements();) {
 				YANG_Refine ref = er.nextElement();
@@ -176,6 +176,7 @@ public class YANG_Uses extends YANG_DataDef  {
 							+ ye.getMessage());
 				}
 			}
+			*/
 			checked = true;
 		}
 	}

@@ -19,8 +19,8 @@ public class CaseDataDef extends YANG_DataDef {
 		ycase = c;
 	}
 
-	public String getCase() {
-		return ycase.getCase();
+	public YANG_Case getCase() {
+		return ycase;
 	}
 	
 	public void addDataDef(YANG_DataDef c) {
@@ -39,6 +39,10 @@ public class CaseDataDef extends YANG_DataDef {
 	@Override
 	public String getBody() {
 		return ycase.getBody();
+	}
+	
+	public String toString(){
+		return ycase.toString();
 	}
 
 }
