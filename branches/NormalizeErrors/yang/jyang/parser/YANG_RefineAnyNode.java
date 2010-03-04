@@ -26,7 +26,7 @@ public YANG_RefineAnyNode(int id) {
   
   public void setRefineAnyNodeId(
 		  String r) {
-	  refineAnyNodeId = r;
+	  refineAnyNodeId = unquote(r);
   }
 	private YANG_Default ydefault = null;
 

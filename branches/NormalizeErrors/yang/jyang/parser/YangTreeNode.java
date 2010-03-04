@@ -107,29 +107,52 @@ public class YangTreeNode implements java.io.Serializable {
 		}
 
 		boolean foundchild = false;
-		for (int i = starting; i < nids.length && !foundchild; i++) {
+		boolean stop = false;
+		for (int i = starting; i < nids.length && !stop; i++) {
 			YangTreeNode child = null;
+			boolean foundonechild = false;
 			for (Enumeration<YangTreeNode> et = startnode.getChilds()
-					.elements(); et.hasMoreElements() && !foundchild;) {
+					.elements(); et.hasMoreElements() && !foundonechild;) {
 				child = et.nextElement();
-				if (nids[i].indexOf(':') != -1) {
-					foundchild = child.getNode().getBody().compareTo(
+				if (child.getNode() instanceof YANG_Uses) {
+					YANG_Uses uses = (YANG_Uses) child.getNode();
+					boolean foundusedchild = false;
+					for (YangTreeNode usedchild : child.getChilds()) {
+						if (!foundusedchild) {
+							if (nids[i].indexOf(':') != -1) {
+								foundonechild = usedchild.getNode().getBody()
+										.compareTo(
+												nids[i].substring(nids[i]
+														.indexOf(':') + 1)) == 0;
+							} else {
+								foundonechild = usedchild.getNode().getBody()
+										.compareTo(nids[i]) == 0;
+							}
+							foundusedchild = foundonechild;
+							if (foundusedchild)
+								child = usedchild;
+						}
+					}
+				} else if (nids[i].indexOf(':') != -1) {
+					foundonechild = child.getNode().getBody().compareTo(
 							nids[i].substring(nids[i].indexOf(':') + 1)) == 0;
 				} else {
-					foundchild = child.getNode().getBody().compareTo(nids[i]) == 0;
+					foundonechild = child.getNode().getBody()
+							.compareTo(nids[i]) == 0;
 				}
-
 			}
-
-			if (foundchild) {
+			if (foundonechild) {
 				startnode = child;
+				foundchild = true;
+			} else {
+				foundchild = false;
+				stop = true;
 			}
 		}
 		if (foundchild)
 			return startnode.getNode();
 		else
 			return null;
-
 	}
 
 	public void check(YANG_Specification module, YangTreeNode root,
@@ -137,6 +160,17 @@ public class YangTreeNode implements java.io.Serializable {
 
 		if (node instanceof YANG_Uses) {
 			YANG_Uses uses = (YANG_Uses) node;
+			Hashtable<String, YANG_Refine> refnds = new Hashtable<String, YANG_Refine>();
+			for (YANG_Refine ref : uses.getRefinements()) {
+				String refnid = ref.getRefineNodeId();
+				if (refnds.containsKey(refnid)) {
+					YANG_Refine firstref = refnds.get(refnid);
+					YangErrorManager.tadd(ref.getFileName(), ref.getLine(), ref
+							.getCol(), "dup_child", refnid, firstref
+							.getFileName(), firstref.getLine());
+				} else
+					refnds.put(ref.getRefineNodeId(), ref);
+			}
 			for (YANG_Refine ref : uses.getRefinements()) {
 				String refnode = ref.getRefineNodeId();
 				YANG_Body body = isInTree(module, root, importeds, refnode);

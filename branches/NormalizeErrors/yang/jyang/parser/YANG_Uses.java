@@ -205,13 +205,14 @@ public class YANG_Uses extends YANG_DataDef  {
 	public String toString() {
 		String result = new String();
 		result += "uses " + uses;
-		if (isBracked()) {
-			result += "{\n";
+//		if (isBracked()) {
+//			result += " {\n";
 			result += super.toString() + "\n";
 			for (YANG_UsesAugment er : usesaugments)
 				result += er.toString() + "\n";
-			result += "}";
-		} else
+			for (YANG_Refine er : refinements)
+				result += er.toString() + "\n";
+//		} else
 			result += ";";
 
 		return result;

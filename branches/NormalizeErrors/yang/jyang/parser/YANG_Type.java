@@ -1736,16 +1736,15 @@ public class YANG_Type extends SimpleYangNode {
 					.elements(); et.hasMoreElements() && !found;) {
 				YANG_Type type = et.nextElement();
 				try {
-					type.checkDefaultValue(context, ut, ydefault);
-					found = true;
+					found = found || type.checkUnionDefaultValue(context, ut, ydefault);
 				} catch (YangParserException ye) {
-					// nothing to do; try an other union type
 				}
 			}
 			if (!found)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":value " + value
 						+ " does not match in any union type");
+
 		} else if (YangBuiltInTypes.empty.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			throw new YangParserException("@" + getLine() + "." + getCol()
@@ -1760,6 +1759,382 @@ public class YANG_Type extends SimpleYangNode {
 
 		}
 
+	}
+
+	public boolean checkUnionDefaultValue(YangContext context,
+			YangNode usernode, YANG_Default ydefault)
+			throws YangParserException {
+		String value = ydefault.getDefault();
+
+		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
+			String[][] ranges = null;
+			YANG_NumericalRestriction lnumrest = null;
+
+			if (getNumRest() != null) {
+				ranges = getRanges(context);
+				lnumrest = getNumRest();
+			} else {
+				YANG_TypeDef td = context.getTypeDef(this);
+				if (td != null) {
+					YANG_Type bt = getFirstRangeDefined(context, td);
+					if (bt != null) {
+						ranges = bt.getRanges(context);
+						lnumrest = bt.getNumRest();
+					} else
+						ranges = getRanges(context);
+				} else {
+					ranges = getRanges(context);
+				}
+			}
+
+			if (YangBuiltInTypes.isInteger(context.getBuiltInType(this))) {
+				if (value.compareTo("min") == 0) {
+					if (ranges[0][0].compareTo("min") != 0)
+						return false;
+				} else if (value.compareTo("max") == 0) {
+					if (ranges[ranges.length - 1][1].compareTo("max") != 0)
+						return false;
+
+				} else {
+					BigInteger bilb = null;
+					BigInteger biub = null;
+					try {
+						BigInteger bi = new BigInteger(value);
+						boolean inside = false;
+						for (int i = 0; i < ranges.length && !inside; i++) {
+							if (ranges[i][0].compareTo("min") != 0
+									&& ranges[i][1].compareTo("max") != 0) {
+								bilb = new BigInteger(ranges[i][0]);
+								biub = new BigInteger(ranges[i][1]);
+							} else if (ranges[i][0].compareTo("min") == 0
+									&& ranges[i][1].compareTo("max") != 0) {
+								if (YangBuiltInTypes.int8.compareTo(context
+										.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int8lb).toString());
+								else if (YangBuiltInTypes.int16
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int16lb)
+											.toString());
+								else if (YangBuiltInTypes.int32
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int32lb)
+											.toString());
+								else if (YangBuiltInTypes.int64
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = YangBuiltInTypes.int64lb;
+								else if (YangBuiltInTypes.uint8
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint8lb)
+											.toString());
+								else if (YangBuiltInTypes.uint16
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint16lb)
+											.toString());
+								else if (YangBuiltInTypes.uint32
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint32lb)
+											.toString());
+								else if (YangBuiltInTypes.uint64
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = YangBuiltInTypes.uint64lb;
+								biub = new BigInteger(ranges[i][1]);
+							} else if (ranges[i][1].compareTo("max") == 0
+									&& ranges[i][0].compareTo("min") != 0) {
+								if (YangBuiltInTypes.int8.compareTo(context
+										.getBuiltInType(this)) == 0)
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int8ub).toString());
+								else if (YangBuiltInTypes.int16
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int16ub)
+											.toString());
+								else if (YangBuiltInTypes.int32
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int32ub)
+											.toString());
+								else if (YangBuiltInTypes.int64
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = YangBuiltInTypes.int64ub;
+								else if (YangBuiltInTypes.uint8
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.uint8ub)
+											.toString());
+								else if (YangBuiltInTypes.uint16
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.uint16ub)
+											.toString());
+								else if (YangBuiltInTypes.uint32
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = YangBuiltInTypes.uint32ub;
+								else if (YangBuiltInTypes.uint64
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = YangBuiltInTypes.uint64ub;
+								bilb = new BigInteger(ranges[i][0]);
+							} else {
+								if (YangBuiltInTypes.int8.compareTo(context
+										.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int8lb).toString());
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int8ub).toString());
+								} else if (YangBuiltInTypes.int16
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int16lb)
+											.toString());
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int16ub)
+											.toString());
+								} else if (YangBuiltInTypes.int32
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int32lb)
+											.toString());
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int32ub)
+											.toString());
+								} else if (YangBuiltInTypes.int64
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = YangBuiltInTypes.int64lb;
+									biub = YangBuiltInTypes.int64ub;
+								} else if (YangBuiltInTypes.uint8
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint8lb)
+											.toString());
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.uint8ub)
+											.toString());
+								} else if (YangBuiltInTypes.uint16
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint16lb)
+											.toString());
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.uint16ub)
+											.toString());
+								} else if (YangBuiltInTypes.uint32
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint32lb)
+											.toString());
+									biub = YangBuiltInTypes.uint32ub;
+								} else if (YangBuiltInTypes.uint64
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = YangBuiltInTypes.uint64lb;
+									biub = YangBuiltInTypes.uint64ub;
+								}
+							}
+
+							inside = (bilb.compareTo(bi) <= 0 && biub
+									.compareTo(bi) >= 0);
+						}
+						if (!inside)
+							return false;
+
+					} catch (NumberFormatException ne) {
+						return false;
+					}
+				}
+			} else if (YangBuiltInTypes.isFloat(context.getBuiltInType(this))) {
+
+				if (value.compareTo("min") == 0 || value.compareTo("-INF") == 0) {
+					if (ranges[0][0].compareTo("min") != 0
+							&& ranges[0][0].compareTo("-INF") != 0)
+						return false;
+				} else if (value.compareTo("max") == 0
+						|| value.compareTo("INF") == 0) {
+					if (ranges[ranges.length - 1][1].compareTo("max") != 0
+							&& ranges[ranges.length - 1][1].compareTo("INF") != 0)
+						return false;
+				} else {
+					BigDecimal bdlb = null;
+					BigDecimal bdub = null;
+					try {
+						BigDecimal bd = new BigDecimal(value);
+						boolean inside = false;
+						for (int i = 0; i < ranges.length && !inside; i++) {
+							if ((ranges[i][0].compareTo("min") != 0 && ranges[i][0]
+									.compareTo("-INF") != 0)
+									&& (ranges[i][1].compareTo("max") != 0 && ranges[i][1]
+											.compareTo("INF") != 0)) {
+								bdlb = new BigDecimal(ranges[i][0]);
+								bdub = new BigDecimal(ranges[i][1]);
+								inside = bdlb.compareTo(bd) <= 0
+										&& bdub.compareTo(bd) >= 0;
+							} else if ((ranges[i][0].compareTo("min") == 0 || ranges[i][0]
+									.compareTo("-INF") == 0)
+									&& (ranges[i][1].compareTo("max") != 0 && ranges[i][1]
+											.compareTo("INF") != 0)) {
+								bdub = new BigDecimal(ranges[i][1]);
+								inside = bdub.compareTo(bd) >= 0;
+							} else if ((ranges[i][0].compareTo("min") != 0 && ranges[i][0]
+									.compareTo("-INF") != 0)
+									&& (ranges[i][1].compareTo("max") == 0 || ranges[i][1]
+											.compareTo("INF") == 0)) {
+								bdlb = new BigDecimal(ranges[i][0]);
+								inside = bdlb.compareTo(bd) <= 0;
+							} else
+								inside = true;
+						}
+						if (!inside)
+							return false;
+					} catch (NumberFormatException ne) {
+						return false;
+					}
+				}
+			}
+		} else if (YangBuiltInTypes.string.compareTo(context
+				.getBuiltInType(this)) == 0
+				|| YangBuiltInTypes.binary.compareTo(context
+						.getBuiltInType(this)) == 0) {
+			value = YangBuiltInTypes.removeQuotes(ydefault.getDefault());
+
+			String[][] ranges = null;
+			boolean isStringRestricted = false;
+
+			Enumeration<YANG_Pattern> patterns = null;
+
+			if (getStringRest() != null) {
+				if (getStringRest().getLength() != null)
+					isStringRestricted = true;
+				else
+					isStringRestricted = false;
+
+				patterns = getStringRest().getPatterns().elements();
+
+			} else
+				isStringRestricted = false;
+
+			if (isStringRestricted) {
+				ranges = getLength(context);
+			} else {
+				YANG_TypeDef td = context.getTypeDef(this);
+				if (td != null) {
+					YANG_Type bt = getFirstLengthDefined(context, td);
+					if (bt != null)
+						ranges = bt.getLength(context);
+					else
+						ranges = getLength(context);
+				} else {
+					ranges = getLength(context);
+				}
+			}
+
+			BigInteger bi = new BigInteger(new Integer(value.length())
+					.toString());
+			BigInteger bilb = null;
+			BigInteger biub = null;
+			boolean inside = false;
+			for (int i = 0; i < ranges.length && !inside; i++) {
+				if (ranges[i][0].compareTo("min") != 0
+						&& ranges[i][1].compareTo("max") != 0) {
+					bilb = new BigInteger(ranges[i][0]);
+					biub = new BigInteger(ranges[i][1]);
+					inside = (bilb.compareTo(bi) <= 0 && biub.compareTo(bi) >= 0);
+				} else if (ranges[i][0].compareTo("min") == 0
+						&& ranges[i][1].compareTo("max") != 0) {
+					biub = new BigInteger(ranges[i][1]);
+					inside = biub.compareTo(bi) >= 0;
+				} else if (ranges[i][0].compareTo("min") != 0
+						&& ranges[i][1].compareTo("max") == 0) {
+					bilb = new BigInteger(ranges[i][0]);
+					inside = bilb.compareTo(bi) <= 0;
+				} else if (ranges[i][0].compareTo("min") == 0
+						&& ranges[i][1].compareTo("max") == 0) {
+					inside = true;
+				}
+			}
+			if (!inside)
+				return false;
+
+			boolean direct = true;
+			YANG_TypeDef indirectTd = null;
+			if (patterns != null) {
+				if (getStringRest().getPatterns().size() == 0) {
+					YANG_TypeDef td = context.getTypeDef(this);
+					if (td != null) {
+						YANG_Type bt = getFirstPatternDefined(context, td);
+						if (bt != null)
+							patterns = bt.getStringRest().getPatterns()
+									.elements();
+					}
+
+				}
+			} else {
+				direct = false;
+				indirectTd = context.getTypeDef(this);
+				if (indirectTd != null) {
+					YANG_Type bt = getFirstPatternDefined(context, indirectTd);
+					if (bt != null)
+						patterns = bt.getStringRest().getPatterns().elements();
+				}
+
+			}
+
+			if (patterns != null)
+				while (patterns.hasMoreElements()) {
+					YANG_Pattern pattern = patterns.nextElement();
+					return false;
+				}
+
+		} else if (YangBuiltInTypes.enumeration.compareTo(context
+				.getBuiltInType(this)) == 0) {
+			value = YangBuiltInTypes.removeQuotesAndTrim(value);
+			String[] enums = getFirstEnumDefined(context, this);
+			boolean match = false;
+			int i = 0;
+			while (!match && i < enums.length)
+				match = enums[i++].compareTo(value) == 0;
+			if (!match)
+				return false;
+		} else if (YangBuiltInTypes.bits
+				.compareTo(context.getBuiltInType(this)) == 0) {
+			value = YangBuiltInTypes.removeQuotesAndTrim(value);
+			byte[] bv = value.getBytes();
+			boolean binary = true;
+			for (int i = 0; i < bv.length && binary; i++)
+				binary = bv[i] == '1' || bv[i] == '0';
+			if (!binary)
+				return false;
+			if (value.length() != getFirstBitDefined(context, this))
+				return false;
+
+		} else if (YangBuiltInTypes.union.compareTo(context
+				.getBuiltInType(this)) == 0) {
+			YANG_Type ut = getFirstUnionDefined(context, this);
+			boolean found = false;
+			for (Enumeration<YANG_Type> et = ut.getUnionSpec().getTypes()
+					.elements(); et.hasMoreElements() && !found;) {
+				YANG_Type type = et.nextElement();
+
+				found = found || type.checkUnionDefaultValue(context, ut, ydefault);
+
+			}
+			if (!found)
+				return false;
+
+		} else if (YangBuiltInTypes.empty.compareTo(context
+				.getBuiltInType(this)) == 0) {
+			return false;
+		} else if (YangBuiltInTypes.yboolean.compareTo(context
+				.getBuiltInType(this)) == 0) {
+			value = YangBuiltInTypes.removeQuotesAndTrim(value);
+			if (value.compareTo("true") != 0 && value.compareTo("false") != 0)
+				return false;
+
+		}
+		return true;
 	}
 
 	private YANG_Type getFirstUnionDefined(YangContext context, YANG_Type bt)
