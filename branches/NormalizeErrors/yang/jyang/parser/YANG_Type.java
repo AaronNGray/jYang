@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -1702,6 +1703,21 @@ public class YANG_Type extends SimpleYangNode {
 
 					}
 				}
+			if (YangBuiltInTypes.binary.compareTo(context.getBuiltInType(this)) == 0) {
+
+				Pattern path_arg = null;
+
+				try {
+					path_arg = Pattern.compile("[A-Z0-9]*");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				Matcher m = path_arg.matcher(value);
+				if (!m.matches()) {
+					YangErrorManager.tadd(filename, getLine(), getCol(),
+							"bad_binary_expr", value, getType());
+				}
+			}
 
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
 				.getBuiltInType(this)) == 0) {
@@ -1736,14 +1752,16 @@ public class YANG_Type extends SimpleYangNode {
 					.elements(); et.hasMoreElements() && !found;) {
 				YANG_Type type = et.nextElement();
 				try {
-					found = found || type.checkUnionDefaultValue(context, ut, ydefault);
+					found = found
+							|| type.checkUnionDefaultValue(context, ut,
+									ydefault);
 				} catch (YangParserException ye) {
 				}
 			}
 			if (!found)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":value " + value
-						+ " does not match in any union type");
+				YangErrorManager.tadd(filename, getLine(), getCol(),
+						"bad_default_union", value, ut.getFileName(), ut
+								.getLine());
 
 		} else if (YangBuiltInTypes.empty.compareTo(context
 				.getBuiltInType(this)) == 0) {
@@ -1941,6 +1959,8 @@ public class YANG_Type extends SimpleYangNode {
 						}
 						if (!inside)
 							return false;
+						else
+							return true;
 
 					} catch (NumberFormatException ne) {
 						return false;
@@ -1989,6 +2009,8 @@ public class YANG_Type extends SimpleYangNode {
 						}
 						if (!inside)
 							return false;
+						else
+							return true;
 					} catch (NumberFormatException ne) {
 						return false;
 					}
@@ -2081,12 +2103,27 @@ public class YANG_Type extends SimpleYangNode {
 				}
 
 			}
-
 			if (patterns != null)
 				while (patterns.hasMoreElements()) {
 					YANG_Pattern pattern = patterns.nextElement();
+					if (!pattern.checkExp(value))
+						return false;
+				}
+			if (YangBuiltInTypes.binary.compareTo(context.getBuiltInType(this)) == 0) {
+
+				Pattern path_arg = null;
+
+				try {
+					path_arg = Pattern.compile("[A-Z0-9]*");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				Matcher m = path_arg.matcher(value);
+				if (!m.matches()) {
 					return false;
 				}
+			}
+			return true;
 
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
 				.getBuiltInType(this)) == 0) {
@@ -2117,9 +2154,8 @@ public class YANG_Type extends SimpleYangNode {
 			for (Enumeration<YANG_Type> et = ut.getUnionSpec().getTypes()
 					.elements(); et.hasMoreElements() && !found;) {
 				YANG_Type type = et.nextElement();
-
-				found = found || type.checkUnionDefaultValue(context, ut, ydefault);
-
+				found = found
+						|| type.checkUnionDefaultValue(context, ut, ydefault);
 			}
 			if (!found)
 				return false;
