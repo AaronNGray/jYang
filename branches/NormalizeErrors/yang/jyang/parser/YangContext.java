@@ -127,6 +127,7 @@ public class YangContext {
 	public boolean isNodeDefined(String n) {
 		return specnodes.isDefined(getModuleSpecName() + ":" + n);
 	}
+	 
 
 	/**
 	 * Ask if a type is defined in this context.
@@ -283,6 +284,10 @@ public class YangContext {
 
 	private YangSpecNode getSpecNodes() {
 		return specnodes;
+	}
+	
+	public YANG_Body get(String b){
+		return specnodes.get(getModuleSpecName() + ":" + b);
 	}
 
 	/**

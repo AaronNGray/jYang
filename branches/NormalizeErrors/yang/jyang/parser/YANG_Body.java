@@ -89,8 +89,7 @@ public abstract class YANG_Body extends DocumentedNode {
 			}
 		} else if (this instanceof YANG_Uses) {
 			/**
-			 * Nothing to do
-			 * the used grouping is not in the current context 
+			 * Nothing to do the used grouping is not in the current context
 			 */
 
 		} else if (this instanceof YANG_Augment) {

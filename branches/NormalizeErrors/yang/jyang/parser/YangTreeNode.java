@@ -160,6 +160,41 @@ public class YangTreeNode implements java.io.Serializable {
 
 		if (node instanceof YANG_Uses) {
 			YANG_Uses uses = (YANG_Uses) node;
+			for (YangTreeNode ytn : getParent().getChilds()) {
+				if (ytn != this) {
+					if (uses.getGrouping() != null) {
+						for (YANG_DataDef ddef : uses.getGrouping()
+								.getDataDefs()) {
+							if (ytn.getNode() instanceof YANG_Choice) {
+								for (YANG_Case ycase : ((YANG_Choice) ytn
+										.getNode()).getCases()) {
+									for (YANG_DataDef cddef : ycase
+											.getDataDefs()) {
+										if (cddef.getBody().compareTo(
+												ddef.getBody()) == 0)
+											YangErrorManager.tadd(uses
+													.getFileName(), uses
+													.getLine(), uses.getCol(),
+													"dup_child",
+													ddef.getBody(), cddef
+															.getFileName(),
+													cddef.getLine());
+									}
+								}
+							} else {
+								if (ytn.getNode().getBody().compareTo(
+										ddef.getBody()) == 0)
+									YangErrorManager.tadd(uses.getFileName(),
+											uses.getLine(), uses.getCol(),
+											"dup_child", ddef.getBody(), ytn
+													.getNode().getFileName(),
+											ytn.getNode().getLine());
+
+							}
+						}
+					}
+				}
+			}
 			Hashtable<String, YANG_Refine> refnds = new Hashtable<String, YANG_Refine>();
 			for (YANG_Refine ref : uses.getRefinements()) {
 				String refnid = ref.getRefineNodeId();
