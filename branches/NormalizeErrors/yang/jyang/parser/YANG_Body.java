@@ -276,6 +276,7 @@ public abstract class YANG_Body extends DocumentedNode {
 					datadefs.add(gddef);
 				}
 		} else if (this instanceof YANG_Augment) {
+			/*
 			YANG_Augment augment = (YANG_Augment) this;
 			datadefs = augment.getDataDefs();
 			for (Enumeration<YANG_Case> ec = augment.getCases().elements(); ec
@@ -289,6 +290,7 @@ public abstract class YANG_Body extends DocumentedNode {
 					datadefs.add(ddef);
 				}
 			}
+			*/
 		} else if (this instanceof YANG_Notification) {
 			YANG_Notification notif = (YANG_Notification) this;
 			datadefs = notif.getDataDefs();

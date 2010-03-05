@@ -110,36 +110,26 @@ public class YangTreeNode implements java.io.Serializable {
 		boolean stop = false;
 		for (int i = starting; i < nids.length && !stop; i++) {
 			YangTreeNode child = null;
+
 			boolean foundonechild = false;
+
 			for (Enumeration<YangTreeNode> et = startnode.getChilds()
 					.elements(); et.hasMoreElements() && !foundonechild;) {
 				child = et.nextElement();
+
 				if (child.getNode() instanceof YANG_Uses) {
 					YANG_Uses uses = (YANG_Uses) child.getNode();
 					boolean foundusedchild = false;
 					for (YangTreeNode usedchild : child.getChilds()) {
 						if (!foundusedchild) {
-							if (nids[i].indexOf(':') != -1) {
-								foundonechild = usedchild.getNode().getBody()
-										.compareTo(
-												nids[i].substring(nids[i]
-														.indexOf(':') + 1)) == 0;
-							} else {
-								foundonechild = usedchild.getNode().getBody()
-										.compareTo(nids[i]) == 0;
-							}
+							foundonechild = sameNode(nids[i], usedchild);
 							foundusedchild = foundonechild;
 							if (foundusedchild)
 								child = usedchild;
 						}
 					}
-				} else if (nids[i].indexOf(':') != -1) {
-					foundonechild = child.getNode().getBody().compareTo(
-							nids[i].substring(nids[i].indexOf(':') + 1)) == 0;
-				} else {
-					foundonechild = child.getNode().getBody()
-							.compareTo(nids[i]) == 0;
-				}
+				} else
+					foundonechild = sameNode(nids[i], child);
 			}
 			if (foundonechild) {
 				startnode = child;
@@ -155,8 +145,20 @@ public class YangTreeNode implements java.io.Serializable {
 			return null;
 	}
 
+	private boolean sameNode(String n1, YangTreeNode ytn) {
+		if (n1.indexOf(':') != -1) {
+			return ytn.getNode().getBody().compareTo(
+					n1.substring(n1.indexOf(':') + 1)) == 0;
+		} else {
+			return ytn.getNode().getBody().compareTo(n1) == 0;
+		}
+
+	}
+
 	public void check(YANG_Specification module, YangTreeNode root,
 			YangTreeNode subroot, Hashtable<String, YangTreeNode> importeds) {
+
+		augmentTreeNode(module, root, subroot, importeds);
 
 		if (node instanceof YANG_Uses) {
 			YANG_Uses uses = (YANG_Uses) node;
@@ -274,24 +276,6 @@ public class YangTreeNode implements java.io.Serializable {
 				}
 
 			}
-		}
-		if (node instanceof YANG_Augment) {
-			YANG_Augment augment = (YANG_Augment) node;
-			YANG_Body body = isInTree(module, root, importeds, augment
-					.getAugment());
-			if (body == null) {
-				System.err.println(module.getName() + "@" + node.getLine()
-						+ "." + node.getCol()
-						+ ":augmented data node not found :"
-						+ augment.getAugment());
-			} else {
-				try {
-					augment.checkAugment(body);
-				} catch (YangParserException ye) {
-					System.err.println(module.getName() + ye.getMessage());
-				}
-
-			}
 		} else if (node instanceof YANG_Leaf) {
 			YANG_Leaf leaf = (YANG_Leaf) node;
 			YANG_Type type = leaf.getType();
@@ -321,18 +305,61 @@ public class YangTreeNode implements java.io.Serializable {
 			ey.nextElement().check(module, root, subroot, importeds);
 	}
 
+	private void augmentTreeNode(YANG_Specification module, YangTreeNode root,
+			YangTreeNode subroot, Hashtable<String, YangTreeNode> importeds) {
+	
+		boolean atleast = false;
+		int nbaugment = 0;
+		for (YangTreeNode ytn : root.getChilds()) {
+			if (ytn.getNode() instanceof YANG_Augment) {
+				nbaugment++;
+				YANG_Augment augment = (YANG_Augment) ytn.getNode();
+				YANG_Body body = isInTree(module, root, importeds, augment
+						.getAugment());
+				if (body != null) {
+					atleast = true;
+					try {
+						augment.checkAugment(body);
+					} catch (YangParserException ye) {
+						System.err.println(module.getName() + ye.getMessage());
+					}
+				}
+			}
+		}
+		if (!atleast && nbaugment != 0)
+			System.out.println("any augment goog");
+		else {
+			for (YangTreeNode ytn : root.getChilds()) {
+				if (ytn.getNode() instanceof YANG_Augment) {
+					YANG_Augment augment = (YANG_Augment) ytn.getNode();
+					YANG_Body body = isInTree(module, root, importeds, augment
+							.getAugment());
+					if (body != null) {
+						if (body instanceof YANG_Container) {
+							YANG_Container bc = (YANG_Container) body;
+							for (YANG_DataDef ddef : augment.getDataDefs()) {
+								bc.addDataDef(ddef);
+							}
+
+						}
+					}
+				}
+			}
+		}
+
+	}
+
 	public String toString() {
 		String result = "";
 		if (getParent() != null)
-			result += node.getBody();
-		if (childs.size() != 0)
-			result += "\n   ";
+			result += node.getBody() + "(";
+		else
+			result += "module (";
 		for (Enumeration<YangTreeNode> ey = childs.elements(); ey
-				.hasMoreElements();)
-			result += ", " + ey.nextElement().toString();
-		if (childs.size() != 0)
-			result += "\n   ";
-
+				.hasMoreElements();) {
+			result += ey.nextElement().toString() + ", ";
+		}
+		result += ")";
 		return result;
 	}
 

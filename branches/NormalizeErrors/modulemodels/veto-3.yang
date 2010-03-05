@@ -56,7 +56,6 @@ list contextProperty {
 		key propertyName;
 		leaf propertyName { type vtPropertyName;}
 		choice property {
-			case target {
 		       	    container targetURI {
 			    	    leaf protocol { type vtProto;}
 				      	choice protoChoice {
@@ -66,7 +65,6 @@ list contextProperty {
 					   	}
 		
 				       	leaf port { type vtPort;}
-		 	     	}
 			}
 			leaf-list contextID { type contextIDType;}
 			leaf locality { type vtLocality;}

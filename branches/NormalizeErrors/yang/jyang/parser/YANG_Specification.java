@@ -540,7 +540,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		for (Enumeration<YANG_Body> eb = bodies.elements(); eb
 				.hasMoreElements();) {
 			YANG_Body body = eb.nextElement();
-			if (body instanceof YANG_DataDef) {
+			if (body instanceof YANG_DataDef || body instanceof YANG_Augment) {
 				YangTreeNode ytn = new YangTreeNode();
 				ytn.setNode(body);
 				ytn.setParent(root);

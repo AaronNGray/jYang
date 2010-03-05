@@ -120,7 +120,7 @@ public class YANG_Choice extends ConfigDataDef {
 							+ getCol() + ":no mandatory leaf in default case ");
 				}
 
-			}  else if (cdef instanceof YANG_Container) {
+			} else if (cdef instanceof YANG_Container) {
 				YANG_Container container = (YANG_Container) cdef;
 				trackMandatory(container.getDataDefs());
 			} else if (cdef instanceof YANG_List) {
@@ -254,31 +254,41 @@ public class YANG_Choice extends ConfigDataDef {
 							+ ":config to true and parent config to false");
 		}
 
-		if (b_default)
+		if (b_default) {
 			checkDefault(context, getDefault());
 
+			if (b_mandatory) {
+				if (getMandatory().getMandatory().compareTo("true") == 0) {
+					YangErrorManager.tadd(getMandatory().getFileName(),
+							getMandatory().getLine(), getMandatory().getCol(),
+							"def_mand", getDefault().getFileName(), getDefault()
+									.getLine());
+				}
+			}
+		}
+
 		Hashtable<String, Integer> caseids = new Hashtable<String, Integer>();
-		
-		for (YANG_Case ycase : cases){		
+
+		for (YANG_Case ycase : cases) {
 			if (caseids.containsKey(ycase.getCase())) {
 				Integer c = caseids.get(ycase.getCase());
 				YangErrorManager.tadd(filename, ycase.getLine(),
-						ycase.getCol(), "dup_child", "case " + ycase.getBody(), ycase
-								.getFileName(), c);
+						ycase.getCol(), "dup_child", "case " + ycase.getBody(),
+						ycase.getFileName(), c);
 
 			} else
 				caseids.put(ycase.getCase(), new Integer(ycase.getLine()));
 		}
-		for (YANG_ShortCase ddef : shorts){	
+		for (YANG_ShortCase ddef : shorts) {
 			if (caseids.containsKey(ddef.getBody())) {
 				Integer c = caseids.get(ddef.getBody());
-				YangErrorManager.tadd(filename, ddef.getLine(),
-						ddef.getCol(), "dup_child", "case " + ddef.getBody(), ddef
+				YangErrorManager.tadd(filename, ddef.getLine(), ddef.getCol(),
+						"dup_child", "case " + ddef.getBody(), ddef
 								.getFileName(), c);
 
 			} else
 				caseids.put(ddef.getBody(), new Integer(ddef.getLine()));
-			
+
 		}
 
 	}
