@@ -32,6 +32,21 @@ public class YangTreeNode implements java.io.Serializable {
 
 	private YANG_Case casenode = null;
 
+	private YANG_Uses uses = null;
+
+	public void setUses(YANG_Uses uses) {
+		this.uses = uses;
+		used = true;
+	}
+
+	public YANG_Uses getUses() {
+		return uses;
+	}
+
+	public YangTreeNode() {
+		used = false;
+	}
+
 	public void setParent(YangTreeNode p) {
 		parent = p;
 	}
@@ -80,7 +95,7 @@ public class YangTreeNode implements java.io.Serializable {
 					.indexOf(':'));
 			if (prefix.compareTo(module.getPrefix().getPrefix()) == 0) {
 				if (relativeXpath)
-					startnode = this;
+					startnode = this.getParent();
 				else
 					startnode = root;
 			} else {
@@ -101,7 +116,7 @@ public class YangTreeNode implements java.io.Serializable {
 			}
 		} else {
 			if (relativeXpath)
-				startnode = this;
+				startnode = this.getParent();
 			else
 				startnode = root;
 		}
@@ -110,26 +125,11 @@ public class YangTreeNode implements java.io.Serializable {
 		boolean stop = false;
 		for (int i = starting; i < nids.length && !stop; i++) {
 			YangTreeNode child = null;
-
 			boolean foundonechild = false;
-
 			for (Enumeration<YangTreeNode> et = startnode.getChilds()
 					.elements(); et.hasMoreElements() && !foundonechild;) {
 				child = et.nextElement();
-
-				if (child.getNode() instanceof YANG_Uses) {
-					YANG_Uses uses = (YANG_Uses) child.getNode();
-					boolean foundusedchild = false;
-					for (YangTreeNode usedchild : child.getChilds()) {
-						if (!foundusedchild) {
-							foundonechild = sameNode(nids[i], usedchild);
-							foundusedchild = foundonechild;
-							if (foundusedchild)
-								child = usedchild;
-						}
-					}
-				} else
-					foundonechild = sameNode(nids[i], child);
+				foundonechild = sameNode(nids[i], child);
 			}
 			if (foundonechild) {
 				startnode = child;
@@ -158,10 +158,10 @@ public class YangTreeNode implements java.io.Serializable {
 	public void check(YANG_Specification module, YangTreeNode root,
 			YangTreeNode subroot, Hashtable<String, YangTreeNode> importeds) {
 
-		augmentTreeNode(module, root, subroot, importeds);
+		// augmentTreeNode(module, root, subroot, importeds);
 
-		if (node instanceof YANG_Uses) {
-			YANG_Uses uses = (YANG_Uses) node;
+		if (isUsed()) {
+			YANG_Uses uses = getUses();
 			for (YangTreeNode ytn : getParent().getChilds()) {
 				if (ytn != this) {
 					if (uses.getGrouping() != null) {
@@ -183,15 +183,6 @@ public class YangTreeNode implements java.io.Serializable {
 													cddef.getLine());
 									}
 								}
-							} else {
-								if (ytn.getNode().getBody().compareTo(
-										ddef.getBody()) == 0)
-									YangErrorManager.tadd(uses.getFileName(),
-											uses.getLine(), uses.getCol(),
-											"dup_child", ddef.getBody(), ytn
-													.getNode().getFileName(),
-											ytn.getNode().getLine());
-
 							}
 						}
 					}
@@ -293,7 +284,8 @@ public class YangTreeNode implements java.io.Serializable {
 				YANG_Unique unique = eu.nextElement();
 				String[] uniques = unique.getUnique().split("\\s");
 				for (int i = 0; i < uniques.length; i++)
-					if (isInTree(module, root, importeds, uniques[i].trim()) == null) {
+					if (isInTree(module, root, importeds, list.getBody() + "/"
+							+ uniques[i].trim()) == null) {
 						YangErrorManager.tadd(node.getFileName(), unique
 								.getLine(), unique.getCol(),
 								"unique_not_found", uniques[i], node.getBody());
@@ -307,7 +299,7 @@ public class YangTreeNode implements java.io.Serializable {
 
 	private void augmentTreeNode(YANG_Specification module, YangTreeNode root,
 			YangTreeNode subroot, Hashtable<String, YangTreeNode> importeds) {
-	
+
 		boolean atleast = false;
 		int nbaugment = 0;
 		for (YangTreeNode ytn : root.getChilds()) {
@@ -347,6 +339,12 @@ public class YangTreeNode implements java.io.Serializable {
 			}
 		}
 
+	}
+
+	private boolean used = false;
+
+	public boolean isUsed() {
+		return used;
 	}
 
 	public String toString() {

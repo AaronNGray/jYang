@@ -34,6 +34,71 @@ public abstract class YANG_DataDef extends FeaturedBody {
 					"when");
 	}
 
+	public Vector<YangTreeNode> groupTreeNode(YangTreeNode parent) {
+		Vector<YangTreeNode> result = new Vector<YangTreeNode>();
+		if (this instanceof YANG_Leaf || this instanceof YANG_LeafList
+				|| this instanceof YANG_AnyXml) {
+			YangTreeNode child = new YangTreeNode();
+			child.setNode(this);
+			child.setParent(parent);
+			result.add(child);
+		} else if (this instanceof DataDefsContainer) {
+			YangTreeNode child = new YangTreeNode();
+			child.setNode(this);
+			child.setParent(parent);
+			DataDefsContainer ddefcont = (DataDefsContainer) this;
+			for (YANG_DataDef ddef : ddefcont.getDataDefs()) {
+				Vector<YangTreeNode> sons = ddef.groupTreeNode(child);
+				for (YangTreeNode son : sons) {
+					child.addChild(son);
+				}
+			}
+			result.add(child);
+		} else if (this instanceof YANG_Choice) {
+			YangTreeNode child = new YangTreeNode();
+			child.setNode(this);
+			child.setParent(parent);
+			YANG_Choice choice = (YANG_Choice) this;
+			for (YANG_Case ycase : choice.getCases()) {
+				CaseDataDef cddef = new CaseDataDef(ycase);
+				Vector<YangTreeNode> sons = cddef.groupTreeNode(child);
+				for (YangTreeNode son : sons) {
+					child.addChild(son);
+				}
+			}
+			for (YANG_ShortCase scase : choice.getShortCases()){
+				YANG_DataDef ddef  = (YANG_DataDef)scase;
+				Vector<YangTreeNode> sons = ddef.groupTreeNode(child);
+				for (YangTreeNode son : sons) {
+					child.addChild(son);
+				}
+				
+			}
+			result.add(child);
+		} else if (this instanceof YANG_Uses) {
+			YANG_Uses uses = (YANG_Uses) this;
+			YANG_Grouping grouping = uses.getGrouping();
+			if (grouping != null && !uses.isRecursive()) {
+				for (YANG_DataDef ddef : grouping.getDataDefs()) {
+					Vector<YangTreeNode> sons = ddef.groupTreeNode(parent);
+					for (YangTreeNode son : sons) {
+						son.setUses(uses);
+						result.add(son);
+					}
+				}
+				for (YangTreeNode ytn : result)
+					for (YangTreeNode ytn2 : result)
+						if (ytn != ytn2 && ytn.getNode().getBody().compareTo(ytn2.getNode().getBody()) == 0)
+							YangErrorManager.tadd(uses.getFileName(),
+									uses.getLine(), uses.getCol(),
+									"dup_child", ytn.getNode().getBody(), ytn
+											.getNode().getFileName(),
+									ytn.getNode().getLine());
+			}
+		}
+		return result;
+	}
+
 	public String toString() {
 		String result = "";
 		if (when != null)

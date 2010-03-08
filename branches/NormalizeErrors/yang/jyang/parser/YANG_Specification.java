@@ -160,7 +160,6 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	public void check(String[] p, Vector<String> checked)
 			throws YangParserException {
 		check(p, checked, null);
-		// if (isCheckOk)
 		checkTreeNode(p);
 
 	}
@@ -540,13 +539,11 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		for (Enumeration<YANG_Body> eb = bodies.elements(); eb
 				.hasMoreElements();) {
 			YANG_Body body = eb.nextElement();
-			if (body instanceof YANG_DataDef || body instanceof YANG_Augment) {
-				YangTreeNode ytn = new YangTreeNode();
-				ytn.setNode(body);
-				ytn.setParent(root);
-				root.addChild(ytn);
-
-				body.builtTreeNode(ytn);
+			if (body instanceof YANG_DataDef) {
+				YANG_DataDef ddef = (YANG_DataDef)body;
+				Vector<YangTreeNode> sons = ddef.groupTreeNode(root);
+				for (YangTreeNode son : sons)
+					root.addChild(son);
 			}
 		}
 		try {

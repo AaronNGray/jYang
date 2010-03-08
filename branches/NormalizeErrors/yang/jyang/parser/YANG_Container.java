@@ -23,7 +23,7 @@ import java.text.MessageFormat;
 import java.util.*;
 
 public class YANG_Container extends MustDataDef implements
-		YANG_ShortCase {
+		YANG_ShortCase, DataDefsContainer {
 
 	private String container = null;
 

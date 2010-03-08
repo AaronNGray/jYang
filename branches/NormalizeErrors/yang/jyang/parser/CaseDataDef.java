@@ -2,7 +2,7 @@ package jyang.parser;
 
 import java.util.Vector;
 
-public class CaseDataDef extends YANG_DataDef {
+public class CaseDataDef extends YANG_DataDef implements DataDefsContainer{
 	
 	YANG_Case ycase;
 

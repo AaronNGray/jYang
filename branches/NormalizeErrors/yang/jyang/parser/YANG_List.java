@@ -22,7 +22,7 @@ package jyang.parser;
 import java.text.MessageFormat;
 import java.util.*;
 
-public class YANG_List extends ListedDataDef {
+public class YANG_List extends ListedDataDef implements DataDefsContainer{
 
 	private String list = null;
 	private YANG_Key key = null;

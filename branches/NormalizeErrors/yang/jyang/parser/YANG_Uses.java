@@ -79,6 +79,15 @@ public class YANG_Uses extends YANG_DataDef {
 	}
 
 	private boolean checked = false;
+	private boolean recursive = false;
+
+	public boolean isRecursive() {
+		return recursive;
+	}
+
+	public void setRecursive(boolean recursive) {
+		this.recursive = recursive;
+	}
 
 	public void check(YangContext context) throws YangParserException {
 
@@ -112,6 +121,7 @@ public class YANG_Uses extends YANG_DataDef {
 							YangErrorManager.tadd(getFileName(), getLine(),
 									getCol(), "rec_grouping", uses);
 							setGrouping(null);
+							setRecursive(true);
 						}
 					}
 				}

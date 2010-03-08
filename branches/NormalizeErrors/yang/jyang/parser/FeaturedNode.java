@@ -4,7 +4,7 @@ import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Vector;
 
-public abstract class FeaturedNode extends StatuedNode {
+public abstract class FeaturedNode extends StatuedNode implements DataDefsContainer{
 
 	private YANG_When when = null;
 	private Vector<YANG_IfFeature> ifFeatures = new Vector<YANG_IfFeature>();

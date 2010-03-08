@@ -277,20 +277,15 @@ public abstract class YANG_Body extends DocumentedNode {
 				}
 		} else if (this instanceof YANG_Augment) {
 			/*
-			YANG_Augment augment = (YANG_Augment) this;
-			datadefs = augment.getDataDefs();
-			for (Enumeration<YANG_Case> ec = augment.getCases().elements(); ec
-					.hasMoreElements();) {
-				YANG_Case ycase = ec.nextElement();
-				Vector<YANG_DataDef> vcases = ycase.getDataDefs();
-				for (Enumeration<YANG_DataDef> ecd = vcases.elements(); ecd
-						.hasMoreElements();) {
-					YANG_DataDef cdef = ecd.nextElement();
-					YANG_DataDef ddef = (YANG_DataDef) cdef;
-					datadefs.add(ddef);
-				}
-			}
-			*/
+			 * YANG_Augment augment = (YANG_Augment) this; datadefs =
+			 * augment.getDataDefs(); for (Enumeration<YANG_Case> ec =
+			 * augment.getCases().elements(); ec .hasMoreElements();) {
+			 * YANG_Case ycase = ec.nextElement(); Vector<YANG_DataDef> vcases =
+			 * ycase.getDataDefs(); for (Enumeration<YANG_DataDef> ecd =
+			 * vcases.elements(); ecd .hasMoreElements();) { YANG_DataDef cdef =
+			 * ecd.nextElement(); YANG_DataDef ddef = (YANG_DataDef) cdef;
+			 * datadefs.add(ddef); } }
+			 */
 		} else if (this instanceof YANG_Notification) {
 			YANG_Notification notif = (YANG_Notification) this;
 			datadefs = notif.getDataDefs();
@@ -305,4 +300,5 @@ public abstract class YANG_Body extends DocumentedNode {
 			body.builtTreeNode(n);
 		}
 	}
+
 }
