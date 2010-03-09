@@ -23,7 +23,7 @@ import java.util.*;
 
 
 
-public class YANG_Notification extends TypedefGroupingBody {
+public class YANG_Notification extends TypedefGroupingBody implements DataDefsContainer {
 
 	private String notification = null;
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
