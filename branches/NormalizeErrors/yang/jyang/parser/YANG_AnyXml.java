@@ -74,8 +74,21 @@ public class YANG_AnyXml extends MustDataDef implements
 	}
 
 	public YANG_AnyXml clone() {
-		YANG_AnyXml ca = new YANG_AnyXml(parser, id);
-		ca.setAnyXml(getAnyXml());
-		return ca;
+		YANG_AnyXml cl = new YANG_AnyXml(parser, id);
+		cl.setAnyXml(getAnyXml());
+		cl.setFileName(getFileName());
+		cl.setCol(getCol());
+		cl.setLine(getLine());
+		cl.setContext(getContext());
+		cl.setConfig(getConfig());
+		cl.setDescription(getDescription());
+		cl.setMandatory(getMandatory());
+		cl.setIfFeature(getIfFeatures());
+		cl.setMusts(getMusts());
+		cl.setUnknowns(getUnknowns());
+		cl.setReference(getReference());
+		cl.setStatus(getStatus());
+		cl.setWhen(getWhen());
+		return cl;
 	}
 }

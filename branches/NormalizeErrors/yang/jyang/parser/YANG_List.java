@@ -69,6 +69,10 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer{
 	public void addUnique(YANG_Unique u) {
 		uniques.add(u);
 	}
+	
+	public void setUniques(Vector<YANG_Unique> u){
+		uniques = u;
+	}
 
 	public Vector<YANG_Unique> getUniques() {
 		return uniques;
@@ -242,6 +246,29 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer{
 			return false;
 		}
 		return false;
+	}
+	
+	public YANG_List clone(){
+		YANG_List cl = new YANG_List(parser, id);
+		cl.setContext(getContext());
+		cl.setList(getList());
+		cl.setFileName(getFileName());
+		cl.setCol(getCol());
+		cl.setLine(getLine());
+		cl.setKey(getKey());
+		cl.setUniques(getUniques());
+		cl.setConfig(getConfig());
+		cl.setDescription(getDescription());
+		cl.setIfFeature(getIfFeatures());
+		cl.setMusts(getMusts());
+		cl.setUnknowns(getUnknowns());
+		cl.setReference(getReference());
+		cl.setStatus(getStatus());
+		cl.setWhen(getWhen());
+		cl.setMaxElement(getMaxElement());
+		cl.setMinElement(getMinElement());
+		cl.setOrderedBy(getOrderedBy());
+		return cl;
 	}
 
 	public String toString() {

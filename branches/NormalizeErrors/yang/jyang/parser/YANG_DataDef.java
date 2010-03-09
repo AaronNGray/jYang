@@ -39,12 +39,12 @@ public abstract class YANG_DataDef extends FeaturedBody {
 		if (this instanceof YANG_Leaf || this instanceof YANG_LeafList
 				|| this instanceof YANG_AnyXml) {
 			YangTreeNode child = new YangTreeNode();
-			child.setNode(this);
+			child.setNode(this.clone());
 			child.setParent(parent);
 			result.add(child);
 		} else if (this instanceof DataDefsContainer) {
 			YangTreeNode child = new YangTreeNode();
-			child.setNode(this);
+			child.setNode(this.clone());
 			child.setParent(parent);
 			DataDefsContainer ddefcont = (DataDefsContainer) this;
 			for (YANG_DataDef ddef : ddefcont.getDataDefs()) {
@@ -56,11 +56,12 @@ public abstract class YANG_DataDef extends FeaturedBody {
 			result.add(child);
 		} else if (this instanceof YANG_Choice) {
 			YangTreeNode child = new YangTreeNode();
-			child.setNode(this);
+			child.setNode(this.clone());
 			child.setParent(parent);
 			YANG_Choice choice = (YANG_Choice) this;
 			for (YANG_Case ycase : choice.getCases()) {
 				CaseDataDef cddef = new CaseDataDef(ycase);
+				cddef.setContext(choice.getContext());
 				Vector<YangTreeNode> sons = cddef.groupTreeNode(child);
 				for (YangTreeNode son : sons) {
 					child.addChild(son);
@@ -98,6 +99,8 @@ public abstract class YANG_DataDef extends FeaturedBody {
 		}
 		return result;
 	}
+	
+	public abstract YANG_Body clone();
 
 	public String toString() {
 		String result = "";

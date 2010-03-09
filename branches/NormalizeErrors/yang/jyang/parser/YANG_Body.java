@@ -208,7 +208,7 @@ public abstract class YANG_Body extends DocumentedNode {
 		}
 	}
 
-	private void setContext(YangContext clone) {
+	public void setContext(YangContext clone) {
 		context = clone;
 
 	}

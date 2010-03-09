@@ -189,7 +189,7 @@ public class YangContext {
 	 * @throws YangParserException
 	 *             when the grouping does not exist in this context.
 	 */
-	public boolean isGroupingDefined(YANG_Uses u) throws YangParserException {
+	public boolean isGroupingDefined(YANG_Uses u)  {
 		String uses = u.getUses();
 		if (uses.indexOf(':') != -1) {
 
@@ -201,8 +201,7 @@ public class YangContext {
 				cn = canonicalTypeName(prefix, suffix,
 						new Hashtable<String, YANG_Type>());
 			} catch (YangParserException e) {
-				throw new YangParserException("@" + u.getLine() + "."
-						+ u.getCol() + ":" + e.getMessage());
+				return false;
 			}
 			return specnodes.isDefinedAsGrouping(cn);
 		} else
@@ -513,7 +512,7 @@ public class YangContext {
 	 * @return the typedef or null if the base type is a built-in type.
 	 */
 	public YANG_TypeDef getBaseTypeDef(YANG_TypeDef typedef)
-			throws YangParserException {
+			 {
 		return getSpecTypes().getBaseType(typedef);
 	}
 

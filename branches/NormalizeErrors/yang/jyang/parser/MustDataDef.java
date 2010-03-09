@@ -17,6 +17,10 @@ public abstract class MustDataDef extends ConfigDataDef {
 	public void addMust(YANG_Must m) {
 		musts.add(m);
 	}
+	
+	public void setMusts(Vector<YANG_Must> m) {
+		musts = m;
+	}
 
 	public Vector<YANG_Must> getMusts() {
 		return musts;

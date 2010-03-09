@@ -22,6 +22,11 @@ public abstract class FeaturedBody extends StatuedBody {
 		ifFeatures.add(i);
 	}
 
+	public void setIfFeature(Vector<YANG_IfFeature> ifs) {
+		ifFeatures = ifs;
+	}
+
+
 	public boolean isBracked() {
 		return ifFeatures.size() != 0;
 	}

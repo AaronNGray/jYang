@@ -62,7 +62,7 @@ public class YANG_LeafList extends ListedDataDef {
 		return type;
 	}
 
-	public void setUnits(YANG_Units u) throws YangParserException {
+	public void setUnits(YANG_Units u) {
 		if (!b_units) {
 			b_units = true;
 			units = u;
@@ -102,6 +102,29 @@ public class YANG_LeafList extends ListedDataDef {
 							+ ":config to true and parent config to false");
 		}
 
+	}
+	
+	public YANG_LeafList clone(){
+		YANG_LeafList cl  = new YANG_LeafList(parser, id);
+		cl.setFileName(getFileName());
+		cl.setCol(getCol());
+		cl.setLine(getLine());
+		cl.setLeafList(getLeafList());
+		cl.setContext(getContext());
+		cl.setType(getType());
+		cl.setUnits(getUnits());
+		cl.setConfig(getConfig());
+		cl.setDescription(getDescription());
+		cl.setIfFeature(getIfFeatures());
+		cl.setMusts(getMusts());
+		cl.setUnknowns(getUnknowns());
+		cl.setReference(getReference());
+		cl.setStatus(getStatus());
+		cl.setWhen(getWhen());
+		cl.setMaxElement(getMaxElement());
+		cl.setMinElement(getMinElement());
+		cl.setOrderedBy(getOrderedBy());
+		return cl;
 	}
 
 	public String toString() {

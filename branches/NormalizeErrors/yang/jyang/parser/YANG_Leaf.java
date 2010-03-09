@@ -22,8 +22,7 @@ package jyang.parser;
 import java.text.MessageFormat;
 import java.util.*;
 
-public class YANG_Leaf extends MustDataDef implements 
-		YANG_ShortCase {
+public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 
 	private String leaf = null;
 	private YANG_Type type = null;
@@ -166,6 +165,7 @@ public class YANG_Leaf extends MustDataDef implements
 
 	}
 
+
 	public String toString() {
 		String result = new String();
 		result += "leaf " + leaf + "{\n";
@@ -183,9 +183,23 @@ public class YANG_Leaf extends MustDataDef implements
 
 	public YANG_Leaf clone() {
 		YANG_Leaf cl = new YANG_Leaf(parser, id);
+		cl.setContext(getContext());
 		cl.setLeaf(getLeaf());
 		cl.setType(getType());
 		cl.setUnits(getUnits());
+		cl.setFileName(getFileName());
+		cl.setCol(getCol());
+		cl.setLine(getLine());
+		cl.setConfig(getConfig());
+		cl.setDefault(getDefault());
+		cl.setDescription(getDescription());
+		cl.setMandatory(getMandatory());
+		cl.setIfFeature(getIfFeatures());
+		cl.setMusts(getMusts());
+		cl.setUnknowns(getUnknowns());
+		cl.setReference(getReference());
+		cl.setStatus(getStatus());
+		cl.setWhen(getWhen());
 		return cl;
 	}
 

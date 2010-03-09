@@ -32,7 +32,8 @@ public abstract class ConfigDataDef extends YANG_DataDef {
 
 	public String toString() {
 		String result = "";
-		result += "config " + config + ";";
+		if (b_config)
+			result += "config " + config + ";";
 		return result;
 	}
 

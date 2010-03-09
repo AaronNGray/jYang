@@ -17,6 +17,15 @@ public class CaseDataDef extends YANG_DataDef implements DataDefsContainer{
 	public CaseDataDef(YANG_Case c){
 		super(0);
 		ycase = c;
+		setLine(c.getLine());
+		setCol(c.getCol());
+		setFileName(c.getFileName());
+		setDescription(c.getDescription());
+		setReference(c.getReference());
+		setUnknowns(c.getUnknowns());
+		setIfFeature(c.getIfFeatures());
+		setWhen(c.getWhen());
+		setStatus(c.getStatus());
 	}
 
 	public YANG_Case getCase() {
@@ -39,6 +48,19 @@ public class CaseDataDef extends YANG_DataDef implements DataDefsContainer{
 	@Override
 	public String getBody() {
 		return ycase.getBody();
+	}
+	
+	public CaseDataDef clone(){
+		CaseDataDef cddef = new CaseDataDef(getCase());
+//		cddef.setFileName(getFileName());
+//		cddef.setLine(getLine());
+//		cddef.setCol(getCol());
+//		cddef.setDescription(getDescription());
+//		cddef.setStatus(getStatus());
+//		cddef.setWhen(getWhen());
+//		cddef.setIfFeature(getIfFeatures());
+//		cddef.setUnknowns(getUnknowns());
+		return cddef;
 	}
 	
 	public String toString(){

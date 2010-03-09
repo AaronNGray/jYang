@@ -22,8 +22,8 @@ package jyang.parser;
 import java.text.MessageFormat;
 import java.util.*;
 
-public class YANG_Container extends MustDataDef implements
-		YANG_ShortCase, DataDefsContainer {
+public class YANG_Container extends MustDataDef implements YANG_ShortCase,
+		DataDefsContainer {
 
 	private String container = null;
 
@@ -134,12 +134,20 @@ public class YANG_Container extends MustDataDef implements
 	}
 
 	public YANG_Container clone() {
-		YANG_Container cc = new YANG_Container(parser, id);
-		cc.setContainer(getContainer());
-		cc.setLine(getLine());
-		cc.setCol(getCol());
-		return cc;
-
+		YANG_Container cl = new YANG_Container(parser, id);
+		cl.setContainer(getContainer());
+		cl.setLine(getLine());
+		cl.setCol(getCol());
+		cl.setFileName(getFileName());
+		cl.setContext(getContext());
+		cl.setPresence(getPresence());
+		cl.setConfig(getConfig());
+		cl.setDescription(getDescription());
+		cl.setReference(getReference());
+		cl.setStatus(getStatus());
+		cl.setWhen(getWhen());
+		cl.setIfFeature(getIfFeatures());
+		return cl;
 	}
 
 }

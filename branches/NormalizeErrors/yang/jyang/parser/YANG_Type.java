@@ -841,7 +841,7 @@ public class YANG_Type extends SimpleYangNode {
 	 * @throws YangParserException
 	 */
 	private YANG_Type getFirstLengthDefined(YangContext context, YANG_TypeDef td)
-			throws YangParserException {
+			 {
 
 		YANG_Type basetype = td.getType();
 		YANG_TypeDef typedef = null;
@@ -1317,14 +1317,14 @@ public class YANG_Type extends SimpleYangNode {
 			if (YangBuiltInTypes.isInteger(context.getBuiltInType(this))) {
 				if (value.compareTo("min") == 0) {
 					if (ranges[0][0].compareTo("min") != 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":min value is not in the "
-								+ getType() + " range values");
+						YangErrorManager.tadd(filename, getLine(), getCol(),
+								"value_not_in_range", "min", context
+										.getBuiltInType(this));
 				} else if (value.compareTo("max") == 0) {
 					if (ranges[ranges.length - 1][1].compareTo("max") != 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":max value is not in the "
-								+ getType() + " range values");
+						YangErrorManager.tadd(filename, getLine(), getCol(),
+								"value_not_in_range", "max", context
+										.getBuiltInType(this));
 
 				} else {
 					BigInteger bilb = null;
@@ -1511,18 +1511,16 @@ public class YANG_Type extends SimpleYangNode {
 				if (value.compareTo("min") == 0 || value.compareTo("-INF") == 0) {
 					if (ranges[0][0].compareTo("min") != 0
 							&& ranges[0][0].compareTo("-INF") != 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol()
-								+ ":negative infinite value is not in the "
-								+ getType() + " range values");
+						YangErrorManager.tadd(filename, getLine(), getCol(),
+								"value_not_in_range", "-INF", context
+										.getBuiltInType(this));
 				} else if (value.compareTo("max") == 0
 						|| value.compareTo("INF") == 0) {
 					if (ranges[ranges.length - 1][1].compareTo("max") != 0
 							&& ranges[ranges.length - 1][1].compareTo("INF") != 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol()
-								+ ":positive infinite value is not in the "
-								+ getType() + " range values");
+						YangErrorManager.tadd(filename, getLine(), getCol(),
+								"value_not_in_range", "INF", context
+										.getBuiltInType(this));
 				} else {
 					BigDecimal bdlb = null;
 					BigDecimal bdub = null;

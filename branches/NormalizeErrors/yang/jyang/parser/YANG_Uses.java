@@ -89,7 +89,7 @@ public class YANG_Uses extends YANG_DataDef {
 		this.recursive = recursive;
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context)  {
 
 		if (!context.isGroupingDefined(this)) {
 			YangErrorManager.tadd(filename, getLine(), getCol(), "unknown",
@@ -151,6 +151,10 @@ public class YANG_Uses extends YANG_DataDef {
 			}
 		}
 		return true;
+	}
+	
+	public YANG_Uses clone(){
+		return this;
 	}
 
 	public String toString() {

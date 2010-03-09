@@ -239,7 +239,7 @@ public class YANG_Choice extends ConfigDataDef {
 		}
 		if (!found)
 			YangErrorManager.tadd(filename, ydefault.getLine(), ydefault
-					.getCol(), "default_case_not_found", defval, getChoice());
+					.getCol(), "default_case_not_found", getChoice(), defval);
 	}
 
 	public void check(YangContext context) throws YangParserException {
@@ -291,6 +291,36 @@ public class YANG_Choice extends ConfigDataDef {
 
 		}
 
+	}
+	
+	public YANG_Choice clone(){
+		YANG_Choice choice = new YANG_Choice(parser, id);
+		choice.setContext(getContext());
+		choice.setChoice(getChoice());
+		choice.setLine(getLine());
+		choice.setCol(getCol());
+		choice.setFileName(getFileName());
+		choice.setDefault(getDefault());
+		choice.setCases(getCases());
+		choice.setShortCases(getShortCases());
+		choice.setDescription(getDescription());
+		choice.setReference(getReference());
+		choice.setMandatory(getMandatory());
+		choice.setStatus(getStatus());
+		choice.setIfFeature(getIfFeatures());
+		choice.setConfig(getConfig());
+		choice.setWhen(getWhen());
+		return choice;
+		
+	}
+
+	private void setShortCases(Vector<YANG_ShortCase> shortCases) {
+		this.shorts = shortCases;
+	}
+
+	private void setCases(Vector<YANG_Case> cases2) {
+		this.cases = cases2;
+		
 	}
 
 	public String toString() {
