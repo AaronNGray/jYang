@@ -77,6 +77,10 @@ public class YANG_Uses extends YANG_DataDef {
 	public void addUsesAugment(YANG_UsesAugment ua) {
 		usesaugments.add(ua);
 	}
+	
+	public Vector<YANG_UsesAugment> getUsesAugments(){
+		return usesaugments;
+	}
 
 	private boolean checked = false;
 	private boolean recursive = false;

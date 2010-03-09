@@ -343,4 +343,17 @@ public class YANG_Choice extends ConfigDataDef {
 		return result;
 	}
 
+	public void refines(YANG_RefineChoice rl) {
+		if (rl.getConfig() !=null)
+			config = rl.getConfig();
+		if (rl.getDescription() != null)
+			description = rl.getDescription();
+		if (rl.getMandatory() != null)
+			mandatory = rl.getMandatory();
+		if (rl.getReference() != null)
+			reference = rl.getReference();
+		if (rl.getDefault() != null)
+			ydefault = rl.getDefault();
+	}
+
 }

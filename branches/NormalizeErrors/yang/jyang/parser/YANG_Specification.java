@@ -466,7 +466,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				try {
 					yang.setFileName(yangspecfilename);
 					externalspec = yang.Start();
-					//externalspec.check();
+					// externalspec.check();
 					Vector<String> checkeds = new Vector<String>();
 					externalspec.check(paths, checkeds);
 				} catch (ParseException p) {
@@ -527,7 +527,6 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		Hashtable<String, YangTreeNode> importedtreenodes = new Hashtable<String, YangTreeNode>();
 		builded.add(getName());
 		schemaTree = buildTreeNode(p, builded, importedtreenodes);
-
 		schemaTree.check(this, schemaTree, schemaTree, importedtreenodes);
 	}
 
@@ -535,17 +534,73 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			Hashtable<String, YangTreeNode> importedtreenodes) {
 
 		YangTreeNode root = new YangTreeNode();
+		
+		
 
-		for (Enumeration<YANG_Body> eb = bodies.elements(); eb
-				.hasMoreElements();) {
-			YANG_Body body = eb.nextElement();
+		for (YANG_Body body : bodies)
 			if (body instanceof YANG_DataDef) {
-				YANG_DataDef ddef = (YANG_DataDef)body;
+				YANG_DataDef ddef = (YANG_DataDef) body;
 				Vector<YangTreeNode> sons = ddef.groupTreeNode(root);
 				for (YangTreeNode son : sons)
 					root.addChild(son);
 			}
+		try {
+			for (YANG_Specification spec : getIncludedSubModules(p)){
+				YangTreeNode includedtreenode = spec.buildTreeNode(p, builded, importedtreenodes);
+				for (YangTreeNode includednode : includedtreenode.getChilds())
+					root.includeNode(includednode);
+			}
+			for (YANG_Specification spec : getImportedModules(p)){
+				YangTreeNode includedtreenode = spec.buildTreeNode(p, builded, importedtreenodes);
+				for (YangTreeNode includednode : includedtreenode.getChilds())
+					root.includeNode(includednode);
+			}
+		} catch (YangParserException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		Hashtable<String, YANG_Augment> augs = new Hashtable<String, YANG_Augment>();
+		for (YANG_Body body : bodies)
+			if (body instanceof YANG_Augment) {
+				YANG_Augment aug = (YANG_Augment) body;
+				augs.put(aug.getAugment(), aug);
+			}
+		String[] taugs = new String[augs.size()];
+		int ik = 0;
+		for (String k : augs.keySet())
+			taugs[ik++] = k;
+
+		for (int i = 0; i < taugs.length; i++)
+			for (int j = i + 1; j < taugs.length; j++) {
+				String[] ti = taugs[i].split("/");
+				String[] tj = taugs[j].split("/");
+				if (ti.length > tj.length) {
+					String ls = taugs[i];
+					taugs[i] = taugs[j];
+					taugs[j] = ls;
+				}
+			}
+
+		for (int i = 0; i < taugs.length; i++) {
+			YANG_Body augmentedbody = root.getBodyInTree(this, root,
+					importedtreenodes, taugs[i]);
+			if (augmentedbody == null) {
+				System.out.println("ERROR " + taugs[i]);
+			} else {
+				YANG_Augment aug = augs.get(taugs[i]);
+				try {
+					aug.checkAugment(augmentedbody);
+				} catch (YangParserException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				YangTreeNode augmentednode = root.getNodeInTree(this, root,
+						importedtreenodes, taugs[i]);
+				augmentednode.augments(aug);
+			}
+
+		}
+
 		try {
 			for (Enumeration<YANG_Specification> ei = getImportedModules(p)
 					.elements(); ei.hasMoreElements();) {
@@ -563,6 +618,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					.println("panic could not happen in buildTreeNode in YANG_Specification");
 			System.exit(-1);
 		}
+
 		return root;
 	}
 }

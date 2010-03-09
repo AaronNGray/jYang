@@ -165,6 +165,20 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 
 	}
 
+	public void refines(YANG_RefineLeaf rl){
+		if (rl.getConfig() !=null)
+			config = rl.getConfig();
+		if (rl.getDefault() != null)
+			ydefault = rl.getDefault();
+		if (rl.getDescription() != null)
+			description = rl.getDescription();
+		if (rl.getMandatory() != null)
+			mandatory = rl.getMandatory();
+		if (rl.getReference() != null)
+			reference = rl.getReference();
+		for (YANG_Must must : rl.getMusts())
+			addMust(must);
+	}
 
 	public String toString() {
 		String result = new String();

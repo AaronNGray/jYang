@@ -63,7 +63,7 @@ public class YANG_RefineLeaf extends MustRefineNode {
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
-
+	
 	public void check(YANG_Leaf leaf) throws YangParserException {
 		YangContext context = leaf.getContext();
 		if (getDefault() != null)

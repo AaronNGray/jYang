@@ -21,7 +21,11 @@ package jyang.parser;
  */
 import java.util.Enumeration;
 
-public class YANG_RefineAnyXml extends MandatoryRefineNode {
+public class YANG_RefineAnyXml extends MustRefineNode {
+
+	private YANG_Mandatory mandatory = null;
+
+	protected boolean b_mandatory = false;
 
 	public YANG_RefineAnyXml(int id) {
 		super(id);
@@ -31,6 +35,18 @@ public class YANG_RefineAnyXml extends MandatoryRefineNode {
 		super(p, id);
 	}
 
+	public void setMandatory(YANG_Mandatory m) {
+		if (!b_mandatory) {
+			b_mandatory = true;
+			mandatory = m;
+		} else
+			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+					"mandatory");
+	}
+
+	public YANG_Mandatory getMandatory() {
+		return mandatory;
+	}
 	public void check(YANG_AnyXml ax)
 			throws YangParserException {
 		YangContext context = ax.getContext();

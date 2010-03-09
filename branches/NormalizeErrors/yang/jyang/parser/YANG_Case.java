@@ -70,4 +70,11 @@ public class YANG_Case extends FeaturedNode {
 		
 	}
 
+	public void refines(YANG_RefineCase rl) {
+		if (rl.getDescription() != null)
+			description = rl.getDescription();
+		if (rl.getReference() != null)
+			reference = rl.getReference();
+	}
+
 }

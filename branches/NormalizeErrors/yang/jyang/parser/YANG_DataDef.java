@@ -81,10 +81,18 @@ public abstract class YANG_DataDef extends FeaturedBody {
 			YANG_Grouping grouping = uses.getGrouping();
 			if (grouping != null && !uses.isRecursive()) {
 				for (YANG_DataDef ddef : grouping.getDataDefs()) {
-					Vector<YangTreeNode> sons = ddef.groupTreeNode(parent);
-					for (YangTreeNode son : sons) {
+					for (YangTreeNode son : ddef.groupTreeNode(parent)) {
 						son.setUses(uses);
 						result.add(son);
+						for (YANG_UsesAugment aug : uses.getUsesAugments()){
+							if (aug.getUsesAugment().compareTo(son.getNode().getBody()) == 0){
+								for (YANG_DataDef addef : aug.getDataDefs()){
+									for (YangTreeNode sonson : addef.groupTreeNode(son))
+									son.addChild(sonson);
+								}
+							}
+						}
+							
 					}
 				}
 				for (YangTreeNode ytn : result)

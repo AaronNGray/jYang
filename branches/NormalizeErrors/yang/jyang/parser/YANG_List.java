@@ -295,4 +295,20 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer{
 		return result;
 	}
 
+	public void refines(YANG_RefineList rl) {
+		if (rl.getConfig() !=null)
+			config = rl.getConfig();
+		if (rl.getDescription() != null)
+			description = rl.getDescription();
+		if (rl.getReference() != null)
+			reference = rl.getReference();
+		for (YANG_Must must : rl.getMusts())
+			addMust(must);
+		if (rl.getMinElement() != null)
+			min = rl.getMinElement();
+		if (rl.getMaxElement() != null)
+			max = rl.getMaxElement();
+	}
+	
+
 }

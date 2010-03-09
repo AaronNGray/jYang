@@ -5,9 +5,9 @@ import java.text.MessageFormat;
 public abstract class ListedDataDef extends MustDataDef implements
 		 YANG_ShortCase {
 
-	private YANG_MinElement min = null;
-	private YANG_MaxElement max = null;
-	private YANG_OrderedBy ordered = null;
+	protected YANG_MinElement min = null;
+	protected YANG_MaxElement max = null;
+	protected YANG_OrderedBy ordered = null;
 	private boolean b_min = false, b_max = false, b_ordered = false;
 
 	public ListedDataDef(int id) {

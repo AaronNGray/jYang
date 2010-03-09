@@ -91,4 +91,17 @@ public class YANG_AnyXml extends MustDataDef implements
 		cl.setWhen(getWhen());
 		return cl;
 	}
+
+	public void refines(YANG_RefineAnyXml rl) {
+		if (rl.getConfig() !=null)
+			config = rl.getConfig();
+		if (rl.getDescription() != null)
+			description = rl.getDescription();
+		if (rl.getMandatory() != null)
+			mandatory = rl.getMandatory();
+		if (rl.getReference() != null)
+			reference = rl.getReference();
+		for (YANG_Must must : rl.getMusts())
+			addMust(must);
+	}
 }

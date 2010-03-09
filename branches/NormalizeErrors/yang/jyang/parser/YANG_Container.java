@@ -150,4 +150,18 @@ public class YANG_Container extends MustDataDef implements YANG_ShortCase,
 		return cl;
 	}
 
+	public void refines(YANG_RefineContainer rl) {
+		if (rl.getConfig() !=null)
+			config = rl.getConfig();
+		if (rl.getDescription() != null)
+			description = rl.getDescription();
+		if (rl.getReference() != null)
+			reference = rl.getReference();
+		if (rl.getPresence() != null)
+			presence = rl.getPresence();
+		for (YANG_Must must : rl.getMusts())
+			addMust(must);
+		
+	}
+
 }

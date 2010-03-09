@@ -12,7 +12,7 @@ public abstract class ConfigDataDef extends YANG_DataDef {
 		super(p, id);
 	}
 
-	private YANG_Config config = null;
+	protected YANG_Config config = null;
 
 	protected boolean b_config = false;
 

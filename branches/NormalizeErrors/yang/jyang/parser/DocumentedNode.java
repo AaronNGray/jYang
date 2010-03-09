@@ -12,8 +12,8 @@ public abstract class DocumentedNode extends SimpleYangNode {
 		super(p, id);
 	}
 
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
+	protected YANG_Description description = null;
+	protected YANG_Reference reference = null;
 
 	private boolean b_description = false, b_reference = false;
 
