@@ -534,8 +534,6 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			Hashtable<String, YangTreeNode> importedtreenodes) {
 
 		YangTreeNode root = new YangTreeNode();
-		
-		
 
 		for (YANG_Body body : bodies)
 			if (body instanceof YANG_DataDef) {
@@ -543,15 +541,74 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				Vector<YangTreeNode> sons = ddef.groupTreeNode(root);
 				for (YangTreeNode son : sons)
 					root.addChild(son);
+			} else if (body instanceof YANG_Rpc) {
+				YANG_Rpc rpc = (YANG_Rpc) body;
+				YangTreeNode ytnrpc = new YangTreeNode();
+				ytnrpc.setNode(rpc);
+				ytnrpc.setParent(root);
+				root.addChild(ytnrpc);
+				if (rpc.getInput() != null) {
+					YangTreeNode ytnrpcin = new YangTreeNode();
+					IoDataDef ioddef = new IoDataDef(rpc.getInput());
+					ytnrpcin.setNode(ioddef);
+					ytnrpcin.setParent(ytnrpc);
+					ytnrpc.addChild(ytnrpcin);
+					for (YANG_DataDef ddef : rpc.getInput().getDataDefs())
+						for (YangTreeNode ichild : ddef.groupTreeNode(ytnrpcin))
+							ytnrpcin.addChild(ichild);
+				} else {
+					YANG_Input in = new YANG_Input(0);
+					in.setLine(rpc.getLine());
+					in.setCol(rpc.getCol());
+					in.setFileName(rpc.getFileName());
+					IoDataDef ioddef = new IoDataDef(in);
+					YangTreeNode ytnin = new YangTreeNode();
+					ytnin.setNode(ioddef);
+					ytnin.setParent(ytnrpc);
+					ytnrpc.addChild(ytnin);
+				}
+				if (rpc.getOutput() != null) {
+					YangTreeNode ytnrpcout = new YangTreeNode();
+					IoDataDef ioddef = new IoDataDef(rpc.getOutput());
+					ytnrpcout.setNode(ioddef);
+					ytnrpcout.setParent(ytnrpc);
+					ytnrpc.addChild(ytnrpcout);
+					for (YANG_DataDef ddef : rpc.getOutput().getDataDefs())
+						for (YangTreeNode ochild : ddef
+								.groupTreeNode(ytnrpcout))
+							ytnrpcout.addChild(ochild);
+				} else {
+					YANG_Output out = new YANG_Output(0);
+					out.setLine(rpc.getLine());
+					out.setCol(rpc.getCol());
+					out.setFileName(rpc.getFileName());
+					IoDataDef ioddef = new IoDataDef(out);
+					YangTreeNode ytnout = new YangTreeNode();
+					ytnout.setNode(ioddef);
+					ytnout.setParent(ytnrpc);
+					ytnrpc.addChild(ytnout);
+
+				}
+			} else if (body instanceof YANG_Notification) {
+				YANG_Notification notif = (YANG_Notification) body;
+				YangTreeNode ytnn = new YangTreeNode();
+				ytnn.setNode(notif);
+				ytnn.setParent(root);
+				root.addChild(ytnn);
+				for (YANG_DataDef ddef : notif.getDataDefs())
+					for (YangTreeNode child : ddef.groupTreeNode(ytnn))
+						ytnn.addChild(child);
 			}
 		try {
-			for (YANG_Specification spec : getIncludedSubModules(p)){
-				YangTreeNode includedtreenode = spec.buildTreeNode(p, builded, importedtreenodes);
+			for (YANG_Specification spec : getIncludedSubModules(p)) {
+				YangTreeNode includedtreenode = spec.buildTreeNode(p, builded,
+						importedtreenodes);
 				for (YangTreeNode includednode : includedtreenode.getChilds())
 					root.includeNode(includednode);
 			}
-			for (YANG_Specification spec : getImportedModules(p)){
-				YangTreeNode includedtreenode = spec.buildTreeNode(p, builded, importedtreenodes);
+			for (YANG_Specification spec : getImportedModules(p)) {
+				YangTreeNode includedtreenode = spec.buildTreeNode(p, builded,
+						importedtreenodes);
 				for (YangTreeNode includednode : includedtreenode.getChilds())
 					root.includeNode(includednode);
 			}
@@ -559,6 +616,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
 		Hashtable<String, YANG_Augment> augs = new Hashtable<String, YANG_Augment>();
 		for (YANG_Body body : bodies)
 			if (body instanceof YANG_Augment) {
@@ -585,7 +643,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			YANG_Body augmentedbody = root.getBodyInTree(this, root,
 					importedtreenodes, taugs[i]);
 			if (augmentedbody == null) {
-				System.out.println("ERROR " + taugs[i]);
+				YangErrorManager.tadd(filename, augs.get(taugs[i]).getLine(),
+						augs.get(taugs[i]).getCol(), "augmented_not_found",
+						taugs[i]);
 			} else {
 				YANG_Augment aug = augs.get(taugs[i]);
 				try {
@@ -598,7 +658,6 @@ public abstract class YANG_Specification extends SimpleYangNode {
 						importedtreenodes, taugs[i]);
 				augmentednode.augments(aug);
 			}
-
 		}
 
 		try {

@@ -378,10 +378,15 @@ public class YangTreeNode implements java.io.Serializable {
 
 	public String toString() {
 		String result = "";
-		if (getParent() != null)
+		if (getParent() != null){
 			result += node.getBody() + "(";
+		}
 		else
 			result += "module (";
+		int i = childs.size();
+		for (YangTreeNode ytn : childs){
+			result += (i-- == 0) ? ytn.toString() : ytn.toString() + ",";
+		}
 		for (Enumeration<YangTreeNode> ey = childs.elements(); ey
 				.hasMoreElements();) {
 			result += ey.nextElement().toString() + ", ";

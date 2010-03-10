@@ -139,19 +139,25 @@ public class YANG_Container extends MustDataDef implements YANG_ShortCase,
 		cl.setLine(getLine());
 		cl.setCol(getCol());
 		cl.setFileName(getFileName());
-		cl.setContext(getContext());
-		cl.setPresence(getPresence());
-		cl.setConfig(getConfig());
-		cl.setDescription(getDescription());
-		cl.setReference(getReference());
-		cl.setStatus(getStatus());
+		if (getContext() != null)
+			cl.setContext(getContext());
+		if (getPresence() != null)
+			cl.setPresence(getPresence());
+		if (getConfig() != null)
+			cl.setConfig(getConfig());
+		if (getDescription() != null)
+			cl.setDescription(getDescription());
+		if (getReference() != null)
+			cl.setReference(getReference());
+		if (getStatus() != null)
+			cl.setStatus(getStatus());
 		cl.setWhen(getWhen());
 		cl.setIfFeature(getIfFeatures());
 		return cl;
 	}
 
 	public void refines(YANG_RefineContainer rl) {
-		if (rl.getConfig() !=null)
+		if (rl.getConfig() != null)
 			config = rl.getConfig();
 		if (rl.getDescription() != null)
 			description = rl.getDescription();
@@ -161,7 +167,7 @@ public class YANG_Container extends MustDataDef implements YANG_ShortCase,
 			presence = rl.getPresence();
 		for (YANG_Must must : rl.getMusts())
 			addMust(must);
-		
+
 	}
 
 }

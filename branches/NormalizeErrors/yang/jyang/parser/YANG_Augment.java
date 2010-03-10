@@ -181,6 +181,19 @@ public class YANG_Augment extends DataDefBody {
 
 		if (augmented_node instanceof YANG_Container) {
 			YANG_Container container = (YANG_Container) augmented_node;
+			for (YANG_DataDef addef : getDataDefs()) {
+				if (container.getConfig() != null
+						&& addef instanceof ConfigDataDef) {
+					ConfigDataDef cddef = (ConfigDataDef) addef;
+					if (cddef.getConfig().getConfigStr().compareTo("true") == 0
+							&& container.getConfig().getConfigStr().compareTo(
+									"false") == 0)
+						YangErrorManager.tadd(filename, getLine(), getCol(),
+								"config_parent", addef.getFileName(), addef
+										.getBody());
+				}
+
+			}
 			checkDouble(container.getDataDefs());
 		} else if (augmented_node instanceof YANG_List) {
 			YANG_List list = (YANG_List) augmented_node;
@@ -201,11 +214,12 @@ public class YANG_Augment extends DataDefBody {
 		} else if (augmented_node instanceof YANG_Notification) {
 			YANG_Notification notif = (YANG_Notification) augmented_node;
 			checkDouble(notif.getDataDefs());
+		} else if (augmented_node instanceof IoDataDef) {
 		} else {
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":illegal data node :" + augmented_node.getBody()
-					+ " at line " + augmented_node.getLine()
-					+ " can not be augmented");
+
+			YangErrorManager.tadd(filename, getLine(), getCol(),
+					"not_augmentable", augmented_node.getBody(), augmented_node
+							.getFileName(), augmented_node.getLine());
 		}
 	}
 
