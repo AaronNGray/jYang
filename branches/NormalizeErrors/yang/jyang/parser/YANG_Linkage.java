@@ -19,4 +19,5 @@ package jyang.parser;
 
  */
 public interface YANG_Linkage extends YangNode{
+	public String getName();
 }

@@ -352,6 +352,74 @@ public class YangTreeNode implements java.io.Serializable {
 			}
 		} else if (node instanceof YANG_List) {
 			YANG_List list = (YANG_List) node;
+
+			String configlist = null;
+			if (list.getConfig() == null) {
+				YANG_Config pconfig = list.getParentConfig();
+				if (pconfig != null)
+					configlist = list.getParentConfig().getConfigStr();
+				else
+					configlist = null;
+			} else
+				configlist = list.getConfig().getConfigStr();
+			YANG_Key k = list.getKey();
+			if (k != null) {
+				String Kstr = k.getKey();
+				String[] tkstr = Kstr.split(" ");
+				for (int i = 0; i < tkstr.length; i++) {
+					String kstr = tkstr[i];
+					YANG_Body kbody = getBodyInTree(module, root, importeds,
+							list.getBody() + "/" + kstr);
+					if (kbody != null) {
+						YangContext context = kbody.getContext();
+						if (kbody instanceof YANG_Leaf) {
+							YANG_Leaf leaf = (YANG_Leaf) kbody;
+
+							try {
+								if (context.getBuiltInType(leaf.getType()) != null) {
+									if (YangBuiltInTypes.empty
+											.compareTo(context
+													.getBuiltInType(leaf
+															.getType())) == 0)
+										YangErrorManager.tadd(node
+												.getFileName(), k.getLine(), k
+												.getCol(), "key_empty", kstr,
+												list.getList());
+
+									String configkeyleaf = null;
+									if (leaf.getConfig() == null)
+										configkeyleaf = configlist;
+									else
+										configkeyleaf = YangBuiltInTypes
+												.removeQuotesAndTrim(leaf
+														.getConfig()
+														.getConfigStr());
+									if (configlist != null) {
+										if (configlist.compareTo(configkeyleaf) != 0)
+
+											YangErrorManager.tadd(node
+													.getFileName(),
+													k.getLine(), k.getCol(),
+													"key_config", kstr, list
+															.getList());
+									} else if (configkeyleaf != null)
+										YangErrorManager.tadd(node
+												.getFileName(), k.getLine(), k
+												.getCol(), "key_config", kstr,
+												list.getList());
+								}
+							} catch (YangParserException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+
+					} else
+						YangErrorManager.tadd(node.getFileName(), k.getLine(),
+								k.getCol(), "key_not_found", kstr, list
+										.getList());
+				}
+			}
 			for (Enumeration<YANG_Unique> eu = list.getUniques().elements(); eu
 					.hasMoreElements();) {
 				YANG_Unique unique = eu.nextElement();
@@ -378,31 +446,35 @@ public class YangTreeNode implements java.io.Serializable {
 
 	public String toString() {
 		String result = "";
-		if (getParent() != null){
+		if (getParent() != null) {
 			result += node.getBody() + "(";
-		}
-		else
+		} else
 			result += "module (";
 		int i = childs.size();
-		for (YangTreeNode ytn : childs){
-			result += (i-- == 0) ? ytn.toString() : ytn.toString() + ",";
-		}
-		for (Enumeration<YangTreeNode> ey = childs.elements(); ey
-				.hasMoreElements();) {
-			result += ey.nextElement().toString() + ", ";
+		for (YangTreeNode ytn : childs) {
+			result += (i == 1) ? ytn.toString() : ytn.toString() + ",";
+			i--;
 		}
 		result += ")";
 		return result;
 	}
 
 	public void augments(YANG_Augment aug) {
-
 		for (YANG_DataDef ddef : aug.getDataDefs()) {
 			for (YangTreeNode child : ddef.groupTreeNode(this)) {
-				addChild(child);
+				boolean ok = true;
+				for (YangTreeNode son : getChilds())
+					if (ddef.getBody().compareTo(son.getNode().getBody()) == 0){
+						YangErrorManager.tadd(ddef.getFileName(), ddef
+								.getLine(), ddef.getCol(), "dup_child", ddef
+								.getBody(), son.getNode().getFileName(), son
+								.getNode().getLine());
+						ok = false;
+					}
+				if (ok)
+					addChild(child);
 			}
 		}
-
 	}
 
 	public void includeNode(YangTreeNode iytn) {

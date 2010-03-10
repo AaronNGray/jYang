@@ -242,8 +242,16 @@ public class jyang {
 					noError = false;
 
 			} catch (ParseException pe) {
-				System.err.println(pe.getMessage());
-				System.exit(-1);
+				if (pe.currentToken != null)
+					if (pe.currentToken.next != null)
+						YangErrorManager.tadd(fname,
+								pe.currentToken.next.beginLine,
+								pe.currentToken.next.beginColumn, "unex_kw",
+								pe.currentToken.next.image);
+					else
+						System.out.println(pe);
+				else
+					System.out.println(pe);
 			}
 		}
 		try {

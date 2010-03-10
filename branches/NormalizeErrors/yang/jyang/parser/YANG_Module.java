@@ -111,19 +111,26 @@ public class YANG_Module extends YANG_Specification {
 		for (Enumeration<YANG_Specification> es = included.elements(); es
 				.hasMoreElements();) {
 			YANG_Specification includedspec = es.nextElement();
-			if (!(includedspec instanceof YANG_SubModule))
-				throw new YangParserException(
-						"Only submodule can be included : "
-								+ includedspec.getName()
-								+ " is not a submodule");
+
+			int l = 0, c = 0;
+			for (YANG_Linkage lk : linkages) {
+				if (lk.getName().compareTo(includedspec.getName()) == 0) {
+					l = lk.getLine();
+					c = lk.getCol();
+				}
+			}
+			if (!(includedspec instanceof YANG_SubModule)){
+				YangErrorManager.tadd(getFileName(), l, c, "not_submodule",
+						includedspec.getName());
+			}
 			else {
 				YANG_SubModule submod = (YANG_SubModule) includedspec;
 
 				if (!submod.getBelong().getBelong().equals(getModule()))
-					throw new YangParserException("Included submodule "
-							+ submod.getSubModule()
-							+ " does not belongs to module " + getName());
-				includeds.add(submod);
+					YangErrorManager.tadd(getFileName(), l, c, "not_belong",
+							submod.getSubModule(), getName());
+				else
+					includeds.add(submod);
 			}
 		}
 	}

@@ -22,6 +22,10 @@ public class YANG_Include extends ImportIncludeNode implements YANG_Linkage {
 		return include;
 	}
 	
+	public String getName(){
+		return getIncludedModule();
+	}
+	
 	public boolean isBracked() {
 		return super.isBracked();
 	}

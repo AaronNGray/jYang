@@ -22,7 +22,7 @@ package jyang.parser;
 import java.text.MessageFormat;
 import java.util.*;
 
-public class YANG_List extends ListedDataDef implements DataDefsContainer{
+public class YANG_List extends ListedDataDef implements DataDefsContainer {
 
 	private String list = null;
 	private YANG_Key key = null;
@@ -69,8 +69,8 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer{
 	public void addUnique(YANG_Unique u) {
 		uniques.add(u);
 	}
-	
-	public void setUniques(Vector<YANG_Unique> u){
+
+	public void setUniques(Vector<YANG_Unique> u) {
 		uniques = u;
 	}
 
@@ -133,63 +133,6 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer{
 								+ ":config to true and parent config to false");
 			}
 
-			String[] kleafs = getKey().getKeyLeaves();
-			for (int i = 0; i < kleafs.length; i++) {
-				for (int j = i + 1; j < kleafs.length; j++)
-					if (kleafs[i].compareTo(kleafs[j]) == 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":dupplicate key leaf in list "
-								+ getList());
-				boolean found = false;
-				String configlist = null;
-				if (!b_config) {
-					YANG_Config pconfig = getParentConfig();
-					if (pconfig != null)
-						configlist = getParentConfig().getConfigStr();
-					else
-						configlist = null;
-				} else
-					configlist = getConfig().getConfigStr();
-				for (Enumeration<YANG_DataDef> ed = getDataDefs().elements(); !found
-						&& ed.hasMoreElements();) {
-					YANG_DataDef dd = ed.nextElement();
-					found = findKey(context, kleafs[i], dd);
-					if (found) {
-						if (dd instanceof YANG_Leaf) {
-							YANG_Leaf leaf = (YANG_Leaf) dd;
-							if (context.getBuiltInType(leaf.getType()) != null) {
-								if (YangBuiltInTypes.empty.compareTo(context
-										.getBuiltInType(leaf.getType())) == 0)
-									YangErrorManager.tadd(filename, getLine(),
-											getCol(), "key_empty", kleafs[i],
-											getList());
-
-								String configkeyleaf = null;
-								if (leaf.getConfig() == null)
-									configkeyleaf = configlist;
-								else
-									configkeyleaf = YangBuiltInTypes
-											.removeQuotesAndTrim(leaf
-													.getConfig().getConfigStr());
-								if (configlist != null) {
-									if (configlist.compareTo(configkeyleaf) != 0)
-
-										YangErrorManager.tadd(filename,
-												getLine(), getCol(),
-												"key_config", kleafs[i],
-												getList());
-								} else if (configkeyleaf != null)
-									YangErrorManager.tadd(filename, getLine(),
-											getCol(), "key_config", kleafs[i],
-											getList());
-							}
-						}
-					}
-				}
-				if (!found)
-					YangErrorManager.tadd(filename, getLine(), getCol(),
-							"key_not_found", kleafs[i], getList());
-			}
 		}
 		/*
 		 * for (Enumeration<YANG_Unique> eu = getUniques().elements(); eu
@@ -247,27 +190,38 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer{
 		}
 		return false;
 	}
-	
-	public YANG_List clone(){
+
+	public YANG_List clone() {
 		YANG_List cl = new YANG_List(parser, id);
 		cl.setContext(getContext());
 		cl.setList(getList());
 		cl.setFileName(getFileName());
+		cl.setParent(getParent());
 		cl.setCol(getCol());
 		cl.setLine(getLine());
-		cl.setKey(getKey());
-		cl.setUniques(getUniques());
-		cl.setConfig(getConfig());
-		cl.setDescription(getDescription());
+		if (getKey() != null)
+			cl.setKey(getKey());
+		if (getUniques() != null)
+			cl.setUniques(getUniques());
+		if (getConfig() != null)
+			cl.setConfig(getConfig());
+		if (getDescription() != null)
+			cl.setDescription(getDescription());
 		cl.setIfFeature(getIfFeatures());
 		cl.setMusts(getMusts());
 		cl.setUnknowns(getUnknowns());
-		cl.setReference(getReference());
-		cl.setStatus(getStatus());
-		cl.setWhen(getWhen());
-		cl.setMaxElement(getMaxElement());
-		cl.setMinElement(getMinElement());
-		cl.setOrderedBy(getOrderedBy());
+		if (getReference() != null)
+			cl.setReference(getReference());
+		if (getStatus() != null)
+			cl.setStatus(getStatus());
+		if (getWhen() != null)
+			cl.setWhen(getWhen());
+		if (getMaxElement() != null)
+			cl.setMaxElement(getMaxElement());
+		if (getMinElement() != null)
+			cl.setMinElement(getMinElement());
+		if (getOrderedBy() != null)
+			cl.setOrderedBy(getOrderedBy());
 		return cl;
 	}
 
@@ -296,7 +250,7 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer{
 	}
 
 	public void refines(YANG_RefineList rl) {
-		if (rl.getConfig() !=null)
+		if (rl.getConfig() != null)
 			config = rl.getConfig();
 		if (rl.getDescription() != null)
 			description = rl.getDescription();
@@ -309,6 +263,5 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer{
 		if (rl.getMaxElement() != null)
 			max = rl.getMaxElement();
 	}
-	
 
 }

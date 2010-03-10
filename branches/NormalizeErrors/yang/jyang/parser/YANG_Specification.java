@@ -438,7 +438,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 						importedspecname);
 				if (!(importedspec instanceof YANG_Module))
 					YangErrorManager.tadd(filename, imported.getLine(),
-							imported.getCol(), "not_module");
+							imported.getCol(), "not_module", importedspecname);
 				else
 					importeds.add((YANG_Module) importedspec);
 			}
@@ -616,7 +616,6 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
 		Hashtable<String, YANG_Augment> augs = new Hashtable<String, YANG_Augment>();
 		for (YANG_Body body : bodies)
 			if (body instanceof YANG_Augment) {
@@ -659,7 +658,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				augmentednode.augments(aug);
 			}
 		}
-
+		
+		
+		
 		try {
 			for (Enumeration<YANG_Specification> ei = getImportedModules(p)
 					.elements(); ei.hasMoreElements();) {

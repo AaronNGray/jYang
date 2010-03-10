@@ -111,8 +111,8 @@ public class YANG_SubModule extends YANG_Specification {
 			else {
 				YANG_SubModule submod = (YANG_SubModule) includedspec;
 
-				if (!submod.getBelong().getBelong().equals(
-						getBelong().getBelong()))
+				if (submod.getBelong().getBelong().compareTo(
+						getBelong().getBelong()) != 0)
 					throw new YangParserException("Included submodule "
 							+ submod.getSubModule() + " in submodule "
 							+ getSubModule()

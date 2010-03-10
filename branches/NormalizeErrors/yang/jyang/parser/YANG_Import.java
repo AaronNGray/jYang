@@ -37,6 +37,10 @@ public class YANG_Import extends ImportIncludeNode implements YANG_Linkage {
 	public YANG_Prefix getPrefix() {
 		return prefix;
 	}
+	
+	public String getName(){
+		return getImportedModule();
+	}
 
 	public String toString() {
 		String result = " import " + importstr + " {" + prefix.toString();
