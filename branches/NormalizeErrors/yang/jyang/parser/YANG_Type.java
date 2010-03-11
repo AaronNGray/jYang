@@ -840,8 +840,7 @@ public class YANG_Type extends SimpleYangNode {
 	 *         typedef has a length restriction or a built-in type is reached.
 	 * @throws YangParserException
 	 */
-	private YANG_Type getFirstLengthDefined(YangContext context, YANG_TypeDef td)
-			 {
+	private YANG_Type getFirstLengthDefined(YangContext context, YANG_TypeDef td) {
 
 		YANG_Type basetype = td.getType();
 		YANG_TypeDef typedef = null;
@@ -909,11 +908,13 @@ public class YANG_Type extends SimpleYangNode {
 
 	private YANG_Type getFirstRangeDefined(YangContext context, YANG_TypeDef td)
 			throws YangParserException {
+
+		if (td == null)
+			return null;
 		YANG_Type basetype = td.getType();
 		YANG_TypeDef typedef = null;
 		YANG_TypeDef oldtd = null;
 		boolean end = false;
-
 		if (basetype.getNumRest() != null) {
 			return basetype;
 		}
@@ -1293,6 +1294,9 @@ public class YANG_Type extends SimpleYangNode {
 			YANG_Default ydefault) throws YangParserException {
 		String value = ydefault.getDefault();
 
+		if (typedef == null)
+			typedef = context.getTypeDef(this);
+
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			String[][] ranges = null;
 			YANG_NumericalRestriction lnumrest = null;
@@ -1471,33 +1475,51 @@ public class YANG_Type extends SimpleYangNode {
 									.compareTo(bi) >= 0);
 						}
 						if (!inside) {
-							YANG_Type t = this;
-							if (getFirstRangeDefined(context, context
-									.getBaseType(this)) != null)
-								t = getFirstRangeDefined(context, context
-										.getBaseType(this));
-							String message = "";
-							if (t == this) {
-								message = "direct_default_match_fail";
-								YangErrorManager.tadd(filename, lnumrest
-										.getLine(), lnumrest.getCol(), message,
-										YangBuiltInTypes.removeQuotes(value),
-										"range error", "range", context
-												.getTypeDef(this).getFileName()
-												+ ":"
-												+ context.getTypeDef(this)
-														.getLine());
-							} else {
-								message = "default_match_fail";
+							if (lnumrest == null) {
 								YANG_TypeDef td = this.getTypedef();
-								YangErrorManager.tadd(filename, lnumrest
-										.getLine(), lnumrest.getCol(), message,
-										YangBuiltInTypes.removeQuotes(value),
-										td.getFileName() + ":" + td.getLine(),
+								YangErrorManager.tadd(filename, ydefault
+										.getLine(), ydefault.getCol(),
+										"default_match_fail", YangBuiltInTypes
+												.removeQuotes(value), td
+												.getFileName()
+												+ ":" + td.getLine(),
 										"range error", "range", getFileName()
 												+ ":"
 												+ context.getTypeDef(this)
-														.getLine());
+														.getType().getLine());
+
+							} else {
+								YANG_Type t = this;
+								if (getFirstRangeDefined(context, context
+										.getBaseType(this)) != null)
+									t = getFirstRangeDefined(context, context
+											.getBaseType(this));
+								String message = "";
+								if (t == this) {
+									message = "direct_default_match_fail";
+									YangErrorManager.tadd(filename, ydefault
+											.getLine(), ydefault.getCol(),
+											message, YangBuiltInTypes
+													.removeQuotes(value),
+											"range error", "range", context
+													.getTypeDef(this)
+													.getFileName()
+													+ ":" + lnumrest.getLine());
+								} else {
+									message = "default_match_fail";
+									YANG_TypeDef td = this.getTypedef();
+									YangErrorManager.tadd(filename, lnumrest
+											.getLine(), lnumrest.getCol(),
+											message, YangBuiltInTypes
+													.removeQuotes(value), td
+													.getFileName()
+													+ ":" + td.getLine(),
+											"range error", "range",
+											getFileName()
+													+ ":"
+													+ context.getTypeDef(this)
+															.getLine());
+								}
 							}
 						}
 

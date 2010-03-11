@@ -53,6 +53,8 @@ public class YangSpecNode {
 	private final static String gprefix = "grouping:";
 	private final static String tprefix = "typedef:";
 	private final static String eprefix = "extension:";
+	private final static String iprefix = "identity:";
+	private final static String fprefix = "feature:";
 
 	public boolean isDefined(String k) {
 		return isDefinedAsNode(k) || isDefinedAsGrouping(k)
@@ -73,7 +75,9 @@ public class YangSpecNode {
 				|| bodies.containsKey(rleprefix + k)
 				|| bodies.containsKey(rchprefix + k)
 				|| bodies.containsKey(raprefix + k)
-				|| bodies.containsKey(eprefix + k))
+				|| bodies.containsKey(eprefix + k)
+				|| bodies.containsKey(iprefix + k)
+				|| bodies.containsKey(fprefix + k))
 			return true;
 		else
 			return false;
@@ -111,6 +115,22 @@ public class YangSpecNode {
 
 	}
 
+	public boolean isDefinedAsFeature(String k) {
+		if (bodies.containsKey(fprefix + k))
+			return true;
+		else
+			return false;
+
+	}
+
+	public boolean isDefinedAsIdentity(String k) {
+		if (bodies.containsKey(iprefix + k))
+			return true;
+		else
+			return false;
+
+	}
+
 	/**
 	 * Put the body only if not already present
 	 * 
@@ -126,22 +146,36 @@ public class YangSpecNode {
 		if (b instanceof YANG_TypeDef) {
 			if (isDefinedAsTypeDef(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"typedef", b.getBody(), modulefilename, get(name)
-								.getLine());
+						"dup_name", "typedef", b.getBody(), modulefilename,
+						get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Grouping) {
 			if (isDefinedAsGrouping(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"grouping", b.getBody(), modulefilename, get(name)
-								.getLine());
+						"dup_name", "grouping", b.getBody(), modulefilename,
+						get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Extension) {
 			if (isDefinedAsExtension(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"extension", b.getBody(), modulefilename, get(name)
-								.getLine());
+						"dup_name", "extension", b.getBody(), modulefilename,
+						get(name).getLine());
+				return;
+			}
+		} else if (b instanceof YANG_Identity) {
+			if (isDefinedAsIdentity(name)) {
+				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
+						"dup_name", "identity", b.getBody(), modulefilename,
+						get(name).getLine());
+				return;
+			}
+		} else if (b instanceof YANG_Feature) {
+			if (isDefinedAsFeature(name)) {
+				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
+						"dup_name", "feature", b.getBody(), modulefilename,
+						get(name).getLine());
 				return;
 			}
 		} else {
@@ -190,6 +224,10 @@ public class YangSpecNode {
 			bodies.put(tprefix + name, b);
 		else if (b instanceof YANG_Extension)
 			bodies.put(eprefix + name, b);
+		else if (b instanceof YANG_Identity)
+			bodies.put(iprefix + name, b);
+		else if (b instanceof YANG_Feature)
+			bodies.put(fprefix + name, b);
 	}
 
 	public void putUsed(YANG_Uses uses, String name, YANG_Body b) {
@@ -299,6 +337,10 @@ public class YangSpecNode {
 				return bodies.get(tprefix + k);
 			else if (bodies.containsKey(eprefix + k))
 				return bodies.get(eprefix + k);
+			else if (bodies.containsKey(iprefix + k))
+				return bodies.get(iprefix + k);
+			else if (bodies.containsKey(fprefix + k))
+				return bodies.get(fprefix + k);
 			else
 				return null;
 		return null;
@@ -317,7 +359,6 @@ public class YangSpecNode {
 			if (!bodies.containsKey(k)) {
 				bodies.put(k, p.bodies.get(k));
 			}
-
 		}
 	}
 

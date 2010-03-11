@@ -482,8 +482,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		if (!found)
 			System.err.println("@external yang specification "
 					+ externalmodulename + " not found");
-
-		checkedSpecs.put(externalmodulename, externalspec);
+		if (externalmodulename != null && externalspec != null)
+			checkedSpecs.put(externalmodulename, externalspec);
 		return externalspec;
 	}
 
@@ -658,9 +658,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				augmentednode.augments(aug);
 			}
 		}
-		
-		
-		
+
 		try {
 			for (Enumeration<YANG_Specification> ei = getImportedModules(p)
 					.elements(); ei.hasMoreElements();) {
