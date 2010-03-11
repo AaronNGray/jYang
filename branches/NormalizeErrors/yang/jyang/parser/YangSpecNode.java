@@ -146,35 +146,35 @@ public class YangSpecNode {
 		if (b instanceof YANG_TypeDef) {
 			if (isDefinedAsTypeDef(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "typedef", b.getBody(), modulefilename,
+						"dup_name", "typedef", b.getBody(), get(name).getFileName(),
 						get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Grouping) {
 			if (isDefinedAsGrouping(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "grouping", b.getBody(), modulefilename,
+						"dup_name", "grouping", b.getBody(), get(name).getFileName(),
 						get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Extension) {
 			if (isDefinedAsExtension(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "extension", b.getBody(), modulefilename,
+						"dup_name", "extension", b.getBody(), get(name).getFileName(),
 						get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Identity) {
 			if (isDefinedAsIdentity(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "identity", b.getBody(), modulefilename,
+						"dup_name", "identity", b.getBody(), get(name).getFileName(),
 						get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Feature) {
 			if (isDefinedAsFeature(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "feature", b.getBody(), modulefilename,
+						"dup_name", "feature", b.getBody(), get(name).getFileName(),
 						get(name).getLine());
 				return;
 			}
@@ -359,6 +359,19 @@ public class YangSpecNode {
 			if (!bodies.containsKey(k)) {
 				bodies.put(k, p.bodies.get(k));
 			}
+		}
+	}
+
+	public void mergeChecked(YangSpecNode p) {
+		for (Enumeration<String> ek = p.getNodes().keys(); ek.hasMoreElements();) {
+			String k = ek.nextElement();
+			if (!bodies.containsKey(k)) {
+				bodies.put(k, p.bodies.get(k));
+			} else
+				YangErrorManager.tadd(p.getNodes().get(k).getFileName(), p
+						.getNodes().get(k).getLine(), p.getNodes().get(k)
+						.getCol(), "dup_child", p.getNodes().get(k).getBody(),
+						bodies.get(k).getFileName(), bodies.get(k).getLine());
 		}
 	}
 

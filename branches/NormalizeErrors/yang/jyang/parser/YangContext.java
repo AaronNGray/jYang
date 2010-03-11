@@ -300,6 +300,11 @@ public class YangContext {
 		specnodes.merge(c.getSpecNodes());
 	}
 
+	public void mergeChecked(YangContext c) {
+		spectypes.mergeChecked(c.getSpecTypes());
+		specnodes.mergeChecked(c.getSpecNodes());
+	}
+
 	/**
 	 * Check if all typedefs have a resolved type and there is no circular
 	 * references

@@ -71,6 +71,18 @@ public class YangSpecTypes {
 		}
 	}
 
+	public void mergeChecked(YangSpecTypes yst) {
+		for (Enumeration<String> ek = yst.keys(); ek.hasMoreElements();) {
+			String k = ek.nextElement();
+			if (!deriveds.containsKey(k))
+				add(k, yst.get(k), yst.getTypeDef(k));
+			else
+				YangErrorManager.tadd(yst.getTypeDef(k).getFileName(), yst
+						.getTypeDef(k).getLine(), yst.getTypeDef(k).getCol(),
+						"dup_child", yst.getTypeDef(k).getBody());
+		}
+	}
+
 	/**
 	 * Get the typedef of the given type
 	 * 

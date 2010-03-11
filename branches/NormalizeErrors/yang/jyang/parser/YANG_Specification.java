@@ -191,13 +191,12 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		localcontext.checkTypes();
 
 		if (c != null)
-			c.merge(localcontext);
+			// c.merge(localcontext);
+			c.mergeChecked(localcontext);
 		else
 			c = localcontext;
 		checkBodies(p, checkeds, c);
-
 		return c;
-
 	}
 
 	private void checkBodies(String[] p, Vector<String> ckd, YangContext context)
@@ -245,7 +244,6 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				throw new YangParserException(importedmodulename + " and "
 						+ getName() + " have circular import chain");
 		}
-
 		if (includeds.size() == 0)
 			checkInclude(paths);
 		for (Enumeration<YANG_SubModule> es = includeds.elements(); es
@@ -257,7 +255,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					Vector<String> cks = (Vector<String>) builded.clone();
 					YangContext includedcontexts = submodule.checkAsExternal(
 							paths, cks);
-					c.merge(includedcontexts);
+					if (this instanceof YANG_Module)
+						c.mergeChecked(includedcontexts);
 				} catch (YangParserException ye) {
 					throw new YangParserException(getName()
 							+ " has an error in included submodule : "
@@ -280,15 +279,11 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		} else {
 			c = specontext;
 		}
-
 		return c;
-
 	}
 
 	public YangContext getThisSpecContext(YangContext context)
 			throws YangParserException {
-
-		// YangContext context = new YangContext(getImports(), this);
 
 		for (Enumeration<YANG_Body> eb = getBodies().elements(); eb
 				.hasMoreElements();) {
@@ -300,42 +295,6 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					System.err.println(getName() + ye.getMessage());
 				}
 		}
-		/*
-		 * YANG_Body body = null;
-		 * 
-		 * try { for (Enumeration<YANG_Body> eb = getBodies().elements(); eb
-		 * .hasMoreElements();) { body = eb.nextElement(); if (body instanceof
-		 * YANG_Uses) { YANG_Uses uses = (YANG_Uses) body; uses.check(context);
-		 * YANG_Grouping g = uses.getGrouping(); Vector<YANG_Grouping>
-		 * usedgroupings = g.getGroupings(); Vector<YANG_TypeDef> usedtypedefs =
-		 * g.getTypeDefs(); Vector<YANG_DataDef> useddatadefs = g.getDataDefs();
-		 * 
-		 * for (Enumeration<YANG_TypeDef> et = usedtypedefs.elements(); et
-		 * .hasMoreElements();) { YANG_TypeDef typedef = (YANG_TypeDef)
-		 * et.nextElement(); context.addNode(typedef); } for
-		 * (Enumeration<YANG_Grouping> eg = usedgroupings .elements();
-		 * eg.hasMoreElements();) { YANG_Grouping ug = (YANG_Grouping)
-		 * eg.nextElement(); context.addNode(ug); } for
-		 * (Enumeration<YANG_DataDef> ued = useddatadefs .elements();
-		 * ued.hasMoreElements();) { YANG_DataDef ddef = (YANG_DataDef)
-		 * ued.nextElement(); context.addNode(ddef); } } } } catch
-		 * (YangParserException ye) { String mes = ye.getMessage(); mes =
-		 * mes.substring(mes.indexOf(":") + 1, mes.length()); mes =
-		 * mes.substring(0, mes.indexOf("defined")); mes = "@" + body.getLine()
-		 * + "." + body.getCol() + ":grouping " + body.getBody() + " used " +
-		 * mes + " used elsewhere";
-		 * 
-		 * throw new YangParserException(getName() + mes); }
-		 */
-		/*
-		 * Vector<YANG_Body> cleanedbodies = new Vector<YANG_Body>();
-		 * 
-		 * for (Enumeration<YANG_Body> eb = bodies.elements();
-		 * eb.hasMoreElements();){ YANG_Body b = eb.nextElement(); if (!(b
-		 * instanceof YANG_Uses)) cleanedbodies.add(b); }
-		 * 
-		 * bodies = cleanedbodies; bodies.addAll(usedbodies);
-		 */
 		return context;
 	}
 
