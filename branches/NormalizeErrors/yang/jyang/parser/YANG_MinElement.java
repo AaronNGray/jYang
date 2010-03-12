@@ -19,6 +19,10 @@ public class YANG_MinElement extends SimpleYangNode {
 	public String getMinElement() {
 		return min;
 	}
+	
+	public int getMinElementInt(){
+		return Integer.parseInt(min);
+	}
 
 	public void check(YangContext context) {
 	}
