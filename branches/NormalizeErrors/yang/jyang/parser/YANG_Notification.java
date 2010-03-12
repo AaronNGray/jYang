@@ -64,6 +64,7 @@ public class YANG_Notification extends TypedefGroupingBody implements DataDefsCo
 	}
 
 	public void check(YangContext context) throws YangParserException {
+		super.check(context);
 	}
 
 	public String toString() {

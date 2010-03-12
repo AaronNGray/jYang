@@ -108,6 +108,7 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 	}
 
 	public void check(YangContext context) throws YangParserException {
+		super.check(context);
 		if (!b_key) {
 			if (b_config) {
 				if (getConfig().getConfigStr().compareTo("true") == 0)

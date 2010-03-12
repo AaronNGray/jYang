@@ -81,6 +81,7 @@ public class YANG_Rpc extends TypedefGroupingBody {
 	}
 
 	public void check(YangContext context) throws YangParserException {
+		super.check(context);
 		if (input != null)
 			input.check(context);
 		if (output != null)

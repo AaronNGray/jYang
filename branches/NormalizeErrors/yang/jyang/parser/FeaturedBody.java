@@ -4,7 +4,7 @@ import java.util.Vector;
 
 public abstract class FeaturedBody extends StatuedBody {
 
-	private Vector<YANG_IfFeature> ifFeatures = new Vector<YANG_IfFeature>();
+	protected Vector<YANG_IfFeature> ifFeatures = new Vector<YANG_IfFeature>();
 
 	public FeaturedBody(int id) {
 		super(id);
@@ -26,6 +26,17 @@ public abstract class FeaturedBody extends StatuedBody {
 		ifFeatures = ifs;
 	}
 
+	public void check(YangContext context) throws YangParserException {
+		for (YANG_IfFeature iff : ifFeatures) {
+			YANG_Body b = context.getFeature(iff);
+			if (b == null)
+				YangErrorManager.tadd(iff.getFileName(), iff.getLine(), iff
+						.getCol(), "feature_not_found", iff.getIfFeature());
+			else if (!(b instanceof YANG_Feature))
+				YangErrorManager.tadd(iff.getFileName(), iff.getLine(), iff
+						.getCol(), "feature_not_found", iff.getIfFeature());
+		}
+	}
 
 	public boolean isBracked() {
 		return ifFeatures.size() != 0;

@@ -146,36 +146,36 @@ public class YangSpecNode {
 		if (b instanceof YANG_TypeDef) {
 			if (isDefinedAsTypeDef(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "typedef", b.getBody(), get(name).getFileName(),
-						get(name).getLine());
+						"dup_name", "typedef", b.getBody(), get(name)
+								.getFileName(), get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Grouping) {
 			if (isDefinedAsGrouping(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "grouping", b.getBody(), get(name).getFileName(),
-						get(name).getLine());
+						"dup_name", "grouping", b.getBody(), get(name)
+								.getFileName(), get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Extension) {
 			if (isDefinedAsExtension(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "extension", b.getBody(), get(name).getFileName(),
-						get(name).getLine());
+						"dup_name", "extension", b.getBody(), get(name)
+								.getFileName(), get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Identity) {
 			if (isDefinedAsIdentity(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "identity", b.getBody(), get(name).getFileName(),
-						get(name).getLine());
+						"dup_name", "identity", b.getBody(), get(name)
+								.getFileName(), get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Feature) {
 			if (isDefinedAsFeature(name)) {
 				YangErrorManager.tadd(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "feature", b.getBody(), get(name).getFileName(),
-						get(name).getLine());
+						"dup_name", "feature", b.getBody(), get(name)
+								.getFileName(), get(name).getLine());
 				return;
 			}
 		} else {
@@ -301,6 +301,20 @@ public class YangSpecNode {
 			bodies.put(eprefix + name, b);
 	}
 
+	public YANG_Body getFeature(String k) {
+		if (isDefined(k))
+			if (bodies.containsKey(fprefix + k))
+				return bodies.get(fprefix + k);
+		return null;
+	}
+	
+	public YANG_Body getIdentity(String k) {
+		if (isDefined(k))
+			if (bodies.containsKey(iprefix + k))
+				return bodies.get(iprefix + k);
+		return null;
+	}
+
 	public YANG_Body get(String k) {
 		if (isDefined(k))
 			if (bodies.containsKey(lprefix + k))
@@ -403,5 +417,6 @@ public class YangSpecNode {
 		}
 		return result;
 	}
+
 
 }

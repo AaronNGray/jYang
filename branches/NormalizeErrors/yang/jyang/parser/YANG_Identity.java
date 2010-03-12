@@ -47,7 +47,34 @@ public class YANG_Identity extends StatuedBody {
 
 	@Override
 	public void check(YangContext context) throws YangParserException {
-		// TODO Auto-generated method stub
+
+		if (getBase() != null) {
+			YANG_Base base = getBase();
+			YANG_Body b = context.getIdentity(base);
+			if (b == null)
+				YangErrorManager.tadd(base.getFileName(), base.getLine(), base
+						.getCol(), "base_not_found", base.getBase());
+			else
+				checkRecursion(context, this, base);
+
+		}
+
+	}
+
+	private void checkRecursion(YangContext context, YANG_Identity id,
+			YANG_Base yb) {
+		YANG_Body b = context.getIdentity(yb);
+		if (b != null)
+			if (b instanceof YANG_Identity) {
+				YANG_Identity bid = (YANG_Identity) b;
+				if (bid.getIdentity().compareTo(id.getIdentity()) == 0)
+					YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+							"circ_identity", getBody());
+				else {
+					if (bid.getBase() != null)
+						checkRecursion(context, id, bid.getBase());
+				}
+			}
 
 	}
 

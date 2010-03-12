@@ -80,6 +80,7 @@ public class YANG_LeafList extends ListedDataDef {
 	}
 
 	public void check(YangContext context) throws YangParserException {
+		super.check(context);
 		if (!b_type)
 			throw new YangParserException(
 					"Type statement not present in leaf-list " + leaflist,

@@ -397,11 +397,13 @@ public class YangTreeNode implements java.io.Serializable {
 									if (configlist != null) {
 										if (configlist.compareTo(configkeyleaf) != 0)
 
-											YangErrorManager.tadd(node
-													.getFileName(),
-													k.getLine(), k.getCol(),
+											YangErrorManager.tadd(kbody
+													.getFileName(), kbody
+													.getLine(), kbody.getCol(),
 													"key_config", kstr, list
-															.getList());
+															.getList(), list
+															.getFileName(),
+													list.getLine());
 									} else if (configkeyleaf != null)
 										YangErrorManager.tadd(node
 												.getFileName(), k.getLine(), k
@@ -464,7 +466,7 @@ public class YangTreeNode implements java.io.Serializable {
 			for (YangTreeNode child : ddef.groupTreeNode(this)) {
 				boolean ok = true;
 				for (YangTreeNode son : getChilds())
-					if (ddef.getBody().compareTo(son.getNode().getBody()) == 0){
+					if (ddef.getBody().compareTo(son.getNode().getBody()) == 0) {
 						YangErrorManager.tadd(ddef.getFileName(), ddef
 								.getLine(), ddef.getCol(), "dup_child", ddef
 								.getBody(), son.getNode().getFileName(), son

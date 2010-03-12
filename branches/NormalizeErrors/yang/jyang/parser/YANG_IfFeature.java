@@ -19,9 +19,25 @@ public class YANG_IfFeature extends SimpleYangNode {
 	public void setIfFeature(String iffeature) {
 		this.iffeature = unquote(iffeature);
 	}
-	
+
 	public String toString() {
 		return "if-feature " + iffeature;
+	}
+
+	public boolean isPrefixed() {
+		return iffeature.indexOf(':') != -1;
+	}
+
+	public String getPrefix() {
+		if (isPrefixed())
+			return iffeature.substring(0, iffeature.indexOf(':'));
+		return "";
+	}
+
+	public String getSuffix() {
+		if (isPrefixed())
+			return iffeature.substring(iffeature.indexOf(':')+1);
+		return iffeature;
 	}
 
 }

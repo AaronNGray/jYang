@@ -98,6 +98,12 @@ public class YANG_Container extends MustDataDef implements YANG_ShortCase,
 	}
 
 	public void check(YangContext context) {
+		try {
+			super.check(context);
+		} catch (YangParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
 			if (parentConfig != null)

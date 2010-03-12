@@ -107,43 +107,47 @@ public class YANG_Choice extends ConfigDataDef {
 			if (cdef instanceof YANG_AnyXml) {
 				if (!checkMandatory((YANG_AnyXml) cdef))
 					YangErrorManager.tadd(cdef.getFileName(), cdef.getLine(),
-							cdef.getCol(), "mand_def_case", c.getBody());
+							cdef.getCol(), "mand_def_case", c.getBody(),
+							getChoice(), getFileName(), getLine());
 			} else if (cdef instanceof YANG_Leaf) {
 				if (!checkMandatory((YANG_Leaf) cdef))
 					YangErrorManager.tadd(cdef.getFileName(), cdef.getLine(),
-							cdef.getCol(), "mand_def_case", c.getBody());
+							cdef.getCol(), "mand_def_case", c.getBody(),
+							getChoice(), getFileName(), getLine());
 			} else if (cdef instanceof YANG_Container) {
 				YANG_Container container = (YANG_Container) cdef;
 				trackMandatory(container.getDataDefs());
-			} else if (cdef instanceof YANG_List) {
-				YANG_List list = (YANG_List) cdef;
-				if (list.getMinElement() != null)
-					if (list.getMinElement().getMinElementInt() > 0)
-						if (list.getMinElement().getMinElementInt() > 0)
-							YangErrorManager
-									.tadd(c.getFileName(), c.getLine(), c
-											.getCol(), "mand_def_case", list
-											.getBody());
-				trackMandatory(list.getDataDefs());
-			} else if (cdef instanceof YANG_LeafList) {
-				YANG_LeafList leaflist = (YANG_LeafList) cdef;
-				if (leaflist.getMinElement() != null)
-					if (leaflist.getMinElement().getMinElementInt() > 0)
-						YangErrorManager.tadd(c.getFileName(), c.getLine(), c
-								.getCol(), "mand_def_case", leaflist.getBody());
+			} else if (cdef instanceof ListedDataDef) {
+				if (!checkMandatory((ListedDataDef) cdef))
+					YangErrorManager.tadd(cdef.getFileName(), cdef.getLine(),
+							cdef.getCol(), "mand_def_case", cdef.getBody(),
+							getChoice(), getFileName(), getLine());
+				if (cdef instanceof YANG_List)
+					trackMandatory(((YANG_List) cdef).getDataDefs());
 			}
 		}
 	}
 
 	private void trackMandatory(YANG_ShortCase scase) {
 		if (scase instanceof YANG_AnyXml) {
-			checkMandatory((YANG_AnyXml) scase);
+			if (!checkMandatory((YANG_AnyXml) scase))
+				YangErrorManager.tadd(scase.getFileName(), scase.getLine(),
+						scase.getCol(), "mand_def_case", scase.getBody(),
+						getChoice(), getFileName(), getLine());
 		} else if (scase instanceof YANG_Leaf) {
-			checkMandatory((YANG_Leaf) scase);
+			if (!checkMandatory((YANG_Leaf) scase))
+				YangErrorManager.tadd(scase.getFileName(), scase.getLine(),
+						scase.getCol(), "mand_def_case", scase.getBody(),
+						getChoice(), getFileName(), getLine());
 		} else if (scase instanceof YANG_Container) {
 			trackMandatory(((YANG_Container) scase).getDataDefs());
-		} else if (scase instanceof YANG_List) {
-			trackMandatory(((YANG_List) scase).getDataDefs());
+		} else if (scase instanceof ListedDataDef) {
+			if (!checkMandatory((ListedDataDef) scase))
+				YangErrorManager.tadd(scase.getFileName(), scase.getLine(),
+						scase.getCol(), "mand_def_case", scase.getBody(),
+						getChoice(), getFileName(), getLine());
+			if (scase instanceof YANG_List)
+				trackMandatory(((YANG_List) scase).getDataDefs());
 		}
 
 	}
@@ -152,15 +156,24 @@ public class YANG_Choice extends ConfigDataDef {
 		for (Enumeration<YANG_DataDef> edd = ddefs.elements(); edd
 				.hasMoreElements();) {
 			YANG_DataDef ddef = edd.nextElement();
-			if (ddef instanceof YANG_AnyXml)
-				checkMandatory((YANG_AnyXml) ddef);
-			else if (ddef instanceof YANG_Choice) {
+			if (ddef instanceof YANG_AnyXml) {
+				if (!checkMandatory((YANG_AnyXml) ddef))
+					YangErrorManager.tadd(ddef.getFileName(), ddef.getLine(),
+							ddef.getCol(), "mand_def_case", ddef.getBody(),
+							getChoice(), getFileName(), getLine());
+			} else if (ddef instanceof YANG_Leaf) {
+				if (!checkMandatory((YANG_Leaf) ddef))
+					YangErrorManager.tadd(ddef.getFileName(), ddef.getLine(),
+							ddef.getCol(), "mand_def_case", ddef.getBody(),
+							getChoice(), getFileName(), getLine());
+			} else if (ddef instanceof YANG_Choice) {
 				YANG_Choice choice = (YANG_Choice) ddef;
 				if (choice.getMandatory() != null)
 					if (choice.getMandatory().getMandatory().compareTo("true") == 0)
 						YangErrorManager.tadd(choice.getFileName(), choice
 								.getLine(), choice.getCol(), "mand_def_case",
-								choice.getBody());
+								choice.getBody(), getChoice(), getFileName(),
+								getLine());
 				for (Enumeration<YANG_Case> ec = choice.getCases().elements(); ec
 						.hasMoreElements();)
 					trackMandatory(ec.nextElement());
@@ -170,24 +183,14 @@ public class YANG_Choice extends ConfigDataDef {
 
 			} else if (ddef instanceof YANG_Container)
 				trackMandatory(((YANG_Container) ddef).getDataDefs());
-			else if (ddef instanceof YANG_Leaf)
-				checkMandatory((YANG_Leaf) ddef);
-			else if (ddef instanceof YANG_List) {
-				YANG_List list = (YANG_List) ddef;
-				if (list.getMinElement() != null)
-					if (list.getMinElement().getMinElementInt() > 0)
-						if (list.getMinElement().getMinElementInt() > 0)
-							YangErrorManager.tadd(ddef.getFileName(), ddef
-									.getLine(), ddef.getCol(), "mand_def_case",
-									list.getBody());
-				trackMandatory(((YANG_List) ddef).getDataDefs());
-			} else if (ddef instanceof YANG_LeafList) {
-				YANG_LeafList leaflist = (YANG_LeafList) ddef;
-				if (leaflist.getMinElement() != null)
-					if (leaflist.getMinElement().getMinElementInt() > 0)
-						YangErrorManager.tadd(ddef.getFileName(), ddef
-								.getLine(), ddef.getCol(), "mand_def_case",
-								leaflist.getBody());
+			else if (ddef instanceof ListedDataDef) {
+				ListedDataDef lddef = (ListedDataDef) ddef;
+				if (!checkMandatory(lddef))
+					YangErrorManager.tadd(ddef.getFileName(), ddef.getLine(),
+							ddef.getCol(), "mand_def_case", ddef.getBody(),
+							getChoice(), getFileName(), getLine());
+				if (ddef instanceof YANG_List)
+					trackMandatory(((YANG_List) ddef).getDataDefs());
 			}
 
 		}
@@ -195,23 +198,23 @@ public class YANG_Choice extends ConfigDataDef {
 
 	private boolean checkMandatory(YANG_AnyXml ax) {
 		if (ax.getMandatory() != null)
-			if (YangBuiltInTypes.removeQuotesAndTrim(
-					ax.getMandatory().getMandatory()).compareTo("true") == 0)
+			if (ax.getMandatory().getMandatory().compareTo("true") == 0)
 				return false;
-			else
-				return true;
 		return true;
 	}
 
 	private boolean checkMandatory(YANG_Leaf leaf) {
 		if (leaf.getMandatory() != null)
-			if (YangBuiltInTypes.removeQuotesAndTrim(
-					leaf.getMandatory().getMandatory()).compareTo("true") == 0)
+			if (leaf.getMandatory().getMandatory().compareTo("true") == 0)
 				return false;
-			else
-				return true;
-		else
-			return true;
+		return true;
+	}
+
+	private boolean checkMandatory(ListedDataDef l) {
+		if (l.getMinElement() != null)
+			if (l.getMinElement().getMinElementInt() > 0)
+				return false;
+		return true;
 
 	}
 
@@ -245,16 +248,23 @@ public class YANG_Choice extends ConfigDataDef {
 					.getCol(), "default_case_not_found", getChoice(), defval);
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context){
+		
+		try {
+			super.check(context);
+		} catch (YangParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
 			if (parentConfig != null)
 				if (parentConfig.getConfigStr().compareTo("false") == 0
 						&& getConfig().getConfigStr().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol()
-							+ ":config to true and parent config to false");
+					YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+							"config_parent", "choice", getBody());
+
 		}
 
 		if (b_default) {

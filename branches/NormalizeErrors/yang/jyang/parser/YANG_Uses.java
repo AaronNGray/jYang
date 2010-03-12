@@ -94,6 +94,13 @@ public class YANG_Uses extends YANG_DataDef {
 	}
 
 	public void check(YangContext context)  {
+		
+		try {
+			super.check(context);
+		} catch (YangParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		if (!context.isGroupingDefined(this)) {
 			YangErrorManager.tadd(filename, getLine(), getCol(), "unknown",

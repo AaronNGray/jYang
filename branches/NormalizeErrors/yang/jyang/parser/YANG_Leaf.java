@@ -111,6 +111,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 	}
 
 	public void check(YangContext context) throws YangParserException {
+		super.check(context);
 		if (!b_type)
 			throw new YangParserException("Type statement not present in leaf "
 					+ leaf, getLine(), getCol());
