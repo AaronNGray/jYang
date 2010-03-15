@@ -189,6 +189,9 @@ public class YangTreeNode implements java.io.Serializable {
 				startnode = root;
 		}
 
+		if (startnode == null)
+			return null;
+
 		boolean foundchild = false;
 		boolean stop = false;
 		for (int i = starting; i < nids.length && !stop; i++) {
@@ -343,13 +346,14 @@ public class YangTreeNode implements java.io.Serializable {
 		} else if (node instanceof YANG_Leaf) {
 			YANG_Leaf leaf = (YANG_Leaf) node;
 			YANG_Type type = leaf.getType();
-			if (type.getLeafRef() != null) {
-				YANG_LeafRefSpecification krs = type.getLeafRef();
-				if (krs.getPath() != null) {
-					YANG_Path path = krs.getPath();
-					getBodyInTree(module, root, importeds, path.getPath());
+			if (type != null)
+				if (type.getLeafRef() != null) {
+					YANG_LeafRefSpecification krs = type.getLeafRef();
+					if (krs.getPath() != null) {
+						YANG_Path path = krs.getPath();
+						getBodyInTree(module, root, importeds, path.getPath());
+					}
 				}
-			}
 		} else if (node instanceof YANG_List) {
 			YANG_List list = (YANG_List) node;
 

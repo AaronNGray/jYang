@@ -31,11 +31,11 @@ public class YANG_UsesAugment extends FeaturedNode {
 	public void setUsesAugment(String ua) {
 		String aa = unquote(ua);
 		Matcher m = dsni.matcher(aa);
-		if (m.matches())
-			usesaugment = aa;
-		else
+		if (!m.matches())
 			YangErrorManager.tadd(filename, getLine(), getCol(),
 					"uses_augment_exp");
+		usesaugment = aa;
+
 	}
 
 	public String getUsesAugment() {

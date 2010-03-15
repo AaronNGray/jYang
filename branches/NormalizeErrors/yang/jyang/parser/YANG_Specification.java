@@ -191,8 +191,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		localcontext.checkTypes();
 
 		if (c != null)
-			// c.merge(localcontext);
-			c.mergeChecked(localcontext);
+			 c.merge(localcontext);
+			//c.mergeChecked(localcontext);
 		else
 			c = localcontext;
 		checkBodies(p, checkeds, c);
@@ -475,9 +475,10 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			}
 		}
 		if (!found)
-			throw new YangParserException("@external yang specification "
-					+ externalmodulename + " not found");
-		checkedSpecs.put(externalmodulename, externalspec);
+			YangErrorManager.tadd(getName(), getLine(), getCol(),
+					"file_not_found", externalmodulename);
+		else
+			checkedSpecs.put(externalmodulename, externalspec);
 		return externalspec;
 	}
 
@@ -565,12 +566,14 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				for (YangTreeNode includednode : includedtreenode.getChilds())
 					root.includeNode(includednode);
 			}
+		/*	
 			for (YANG_Specification spec : getImportedModules(p)) {
 				YangTreeNode includedtreenode = spec.buildTreeNode(p, builded,
 						importedtreenodes);
 				for (YangTreeNode includednode : includedtreenode.getChilds())
-					root.includeNode(includednode);
+					root.includeNode(includednode);	
 			}
+			*/
 		} catch (YangParserException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -635,7 +638,6 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					.println("panic could not happen in buildTreeNode in YANG_Specification");
 			System.exit(-1);
 		}
-
 		return root;
 	}
 }

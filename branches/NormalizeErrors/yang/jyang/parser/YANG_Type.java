@@ -1669,8 +1669,8 @@ public class YANG_Type extends SimpleYangNode {
 				YangErrorManager.tadd(filename, ydefault.getLine(), ydefault
 						.getCol(), "direct_default_match_fail",
 						YangBuiltInTypes.removeQuotes(value), "length error",
-						"length", this.getFileName() + ":"
-								+ getStringRest().getLine());
+						"length", this.getFileName() + ":");
+							//	+ getStringRest().getLine());
 
 			boolean direct = true;
 			YANG_TypeDef indirectTd = null;

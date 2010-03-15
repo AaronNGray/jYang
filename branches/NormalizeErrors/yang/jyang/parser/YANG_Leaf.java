@@ -114,16 +114,18 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 		super.check(context);
 		if (!b_type)
 			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
-					"exptected_kw", "type");
-
-		if (!YangBuiltInTypes.isBuiltIn(getType().getType()))
-			if (!context.isTypeDefined(getType())) {
-				YangErrorManager.tadd(filename, getType().getLine(), getType()
-						.getCol(), "unknown_type", getType().getType());
-			} else {
-				if (!context.getTypeDef(getType()).isChecked())
-					context.getTypeDef(getType()).check(context);
-			}
+					"expected_kw", "type");
+		else {
+			if (!YangBuiltInTypes.isBuiltIn(getType().getType()))
+				if (!context.isTypeDefined(getType())) {
+					YangErrorManager.tadd(filename, getType().getLine(),
+							getType().getCol(), "unknown_type", getType()
+									.getType());
+				} else {
+					if (!context.getTypeDef(getType()).isChecked())
+						context.getTypeDef(getType()).check(context);
+				}
+		}
 
 		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
@@ -142,27 +144,35 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":no default value permitted when mandatory is true");
 		if (b_default)
-			getType().checkDefaultValue(context, this, getDefault());
-		else {
-			YANG_TypeDef defining = context.getTypeDef(getType());
-			while (defining != null) {
-				if (defining.getDefault() != null) {
-					try {
-						getType().checkDefaultValue(context, this,
-								defining.getDefault());
-						defining = null;
-					} catch (YangParserException ye) {
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":default value "
-								+ defining.getDefault().getDefault()
-								+ " does no more match with current leaf "
-								+ getLeaf());
+			if (getType() != null)
+				getType().checkDefaultValue(context, this, getDefault());
+			else {
+				if (getType() != null) {
+					YANG_TypeDef defining = context.getTypeDef(getType());
+					while (defining != null) {
+						if (defining.getDefault() != null) {
+							try {
+								getType().checkDefaultValue(context, this,
+										defining.getDefault());
+								defining = null;
+							} catch (YangParserException ye) {
+								throw new YangParserException(
+										"@"
+												+ getLine()
+												+ "."
+												+ getCol()
+												+ ":default value "
+												+ defining.getDefault()
+														.getDefault()
+												+ " does no more match with current leaf "
+												+ getLeaf());
+							}
+						} else {
+							defining = context.getBaseTypeDef(defining);
+						}
 					}
-				} else {
-					defining = context.getBaseTypeDef(defining);
 				}
 			}
-		}
 
 	}
 
