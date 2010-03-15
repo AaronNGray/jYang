@@ -980,9 +980,10 @@ public class YANG_Type extends SimpleYangNode {
 					inside = true;
 			}
 			if (!inside)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":subtyping error " + subranges[i][0] + ".."
-						+ subranges[i][1]);
+				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+						"bad_subtyping", subranges[i][0] + ".."
+								+ subranges[i][1]);
+
 		}
 
 	}
@@ -1161,20 +1162,17 @@ public class YANG_Type extends SimpleYangNode {
 		for (int i = 1; i < r.length; i++) {
 			String oldbs = bs;
 			if (compareTo(context, bi, bs) == 1)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":not ascending order in range because " + bi + " > "
-						+ bs);
+				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+						"bad_range_order", bi + " > " + bs);
 			bi = r[i][0];
 			bs = r[i][1];
 			if (compareTo(context, oldbs, bi) != -1)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":not ascending order in range because " + oldbs
-						+ " >= " + bi);
+				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+						"bad_range_order", oldbs + " >= " + bi);
 		}
 		if (compareTo(context, bi, bs) == 1)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":not ascending order in range because " + bi + " > "
-					+ bs);
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"bad_range_order", bi + " > " + bs);
 	}
 
 	/**

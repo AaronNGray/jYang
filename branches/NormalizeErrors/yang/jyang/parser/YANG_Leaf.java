@@ -113,8 +113,8 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 	public void check(YangContext context) throws YangParserException {
 		super.check(context);
 		if (!b_type)
-			throw new YangParserException("Type statement not present in leaf "
-					+ leaf, getLine(), getCol());
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"exptected_kw", "type");
 
 		if (!YangBuiltInTypes.isBuiltIn(getType().getType()))
 			if (!context.isTypeDefined(getType())) {
@@ -166,8 +166,8 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 
 	}
 
-	public void refines(YANG_RefineLeaf rl){
-		if (rl.getConfig() !=null)
+	public void refines(YANG_RefineLeaf rl) {
+		if (rl.getConfig() != null)
 			config = rl.getConfig();
 		if (rl.getDefault() != null)
 			ydefault = rl.getDefault();

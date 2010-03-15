@@ -95,8 +95,8 @@ public class YANG_Module extends YANG_Specification {
 			throw new YangParserException("Name space not defined in module "
 					+ name);
 		if (b_namespace && !b_prefix)
-			throw new YangParserException("Prefix not defined in module "
-					+ name);
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"expected", "prefix");
 		if (!b_namespace && !b_prefix)
 			throw new YangParserException(
 					"Name space and Prefix not defined in module " + name);
@@ -119,11 +119,10 @@ public class YANG_Module extends YANG_Specification {
 					c = lk.getCol();
 				}
 			}
-			if (!(includedspec instanceof YANG_SubModule)){
+			if (!(includedspec instanceof YANG_SubModule)) {
 				YangErrorManager.tadd(getFileName(), l, c, "not_submodule",
 						includedspec.getName());
-			}
-			else {
+			} else {
 				YANG_SubModule submod = (YANG_SubModule) includedspec;
 
 				if (!submod.getBelong().getBelong().equals(getModule()))

@@ -379,10 +379,11 @@ public class YangContext {
 
 		// Are we trying to redefine a built-in type ?
 
-		if (YangBuiltInTypes.isBuiltIn(td.getTypeDef()))
-			throw new YangParserException(spec.getName() + " : built-in type "
-					+ td.getTypeDef() + " cannot be redefined", td.getLine(),
-					td.getCol());
+		if (YangBuiltInTypes.isBuiltIn(td.getTypeDef())) {
+			YangErrorManager.tadd(td.getFileName(), td.getLine(), td.getCol(),
+					"illegal_builtin", td.getBody());
+			return;
+		}
 
 		// Is there a type statement ?
 
