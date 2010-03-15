@@ -48,14 +48,14 @@ public class YANG_Augment extends DataDefBody {
 		super(p, id);
 	}
 
-	public void setAugment(String a) throws YangParserException {
+	public void setAugment(String a) {
 		String aa = unquote(a);
 		Matcher m = nid.matcher(aa);
 		if (m.matches())
 			augment = aa;
 		else
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":incorrect node identifier expression :" + a);
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"bad_aug_expr", aa);
 	}
 
 	public String getBody() {
@@ -97,7 +97,7 @@ public class YANG_Augment extends DataDefBody {
 	}
 
 	public void check(YangContext context) {
-		
+
 		try {
 			super.check(context);
 		} catch (YangParserException e) {
@@ -127,10 +127,7 @@ public class YANG_Augment extends DataDefBody {
 						getCol(), "ipnf", prefix);
 				return;
 			}
-			/*
-			 * throw new YangParserException("@" + getLine() + "." + getCol() +
-			 * ":imported module " + prefix + " not found");
-			 */
+
 			for (int i = start; i < nids.length; i++) {
 				if (nids[i].indexOf(':') != -1) {
 					if (prefix.compareTo(nids[i].substring(0, nids[i]
@@ -139,22 +136,13 @@ public class YANG_Augment extends DataDefBody {
 								getLine(), getCol(), "cp", getBody());
 						return;
 					}
-					/*
-					 * throw new YangParserException("@" + getLine() + "." +
-					 * getCol() + ":change prefix in a node reference " +
-					 * getAugment());
-					 */
+
 				} else {
 					if (!localprefix) {
 						YangErrorManager.tadd(context.getSpec().getName(),
 								getLine(), getCol(), "cp", getBody());
 						return;
 					}
-					/*
-					 * throw new YangParserException("@" + getLine() + "." +
-					 * getCol() + ":change prefix in a node reference " +
-					 * getAugment());
-					 */
 				}
 			}
 		}
@@ -164,10 +152,6 @@ public class YANG_Augment extends DataDefBody {
 				.hasMoreElements();) {
 			YANG_Case ycase = ec.nextElement();
 			if (caseids.contains(ycase.getCase())) {
-				/*
-				 * throw new YangParserException("case " + ycase.getCase() +
-				 * " already defined", ycase.getLine(), ycase.getCol());
-				 */
 				YangErrorManager.tadd(context.getSpec().getName(), ycase
 						.getLine(), ycase.getCol(), "ad", ycase.getBody());
 			} else
@@ -180,10 +164,9 @@ public class YANG_Augment extends DataDefBody {
 			throws YangParserException {
 
 		if (getCases().size() != 0 && !(augmented_node instanceof YANG_Choice)) {
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":only a choice can be augmented by a case :"
-					+ augmented_node.getBody() + " at line "
-					+ augmented_node.getLine() + " is not a choice");
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"bad_choice_aug", augmented_node.getBody(), augmented_node
+							.getFileName(), augmented_node.getLine());
 		}
 
 		if (augmented_node instanceof YANG_Container) {
@@ -247,12 +230,9 @@ public class YANG_Augment extends DataDefBody {
 			}
 		}
 		if (found)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":augmented data node already defined : "
-					+ augddef.getBody() + " at line " + augddef.getLine()
-					+ " and " + targddef.getBody() + " at line "
-					+ targddef.getLine());
-
+			YangErrorManager.tadd(augddef.getFileName(), augddef.getLine(),
+					augddef.getCol(), "dup_child", augddef.getBody(), targddef
+							.getFileName(), targddef.getLine());
 	}
 
 	private void checkDoubleCase(Vector<YANG_Case> vcases)
@@ -274,11 +254,8 @@ public class YANG_Augment extends DataDefBody {
 			}
 		}
 		if (found)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":augmented data node already defined : case "
-					+ ayc.getBody() + " at line " + ayc.getLine()
-					+ " and case " + yc.getBody() + " at line " + yc.getLine());
-
+			YangErrorManager.tadd(ayc.getFileName(), ayc.getLine(), ayc.getCol(),
+					"dup_child", ayc.getBody(), yc.getFileName(), yc.getLine());
 	}
 
 	public String toString() {

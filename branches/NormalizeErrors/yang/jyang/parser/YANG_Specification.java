@@ -191,8 +191,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		localcontext.checkTypes();
 
 		if (c != null)
-			 c.merge(localcontext);
-			//c.mergeChecked(localcontext);
+			c.merge(localcontext);
+		// c.mergeChecked(localcontext);
 		else
 			c = localcontext;
 		checkBodies(p, checkeds, c);
@@ -486,6 +486,14 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		Vector<String> builded = new Vector<String>();
 		Hashtable<String, YangTreeNode> importedtreenodes = new Hashtable<String, YangTreeNode>();
 		builded.add(getName());
+		for (YANG_Specification spec : importeds) {
+			YangTreeNode iytn = spec.buildTreeNode(p, builded,
+					importedtreenodes);
+			for (YANG_Import imp : getImports()) {
+				if (imp.getImportedModule().compareTo(spec.getName()) == 0)
+					importedtreenodes.put(imp.getPrefix().getPrefix(), iytn);
+			}
+		}
 		schemaTree = buildTreeNode(p, builded, importedtreenodes);
 		schemaTree.check(this, schemaTree, schemaTree, importedtreenodes);
 	}
@@ -564,16 +572,16 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				YangTreeNode includedtreenode = spec.buildTreeNode(p, builded,
 						importedtreenodes);
 				for (YangTreeNode includednode : includedtreenode.getChilds())
-					root.includeNode(includednode);
+					root.addChild(includednode);
 			}
-		/*	
-			for (YANG_Specification spec : getImportedModules(p)) {
-				YangTreeNode includedtreenode = spec.buildTreeNode(p, builded,
-						importedtreenodes);
-				for (YangTreeNode includednode : includedtreenode.getChilds())
-					root.includeNode(includednode);	
-			}
-			*/
+			/*
+			 * for (YANG_Specification spec : getImportedModules(p)) {
+			 * YangTreeNode importedtreenode = spec.buildTreeNode(p, builded,
+			 * importedtreenodes);
+			 * 
+			 * }
+			 */
+
 		} catch (YangParserException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -604,9 +612,15 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			YANG_Body augmentedbody = root.getBodyInTree(this, root,
 					importedtreenodes, taugs[i]);
 			if (augmentedbody == null) {
-				YangErrorManager.tadd(filename, augs.get(taugs[i]).getLine(),
-						augs.get(taugs[i]).getCol(), "augmented_not_found",
-						taugs[i]);
+				for (String pref : importedtreenodes.keySet()) {
+					YangTreeNode ytn = importedtreenodes.get(pref);
+					augmentedbody = ytn.getBodyInTree(this, root,
+							importedtreenodes, taugs[i]);
+				}
+				if (augmentedbody == null)
+					YangErrorManager.tadd(filename, augs.get(taugs[i])
+							.getLine(), augs.get(taugs[i]).getCol(),
+							"augmented_not_found", taugs[i]);
 			} else {
 				YANG_Augment aug = augs.get(taugs[i]);
 				try {
