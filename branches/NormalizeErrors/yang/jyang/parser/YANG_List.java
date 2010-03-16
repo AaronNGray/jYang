@@ -135,28 +135,11 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 			}
 
 		}
-		/*
-		 * for (Enumeration<YANG_Unique> eu = getUniques().elements(); eu
-		 * .hasMoreElements();) { YANG_Unique unique = eu.nextElement(); }
-		 */
 		if (datadefs.size() == 0)
 			throw new YangParserException("@" + getLine() + ":" + getCol()
 					+ ":no data in list " + list);
 
-		/*
-		 * 
-		 * Hashtable<String , YANG_DataDef> nodes = new Hashtable<String,
-		 * YANG_DataDef>(); for (Enumeration <YANG_DataDef> edd =
-		 * getDataDefs().elements(); edd.hasMoreElements();){ YANG_DataDef ddef
-		 * = edd.nextElement(); if (!(ddef instanceof YANG_Uses)){
-		 * nodes.put(ddef.getBody(), ddef); } if (ddef instanceof YANG_Uses){
-		 * YANG_Uses uses = (YANG_Uses) ddef; for (Enumeration <YANG_Refinement>
-		 * er = uses.getRefinements().elements(); er.hasMoreElements();){
-		 * YANG_Refinement ref = er.nextElement(); if
-		 * (nodes.containsKey(ref.getBody())) throw new YangParserException("@"
-		 * + ref.getLine() + "." + ref.getCol() + ":refinement " + ref.getBody()
-		 * + " is already defined in list " + getBody()); } } }
-		 */
+		setContext(context);
 	}
 
 	private boolean findKey(YangContext context, String k, YANG_DataDef dd) {

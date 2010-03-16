@@ -83,42 +83,43 @@ public class YANG_SubModule extends YANG_Specification {
 	 * existing module. The presence of the module and its syntax are checked
 	 * but no semantical checking.
 	 */
-	public void checkHeader(String[] p) throws YangParserException {
+	public void checkHeader(String[] p) {
 		if (!b_belong)
-			throw new YangParserException(
-					"Belonging module must be defined in submodule "
-							+ submodule);
-		YANG_Specification belonged = getExternal(p, belong.getBelong(), true);
-		if (!(belonged instanceof YANG_Module))
-			throw new YangParserException(belonged.getName()
-					+ " is not a module", belonged.getLine(), belonged.getCol());
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"expected_kw", "belongs-to");
+		else {
+			YANG_Specification belonged = getExternal(p, belong.getBelong());
+			if (!(belonged instanceof YANG_Module))
+				YangErrorManager.tadd(getFileName(), belong.getLine(), belong
+						.getCol(), "not_module", belong.getBelong());
+		}
 	}
 
 	/**
 	 * Check if included submodule belong to the same module than this submodule
 	 */
 
-	protected void checkInclude(String[] paths) throws YangParserException {
-		Vector<YANG_Specification> included = getIncludedSubModules(paths);
-		for (Enumeration<YANG_Specification> es = included.elements(); es
-				.hasMoreElements();) {
-			YANG_Specification includedspec = es.nextElement();
+	protected void checkInclude(String[] paths) {
+
+		for (YANG_Specification includedspec : getIncludedSubModules(paths)) {
+			int l = 0, c = 0;
+			for (YANG_Linkage lk : linkages) {
+				if (lk.getName().compareTo(includedspec.getName()) == 0) {
+					l = lk.getLine();
+					c = lk.getCol();
+				}
+			}
 			if (!(includedspec instanceof YANG_SubModule))
-				throw new YangParserException(
-						"Only submodule can be included : "
-								+ includedspec.getName()
-								+ " is not a submodule");
+				YangErrorManager.tadd(getFileName(), l, c, "not_submodule",
+						includedspec.getName());
 			else {
 				YANG_SubModule submod = (YANG_SubModule) includedspec;
 
 				if (submod.getBelong().getBelong().compareTo(
 						getBelong().getBelong()) != 0)
-					throw new YangParserException("Included submodule "
-							+ submod.getSubModule() + " in submodule "
-							+ getSubModule()
-							+ " does not belongs to the same module "
-							+ getBelong().getBelong());
-				if (!includeds.contains(submod))
+					YangErrorManager.tadd(getFileName(), l, c, "not_belong",
+							submod.getName(), getBelong().getBelong());
+				else if (!includeds.contains(submod))
 					includeds.add(submod);
 			}
 		}

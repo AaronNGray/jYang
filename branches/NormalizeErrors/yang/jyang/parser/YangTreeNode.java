@@ -229,12 +229,23 @@ public class YangTreeNode implements java.io.Serializable {
 	public void check(YANG_Specification module, YangTreeNode root,
 			YangTreeNode subroot, Hashtable<String, YangTreeNode> importeds) {
 
+		if (getParent() != null)
+			for (YangTreeNode ytn : getParent().getChilds()) {
+				if (ytn != this) {
+					if (ytn.getNode().getBody().compareTo(getNode().getBody()) == 0)
+						YangErrorManager.tadd(ytn.getNode().getFileName(), ytn
+								.getNode().getLine(), ytn.getNode().getCol(),
+								"dup_child", ytn.getNode().getBody(), getNode()
+										.getFileName(), getNode().getLine());
+				}
+			}
+
 		if (isUsed()) {
 			YANG_Uses uses = getUses();
 			for (YangTreeNode ytn : getParent().getChilds()) {
 				if (ytn != this) {
 					if (uses.getGrouping() != null) {
-						for (YANG_DataDef ddef : uses.getGrouping()
+						for (YANG_DataDef uddef : uses.getGrouping()
 								.getDataDefs()) {
 							if (ytn.getNode() instanceof YANG_Choice) {
 								for (YANG_Case ycase : ((YANG_Choice) ytn
@@ -242,15 +253,29 @@ public class YangTreeNode implements java.io.Serializable {
 									for (YANG_DataDef cddef : ycase
 											.getDataDefs()) {
 										if (cddef.getBody().compareTo(
-												ddef.getBody()) == 0)
+												uddef.getBody()) == 0)
 											YangErrorManager.tadd(uses
 													.getFileName(), uses
 													.getLine(), uses.getCol(),
-													"dup_child",
-													ddef.getBody(), cddef
+													"dup_child", uddef
+															.getBody(), cddef
 															.getFileName(),
 													cddef.getLine());
 									}
+								}
+								for (YANG_ShortCase scase : (((YANG_Choice) ytn
+										.getNode()).getShortCases())){
+									YANG_DataDef sddef = (YANG_DataDef)scase;
+									if (sddef.getBody().compareTo(
+											uddef.getBody()) == 0)
+										YangErrorManager.tadd(uses
+												.getFileName(), uses
+												.getLine(), uses.getCol(),
+												"dup_child", uddef
+														.getBody(), sddef
+														.getFileName(),
+												sddef.getLine());
+									
 								}
 							}
 						}

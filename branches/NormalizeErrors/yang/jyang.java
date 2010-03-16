@@ -222,8 +222,7 @@ public class jyang {
 			try {
 				yang.setFileName(fname);
 				YANG_Specification yangspec = yang.Start();
-				Vector<String> checkeds = new Vector<String>();
-				yangspec.check(paths, checkeds);
+				yangspec.check(paths);
 				if (YANG_Specification.isCheckOk()) {
 					yangsSpecs.put(yangspec.getName(), yangspec);
 

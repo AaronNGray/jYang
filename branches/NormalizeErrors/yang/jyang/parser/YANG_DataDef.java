@@ -106,6 +106,7 @@ public abstract class YANG_DataDef extends FeaturedBody {
 									.getLine(), uses.getCol(), "dup_child", ytn
 									.getNode().getBody(), ytn.getNode()
 									.getFileName(), ytn.getNode().getLine());
+				
 			}
 		}
 		return result;

@@ -28,6 +28,11 @@ public class YangContext {
 	private Hashtable<String, YANG_Type> pendinguniontypes = new Hashtable<String, YANG_Type>();
 	private Vector<YANG_Import> imports = null;
 	private YANG_Specification spec = null;
+	private YANG_Prefix localPrefix = null;
+
+	public YANG_Prefix getLocalPrefix() {
+		return localPrefix;
+	}
 
 	private YangContext(YangSpecTypes st, YangSpecNode sn,
 			Vector<YANG_Import> i, YANG_Specification s) {
@@ -93,7 +98,7 @@ public class YangContext {
 	 *             already exists in this context or if a typedef or a grouping
 	 *             uses a built-in type.
 	 */
-	public void addNode(YANG_Body b) throws YangParserException {
+	public void addNode(YANG_Body b) {
 
 		if (b instanceof YANG_TypeDef)
 			addTypeDef((YANG_TypeDef) b);
@@ -197,12 +202,8 @@ public class YangContext {
 			String suffix = uses
 					.substring(uses.indexOf(':') + 1, uses.length());
 			String cn = null;
-			try {
-				cn = canonicalTypeName(prefix, suffix,
-						new Hashtable<String, YANG_Type>());
-			} catch (YangParserException e) {
-				return false;
-			}
+			cn = canonicalTypeName(prefix, suffix, u.getLine(), u.getCol(),
+					new Hashtable<String, YANG_Type>());
 			return specnodes.isDefinedAsGrouping(cn);
 		} else
 			return specnodes.isDefinedAsGrouping(getModuleSpecName() + ":"
@@ -221,13 +222,8 @@ public class YangContext {
 			String suffix = uses
 					.substring(uses.indexOf(':') + 1, uses.length());
 			String cn = null;
-			try {
-				cn = canonicalTypeName(prefix, suffix,
-						new Hashtable<String, YANG_Type>());
-			} catch (YangParserException e) {
-				// must not occurs
-				System.err.println("Panic in used grouping");
-			}
+			cn = canonicalTypeName(prefix, suffix, u.getLine(), u.getCol(),
+					new Hashtable<String, YANG_Type>());
 			return specnodes.getUsedGrouping(cn);
 		} else {
 			return specnodes.getUsedGrouping(getModuleSpecName() + ":" + uses);
@@ -291,24 +287,14 @@ public class YangContext {
 
 	public YANG_Body getIdentity(YANG_Base base) {
 		String t = "";
-		try {
-			t = canonicalTypeName(base, new Hashtable<String, YANG_Type>());
-		} catch (YangParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		t = canonicalTypeName(base, new Hashtable<String, YANG_Type>());
 		return specnodes.getIdentity(t);
 
 	}
 
 	public YANG_Body getFeature(YANG_IfFeature iff) {
 		String t = "";
-		try {
-			t = canonicalTypeName(iff, new Hashtable<String, YANG_Type>());
-		} catch (YangParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		t = canonicalTypeName(iff, new Hashtable<String, YANG_Type>());
 		return specnodes.getFeature(t);
 	}
 
@@ -370,12 +356,12 @@ public class YangContext {
 		specnodes.put(getModuleSpecName() + ":" + g.getGrouping(), g);
 	}
 
-	private void addExtension(YANG_Extension e) throws YangParserException {
+	private void addExtension(YANG_Extension e) {
 
 		specnodes.put(getModuleSpecName() + ":" + e.getExtension(), e);
 	}
 
-	private void addTypeDef(YANG_TypeDef td) throws YangParserException {
+	private void addTypeDef(YANG_TypeDef td) {
 
 		// Are we trying to redefine a built-in type ?
 
@@ -396,15 +382,14 @@ public class YangContext {
 		YANG_Type type = td.getType();
 
 		String typestr = canonicalTypeName(type, pendinguniontypes);
-
+		
 		specnodes.put(getModuleSpecName() + ":" + td.getTypeDef(), td);
 		spectypes.add(getModuleSpecName() + ":" + td.getTypeDef(), typestr, td);
 
 	}
 
 	private String canonicalTypeName(YANG_Type type,
-			Hashtable<String, YANG_Type> pendinguniontype)
-			throws YangParserException {
+			Hashtable<String, YANG_Type> pendinguniontype) {
 		String prefix = null;
 		String suffix = null;
 
@@ -412,28 +397,22 @@ public class YangContext {
 			prefix = type.getPrefix();
 		suffix = type.getSuffix();
 		String cn = null;
-		try {
-			cn = canonicalTypeName(prefix, suffix, pendinguniontype);
-		} catch (YangParserException e) {
-			throw new YangParserException("@" + type.getLine() + "."
-					+ type.getCol() + ":" + e.getMessage());
-		}
-
+		cn = canonicalTypeName(prefix, suffix, type.getLine(), type.getCol(),
+				pendinguniontype);
 		if (YangBuiltInTypes.union.compareTo(suffix) == 0) {
 			YANG_UnionSpecification unionspec = type.getUnionSpec();
 			if (unionspec != null)
 				pendingUnionTypes(unionspec, pendinguniontype, imports, spec);
 			else
-				throw new YangParserException("@" + type.getLine() + "."
-						+ type.getCol() + ":union type must have type(s)");
+				YangErrorManager.tadd(type.getFileName(), type.getLine(), type
+						.getCol(), "union_no_type");
 		}
 		return cn;
 
 	}
 
 	private String canonicalTypeName(YANG_IfFeature iff,
-			Hashtable<String, YANG_Type> pendinguniontype)
-			throws YangParserException {
+			Hashtable<String, YANG_Type> pendinguniontype) {
 		String prefix = null;
 		String suffix = null;
 
@@ -441,18 +420,13 @@ public class YangContext {
 			prefix = iff.getPrefix();
 		suffix = iff.getSuffix();
 		String cn = null;
-		try {
-			cn = canonicalTypeName(prefix, suffix, pendinguniontype);
-		} catch (YangParserException e) {
-			throw new YangParserException("@" + iff.getLine() + "."
-					+ iff.getCol() + ":" + e.getMessage());
-		}
+		cn = canonicalTypeName(prefix, suffix, iff.getLine(), iff.getCol(),
+				pendinguniontype);
 		return cn;
 	}
 
 	private String canonicalTypeName(YANG_Base base,
-			Hashtable<String, YANG_Type> pendinguniontype)
-			throws YangParserException {
+			Hashtable<String, YANG_Type> pendinguniontype) {
 		String prefix = null;
 		String suffix = null;
 
@@ -460,18 +434,13 @@ public class YangContext {
 			prefix = base.getPrefix();
 		suffix = base.getSuffix();
 		String cn = null;
-		try {
-			cn = canonicalTypeName(prefix, suffix, pendinguniontype);
-		} catch (YangParserException e) {
-			throw new YangParserException("@" + base.getLine() + "."
-					+ base.getCol() + ":" + e.getMessage());
-		}
+		cn = canonicalTypeName(prefix, suffix, base.getLine(), base.getCol(),
+				pendinguniontype);
 		return cn;
 	}
 
-	private String canonicalTypeName(String prefix, String suffix,
-			Hashtable<String, YANG_Type> pendinguniontype)
-			throws YangParserException {
+	private String canonicalTypeName(String prefix, String suffix, int line,
+			int col, Hashtable<String, YANG_Type> pendinguniontype) {
 		String result = null;
 		if (prefix == null) {
 			if (YangBuiltInTypes.isBuiltIn(suffix))
@@ -480,9 +449,14 @@ public class YangContext {
 				return getModuleSpecName() + ":" + suffix;
 		} else {
 			if (YangBuiltInTypes.isBuiltIn(suffix))
-				throw new YangParserException("built in type " + suffix
-						+ " cannot be prefixed");
+				YangErrorManager.tadd(getModuleSpecName(), line, col,
+						"illegal_builtin", prefix + ":" + suffix);
 			boolean found = false;
+			if (getLocalPrefix() != null)
+				if( getLocalPrefix().getPrefix().compareTo(prefix) == 0){
+					found = true;
+					result = getSpec().getName() + ":" + suffix;
+				}
 			for (Enumeration<YANG_Import> ei = imports.elements(); ei
 					.hasMoreElements()
 					&& !found;) {
@@ -501,8 +475,8 @@ public class YangContext {
 					}
 				}
 				if (!found) {
-					throw new YangParserException("the prefix " + prefix
-							+ " is not a prefix of an imported module");
+					YangErrorManager.tadd(getModuleSpecName(), line, col,
+							"not_imported_prefix", prefix);
 				}
 			}
 		}
@@ -511,8 +485,8 @@ public class YangContext {
 
 	private void pendingUnionTypes(YANG_UnionSpecification us,
 			Hashtable<String, YANG_Type> pendinguniontype,
-			Vector<YANG_Import> imports, YANG_Specification spec)
-			throws YangParserException {
+			Vector<YANG_Import> imports, YANG_Specification spec) {
+
 		for (Enumeration<YANG_Type> et = us.getTypes().elements(); et
 				.hasMoreElements();) {
 			YANG_Type utype = et.nextElement();
@@ -599,6 +573,12 @@ public class YangContext {
 	 */
 	public String toString() {
 		return spectypes.toString() + "\n" + specnodes.toString();
+	}
+
+	public void addLocalPrefix(YANG_Prefix prefix) {
+
+		localPrefix = prefix;
+		
 	}
 
 }

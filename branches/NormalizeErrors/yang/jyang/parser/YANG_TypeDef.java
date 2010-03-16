@@ -14,7 +14,7 @@ public class YANG_TypeDef extends StatuedBody {
 	private boolean b_type = false, b_units = false, b_default = false;
 
 	private boolean used = false, correct = true;
-	private boolean checked;
+	private boolean checked = false;
 
 	public boolean isChecked() {
 		return checked;
@@ -116,6 +116,7 @@ public class YANG_TypeDef extends StatuedBody {
 		}
 
 		checked = true;
+		correct = true;
 
 	}
 

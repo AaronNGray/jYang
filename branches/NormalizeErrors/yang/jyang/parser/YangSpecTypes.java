@@ -79,7 +79,7 @@ public class YangSpecTypes {
 			else
 				YangErrorManager.tadd(yst.getTypeDef(k).getFileName(), yst
 						.getTypeDef(k).getLine(), yst.getTypeDef(k).getCol(),
-						"dup_child", yst.getTypeDef(k).getBody());
+						"dup_child", yst.getTypeDef(k).getBody()+"--------------------");
 		}
 	}
 

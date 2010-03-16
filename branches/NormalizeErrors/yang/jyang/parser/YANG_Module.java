@@ -90,28 +90,22 @@ public class YANG_Module extends YANG_Specification {
 	/**
 	 * Check the presence of the namespace and the prefix statements
 	 */
-	public void checkHeader(String[] p) throws YangParserException {
-		if (!b_namespace && b_prefix)
-			throw new YangParserException("Name space not defined in module "
-					+ name);
-		if (b_namespace && !b_prefix)
+	public void checkHeader(String[] p) {
+		if (!b_prefix)
 			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
 					"expected", "prefix");
-		if (!b_namespace && !b_prefix)
-			throw new YangParserException(
-					"Name space and Prefix not defined in module " + name);
+		if (!b_namespace)
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"expected_kw", "namespace");
 	}
 
 	/**
 	 * Check if included yang specifications are accessible and have a correct
 	 * syntax and if they are submodules and if they belong to this module
 	 */
-	protected void checkInclude(String[] paths) throws YangParserException {
-		Vector<YANG_Specification> included = getIncludedSubModules(paths);
-		for (Enumeration<YANG_Specification> es = included.elements(); es
-				.hasMoreElements();) {
-			YANG_Specification includedspec = es.nextElement();
+	protected void checkInclude(String[] paths) {
 
+		for (YANG_Specification includedspec : getIncludedSubModules(paths)) {
 			int l = 0, c = 0;
 			for (YANG_Linkage lk : linkages) {
 				if (lk.getName().compareTo(includedspec.getName()) == 0) {
