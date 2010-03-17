@@ -312,10 +312,12 @@ public class YANG_Type extends SimpleYangNode {
 							getStringRest().getCol(), "not_alw",
 							"restriction pattern", getType());
 			}
-
 			if (getUnionSpec() != null)
 				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
 						"union specification", getType());
+			if (getInstanceIdentifierSpec() != null)System.out.println("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+			if (getLeafRef()!= null)System.out.println("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+			
 
 			checkRange(context);
 		} else if (YangBuiltInTypes.string.compareTo(context
@@ -1572,30 +1574,47 @@ public class YANG_Type extends SimpleYangNode {
 								inside = true;
 						}
 						if (!inside) {
-							YANG_Type t = this;
-							if (getFirstRangeDefined(context, context
-									.getTypeDef(this)) != this)
-								t = getFirstRangeDefined(context, context
-										.getTypeDef(this));
-							if (t == this) {
-								YangErrorManager.tadd(filename, lnumrest
-										.getLine(), lnumrest.getCol(),
-										"direct_default_match_fail",
-										YangBuiltInTypes.removeQuotes(value),
-										"range error", "range", this
-												.getFileName()
-												+ ":" + getLine());
-							} else {
-								YANG_TypeDef td = t.getTypedef();
-								YangErrorManager.tadd(filename, lnumrest
-										.getLine(), lnumrest.getCol(),
+							if (lnumrest == null) {
+								YANG_TypeDef td = this.getTypedef();
+								YangErrorManager.tadd(filename, ydefault
+										.getLine(), ydefault.getCol(),
 										"default_match_fail", YangBuiltInTypes
 												.removeQuotes(value), td
 												.getFileName()
 												+ ":" + td.getLine(),
-										"range error", "range", this
-												.getFileName()
-												+ ":" + getLine());
+										"range error", "range", getFileName()
+												+ ":"
+												+ context.getTypeDef(this)
+														.getType().getLine());
+
+							} else {
+								YANG_Type t = this;
+								if (getFirstRangeDefined(context, context
+										.getTypeDef(this)) != this)
+									t = getFirstRangeDefined(context, context
+											.getTypeDef(this));
+								if (t == this) {
+									YangErrorManager.tadd(filename, lnumrest
+											.getLine(), lnumrest.getCol(),
+											"direct_default_match_fail",
+											YangBuiltInTypes
+													.removeQuotes(value),
+											"range error", "range", this
+													.getFileName()
+													+ ":" + getLine());
+								} else {
+									YANG_TypeDef td = this.getTypedef();
+									YangErrorManager.tadd(filename, lnumrest
+											.getLine(), lnumrest.getCol(),
+											"default_match_fail",
+											YangBuiltInTypes
+													.removeQuotes(value), td
+													.getFileName()
+													+ ":" + td.getLine(),
+											"range error", "range", this
+													.getFileName()
+													+ ":" + getLine());
+								}
 							}
 						}
 					} catch (NumberFormatException ne) {
@@ -1670,7 +1689,7 @@ public class YANG_Type extends SimpleYangNode {
 						.getCol(), "direct_default_match_fail",
 						YangBuiltInTypes.removeQuotes(value), "length error",
 						"length", this.getFileName() + ":");
-							//	+ getStringRest().getLine());
+			// + getStringRest().getLine());
 
 			boolean direct = true;
 			YANG_TypeDef indirectTd = null;

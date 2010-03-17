@@ -232,11 +232,31 @@ public class YangTreeNode implements java.io.Serializable {
 		if (getParent() != null)
 			for (YangTreeNode ytn : getParent().getChilds()) {
 				if (ytn != this) {
-					if (ytn.getNode().getBody().compareTo(getNode().getBody()) == 0)
-						YangErrorManager.tadd(ytn.getNode().getFileName(), ytn
-								.getNode().getLine(), ytn.getNode().getCol(),
-								"dup_child", ytn.getNode().getBody(), getNode()
-										.getFileName(), getNode().getLine());
+					if (ytn.getNode().getBody().compareTo(getNode().getBody()) == 0) {
+						if (getNode().getFileName().compareTo(
+								ytn.getNode().getFileName()) == 0) {
+							int l1, c1, l2;
+							if (getNode().getLine() > ytn.getNode().getLine()) {
+								l1 = getNode().getLine();
+								c1 = getNode().getCol();
+								l2 = ytn.getNode().getLine();
+							} else {
+								l1 = ytn.getNode().getLine();
+								c1 = ytn.getNode().getCol();
+								l2 = getNode().getLine();
+							}
+							YangErrorManager.tadd(getNode().getFileName(), l1,
+									c1, "dup_child", getNode().getBody(),
+									getNode().getFileName(), l2);
+
+						} else
+							YangErrorManager
+									.tadd(ytn.getNode().getFileName(), ytn
+											.getNode().getLine(), ytn.getNode()
+											.getCol(), "dup_child", ytn
+											.getNode().getBody(), getNode()
+											.getFileName(), getNode().getLine());
+					}
 				}
 			}
 
@@ -245,38 +265,32 @@ public class YangTreeNode implements java.io.Serializable {
 			for (YangTreeNode ytn : getParent().getChilds()) {
 				if (ytn != this) {
 					if (uses.getGrouping() != null) {
-						for (YANG_DataDef uddef : uses.getGrouping()
-								.getDataDefs()) {
-							if (ytn.getNode() instanceof YANG_Choice) {
-								for (YANG_Case ycase : ((YANG_Choice) ytn
-										.getNode()).getCases()) {
-									for (YANG_DataDef cddef : ycase
-											.getDataDefs()) {
-										if (cddef.getBody().compareTo(
-												uddef.getBody()) == 0)
-											YangErrorManager.tadd(uses
-													.getFileName(), uses
-													.getLine(), uses.getCol(),
-													"dup_child", uddef
-															.getBody(), cddef
-															.getFileName(),
-													cddef.getLine());
-									}
-								}
-								for (YANG_ShortCase scase : (((YANG_Choice) ytn
-										.getNode()).getShortCases())){
-									YANG_DataDef sddef = (YANG_DataDef)scase;
-									if (sddef.getBody().compareTo(
-											uddef.getBody()) == 0)
+						if (getNode() instanceof YANG_Choice) {
+							for (YANG_Case ycase : ((YANG_Choice) getNode())
+									.getCases()) {
+								for (YANG_DataDef cddef : ycase.getDataDefs()) {
+									if (cddef.getBody().compareTo(
+											ytn.getNode().getBody()) == 0)
 										YangErrorManager.tadd(uses
-												.getFileName(), uses
-												.getLine(), uses.getCol(),
-												"dup_child", uddef
-														.getBody(), sddef
-														.getFileName(),
-												sddef.getLine());
-									
+												.getFileName(), uses.getLine(),
+												uses.getCol(), "dup_child", ytn
+														.getNode().getBody(),
+												cddef.getFileName(), cddef
+														.getLine());
 								}
+							}
+							for (YANG_ShortCase scase : (((YANG_Choice) getNode())
+									.getShortCases())) {
+								YANG_DataDef sddef = (YANG_DataDef) scase;
+								if (sddef.getBody().compareTo(
+										ytn.getNode().getBody()) == 0)
+									YangErrorManager.tadd(uses.getFileName(),
+											uses.getLine(), uses.getCol(),
+											"dup_child", ytn.getNode()
+													.getBody(), sddef
+													.getFileName(), sddef
+													.getLine());
+
 							}
 						}
 					}
@@ -368,6 +382,61 @@ public class YangTreeNode implements java.io.Serializable {
 				}
 
 			}
+			Vector<YANG_UsesAugment> vaugs = uses.getUsesAugments();
+			String[] taugs = new String[vaugs.size()];
+			int iu = 0;
+			for (YANG_UsesAugment uaug : vaugs)
+				taugs[iu++] = uaug.getUsesAugment();
+
+			for (int i = 0; i < taugs.length; i++)
+				for (int j = i + 1; j < taugs.length; j++) {
+					String[] ti = taugs[i].split("/");
+					String[] tj = taugs[j].split("/");
+					if (ti.length > tj.length) {
+						String ls = taugs[i];
+						YANG_UsesAugment lai = vaugs.get(i);
+						YANG_UsesAugment laj = vaugs.get(j);
+						taugs[i] = taugs[j];
+						taugs[j] = ls;
+						vaugs.remove(i);
+						vaugs.add(i, laj);
+						vaugs.remove(j);
+						vaugs.add(j, lai);
+					}
+				}
+
+			for (int i = 0; i < taugs.length; i++) {
+				YANG_Body augmentedbody = getBodyInTree(module, this,
+						importeds, taugs[i]);
+				if (augmentedbody == null) {
+					for (String pref : importeds.keySet()) {
+						YangTreeNode ytn = importeds.get(pref);
+						augmentedbody = ytn.getBodyInTree(module, this,
+								importeds, taugs[i]);
+					}
+					if (augmentedbody == null)
+						YangErrorManager.tadd(vaugs.get(i).getFileName(), vaugs
+								.get(i).getLine(), vaugs.get(i).getCol(),
+								"augmented_not_found", taugs[i]);
+				} else {
+
+					YANG_UsesAugment uaug = vaugs.get(i);
+
+					YangTreeNode augmentednode = getNodeInTree(module, this,
+							importeds, taugs[i]);
+
+					if (augmentednode.getParent() != parent)
+						augmentednode.usesaugments(uaug);
+					else {
+						YangErrorManager.tadd(uaug.getFileName(), uaug
+								.getLine(), uaug.getCol(), "not_augmentable",
+								uaug.getBody(), augmentednode.getNode()
+										.getFileName(), augmentednode.getNode()
+										.getLine());
+					}
+				}
+			}
+
 		} else if (node instanceof YANG_Leaf) {
 			YANG_Leaf leaf = (YANG_Leaf) node;
 			YANG_Type type = leaf.getType();
@@ -496,10 +565,64 @@ public class YangTreeNode implements java.io.Serializable {
 				boolean ok = true;
 				for (YangTreeNode son : getChilds())
 					if (ddef.getBody().compareTo(son.getNode().getBody()) == 0) {
-						YangErrorManager.tadd(ddef.getFileName(), ddef
-								.getLine(), ddef.getCol(), "dup_child", ddef
-								.getBody(), son.getNode().getFileName(), son
-								.getNode().getLine());
+						int l1, c1, l2;
+						if (ddef.getFileName().compareTo(
+								son.getNode().getFileName()) == 0) {
+							if (ddef.getLine() > son.getNode().getLine()) {
+								l1 = ddef.getLine();
+								c1 = ddef.getCol();
+								l2 = son.getNode().getLine();
+							} else {
+								l1 = son.getNode().getLine();
+								c1 = son.getNode().getCol();
+								l2 = ddef.getLine();
+							}
+							YangErrorManager.tadd(ddef.getFileName(), l1, c1,
+									"dup_child", ddef.getBody(), son.getNode()
+											.getFileName(), l2);
+
+						} else
+							YangErrorManager.tadd(ddef.getFileName(), ddef
+									.getLine(), ddef.getCol(), "dup_child",
+									ddef.getBody(),
+									son.getNode().getFileName(), son.getNode()
+											.getLine());
+						ok = false;
+					}
+				if (ok)
+					addChild(child);
+			}
+		}
+	}
+
+	public void usesaugments(YANG_UsesAugment aug) {
+		for (YANG_DataDef ddef : aug.getDataDefs()) {
+			for (YangTreeNode child : ddef.groupTreeNode(this)) {
+				boolean ok = true;
+				for (YangTreeNode son : getChilds())
+					if (ddef.getBody().compareTo(son.getNode().getBody()) == 0) {
+						int l1, c1, l2;
+						if (ddef.getFileName().compareTo(
+								son.getNode().getFileName()) == 0) {
+							if (ddef.getLine() > son.getNode().getLine()) {
+								l1 = ddef.getLine();
+								c1 = ddef.getCol();
+								l2 = son.getNode().getLine();
+							} else {
+								l1 = son.getNode().getLine();
+								c1 = son.getNode().getCol();
+								l2 = ddef.getLine();
+							}
+							YangErrorManager.tadd(ddef.getFileName(), l1, c1,
+									"dup_child", ddef.getBody(), son.getNode()
+											.getFileName(), l2);
+
+						} else
+							YangErrorManager.tadd(ddef.getFileName(), ddef
+									.getLine(), ddef.getCol(), "dup_child",
+									ddef.getBody(),
+									son.getNode().getFileName(), son.getNode()
+											.getLine());
 						ok = false;
 					}
 				if (ok)

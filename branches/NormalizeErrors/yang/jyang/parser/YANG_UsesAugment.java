@@ -33,7 +33,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 		Matcher m = dsni.matcher(aa);
 		if (!m.matches())
 			YangErrorManager.tadd(filename, getLine(), getCol(),
-					"uses_augment_exp");
+					"uses_augment_exp", aa);
 		usesaugment = aa;
 
 	}
@@ -56,6 +56,105 @@ public class YANG_UsesAugment extends FeaturedNode {
 
 	public boolean isBracked() {
 		return super.isBracked() || cases.size() != 0;
+	}
+
+	public void checkUsesAugment(YANG_Body augmented_node)
+			throws YangParserException {
+
+		if (getCases().size() != 0 && !(augmented_node instanceof YANG_Choice)) {
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"bad_choice_aug", augmented_node.getBody(), augmented_node
+							.getFileName(), augmented_node.getLine());
+		}
+
+		if (augmented_node instanceof YANG_Container) {
+			YANG_Container container = (YANG_Container) augmented_node;
+			for (YANG_DataDef addef : getDataDefs()) {
+				if (container.getConfig() != null
+						&& addef instanceof ConfigDataDef) {
+					ConfigDataDef cddef = (ConfigDataDef) addef;
+					if (cddef.getConfig().getConfigStr().compareTo("true") == 0
+							&& container.getConfig().getConfigStr().compareTo(
+									"false") == 0)
+						YangErrorManager.tadd(filename, getLine(), getCol(),
+								"config_parent", addef.getFileName(), addef
+										.getBody());
+				}
+
+			}
+			checkDouble(container.getDataDefs());
+		} else if (augmented_node instanceof YANG_List) {
+			YANG_List list = (YANG_List) augmented_node;
+			checkDouble(list.getDataDefs());
+		} else if (augmented_node instanceof YANG_Choice) {
+			YANG_Choice choice = (YANG_Choice) augmented_node;
+
+			checkDoubleCase(choice.getCases());
+
+		} else if (augmented_node instanceof YANG_Rpc) {
+			YANG_Rpc rpc = (YANG_Rpc) augmented_node;
+			Vector<YANG_DataDef> vdef = new Vector<YANG_DataDef>();
+			if (rpc.getInput() != null)
+				vdef.addAll(rpc.getInput().getDataDefs());
+			if (rpc.getOutput() != null)
+				vdef.addAll(rpc.getOutput().getDataDefs());
+			checkDouble(vdef);
+		} else if (augmented_node instanceof YANG_Notification) {
+			YANG_Notification notif = (YANG_Notification) augmented_node;
+			checkDouble(notif.getDataDefs());
+		} else if (augmented_node instanceof IoDataDef) {
+		} else {
+
+			YangErrorManager.tadd(filename, getLine(), getCol(),
+					"not_augmentable", augmented_node.getBody(), augmented_node
+							.getFileName(), augmented_node.getLine());
+		}
+	}
+
+	private void checkDouble(Vector<YANG_DataDef> vddef)
+			throws YangParserException {
+		boolean found = false;
+		YANG_DataDef augddef = null;
+		YANG_DataDef targddef = null;
+		for (Enumeration<YANG_DataDef> eda = getDataDefs().elements(); eda
+				.hasMoreElements()
+				&& !found;) {
+			augddef = eda.nextElement();
+			for (Enumeration<YANG_DataDef> eddef = vddef.elements(); eddef
+					.hasMoreElements()
+					&& !found;) {
+				targddef = eddef.nextElement();
+				found = augddef.getBody().compareTo(targddef.getBody()) == 0;
+			}
+		}
+		if (found)
+			YangErrorManager.tadd(augddef.getFileName(), augddef.getLine(),
+					augddef.getCol(), "dup_child", augddef.getBody(), targddef
+							.getFileName(), targddef.getLine());
+	}
+
+	private void checkDoubleCase(Vector<YANG_Case> vcases)
+			throws YangParserException {
+		boolean found = false;
+		YANG_Case ayc = null;
+		YANG_Case yc = null;
+
+		for (Enumeration<YANG_Case> ec = getCases().elements(); ec
+				.hasMoreElements()
+				&& !found;) {
+			yc = ec.nextElement();
+
+			for (Enumeration<YANG_Case> eayc = vcases.elements(); eayc
+					.hasMoreElements()
+					&& !found;) {
+				ayc = eayc.nextElement();
+				found = ayc.getBody().compareTo(yc.getBody()) == 0;
+			}
+		}
+		if (found)
+			YangErrorManager.tadd(ayc.getFileName(), ayc.getLine(), ayc
+					.getCol(), "dup_child", ayc.getBody(), yc.getFileName(), yc
+					.getLine());
 	}
 
 	public String toString() {

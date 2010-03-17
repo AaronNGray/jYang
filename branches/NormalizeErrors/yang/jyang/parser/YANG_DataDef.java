@@ -35,6 +35,7 @@ public abstract class YANG_DataDef extends FeaturedBody {
 	}
 
 	public Vector<YangTreeNode> groupTreeNode(YangTreeNode parent) {
+
 		Vector<YangTreeNode> result = new Vector<YangTreeNode>();
 		if (this instanceof YANG_Leaf || this instanceof YANG_LeafList
 				|| this instanceof YANG_AnyXml) {
@@ -106,7 +107,7 @@ public abstract class YANG_DataDef extends FeaturedBody {
 									.getLine(), uses.getCol(), "dup_child", ytn
 									.getNode().getBody(), ytn.getNode()
 									.getFileName(), ytn.getNode().getLine());
-				
+
 			}
 		}
 		return result;

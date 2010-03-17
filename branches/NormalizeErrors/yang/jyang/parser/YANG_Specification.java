@@ -515,6 +515,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		}
 		schemaTree = buildTreeNode(p, builded, importedtreenodes);
 		schemaTree.check(this, schemaTree, schemaTree, importedtreenodes);
+		System.out.println(schemaTree);
 	}
 
 	public YangTreeNode buildTreeNode(String[] p, Vector<String> builded,
@@ -595,6 +596,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		}
 
 		Vector<YANG_Augment> vaugs = new Vector<YANG_Augment>();
+		
 		int iaug = 0;
 		for (YANG_Body body : bodies)
 			if (body instanceof YANG_Augment) {
@@ -612,27 +614,32 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				String[] tj = taugs[j].split("/");
 				if (ti.length > tj.length) {
 					String ls = taugs[i];
-					YANG_Augment la = vaugs.get(i);
+					YANG_Augment lai = vaugs.get(i);
+					YANG_Augment laj = vaugs.get(j);
 					taugs[i] = taugs[j];
-					vaugs.add(i, vaugs.remove(j));
 					taugs[j] = ls;
-					vaugs.add(j, la);
+					vaugs.remove(i);
+					vaugs.add(i, laj);
+					vaugs.remove(j);
+					vaugs.add(j,lai);
 				}
 			}
 
 		for (int i = 0; i < taugs.length; i++) {
+			if (i == 0 && taugs[i].indexOf("/") == -1)
+				taugs[i] = "/" + taugs[i];
 			YANG_Body augmentedbody = root.getBodyInTree(this, root,
-					importedtreenodes, vaugs.get(i).getAugment());
+					importedtreenodes, taugs[i]);
 			if (augmentedbody == null) {
 				for (String pref : importedtreenodes.keySet()) {
 					YangTreeNode ytn = importedtreenodes.get(pref);
 					augmentedbody = ytn.getBodyInTree(this, root,
-							importedtreenodes, vaugs.get(i).getAugment());
+							importedtreenodes, taugs[i]);
 				}
 				if (augmentedbody == null)
 					YangErrorManager.tadd(filename, vaugs.get(i)
 							.getLine(), vaugs.get(i).getCol(),
-							"augmented_not_found", vaugs.get(i).getAugment());
+							"augmented_not_found", taugs[i]);
 			} else {
 				YANG_Augment aug = vaugs.get(i);
 				try {
@@ -642,7 +649,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					e.printStackTrace();
 				}
 				YangTreeNode augmentednode = root.getNodeInTree(this, root,
-						importedtreenodes, vaugs.get(i).getAugment());
+						importedtreenodes, taugs[i]);
 				augmentednode.augments(aug);
 			}
 		}
