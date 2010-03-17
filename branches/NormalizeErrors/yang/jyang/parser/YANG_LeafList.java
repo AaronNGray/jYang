@@ -104,27 +104,36 @@ public class YANG_LeafList extends ListedDataDef {
 		}
 
 	}
-	
-	public YANG_LeafList clone(){
-		YANG_LeafList cl  = new YANG_LeafList(parser, id);
+
+	public YANG_LeafList clone() {
+		YANG_LeafList cl = new YANG_LeafList(parser, id);
 		cl.setFileName(getFileName());
 		cl.setCol(getCol());
 		cl.setLine(getLine());
 		cl.setLeafList(getLeafList());
 		cl.setContext(getContext());
 		cl.setType(getType());
-		cl.setUnits(getUnits());
-		cl.setConfig(getConfig());
-		cl.setDescription(getDescription());
+		if (getUnits() != null)
+			cl.setUnits(getUnits());
+		if (getConfig() != null)
+			cl.setConfig(getConfig());
+		if (getDescription() != null)
+			cl.setDescription(getDescription());
 		cl.setIfFeature(getIfFeatures());
 		cl.setMusts(getMusts());
 		cl.setUnknowns(getUnknowns());
-		cl.setReference(getReference());
-		cl.setStatus(getStatus());
-		cl.setWhen(getWhen());
-		cl.setMaxElement(getMaxElement());
-		cl.setMinElement(getMinElement());
-		cl.setOrderedBy(getOrderedBy());
+		if (getReference() != null)
+			cl.setReference(getReference());
+		if (getStatus() != null)
+			cl.setStatus(getStatus());
+		if (getWhen() != null)
+			cl.setWhen(getWhen());
+		if (getMaxElement() != null)
+			cl.setMaxElement(getMaxElement());
+		if (getMinElement() != null)
+			cl.setMinElement(getMinElement());
+		if (getOrderedBy() != null)
+			cl.setOrderedBy(getOrderedBy());
 		return cl;
 	}
 
@@ -142,7 +151,7 @@ public class YANG_LeafList extends ListedDataDef {
 	}
 
 	public void refines(YANG_RefineLeafList rl) {
-		if (rl.getConfig() !=null)
+		if (rl.getConfig() != null)
 			config = rl.getConfig();
 		if (rl.getDescription() != null)
 			description = rl.getDescription();

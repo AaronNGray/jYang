@@ -528,7 +528,7 @@ public class YangContext {
 	 * @param t
 	 * @return
 	 */
-	public String getBuiltInType(YANG_Type type) throws YangParserException {
+	public String getBuiltInType(YANG_Type type) {
 		String t = canonicalTypeName(type, new Hashtable<String, YANG_Type>());
 		return getSpecTypes().getBuiltInType(t);
 	}
@@ -540,7 +540,7 @@ public class YangContext {
 	 * @return typedef
 	 * @throws YangParserException
 	 */
-	public YANG_TypeDef getBaseType(YANG_Type type) throws YangParserException {
+	public YANG_TypeDef getBaseType(YANG_Type type) {
 		String t = canonicalTypeName(type, new Hashtable<String, YANG_Type>());
 		return getSpecTypes().getBaseType(t);
 	}
@@ -563,7 +563,7 @@ public class YangContext {
 	 *            the canonical name of the type
 	 * @return the typedef of null if the type is a built-in type
 	 */
-	public YANG_TypeDef getTypeDef(YANG_Type type) throws YangParserException {
+	public YANG_TypeDef getTypeDef(YANG_Type type)  {
 		String t = canonicalTypeName(type, new Hashtable<String, YANG_Type>());
 		return getSpecTypes().getTypeDef(t);
 	}

@@ -53,6 +53,25 @@ public class YANG_DeviateAdd extends DeviateAddReplace {
 			result += ";";
 		return result;
 	}
+
+	public void deviates(YangTreeNode deviated) {
+		if (getDefault() != null){
+			YangContext context = deviated.getNode().getContext();
+			if (deviated.getNode() instanceof YANG_Leaf){
+				YANG_Leaf leaf = (YANG_Leaf) deviated.getNode();
+				if (leaf.getDefault() == null){
+					leaf.setDefault(getDefault());
+					try {
+						leaf.check(context);
+					} catch (YangParserException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
+	}
 	
 
 }

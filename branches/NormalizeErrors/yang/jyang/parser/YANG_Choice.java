@@ -248,8 +248,8 @@ public class YANG_Choice extends ConfigDataDef {
 					.getCol(), "default_case_not_found", getChoice(), defval);
 	}
 
-	public void check(YangContext context){
-		
+	public void check(YangContext context) {
+
 		try {
 			super.check(context);
 		} catch (YangParserException e) {
@@ -313,16 +313,23 @@ public class YANG_Choice extends ConfigDataDef {
 		choice.setLine(getLine());
 		choice.setCol(getCol());
 		choice.setFileName(getFileName());
-		choice.setDefault(getDefault());
+		if (getDefault() != null)
+			choice.setDefault(getDefault());
 		choice.setCases(getCases());
 		choice.setShortCases(getShortCases());
-		choice.setDescription(getDescription());
-		choice.setReference(getReference());
-		choice.setMandatory(getMandatory());
-		choice.setStatus(getStatus());
+		if (getDescription() != null)
+			choice.setDescription(getDescription());
+		if (getReference() != null)
+			choice.setReference(getReference());
+		if (getMandatory() != null)
+			choice.setMandatory(getMandatory());
+		if (getStatus() != null)
+			choice.setStatus(getStatus());
 		choice.setIfFeature(getIfFeatures());
-		choice.setConfig(getConfig());
-		choice.setWhen(getWhen());
+		if (getConfig() != null)
+			choice.setConfig(getConfig());
+		if (getWhen() != null)
+			choice.setWhen(getWhen());
 		return choice;
 
 	}

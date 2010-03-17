@@ -515,7 +515,6 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		}
 		schemaTree = buildTreeNode(p, builded, importedtreenodes);
 		schemaTree.check(this, schemaTree, schemaTree, importedtreenodes);
-		System.out.println(schemaTree);
 	}
 
 	public YangTreeNode buildTreeNode(String[] p, Vector<String> builded,
@@ -596,7 +595,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		}
 
 		Vector<YANG_Augment> vaugs = new Vector<YANG_Augment>();
-		
+
 		int iaug = 0;
 		for (YANG_Body body : bodies)
 			if (body instanceof YANG_Augment) {
@@ -604,8 +603,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				vaugs.add(iaug++, aug);
 			}
 		String[] taugs = new String[vaugs.size()];
-		
-		for (int i = 0; i < vaugs.size();i++)
+
+		for (int i = 0; i < vaugs.size(); i++)
 			taugs[i] = vaugs.get(i).getAugment();
 
 		for (int i = 0; i < taugs.length; i++)
@@ -621,7 +620,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					vaugs.remove(i);
 					vaugs.add(i, laj);
 					vaugs.remove(j);
-					vaugs.add(j,lai);
+					vaugs.add(j, lai);
 				}
 			}
 
@@ -637,9 +636,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 							importedtreenodes, taugs[i]);
 				}
 				if (augmentedbody == null)
-					YangErrorManager.tadd(filename, vaugs.get(i)
-							.getLine(), vaugs.get(i).getCol(),
-							"augmented_not_found", taugs[i]);
+					YangErrorManager.tadd(filename, vaugs.get(i).getLine(),
+							vaugs.get(i).getCol(), "augmented_not_found",
+							taugs[i]);
 			} else {
 				YANG_Augment aug = vaugs.get(i);
 				try {
@@ -654,16 +653,44 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			}
 		}
 
+		for (YANG_Body body : bodies)
+			if (body instanceof YANG_Deviation) {
+				YANG_Deviation deviation = (YANG_Deviation) body;
+				String deviated = deviation.getDeviation();
+				YangTreeNode deviatednode = root.getNodeInTree(this, root,
+						importedtreenodes, deviated);
+				if (deviatednode == null) {
+					YangErrorManager.tadd(getFileName(), deviation.getLine(),
+							deviation.getCol(), "deviate_not_found", deviated);
+				} else {
+					if (deviation.getDeviateNotSupported() != null) {
+						deviatednode.getParent().removeChild(deviatednode);
+					}
+					for (YANG_DeviateAdd dadd : deviation.getDeviateAdds()) {
+						dadd.deviates(deviatednode);
+					}
+					for (YANG_DeviateReplace drep : deviation
+							.getDeviateReplaces()) {
+
+					}
+					for (YANG_DeviateDelete ddel : deviation
+							.getDeviateDeletes()) {
+
+					}
+				}
+			}
+
 		try {
 			for (Enumeration<YANG_Specification> ei = getImportedModules(p)
 					.elements(); ei.hasMoreElements();) {
 				YANG_Specification spec = ei.nextElement();
-				if (!builded.contains(spec.getName())) {
-					builded.add(spec.getName());
-					YangTreeNode itn = spec.buildTreeNode(p, builded,
-							importedtreenodes);
-					importedtreenodes.put(spec.getName(), itn);
-				}
+				if (spec != null)
+					if (!builded.contains(spec.getName())) {
+						builded.add(spec.getName());
+						YangTreeNode itn = spec.buildTreeNode(p, builded,
+								importedtreenodes);
+						importedtreenodes.put(spec.getName(), itn);
+					}
 			}
 
 		} catch (YangParserException e) {

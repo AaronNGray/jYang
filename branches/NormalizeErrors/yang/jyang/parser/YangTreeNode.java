@@ -424,16 +424,16 @@ public class YangTreeNode implements java.io.Serializable {
 
 					YangTreeNode augmentednode = getNodeInTree(module, this,
 							importeds, taugs[i]);
-
-					if (augmentednode.getParent() != parent)
-						augmentednode.usesaugments(uaug);
-					else {
-						YangErrorManager.tadd(uaug.getFileName(), uaug
-								.getLine(), uaug.getCol(), "not_augmentable",
-								uaug.getBody(), augmentednode.getNode()
-										.getFileName(), augmentednode.getNode()
-										.getLine());
-					}
+					if (parent.getParent() != null)
+						if (augmentednode.getParent() != parent)
+							augmentednode.usesaugments(uaug);
+						else {
+							YangErrorManager.tadd(uaug.getFileName(), uaug
+									.getLine(), uaug.getCol(),
+									"not_augmentable", uaug.getBody(),
+									augmentednode.getNode().getFileName(),
+									augmentednode.getNode().getLine());
+						}
 				}
 			}
 
@@ -445,7 +445,12 @@ public class YangTreeNode implements java.io.Serializable {
 					YANG_LeafRefSpecification krs = type.getLeafRef();
 					if (krs.getPath() != null) {
 						YANG_Path path = krs.getPath();
-						getBodyInTree(module, root, importeds, path.getPath());
+						YangTreeNode referenced = getNodeInTree(module, root,
+								importeds, path.getPath());
+						if (referenced == null)
+							YangErrorManager.tadd(path.getFileName(), path
+									.getLine(), path.getCol(), "unknown",
+									"node", path.getPath());
 					}
 				}
 		} else if (node instanceof YANG_List) {
@@ -473,45 +478,36 @@ public class YangTreeNode implements java.io.Serializable {
 						if (kbody instanceof YANG_Leaf) {
 							YANG_Leaf leaf = (YANG_Leaf) kbody;
 
-							try {
-								if (context.getBuiltInType(leaf.getType()) != null) {
-									if (YangBuiltInTypes.empty
-											.compareTo(context
-													.getBuiltInType(leaf
-															.getType())) == 0)
-										YangErrorManager.tadd(node
-												.getFileName(), k.getLine(), k
-												.getCol(), "key_empty", kstr,
-												list.getList());
+							if (context.getBuiltInType(leaf.getType()) != null) {
+								if (YangBuiltInTypes.empty.compareTo(context
+										.getBuiltInType(leaf.getType())) == 0)
+									YangErrorManager.tadd(node.getFileName(), k
+											.getLine(), k.getCol(),
+											"key_empty", kstr, list.getList());
 
-									String configkeyleaf = null;
-									if (leaf.getConfig() == null)
-										configkeyleaf = configlist;
-									else
-										configkeyleaf = YangBuiltInTypes
-												.removeQuotesAndTrim(leaf
-														.getConfig()
-														.getConfigStr());
-									if (configlist != null) {
-										if (configlist.compareTo(configkeyleaf) != 0)
+								String configkeyleaf = null;
+								if (leaf.getConfig() == null)
+									configkeyleaf = configlist;
+								else
+									configkeyleaf = YangBuiltInTypes
+											.removeQuotesAndTrim(leaf
+													.getConfig().getConfigStr());
+								if (configlist != null) {
+									if (configlist.compareTo(configkeyleaf) != 0)
 
-											YangErrorManager.tadd(kbody
-													.getFileName(), kbody
-													.getLine(), kbody.getCol(),
-													"key_config", kstr, list
-															.getList(), list
-															.getFileName(),
-													list.getLine());
-									} else if (configkeyleaf != null)
-										YangErrorManager.tadd(node
-												.getFileName(), k.getLine(), k
-												.getCol(), "key_config", kstr,
-												list.getList());
-								}
-							} catch (YangParserException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+										YangErrorManager.tadd(kbody
+												.getFileName(),
+												kbody.getLine(),
+												kbody.getCol(), "key_config",
+												kstr, list.getList(), list
+														.getFileName(), list
+														.getLine());
+								} else if (configkeyleaf != null)
+									YangErrorManager.tadd(node.getFileName(), k
+											.getLine(), k.getCol(),
+											"key_config", kstr, list.getList());
 							}
+
 						}
 
 					} else
@@ -642,6 +638,18 @@ public class YangTreeNode implements java.io.Serializable {
 		}
 		if (!found)
 			addChild(iytn);
+	}
+
+	public void removeChild(YangTreeNode deviatednode) {
+		boolean found = false;
+		for (YangTreeNode ytn : getChilds()) {
+			if (!found)
+				if (deviatednode == ytn) {
+					getChilds().remove(ytn);
+					found = true;
+				}
+		}
+
 	}
 
 }

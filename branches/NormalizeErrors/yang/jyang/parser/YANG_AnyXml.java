@@ -2,8 +2,7 @@ package jyang.parser;
 
 import java.text.MessageFormat;
 
-public class YANG_AnyXml extends MustDataDef implements 
-		YANG_ShortCase {
+public class YANG_AnyXml extends MustDataDef implements YANG_ShortCase {
 
 	private String anyxml = null;
 	private YANG_Mandatory mandatory = null;
@@ -86,20 +85,26 @@ public class YANG_AnyXml extends MustDataDef implements
 		cl.setCol(getCol());
 		cl.setLine(getLine());
 		cl.setContext(getContext());
-		cl.setConfig(getConfig());
-		cl.setDescription(getDescription());
-		cl.setMandatory(getMandatory());
+		if (getConfig() != null)
+			cl.setConfig(getConfig());
+		if (getDescription() != null)
+			cl.setDescription(getDescription());
+		if (getMandatory() != null)
+			cl.setMandatory(getMandatory());
 		cl.setIfFeature(getIfFeatures());
 		cl.setMusts(getMusts());
 		cl.setUnknowns(getUnknowns());
-		cl.setReference(getReference());
-		cl.setStatus(getStatus());
-		cl.setWhen(getWhen());
+		if (getReference() != null)
+			cl.setReference(getReference());
+		if (getStatus() != null)
+			cl.setStatus(getStatus());
+		if (getWhen() != null)
+			cl.setWhen(getWhen());
 		return cl;
 	}
 
 	public void refines(YANG_RefineAnyXml rl) {
-		if (rl.getConfig() !=null)
+		if (rl.getConfig() != null)
 			config = rl.getConfig();
 		if (rl.getDescription() != null)
 			description = rl.getDescription();

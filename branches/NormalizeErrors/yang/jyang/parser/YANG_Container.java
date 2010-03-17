@@ -157,6 +157,7 @@ public class YANG_Container extends MustDataDef implements YANG_ShortCase,
 			cl.setReference(getReference());
 		if (getStatus() != null)
 			cl.setStatus(getStatus());
+		if (getWhen() != null)
 		cl.setWhen(getWhen());
 		cl.setIfFeature(getIfFeatures());
 		return cl;

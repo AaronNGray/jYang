@@ -7,7 +7,7 @@ public abstract class Deviate extends SimpleYangNode {
 	private YANG_Units units = null;
 	private YANG_Default ydefault = null;
 
-	boolean b_units = false, b_default = false;
+	private boolean b_units = false, b_default = false;
 
 	public Deviate(int i) {
 		super(i);
@@ -45,6 +45,10 @@ public abstract class Deviate extends SimpleYangNode {
 
 	public boolean isBracked() {
 		return b_units || b_default;
+	}
+	
+	public void deviates(YangTreeNode deviated){
+		
 	}
 
 	public String toString() {

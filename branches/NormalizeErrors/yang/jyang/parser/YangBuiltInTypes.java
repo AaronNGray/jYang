@@ -1,21 +1,22 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.math.*;
@@ -41,11 +42,11 @@ public class YangBuiltInTypes {
 	public static final String uint32 = "uint32";
 	public static final String uint64 = "uint64";
 	public static final String union = "union";
-	
+
 	// Removed build-in type
-	//public static final String float32 = "float32";
-	//public static final String float64 = "float64";
-	//public static final String keyref = "keyref";
+	// public static final String float32 = "float32";
+	// public static final String float64 = "float64";
+	// public static final String keyref = "keyref";
 
 	public static final int int8lb = -128;
 	public static final int int8ub = 127;
@@ -66,9 +67,82 @@ public class YangBuiltInTypes {
 	public static final BigInteger uint32ub = new BigInteger("4294967295");
 	public static final BigInteger uint64ub = new BigInteger(
 			"18446744073709551615");
-	
+
+	public static final BigDecimal dec64_1lb = new BigDecimal(
+			"-922337203685477580.8");
+	public static final BigDecimal dec64_1ub = new BigDecimal(
+			"922337203685477580.8");
+	public static final BigDecimal dec64_2lb = new BigDecimal(
+			"-92233720368547758.08");
+	public static final BigDecimal dec64_2ub = new BigDecimal(
+			"92233720368547758.08");
+	public static final BigDecimal dec64_3lb = new BigDecimal(
+			"-9223372036854775.808");
+	public static final BigDecimal dec64_3ub = new BigDecimal(
+			"9223372036854775.808");
+	public static final BigDecimal dec64_4lb = new BigDecimal(
+			"-922337203685477.5808");
+	public static final BigDecimal dec64_4ub = new BigDecimal(
+			"922337203685477.5808");
+	public static final BigDecimal dec64_5lb = new BigDecimal(
+			"-92233720368547.75808");
+	public static final BigDecimal dec64_5ub = new BigDecimal(
+			"92233720368547.75808");
+	public static final BigDecimal dec64_6lb = new BigDecimal(
+			"-9223372036854.775808");
+	public static final BigDecimal dec64_6ub = new BigDecimal(
+			"9223372036854.775808");
+	public static final BigDecimal dec64_7lb = new BigDecimal(
+			"-922337203685.4775808");
+	public static final BigDecimal dec64_7ub = new BigDecimal(
+			"922337203685.4775808");
+	public static final BigDecimal dec64_8lb = new BigDecimal(
+			"-92233720368.54775808");
+	public static final BigDecimal dec64_8ub = new BigDecimal(
+			"92233720368.54775808");
+	public static final BigDecimal dec64_9lb = new BigDecimal(
+			"-9223372036.854775808");
+	public static final BigDecimal dec64_9ub = new BigDecimal(
+			"9223372036.854775808");
+	public static final BigDecimal dec64_10lb = new BigDecimal(
+			"-922337203.6854775808");
+	public static final BigDecimal dec64_10ub = new BigDecimal(
+			"922337203.6854775808");
+	public static final BigDecimal dec64_11lb = new BigDecimal(
+			"-92233720.36854775808");
+	public static final BigDecimal dec64_11ub = new BigDecimal(
+			"92233720.36854775808");
+	public static final BigDecimal dec64_12lb = new BigDecimal(
+			"-9223372.036854775808");
+	public static final BigDecimal dec64_12ub = new BigDecimal(
+			"9223372.036854775808");
+	public static final BigDecimal dec64_13lb = new BigDecimal(
+			"-922337.2036854775808");
+	public static final BigDecimal dec64_13ub = new BigDecimal(
+			"922337.2036854775808");
+	public static final BigDecimal dec64_14lb = new BigDecimal(
+			"-92233.72036854775808");
+	public static final BigDecimal dec64_14ub = new BigDecimal(
+			"92233.72036854775808");
+	public static final BigDecimal dec64_15lb = new BigDecimal(
+			"-9223.372036854775808");
+	public static final BigDecimal dec64_15ub = new BigDecimal(
+			"9223.372036854775808");
+	public static final BigDecimal dec64_16lb = new BigDecimal(
+			"-922.3372036854775808");
+	public static final BigDecimal dec64_16ub = new BigDecimal(
+			"922.3372036854775808");
+	public static final BigDecimal dec64_17lb = new BigDecimal(
+			"-92.23372036854775808");
+	public static final BigDecimal dec64_17ub = new BigDecimal(
+			"92.23372036854775808");
+	public static final BigDecimal dec64_18lb = new BigDecimal(
+			"-9.223372036854775808");
+	public static final BigDecimal dec64_18ub = new BigDecimal(
+			"9.223372036854775808");
+
 	public static final int idlength = 63;
-	
+
 	public static final String config = "true";
 	public static final String mandatory = "false";
 
@@ -77,8 +151,8 @@ public class YangBuiltInTypes {
 		result = result.trim();
 		return result;
 	}
-	
-	public static boolean isNumber(String s){
+
+	public static boolean isNumber(String s) {
 		return isInteger(s) || isFloat(s);
 	}
 
@@ -97,7 +171,7 @@ public class YangBuiltInTypes {
 	public static boolean isFloat(String t) {
 		if (t == null)
 			return false;
-		//if (t.compareTo(float32) == 0 || t.compareTo(float64) == 0)
+		// if (t.compareTo(float32) == 0 || t.compareTo(float64) == 0)
 		if (t.compareTo(decimal64) == 0)
 			return true;
 		else
@@ -107,15 +181,21 @@ public class YangBuiltInTypes {
 	public static boolean isBuiltIn(String t) {
 		if (t == null)
 			return false;
-		if (t.compareTo(int8) == 0 || t.compareTo(int16) == 0
-				|| t.compareTo(int32) == 0 || t.compareTo(int64) == 0
-				|| t.compareTo(uint8) == 0 || t.compareTo(uint16) == 0
-				|| t.compareTo(uint32) == 0 || t.compareTo(uint64) == 0
-				//|| t.compareTo(float32) == 0 || t.compareTo(float64) == 0
-				|| t.compareTo(string) == 0 || t.compareTo(yboolean) == 0
-				|| t.compareTo(enumeration) == 0 || t.compareTo(bits) == 0
-				|| t.compareTo(binary) == 0 
-				//|| t.compareTo(keyref) == 0
+		if (t.compareTo(int8) == 0
+				|| t.compareTo(int16) == 0
+				|| t.compareTo(int32) == 0
+				|| t.compareTo(int64) == 0
+				|| t.compareTo(uint8) == 0
+				|| t.compareTo(uint16) == 0
+				|| t.compareTo(uint32) == 0
+				|| t.compareTo(uint64) == 0
+				// || t.compareTo(float32) == 0 || t.compareTo(float64) == 0
+				|| t.compareTo(string) == 0
+				|| t.compareTo(yboolean) == 0
+				|| t.compareTo(enumeration) == 0
+				|| t.compareTo(bits) == 0
+				|| t.compareTo(binary) == 0
+				// || t.compareTo(keyref) == 0
 				|| t.compareTo(empty) == 0 || t.compareTo(union) == 0
 				|| t.compareTo(decimal64) == 0 || t.compareTo(identityref) == 0
 				|| t.compareTo(instanceidentifier) == 0
@@ -135,6 +215,7 @@ public class YangBuiltInTypes {
 		s = s.trim();
 		return s;
 	}
+
 	public static String removeQuotes(String qs) {
 		String s = new String(qs);
 		s = s.trim();

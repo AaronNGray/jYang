@@ -38,7 +38,7 @@ public class YANG_Pattern extends ErrorTagedNode {
 		return pattern;
 	}
 
-	public boolean checkExp(String exp) throws YangParserException {
+	public boolean checkExp(String exp)  {
 		Matcher m = regexp.matcher(exp);
 		if (!m.matches())
 			return false;

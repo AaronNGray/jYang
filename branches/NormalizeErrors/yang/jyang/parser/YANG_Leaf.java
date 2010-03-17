@@ -123,6 +123,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 							getType().getCol(), "unknown_type", getType()
 									.getType());
 				} else {
+					getType().check(context);
 					if (!context.getTypeDef(getType()).isChecked())
 						context.getTypeDef(getType()).check(context);
 				}
@@ -138,12 +139,12 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 
 			}
 		}
-
-		if (b_mandatory)
+		if (b_mandatory) {
 			if (getMandatory().getMandatory().compareTo("true") == 0
 					&& b_default)
 				throw new YangParserException("@" + getLine() + "." + getCol()
 						+ ":no default value permitted when mandatory is true");
+		}
 		if (b_default)
 			if (getType() != null)
 				getType().checkDefaultValue(context, this, getDefault());
@@ -212,20 +213,28 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 		cl.setContext(getContext());
 		cl.setLeaf(getLeaf());
 		cl.setType(getType());
-		cl.setUnits(getUnits());
+		if (getUnits() != null)
+			cl.setUnits(getUnits());
 		cl.setFileName(getFileName());
 		cl.setCol(getCol());
 		cl.setLine(getLine());
-		cl.setConfig(getConfig());
-		cl.setDefault(getDefault());
-		cl.setDescription(getDescription());
-		cl.setMandatory(getMandatory());
+		if (getConfig() != null)
+			cl.setConfig(getConfig());
+		if (getDefault() != null)
+			cl.setDefault(getDefault());
+		if (getDescription() != null)
+			cl.setDescription(getDescription());
+		if (getMandatory() != null)
+			cl.setMandatory(getMandatory());
 		cl.setIfFeature(getIfFeatures());
 		cl.setMusts(getMusts());
 		cl.setUnknowns(getUnknowns());
-		cl.setReference(getReference());
-		cl.setStatus(getStatus());
-		cl.setWhen(getWhen());
+		if (getReference() != null)
+			cl.setReference(getReference());
+		if (getStatus() != null)
+			cl.setStatus(getStatus());
+		if (getWhen() != null)
+			cl.setWhen(getWhen());
 		return cl;
 	}
 
