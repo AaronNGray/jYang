@@ -92,16 +92,14 @@ public class YANG_LeafList extends ListedDataDef {
 						.getCol(), "unknown_type", getType().getType());
 			} else
 				context.getTypeDef(getType()).check(context);
-
-		if (b_config) {
-			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig != null)
-				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& getConfig().getConfigStr().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol()
-							+ ":config to true and parent config to false");
-		}
+		/*
+		 * if (b_config) { YANG_Config parentConfig = getParentConfig(); if
+		 * (parentConfig != null) if
+		 * (parentConfig.getConfigStr().compareTo("false") == 0 &&
+		 * getConfig().getConfigStr().compareTo("true") == 0) throw new
+		 * YangParserException("@" + getLine() + "." + getCol() +
+		 * ":config to true and parent config to false"); }
+		 */
 
 	}
 

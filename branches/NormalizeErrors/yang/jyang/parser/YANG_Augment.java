@@ -171,6 +171,7 @@ public class YANG_Augment extends DataDefBody {
 
 		if (augmented_node instanceof YANG_Container) {
 			YANG_Container container = (YANG_Container) augmented_node;
+			/*
 			for (YANG_DataDef addef : getDataDefs()) {
 				if (container.getConfig() != null
 						&& addef instanceof ConfigDataDef) {
@@ -184,6 +185,7 @@ public class YANG_Augment extends DataDefBody {
 				}
 
 			}
+			*/
 			checkDouble(container.getDataDefs());
 		} else if (augmented_node instanceof YANG_List) {
 			YANG_List list = (YANG_List) augmented_node;

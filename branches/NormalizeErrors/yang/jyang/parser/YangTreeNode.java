@@ -234,18 +234,106 @@ public class YangTreeNode implements java.io.Serializable {
 	}
 
 	private void checkConfig() {
-		if (getChilds().size() == 0){
-			if (getNode() instanceof ConfigDataDef){
-				ConfigDataDef cddef = (ConfigDataDef) getNode();
-				if (cddef.getConfig().getConfigStr().compareTo("true") == 0){
-					
+
+		checkConfigDataDef();
+		checkConfigList("true");
+	}
+
+	protected void checkConfigList(String cstr) {
+		String parentcfg = cstr;
+		for (YangTreeNode child : getChilds()) {
+			if (child.getNode() instanceof YANG_List) {
+				YANG_List list = (YANG_List) child.getNode();
+				if (list.getConfig() == null) {
+					if (parentcfg.compareTo("true") == 0) {
+
+						if (list.getKey() == null) {
+							if (child.isUsed()) {
+								YangErrorManager.tadd(child.getUses()
+										.getFileName(), child.getUses()
+										.getLine(), child.getUses().getCol(),
+										"config_list_true_no_key", list
+												.getList());
+							} else
+								YangErrorManager.tadd(list.getFileName(), list
+										.getLine(), list.getCol(),
+										"config_list_true_no_key", list
+												.getList());
+						}
+					}
+				} else {
+					if (list.getConfig().getConfigStr().compareTo("true") == 0) {
+
+						if (list.getKey() == null) {
+							if (child.isUsed()) {
+								YangErrorManager.tadd(child.getUses()
+										.getFileName(), child.getUses()
+										.getLine(), child.getUses().getCol(),
+										"config_list_true_no_key", list
+												.getList());
+							} else
+								YangErrorManager.tadd(list.getFileName(), list
+										.getLine(), list.getCol(),
+										"config_list_true_no_key", list
+												.getList());
+						}
+
+					}
+				}
+			} else if (child.getNode() instanceof ConfigDataDef) {
+				if (((ConfigDataDef) child.getNode()).getConfig() != null) {
+					child.checkConfigList(((ConfigDataDef) child.getNode())
+							.getConfig().getConfigStr());
+				} else
+					child.checkConfigList(parentcfg);
+			} else
+				child.checkConfigList(parentcfg);
+		}
+	}
+
+	private void checkConfigDataDef() {
+
+		if (getChilds().size() == 0)
+			bottomUpConfig(this);
+		else
+			for (YangTreeNode child : getChilds())
+				child.checkConfigDataDef();
+	}
+
+	private void bottomUpConfig(YangTreeNode n) {
+
+		YANG_Config lastconf = null;
+		if (n.getNode() instanceof ConfigDataDef)
+			if (((ConfigDataDef) n.getNode()).getConfig() != null) {
+				lastconf = ((ConfigDataDef) n.getNode()).getConfig();
+			}
+		boolean ok = true;
+
+		YangTreeNode iparent = n;
+		ConfigDataDef icddef = null;
+		while (ok && iparent.getNode() != null) {
+			if (lastconf == null) {
+				if (iparent.getNode() instanceof ConfigDataDef) {
+					if (((ConfigDataDef) iparent.getNode()).getConfig() != null) {
+						lastconf = ((ConfigDataDef) iparent.getNode())
+								.getConfig();
+					}
+				}
+			} else {
+				if (iparent.getNode() instanceof ConfigDataDef) {
+					icddef = (ConfigDataDef) iparent.getNode();
+					if (icddef.getConfig() != null)
+						if (icddef.getConfig().getConfigStr()
+								.compareTo("false") == 0
+								&& lastconf.getConfigStr().compareTo("true") == 0)
+							ok = false;
 				}
 			}
+			iparent = iparent.getParent();
 		}
-		else
-		for (YangTreeNode child : getChilds())
-			child.checkConfig();
-		
+		if (!ok)
+			YangErrorManager.tadd(icddef.getFileName(), icddef.getLine(),
+					icddef.getCol(), "config_parent_true", icddef.getBody());
 	}
 
 	public void checkDupChilds(YANG_Specification module, YangTreeNode root,
@@ -488,6 +576,7 @@ public class YangTreeNode implements java.io.Serializable {
 					configlist = null;
 			} else
 				configlist = list.getConfig().getConfigStr();
+			
 			YANG_Key k = list.getKey();
 			if (k != null) {
 				String Kstr = k.getKey();
@@ -554,7 +643,7 @@ public class YangTreeNode implements java.io.Serializable {
 		}
 		for (Enumeration<YangTreeNode> ey = childs.elements(); ey
 				.hasMoreElements();)
-			ey.nextElement().check(module, root, subroot, importeds);
+			ey.nextElement().checkDupChilds(module, root, subroot, importeds);
 	}
 
 	private boolean used = false;

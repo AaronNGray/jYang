@@ -68,7 +68,7 @@ public class YANG_RefineLeaf extends MustRefineNode {
 		YangContext context = leaf.getContext();
 		if (getDefault() != null)
 			leaf.getType().checkDefaultValue(context, this, getDefault());
-
+/*
 		YANG_Config parentConfig = getParentConfig();
 
 		if (parentConfig != null)
@@ -86,6 +86,7 @@ public class YANG_RefineLeaf extends MustRefineNode {
 								"config_parent", "leaf", leaf.getLeaf());
 				}
 			}
+			*/
 	}
 
 	/*

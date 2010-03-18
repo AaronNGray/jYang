@@ -104,6 +104,7 @@ public class YANG_Container extends MustDataDef implements YANG_ShortCase,
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		/*
 		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
 			if (parentConfig != null)
@@ -112,6 +113,7 @@ public class YANG_Container extends MustDataDef implements YANG_ShortCase,
 					YangErrorManager.tadd(context.getSpec().getName(),
 							getLine(), getCol(), "ctf");
 		}
+		*/
 
 	}
 

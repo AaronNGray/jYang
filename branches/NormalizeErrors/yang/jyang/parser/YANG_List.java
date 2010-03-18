@@ -109,6 +109,7 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 
 	public void check(YangContext context) throws YangParserException {
 		super.check(context);
+		/*
 		if (!b_key) {
 			if (b_config) {
 				if (getConfig().getConfigStr().compareTo("true") == 0)
@@ -123,7 +124,7 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 								"key_exp", getList());
 			}
 		} else {
-
+			
 			if (b_config) {
 				YANG_Config parentConfig = getParentConfig();
 				if (parentConfig != null)
@@ -133,8 +134,13 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 								+ getCol()
 								+ ":config to true and parent config to false");
 			}
+			
 
 		}
+		*/
+		
+		
+		
 		if (datadefs.size() == 0)
 			throw new YangParserException("@" + getLine() + ":" + getCol()
 					+ ":no data in list " + list);

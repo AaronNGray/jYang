@@ -256,17 +256,16 @@ public class YANG_Choice extends ConfigDataDef {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		if (b_config) {
-			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig != null)
-				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& getConfig().getConfigStr().compareTo("true") == 0)
-					YangErrorManager.tadd(getFileName(), getLine(), getCol(),
-							"config_parent", "choice", getBody());
-
-		}
-
+		/*
+		 * if (b_config) { YANG_Config parentConfig = getParentConfig(); if
+		 * (parentConfig != null) if
+		 * (parentConfig.getConfigStr().compareTo("false") == 0 &&
+		 * getConfig().getConfigStr().compareTo("true") == 0)
+		 * YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+		 * "config_parent", "choice", getBody());
+		 * 
+		 * }
+		 */
 		if (b_default) {
 			checkDefault(context, getDefault());
 
@@ -342,6 +341,7 @@ public class YANG_Choice extends ConfigDataDef {
 		this.cases = cases2;
 
 	}
+
 	public void deleteDefault() {
 		ydefault = null;
 		b_default = false;
@@ -379,6 +379,5 @@ public class YANG_Choice extends ConfigDataDef {
 		if (rl.getDefault() != null)
 			ydefault = rl.getDefault();
 	}
-
 
 }

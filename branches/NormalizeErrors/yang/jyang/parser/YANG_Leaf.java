@@ -128,7 +128,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 						context.getTypeDef(getType()).check(context);
 				}
 		}
-
+/*
 		if (b_config) {
 			YANG_Config parentConfig = getParentConfig();
 			if (parentConfig != null) {
@@ -139,6 +139,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 
 			}
 		}
+		*/
 		if (b_mandatory) {
 			if (getMandatory().getMandatory().compareTo("true") == 0
 					&& b_default)
