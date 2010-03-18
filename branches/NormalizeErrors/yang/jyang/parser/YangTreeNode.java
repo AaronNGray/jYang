@@ -228,6 +228,28 @@ public class YangTreeNode implements java.io.Serializable {
 
 	public void check(YANG_Specification module, YangTreeNode root,
 			YangTreeNode subroot, Hashtable<String, YangTreeNode> importeds) {
+		checkDupChilds(module, root, subroot, importeds);
+		checkConfig();
+
+	}
+
+	private void checkConfig() {
+		if (getChilds().size() == 0){
+			if (getNode() instanceof ConfigDataDef){
+				ConfigDataDef cddef = (ConfigDataDef) getNode();
+				if (cddef.getConfig().getConfigStr().compareTo("true") == 0){
+					
+				}
+			}
+		}
+		else
+		for (YangTreeNode child : getChilds())
+			child.checkConfig();
+		
+	}
+
+	public void checkDupChilds(YANG_Specification module, YangTreeNode root,
+			YangTreeNode subroot, Hashtable<String, YangTreeNode> importeds) {
 
 		if (getParent() != null)
 			for (YangTreeNode ytn : getParent().getChilds()) {
