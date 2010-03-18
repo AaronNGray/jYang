@@ -671,11 +671,11 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					}
 					for (YANG_DeviateReplace drep : deviation
 							.getDeviateReplaces()) {
-
+						drep.deviates(deviatednode);
 					}
 					for (YANG_DeviateDelete ddel : deviation
 							.getDeviateDeletes()) {
-
+						ddel.deviates(deviatednode);
 					}
 				}
 			}

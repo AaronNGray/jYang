@@ -208,6 +208,27 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 		return result;
 	}
 
+	public void deleteUnits() {
+		units = null;
+		b_units = false;
+	}
+
+	public void deleteDefault() {
+		ydefault = null;
+		b_default = false;
+	}
+
+	public void deleteMandatory() {
+		mandatory = null;
+		b_mandatory = false;
+	}
+
+	public void deleteType() {
+		type = null;
+		b_type = false;
+		
+	}
+
 	public YANG_Leaf clone() {
 		YANG_Leaf cl = new YANG_Leaf(parser, id);
 		cl.setContext(getContext());

@@ -440,19 +440,20 @@ public class YangTreeNode implements java.io.Serializable {
 		} else if (node instanceof YANG_Leaf) {
 			YANG_Leaf leaf = (YANG_Leaf) node;
 			YANG_Type type = leaf.getType();
-			if (type != null)
-				if (type.getLeafRef() != null) {
-					YANG_LeafRefSpecification krs = type.getLeafRef();
-					if (krs.getPath() != null) {
-						YANG_Path path = krs.getPath();
-						YangTreeNode referenced = getNodeInTree(module, root,
-								importeds, path.getPath());
-						if (referenced == null)
-							YangErrorManager.tadd(path.getFileName(), path
-									.getLine(), path.getCol(), "unknown",
-									"node", path.getPath());
-					}
-				}
+			if (type != null) {
+				/**
+				 * The path specification is to evaluate on data tree
+				 */
+				/*
+				 * if (type.getLeafRef() != null) { YANG_LeafRefSpecification
+				 * krs = type.getLeafRef(); if (krs.getPath() != null) {
+				 * YANG_Path path = krs.getPath(); YangTreeNode referenced =
+				 * getNodeInTree(module, root, importeds, path.getPath()); if
+				 * (referenced == null)
+				 * YangErrorManager.tadd(path.getFileName(), path .getLine(),
+				 * path.getCol(), "unknown", "node", path.getPath()); } }
+				 */
+			}
 		} else if (node instanceof YANG_List) {
 			YANG_List list = (YANG_List) node;
 

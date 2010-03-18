@@ -175,6 +175,9 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 		return false;
 	}
 
+	public void deleteUniques(Vector<YANG_Unique> vuniques) {
+		getUniques().removeAll(vuniques);
+	}
 	public YANG_List clone() {
 		YANG_List cl = new YANG_List(parser, id);
 		cl.setContext(getContext());
@@ -247,5 +250,6 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 		if (rl.getMaxElement() != null)
 			max = rl.getMaxElement();
 	}
+
 
 }

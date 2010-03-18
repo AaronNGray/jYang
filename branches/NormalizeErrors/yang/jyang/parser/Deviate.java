@@ -47,10 +47,6 @@ public abstract class Deviate extends SimpleYangNode {
 		return b_units || b_default;
 	}
 	
-	public void deviates(YangTreeNode deviated){
-		
-	}
-
 	public String toString() {
 		String result = "";
 		if (b_units)

@@ -342,6 +342,10 @@ public class YANG_Choice extends ConfigDataDef {
 		this.cases = cases2;
 
 	}
+	public void deleteDefault() {
+		ydefault = null;
+		b_default = false;
+	}
 
 	public String toString() {
 		String result = new String();
@@ -375,5 +379,6 @@ public class YANG_Choice extends ConfigDataDef {
 		if (rl.getDefault() != null)
 			ydefault = rl.getDefault();
 	}
+
 
 }

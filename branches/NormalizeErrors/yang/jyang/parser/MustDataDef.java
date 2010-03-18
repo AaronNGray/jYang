@@ -26,6 +26,12 @@ public abstract class MustDataDef extends ConfigDataDef {
 		return musts;
 	}
 	
+	public void deleteMusts(Vector<YANG_Must> vmusts) {
+		getMusts().removeAll(vmusts);
+		
+	}
+	
+
 	public boolean isBracked() {
 		return musts.size() != 0 || super.isBracked();
 	}
@@ -37,6 +43,5 @@ public abstract class MustDataDef extends ConfigDataDef {
 			result += m.toString() + "\n";
 		return result;
 	}
-	
 
 }

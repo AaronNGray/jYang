@@ -63,6 +63,11 @@ public class YANG_AnyXml extends MustDataDef implements YANG_ShortCase {
 
 	}
 
+	public void deleteMandatory() {
+		mandatory = null;
+		b_mandatory = false;
+	}
+
 	public String toString() {
 		String result = new String();
 		result += "anyxml " + anyxml;
@@ -115,4 +120,5 @@ public class YANG_AnyXml extends MustDataDef implements YANG_ShortCase {
 		for (YANG_Must must : rl.getMusts())
 			addMust(must);
 	}
+
 }

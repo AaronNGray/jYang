@@ -26,6 +26,12 @@ public abstract class ConfigDataDef extends YANG_DataDef {
 
 	}
 
+	public void deleteConfig() {
+		config = null;
+		b_config = false;
+
+	}
+
 	public YANG_Config getConfig() {
 		return config;
 	}

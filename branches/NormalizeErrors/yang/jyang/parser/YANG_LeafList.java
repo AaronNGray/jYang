@@ -137,6 +137,11 @@ public class YANG_LeafList extends ListedDataDef {
 		return cl;
 	}
 
+	public void deleteUnits() {
+		units = null;
+		b_units = false;
+	}
+
 	public String toString() {
 		String result = new String();
 		result += "leaf-list " + leaflist + "{\n";
@@ -164,4 +169,11 @@ public class YANG_LeafList extends ListedDataDef {
 		if (rl.getMaxElement() != null)
 			max = rl.getMaxElement();
 	}
+
+	public void deleteType() {
+		type = null;
+		b_type = false;
+
+	}
+
 }
