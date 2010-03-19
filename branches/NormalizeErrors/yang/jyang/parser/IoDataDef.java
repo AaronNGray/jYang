@@ -29,9 +29,6 @@ public class IoDataDef extends YANG_Body {
 		return null;
 	}
 
-	@Override
-	public void check(YangContext context) throws YangParserException {
-		// TODO Auto-generated method stub
+	public void check(YangContext context) {}
 
-	}
 }

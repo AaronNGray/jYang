@@ -12,7 +12,7 @@ public class YANG_Status extends SimpleYangNode {
 		super(p, id);
 	}
 
-	public void setStatus(String s) throws YangParserException {
+	public void setStatus(String s) {
 		String st = unquote(s);
 		if (st.compareTo("current") != 0 && st.compareTo("obsolete") != 0
 				&& st.compareTo("deprecated") != 0)

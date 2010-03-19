@@ -63,7 +63,7 @@ public class YANG_Notification extends TypedefGroupingBody implements DataDefsCo
 		return super.isBracked() ||  datadefs.size() != 0;
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context)  {
 		super.check(context);
 	}
 

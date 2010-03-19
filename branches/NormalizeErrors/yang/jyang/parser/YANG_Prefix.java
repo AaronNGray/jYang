@@ -34,7 +34,7 @@ public class YANG_Prefix extends SimpleYangNode implements YANG_Header {
 		super(p, id);
 	}
 
-	public void setPrefix(String p) throws YangParserException {
+	public void setPrefix(String p){
 		checkPrefix(p);
 	}
 
@@ -46,17 +46,17 @@ public class YANG_Prefix extends SimpleYangNode implements YANG_Header {
 		return "prefix " + prefix + ";";
 	}
 
-	private void checkPrefix(String p) throws YangParserException {
+	private void checkPrefix(String p){
 		String lp = unquote(p);
 		lp = lp.trim();
 		if (lp.length() > YangBuiltInTypes.idlength)
-			throw new YangParserException("@" + getLine() + ":" + getCol()
-					+ ":prefix identifier too long (>63)");
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"prefix_too_long", lp);
 		Pattern pat = Pattern.compile("[a-zA-Z](\\w|\\-)*");
 		Matcher m = pat.matcher(lp);
 		if (!m.matches())
-			throw new YangParserException("@" + getLine() + ":" + getCol()
-					+ ":prefix syntax " + lp);
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"prefix_exp", lp);
 		prefix = lp;
 
 	}

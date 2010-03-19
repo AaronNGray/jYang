@@ -105,12 +105,6 @@ public class YangSpecTypes {
 
 	}
 
-	/*
-	 * public void add(String prefix, YangSpecTypes yst) throws
-	 * YangParserException { for (Enumeration<String> ek = yst.keys();
-	 * ek.hasMoreElements();) { String k = ek.nextElement(); add(prefix + ":" +
-	 * k, yst.get(k)); } }
-	 */
 	public boolean isEmpty() {
 		return deriveds.size() == 0;
 	}

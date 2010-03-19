@@ -98,12 +98,7 @@ public class YANG_Augment extends DataDefBody {
 
 	public void check(YangContext context) {
 
-		try {
 			super.check(context);
-		} catch (YangParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		String nids[] = getAugment().split("/");
 		int start = 0;
@@ -160,8 +155,7 @@ public class YANG_Augment extends DataDefBody {
 
 	}
 
-	public void checkAugment(YANG_Body augmented_node)
-			throws YangParserException {
+	public void checkAugment(YANG_Body augmented_node) {
 
 		if (getCases().size() != 0 && !(augmented_node instanceof YANG_Choice)) {
 			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
@@ -215,8 +209,7 @@ public class YANG_Augment extends DataDefBody {
 		}
 	}
 
-	private void checkDouble(Vector<YANG_DataDef> vddef)
-			throws YangParserException {
+	private void checkDouble(Vector<YANG_DataDef> vddef) {
 		boolean found = false;
 		YANG_DataDef augddef = null;
 		YANG_DataDef targddef = null;
@@ -237,8 +230,7 @@ public class YANG_Augment extends DataDefBody {
 							.getFileName(), targddef.getLine());
 	}
 
-	private void checkDoubleCase(Vector<YANG_Case> vcases)
-			throws YangParserException {
+	private void checkDoubleCase(Vector<YANG_Case> vcases) {
 		boolean found = false;
 		YANG_Case ayc = null;
 		YANG_Case yc = null;

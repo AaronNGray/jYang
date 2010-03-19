@@ -64,63 +64,13 @@ public class YANG_RefineLeaf extends MustRefineNode {
 		return mandatory;
 	}
 	
-	public void check(YANG_Leaf leaf) throws YangParserException {
+	public void check(YANG_Leaf leaf) {
 		YangContext context = leaf.getContext();
 		if (getDefault() != null)
 			leaf.getType().checkDefaultValue(context, this, getDefault());
-/*
-		YANG_Config parentConfig = getParentConfig();
 
-		if (parentConfig != null)
-			if (b_config) {
-				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& config.getConfigStr().compareTo("true") == 0)
-					YangErrorManager.tadd(filename, getLine(), getCol(),
-							"config_parent", "leaf", leaf.getLeaf());
-			} else {
-				if (leaf.getConfig() != null) {
-					if (parentConfig.getConfigStr().compareTo("false") == 0
-							&& leaf.getConfig().getConfigStr()
-									.compareTo("true") == 0)
-						YangErrorManager.tadd(filename, getLine(), getCol(),
-								"config_parent", "leaf", leaf.getLeaf());
-				}
-			}
-			*/
 	}
 
-	/*
-	 * 
-	 * public void check(YangContext context, YANG_Grouping grouping) throws
-	 * YangParserException { try { check(context, grouping.getDataDefs()); }
-	 * catch (YangParserException ye) { throw new
-	 * YangParserException(ye.getMessage() + usedgrouping); } }
-	 * 
-	 * public void check(YangContext context, Vector<YANG_DataDef> vddef) throws
-	 * YangParserException { boolean found = false; YANG_Leaf leaf = null; for
-	 * (Enumeration<YANG_DataDef> edd = vddef.elements(); edd .hasMoreElements()
-	 * && !found;) { YANG_DataDef ddef = edd.nextElement(); if (ddef instanceof
-	 * YANG_Leaf) { leaf = (YANG_Leaf) ddef; found =
-	 * leaf.getLeaf().compareTo(getRefineNodeId()) == 0; if (found)
-	 * check(context, leaf); } } if (!found) throw new YangParserException("@" +
-	 * getLine() + "." + getCol() + ":refine leaf " + getRefineNodeId() +
-	 * " is not a leaf ");
-	 * 
-	 * YANG_Config parentConfig = getParentConfig(); if (parentConfig != null)
-	 * if (b_config) { if (parentConfig.getConfigStr().compareTo("false") == 0
-	 * && config.getConfigStr().compareTo("true") == 0) throw new
-	 * YangParserException("@" + getLine() + "." + getCol() +
-	 * ":config to true and parent config to false"); } else { if
-	 * (leaf.getConfig() != null) { if
-	 * (parentConfig.getConfigStr().compareTo("false") == 0 &&
-	 * leaf.getConfig().getConfigStr() .compareTo("true") == 0) throw new
-	 * YangParserException( "@" + getLine() + "." + getCol() +
-	 * ":config to true in the grouping  but parent config to false");
-	 * 
-	 * } }
-	 * 
-	 * }
-	 */
 
 	public String toString() {
 		String result = "";

@@ -9,7 +9,7 @@ public abstract class ErrorTagedNode extends DocumentedNode {
 
 	private boolean b_errmess = false, b_errapptag = false;
 
-	public void setErrMess(YANG_ErrorMessage e) throws YangParserException {
+	public void setErrMess(YANG_ErrorMessage e){
 		if (!b_errmess) {
 			b_errmess = true;
 			errmess = e;
@@ -22,7 +22,7 @@ public abstract class ErrorTagedNode extends DocumentedNode {
 		return errmess;
 	}
 
-	public void setErrAppTag(YANG_ErrorAppt e) throws YangParserException {
+	public void setErrAppTag(YANG_ErrorAppt e) {
 		if (!b_errapptag) {
 			b_errapptag = true;
 			errapptag = e;

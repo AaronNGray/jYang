@@ -216,30 +216,30 @@ public class YANG_Type extends SimpleYangNode {
 
 	}
 
-	public void checkTypeSyntax(YangContext context) throws YangParserException {
+	public void checkTypeSyntax(YangContext context) {
 
 		if (YangBuiltInTypes.union.compareTo(getType()) == 0)
 			if (getUnionSpec() == null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":union type must have at least one type");
+				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+						"union_no_type");
 
 		if (YangBuiltInTypes.leafref.compareTo(getType()) == 0)
 			if (getLeafRef() == null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":keyref type must have at one path");
+				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+						"leafref_no_path");
 
 		if (YangBuiltInTypes.enumeration.compareTo(getType()) == 0) {
 			if (getEnums().size() == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":enumeration must have at least one enum");
+				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+						"empty_enumeration");
 
 			checkEnum(context);
 		}
 
 		if (YangBuiltInTypes.bits.compareTo(getType()) == 0) {
 			if (getBitSpec() == null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bits  must have at least one bit");
+				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+						"empty_bits");
 			checkBits();
 		}
 
@@ -261,32 +261,26 @@ public class YANG_Type extends SimpleYangNode {
 			if (getEnums().size() == 0)
 				System.err.println("@" + getLine() + "." + getCol()
 						+ ":enumeration must have at least one enum");
-			try {
-				checkEnum(c);
-			} catch (YangParserException e) {
-				System.err.println(e.getMessage());
-			}
+
+			checkEnum(c);
 		}
 
 		if (YangBuiltInTypes.bits.compareTo(getType()) == 0) {
 			if (getBitSpec() == null)
 				System.err.println("@" + getLine() + "." + getCol()
 						+ ":bits  must have at least one bit");
-			try {
-				checkBits();
-			} catch (YangParserException e) {
-				System.err.println(e.getMessage());
-			}
+			checkBits();
 		}
-
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context) {
 
 		checkTypeSyntax(context);
+
 		if (context.getBuiltInType(this) == null) {
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":type " + getType() + " is not defined");
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"unknown", "type", getType());
+			return;
 		}
 		typedef = context.getTypeDef(this);
 
@@ -346,175 +340,128 @@ public class YANG_Type extends SimpleYangNode {
 		} else if (YangBuiltInTypes.yboolean.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":boolean type can not have length or pattern specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"string restriction", getType());
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":boolean type can not have bit specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":boolean type can not have enum specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"enum specification", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":boolean type can not have key reference specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"leaf reference", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":boolean type can not have type specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":boolean type can not have numeric restriction");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"numeric restriction", getType());
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":enumeration type can not have bit specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"bit specification", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":enumeration type can not have key reference specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"leaf reference", getType());
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":enumeration type can not have length or pattern specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"string restriction", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":enumeration type can not have type specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"type specification", getType());
 		} else if (YangBuiltInTypes.bits
 				.compareTo(context.getBuiltInType(this)) == 0) {
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":bits type can not have length or pattern specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"string restriction", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bits type can not have enum specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"enum specification", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":boolean type can not have key reference specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"leaf reference", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bits type can not have type specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bits type can not have numeric restriction");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"numeric restriction", getType());
 		} else if (YangBuiltInTypes.binary.compareTo(context
 				.getBuiltInType(this)) == 0) {
 
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":binary type can not have bit specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":binary type can not have enum specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"enum specification", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":binary type can not have key reference specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"leaf reference", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":binary type can not have type specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":binary type can not have numeric restriction");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"numeric restriction", getType());
 			checkStringLength(context);
 		} else if (YangBuiltInTypes.leafref.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":keyref type can not have bit specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":keyref type can not have enum specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"enum specification", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":keyref type can not have type specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":keyref type can not have numeric restriction");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"numeric restriction", getType());
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":keyref type can not have length or pattern specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"string restriction", getType());
+
 		} else if (YangBuiltInTypes.empty.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":empty type can not have bit specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":empty type can not have enum specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"enum specification", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":empty type can not have type specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":empty type can not have numeric restriction");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"numeric restriction", getType());
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":empty type can not have length or pattern specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"string restriction", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":empty type can not have key reference specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"leaf reference", getType());
 		} else if (YangBuiltInTypes.union.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":union type can not have bit specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":union type can not have enum specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"enum specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":union type can not have numeric restriction");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"numeric restriction", getType());
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":union type can not have length or pattern specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"string restriction", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":union type can not have key reference specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"leaf reference", getType());
 			if (getUnionSpec() != null)
 				checkEmptyUnion(context, new Vector<YANG_Type>(),
 						getUnionSpec().getTypes());
@@ -522,55 +469,33 @@ public class YANG_Type extends SimpleYangNode {
 		} else if (YangBuiltInTypes.instanceidentifier.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have bit specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have enum specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"enum specification", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have type specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have numeric restriction");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"numeric restriction", getType());
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have length or pattern specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"string restriction", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have key reference specification");
+				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+						"leaf reference", getType());
 		}
 		checked = true;
 	}
 
-	private void checkBits() throws YangParserException {
-		if (getBitSpec() == null)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":bits must have at least one bit");
+	private void checkBits() {
+		if (getBitSpec() == null) {
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"empty_bits");
+			return;
+		}
 		YANG_Bit bit = null;
 		YANG_BitSpecification bs = getBitSpec();
 		YANG_Bit[] bits = new YANG_Bit[bs.getBits().size()];
@@ -587,11 +512,12 @@ public class YANG_Type extends SimpleYangNode {
 			if (bit.getPosition() == null) {
 				if (highest.compareTo(YangBuiltInTypes.uint32ub
 						.add(new BigInteger("1"))) == 0)
-					throw new YangParserException("@" + bit.getLine() + "."
-							+ bit.getCol()
-							+ ":position must be given because max is given");
-				bitspos.add(highest);
-				highest = highest.add(new BigInteger("1"));
+					YangErrorManager.tadd(bit.getFileName(), bit.getLine(), bit
+							.getCol(), "bits_max");
+				else {
+					bitspos.add(highest);
+					highest = highest.add(new BigInteger("1"));
+				}
 			} else {
 				String strpos = YangBuiltInTypes.removeQuotesAndTrim(bit
 						.getPosition().getPosition());
@@ -599,13 +525,13 @@ public class YANG_Type extends SimpleYangNode {
 				try {
 					biginteger = new BigInteger(strpos);
 				} catch (NumberFormatException e) {
-					throw new YangParserException("@" + bit.getLine() + "."
-							+ bit.getCol() + ":bit position is not an integer");
+					YangErrorManager.tadd(bit.getFileName(), bit.getLine(), bit
+							.getCol(), "bits_pos_not_int");
+					return;
 				}
 				if (biginteger.compareTo(YangBuiltInTypes.uint32ub) == 1)
-					throw new YangParserException("@" + bit.getLine() + "."
-							+ bit.getCol() + ":" + biginteger
-							+ " is a too much higher position");
+					YangErrorManager.tadd(bit.getFileName(), bit.getLine(), bit
+							.getCol(), "bits_pos_too_high");
 				if (biginteger.compareTo(highest) > 0) {
 					highest = biginteger;
 					bitspos.add(highest);
@@ -629,30 +555,9 @@ public class YANG_Type extends SimpleYangNode {
 			}
 		}
 
-		/*
-		 * boolean duplicate = false; int position = 0; for
-		 * (Enumeration<BigInteger> eb = bitspos.elements(); eb
-		 * .hasMoreElements() && !duplicate;) { position = 0; BigInteger bi =
-		 * eb.nextElement(); for (Enumeration<BigInteger> eb2 =
-		 * bitspos.elements(); eb2 .hasMoreElements() && !duplicate;) {
-		 * BigInteger bi2 = eb2.nextElement(); duplicate = (bi.compareTo(bi2) ==
-		 * 0 && bi != bi2); position++; } } if (duplicate)
-		 * YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
-		 * .format(YangErrorManager.messages.getString("dup_value"), "position",
-		 * position, "bit", bits[position - 1] .getPosition().getFileName() +
-		 * ":" + bits[position - 1].getPosition() .getLine()));
-		 * 
-		 * for (int j = 0; j < bitnames.length && !duplicate; j++) for (int k =
-		 * j + 1; k < bitnames.length && !duplicate; k++) { duplicate =
-		 * bitnames[j].compareTo(bitnames[k]) == 0; } if (duplicate)
-		 * YangErrorManager.add(filename, getLine(), getCol(), MessageFormat
-		 * .format(YangErrorManager.messages.getString("dup_value"), "position",
-		 * "trailing whitespace")); throw new YangParserException("@" +
-		 * getLine() + "." + getCol() + ":duplicate bit name");
-		 */
 	}
 
-	private void checkEnum(YangContext context) throws YangParserException {
+	private void checkEnum(YangContext context) {
 		int highest = 0;
 		int[] enumvalues = new int[getEnums().size()];
 		YANG_Enum[] tenums = new YANG_Enum[getEnums().size()];
@@ -678,8 +583,8 @@ public class YANG_Type extends SimpleYangNode {
 				try {
 					integer = Integer.parseInt(strenum);
 				} catch (NumberFormatException n) {
-					YangErrorManager.tadd(filename, yenum.getLine(), yenum
-							.getCol(), "enum_expr", strenum);
+					YangErrorManager.tadd(yenum.getFileName(), yenum.getLine(),
+							yenum.getCol(), "enum_expr", strenum);
 					return;
 				}
 				if (integer.compareTo(new Integer((int) highest)) >= 0) {
@@ -688,9 +593,8 @@ public class YANG_Type extends SimpleYangNode {
 				} else if (integer.compareTo(new Integer((int) highest)) == -1) {
 					enumvalues[i++] = integer.intValue();
 				} else if (integer.compareTo(new Integer((int) highest)) == 0) {
-					throw new YangParserException("@" + yenum.getLine() + "."
-							+ yenum.getCol() + highest
-							+ ":ambigous; a value must be specified");
+					YangErrorManager.tadd(yenum.getFileName(), yenum.getLine(),
+							yenum.getCol(), "enum_ambigous");
 				}
 			}
 		}
@@ -711,9 +615,9 @@ public class YANG_Type extends SimpleYangNode {
 				}
 			}
 		if (duplicate) {
-			YangErrorManager.tadd(filename, dupenum.getValue().getLine(),
-					dupenum.getValue().getCol(), "dupp_enum_val", dupvalue,
-					getFileName() + ":" + firstenum.getLine());
+			YangErrorManager.tadd(dupenum.getFileName(), dupenum.getValue()
+					.getLine(), dupenum.getValue().getCol(), "dupp_enum_val",
+					dupvalue, getFileName() + ":" + firstenum.getLine());
 			// return;
 		}
 		duplicate = false;
@@ -739,7 +643,7 @@ public class YANG_Type extends SimpleYangNode {
 
 	}
 
-	protected void checkPattern(YangContext context) throws YangParserException {
+	protected void checkPattern(YangContext context) {
 		if (getStringRest() == null)
 			return;
 		for (Enumeration<YANG_Pattern> ep = getStringRest().getPatterns()
@@ -751,8 +655,8 @@ public class YANG_Type extends SimpleYangNode {
 			try {
 				Pattern.compile(canopattern);
 			} catch (PatternSyntaxException p) {
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":pattern definition " + p.getMessage());
+				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+						"pattern_exp", p.getMessage());
 			}
 		}
 	}
@@ -761,9 +665,8 @@ public class YANG_Type extends SimpleYangNode {
 	 * check if the range is a restriction
 	 * 
 	 * @param context
-	 * @throws YangParserException
 	 */
-	protected void checkRange(YangContext context) throws YangParserException {
+	protected void checkRange(YangContext context) {
 
 		YANG_Type basetype = null;
 		YANG_TypeDef typedef = null;
@@ -800,10 +703,8 @@ public class YANG_Type extends SimpleYangNode {
 	 * check with itself. If there is no defining typedef, check with itself
 	 * 
 	 * @param context
-	 * @throws YangParserException
 	 */
-	protected void checkStringLength(YangContext context)
-			throws YangParserException {
+	protected void checkStringLength(YangContext context) {
 
 		YANG_Type basetype = null;
 		YANG_TypeDef typedef = null;
@@ -843,7 +744,6 @@ public class YANG_Type extends SimpleYangNode {
 	 *            the typedef
 	 * @return the first type with a length restriction or null either if the
 	 *         typedef has a length restriction or a built-in type is reached.
-	 * @throws YangParserException
 	 */
 	private YANG_Type getFirstLengthDefined(YangContext context, YANG_TypeDef td) {
 
@@ -881,7 +781,6 @@ public class YANG_Type extends SimpleYangNode {
 	 *            the typedef
 	 * @return the first type with a pattern restriction or null either if the
 	 *         typedef has a length restriction or a built-in type is reached.
-	 * @throws YangParserException
 	 */
 	private YANG_Type getFirstPatternDefined(YangContext context,
 			YANG_TypeDef td) {
@@ -941,10 +840,8 @@ public class YANG_Type extends SimpleYangNode {
 	 * @param context
 	 * @param supranges
 	 *            the range of the typedef defining this type
-	 * @throws YangParserException
 	 */
-	private void checkNumberRange(YangContext context, String[][] supranges)
-			throws YangParserException {
+	private void checkNumberRange(YangContext context, String[][] supranges) {
 		if (numrest == null)
 			return;
 		String[][] subranges = getRanges(context);
@@ -958,42 +855,44 @@ public class YANG_Type extends SimpleYangNode {
 	 * @param context
 	 * @param supranges
 	 *            the range of the typedef defining this type
-	 * @throws YangParserException
 	 */
-	private void checkStringRange(YangContext context, String[][] supranges)
-			throws YangParserException {
+	private void checkStringRange(YangContext context, String[][] supranges) {
 		String[][] subranges = getLength(context);
 		checkSubTyping(context, subranges, supranges);
 	}
 
 	public void checkSubTyping(YangContext context, String[][] subranges,
-			String[][] supranges) throws YangParserException {
+			String[][] supranges) {
+		try {
+			checkRangeValues(context, subranges);
+			checkRangeValues(context, supranges);
+			checkRangeOrder(context, subranges);
+			checkRangeOrder(context, supranges);
+			subranges = normalizeRange(context, subranges);
+			supranges = normalizeRange(context, supranges);
 
-		checkRangeValues(context, subranges);
-		checkRangeValues(context, supranges);
-		checkRangeOrder(context, subranges);
-		checkRangeOrder(context, supranges);
-		subranges = normalizeRange(context, subranges);
-		supranges = normalizeRange(context, supranges);
+			for (int i = 0; i < subranges.length; i++) {
+				boolean inside = false;
+				for (int j = 0; j < supranges.length && !inside; j++) {
+					if (compareTo(context, subranges[i][0], supranges[j][0]) >= 0
+							&& compareTo(context, subranges[i][1],
+									supranges[j][1]) <= 0)
+						inside = true;
+				}
+				if (!inside)
+					YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+							"bad_subtyping", subranges[i][0] + ".."
+									+ subranges[i][1]);
 
-		for (int i = 0; i < subranges.length; i++) {
-			boolean inside = false;
-			for (int j = 0; j < supranges.length && !inside; j++) {
-				if (compareTo(context, subranges[i][0], supranges[j][0]) >= 0
-						&& compareTo(context, subranges[i][1], supranges[j][1]) <= 0)
-					inside = true;
 			}
-			if (!inside)
-				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
-						"bad_subtyping", subranges[i][0] + ".."
-								+ subranges[i][1]);
-
+		} catch (NumberFormatException n) {
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"range_value");
 		}
 
 	}
 
-	private String[][] normalizeRange(YangContext context, String[][] r)
-			throws YangParserException {
+	private String[][] normalizeRange(YangContext context, String[][] r) {
 		for (int i = 0; i < r.length; i++)
 			for (int j = 0; j < 2; j++)
 				if (r[i][j].compareTo("min") == 0)
@@ -1003,8 +902,7 @@ public class YANG_Type extends SimpleYangNode {
 		return r;
 	}
 
-	private String normalizeValue(YangContext context, String v)
-			throws YangParserException {
+	private String normalizeValue(YangContext context, String v) {
 		if (v.compareTo("min") == 0) {
 			if (YangBuiltInTypes.int8.compareTo(context.getBuiltInType(this)) == 0)
 				return (new Integer(YangBuiltInTypes.int8lb)).toString();
@@ -1041,9 +939,7 @@ public class YANG_Type extends SimpleYangNode {
 			else if (YangBuiltInTypes.decimal64.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return ("-INF");
-			else
-				throw new YangParserException("panic in normalize min value "
-						+ v + " " + getType());
+
 		} else if (v.compareTo("max") == 0) {
 			if (YangBuiltInTypes.int8.compareTo(context.getBuiltInType(this)) == 0)
 				return (new Integer(YangBuiltInTypes.int8ub)).toString();
@@ -1080,14 +976,12 @@ public class YANG_Type extends SimpleYangNode {
 			else if (YangBuiltInTypes.decimal64.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return ("INF");
-			else
-				throw new YangParserException("panic in normalize max value");
-		} else
-			throw new YangParserException("panic in normalize value");
+
+		}
+		return "";
 	}
 
-	public void checkRangeValues(YangContext context, String[][] r)
-			throws YangParserException {
+	public void checkRangeValues(YangContext context, String[][] r) {
 		if (YangBuiltInTypes.isInteger(context.getBuiltInType(this))
 				|| YangBuiltInTypes.string.compareTo(context
 						.getBuiltInType(this)) == 0
@@ -1126,9 +1020,8 @@ public class YANG_Type extends SimpleYangNode {
 							BigInteger Bi = new BigInteger(bound, radix);
 							r[i][j] = Bi.toString();
 						} catch (NumberFormatException e) {
-							throw new YangParserException("@" + getLine() + "."
-									+ getCol() + ":" + bound
-									+ " is not an integer");
+							YangErrorManager.tadd(getFileName(), getLine(),
+									getCol(), "range_not_int", bound);
 						}
 					}
 				}
@@ -1146,9 +1039,8 @@ public class YANG_Type extends SimpleYangNode {
 						try {
 							new BigDecimal(bound);
 						} catch (NumberFormatException e) {
-							throw new YangParserException("@" + getLine() + "."
-									+ getCol() + ":" + bound
-									+ " is not a float");
+							YangErrorManager.tadd(getFileName(), getLine(),
+									getCol(), "range_not_float", bound);
 						}
 
 					}
@@ -1159,7 +1051,7 @@ public class YANG_Type extends SimpleYangNode {
 	}
 
 	public void checkRangeOrder(YangContext context, String[][] r)
-			throws YangParserException {
+			throws NumberFormatException {
 
 		String bi = r[0][0];
 		String bs = r[0][1];
@@ -1185,10 +1077,9 @@ public class YANG_Type extends SimpleYangNode {
 	 * @param bi
 	 * @param bs
 	 * @return -1 if bi < bs, 0 if bi == bs and 1 if bi > bs
-	 * @throws YangParserException
 	 */
 	private int compareTo(YangContext context, String bi, String bs)
-			throws YangParserException {
+			throws NumberFormatException {
 
 		if (YangBuiltInTypes.isInteger(context.getBuiltInType(this))
 				|| YangBuiltInTypes.string.compareTo(context
@@ -1211,13 +1102,9 @@ public class YANG_Type extends SimpleYangNode {
 				return 1;
 			if (bs.compareTo("min") == 0)
 				return 1;
-			try {
-				BigInteger bbi = new BigInteger(bi);
-				BigInteger bbs = new BigInteger(bs);
-				return bbi.compareTo(bbs);
-			} catch (NumberFormatException e) {
-				throw new YangParserException("Panic in in range comparaison");
-			}
+			BigInteger bbi = new BigInteger(bi);
+			BigInteger bbs = new BigInteger(bs);
+			return bbi.compareTo(bbs);
 
 		} else if (YangBuiltInTypes.isFloat(context.getBuiltInType(this))) {
 			if (bi.compareTo("min") == 0 || bi.compareTo("-INF") == 0) {
@@ -1236,21 +1123,15 @@ public class YANG_Type extends SimpleYangNode {
 				return 1;
 			if (bs.compareTo("min") == 0 || bs.compareTo("-INF") == 0)
 				return 1;
-			try {
-				BigDecimal bbi = new BigDecimal(bi);
-				BigDecimal bbs = new BigDecimal(bs);
-				return bbi.compareTo(bbs);
+			BigDecimal bbi = new BigDecimal(bi);
+			BigDecimal bbs = new BigDecimal(bs);
+			return bbi.compareTo(bbs);
 
-			} catch (NumberFormatException e) {
-				throw new YangParserException("Panic in in range comparaison");
-			}
 		} else
-			throw new YangParserException("Panic in range comparaison");
-
+			throw new NumberFormatException();
 	}
 
-	public String[][] getBuiltInBounds(YangContext context)
-			throws YangParserException {
+	public String[][] getBuiltInBounds(YangContext context) {
 		String[][] birange = new String[1][2];
 		if (YangBuiltInTypes.int8.compareTo(getType()) == 0) {
 			birange[0][0] = (new Integer(YangBuiltInTypes.int8lb)).toString();
@@ -1293,17 +1174,17 @@ public class YANG_Type extends SimpleYangNode {
 	}
 
 	public void checkDefaultValue(YangContext context, YangNode usernode,
-			YANG_Default ydefault) throws YangParserException {
+			YANG_Default ydefault) {
 		String value = ydefault.getDefault();
 
 		if (typedef == null)
 			typedef = context.getTypeDef(this);
-		if (context.getBuiltInType(this) == null){
+		if (context.getBuiltInType(this) == null) {
 			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
 					"type_not_found", getType());
 			return;
 		}
-		
+
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			String[][] ranges = null;
 			YANG_NumericalRestriction lnumrest = null;
@@ -1789,9 +1670,9 @@ public class YANG_Type extends SimpleYangNode {
 			while (!match && i < enums.length)
 				match = enums[i++].compareTo(value) == 0;
 			if (!match)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":enum value " + value + " is not in the type "
-						+ getType());
+				YangErrorManager.tadd(ydefault.getFileName(), ydefault
+						.getLine(), ydefault.getCol(), "default_mismatch",
+						value, getType(), getFileName(), getLine());
 		} else if (YangBuiltInTypes.bits
 				.compareTo(context.getBuiltInType(this)) == 0) {
 			value = YangBuiltInTypes.removeQuotesAndTrim(value);
@@ -1800,11 +1681,13 @@ public class YANG_Type extends SimpleYangNode {
 			for (int i = 0; i < bv.length && binary; i++)
 				binary = bv[i] == '1' || bv[i] == '0';
 			if (!binary)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bit value " + value + " is not binary");
+				YangErrorManager.tadd(ydefault.getFileName(), ydefault
+						.getLine(), ydefault.getCol(), "default_mismatch",
+						value, getType(), getFileName(), getLine());
 			if (value.length() != getFirstBitDefined(context, this))
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bit value " + value + " has not correct length");
+				YangErrorManager.tadd(ydefault.getFileName(), ydefault
+						.getLine(), ydefault.getCol(), "default_mismatch",
+						value, getType(), getFileName(), getLine());
 		} else if (YangBuiltInTypes.union.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			YANG_Type ut = getFirstUnionDefined(context, this);
@@ -1823,16 +1706,17 @@ public class YANG_Type extends SimpleYangNode {
 
 		} else if (YangBuiltInTypes.empty.compareTo(context
 				.getBuiltInType(this)) == 0) {
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":value " + value + " can not be of the empty type");
+			if (value.length() != getFirstBitDefined(context, this))
+				YangErrorManager.tadd(ydefault.getFileName(), ydefault
+						.getLine(), ydefault.getCol(), "default_mismatch",
+						value, getType(), getFileName(), getLine());
 		} else if (YangBuiltInTypes.yboolean.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			value = YangBuiltInTypes.removeQuotesAndTrim(value);
 			if (value.compareTo("true") != 0 && value.compareTo("false") != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":value " + value
-						+ " can not be of the boolean type (true or false)");
-
+				YangErrorManager.tadd(ydefault.getFileName(), ydefault
+						.getLine(), ydefault.getCol(), "default_mismatch",
+						value, getType(), getFileName(), getLine());
 		}
 
 	}
@@ -2306,7 +2190,7 @@ public class YANG_Type extends SimpleYangNode {
 	}
 
 	private void checkEmptyUnion(YangContext context, Vector<YANG_Type> chain,
-			Vector<YANG_Type> unions) throws YangParserException {
+			Vector<YANG_Type> unions) {
 		for (Enumeration<YANG_Type> et = unions.elements(); et
 				.hasMoreElements();) {
 			boolean empty = false;
@@ -2329,8 +2213,7 @@ public class YANG_Type extends SimpleYangNode {
 	}
 
 	private boolean checkRecEmptyUnion(YangContext context,
-			Vector<YANG_Type> chain, YANG_Type utype)
-			throws YangParserException {
+			Vector<YANG_Type> chain, YANG_Type utype) {
 
 		boolean empty = false;
 		if (context.getBuiltInType(utype).compareTo(YangBuiltInTypes.empty) == 0) {

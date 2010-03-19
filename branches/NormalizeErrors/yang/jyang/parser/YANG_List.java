@@ -107,43 +107,10 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 				|| groupings.size() != 0;
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context) {
 		super.check(context);
-		/*
-		if (!b_key) {
-			if (b_config) {
-				if (getConfig().getConfigStr().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":key not present in list "
-							+ getList() + " with config true");
-			} else {
-				YANG_Config parentConfig = getParentConfig();
-				if (parentConfig != null)
-					if (parentConfig.getConfigStr().compareTo("true") == 0)
-						YangErrorManager.tadd(filename, getLine(), getCol(),
-								"key_exp", getList());
-			}
-		} else {
-			
-			if (b_config) {
-				YANG_Config parentConfig = getParentConfig();
-				if (parentConfig != null)
-					if (parentConfig.getConfigStr().compareTo("false") == 0
-							&& getConfig().getConfigStr().compareTo("true") == 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol()
-								+ ":config to true and parent config to false");
-			}
-			
-
-		}
-		*/
-		
-		
-		
 		if (datadefs.size() == 0)
-			throw new YangParserException("@" + getLine() + ":" + getCol()
-					+ ":no data in list " + list);
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(), "expected", "data definition");
 
 		setContext(context);
 	}

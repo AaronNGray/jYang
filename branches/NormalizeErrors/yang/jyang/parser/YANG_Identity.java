@@ -46,7 +46,7 @@ public class YANG_Identity extends StatuedBody {
 	}
 
 	@Override
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context){
 
 		if (getBase() != null) {
 			YANG_Base base = getBase();

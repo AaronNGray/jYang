@@ -70,9 +70,8 @@ public class YangContext {
 	 * Add all nodes of the given context to this context.
 	 * 
 	 * @param sc
-	 * @throws YangParserException
 	 */
-	public void addSubContext(YangContext sc) throws YangParserException {
+	public void addSubContext(YangContext sc) {
 		Hashtable<String, YANG_Body> subnodes = sc.getSpecNodes().getNodes();
 		for (Enumeration<String> ek = subnodes.keys(); ek.hasMoreElements();) {
 			String k = ek.nextElement();
@@ -89,14 +88,27 @@ public class YangContext {
 	}
 
 	/**
+	 * Resolve types used inside an union type. Must be called after all
+	 * typedefs of a naming scope are added
+	 */
+	public void pendingUnions() {
+		for (Enumeration<String> ek = pendinguniontypes.keys(); ek
+				.hasMoreElements();) {
+			String k = ek.nextElement();
+			YANG_Type ptype = pendinguniontypes.get(k);
+			if (spectypes.get(k) == null) {
+				YangErrorManager.tadd(ptype.getFileName(), ptype.getLine(),
+						ptype.getCol(), "unlnow_type", ptype.getType());
+			}
+		}
+
+	}
+
+	/**
 	 * Add a node to this context
 	 * 
 	 * @param b
 	 *            a yang node
-	 * @throws YangParserException
-	 *             if a typedef or a grouping is redefined or if the node
-	 *             already exists in this context or if a typedef or a grouping
-	 *             uses a built-in type.
 	 */
 	public void addNode(YANG_Body b) {
 
@@ -110,8 +122,7 @@ public class YangContext {
 			specnodes.put(getModuleSpecName() + ":" + b.getBody(), b);
 	}
 
-	public void addUsedNode(YANG_Uses u, YANG_Body b)
-			throws YangParserException {
+	public void addUsedNode(YANG_Uses u, YANG_Body b) {
 
 		if (b instanceof YANG_TypeDef)
 			addTypeDef((YANG_TypeDef) b);
@@ -139,11 +150,8 @@ public class YangContext {
 	 * 
 	 * @param t
 	 * @return true if the type is in this context, false else.
-	 * @throws YangParserException
-	 *             if there is an unknown prefix or if a built-in type is
-	 *             prefixed
 	 */
-	public boolean isTypeDefined(YANG_Type t) throws YangParserException {
+	public boolean isTypeDefined(YANG_Type t) {
 		String cn = canonicalTypeName(t, new Hashtable<String, YANG_Type>());
 		return specnodes.isDefinedAsTypeDef(cn);
 	}
@@ -158,12 +166,8 @@ public class YangContext {
 	 * @param u
 	 *            an unknown statement
 	 * @return true if the extension is defined in this context.
-	 * @throws YangParserException
-	 *             if there is an unknown prefix or if a built-in type is
-	 *             prefixed
 	 */
-	public boolean isExtensionDefined(YANG_Unknown u)
-			throws YangParserException {
+	public boolean isExtensionDefined(YANG_Unknown u) {
 		String prefix = u.getPrefix();
 		String suffix = u.getExtension();
 		YANG_Type faketype = new YANG_Type(0);
@@ -173,9 +177,7 @@ public class YangContext {
 		return specnodes.isDefinedAsExtension(fakenametype);
 	}
 
-	public YANG_Extension getExtension(YANG_Unknown u)
-			throws YangParserException {
-
+	public YANG_Extension getExtension(YANG_Unknown u) {
 		String prefix = u.getPrefix();
 		String suffix = u.getExtension();
 		YANG_Type faketype = new YANG_Type(0);
@@ -191,8 +193,6 @@ public class YangContext {
 	 * @param u
 	 *            a YANG_Uses element
 	 * @return true if the grouping used exist in this context.
-	 * @throws YangParserException
-	 *             when the grouping does not exist in this context.
 	 */
 	public boolean isGroupingDefined(YANG_Uses u) {
 		String uses = u.getUses();
@@ -382,7 +382,7 @@ public class YangContext {
 		YANG_Type type = td.getType();
 
 		String typestr = canonicalTypeName(type, pendinguniontypes);
-		
+
 		specnodes.put(getModuleSpecName() + ":" + td.getTypeDef(), td);
 		spectypes.add(getModuleSpecName() + ":" + td.getTypeDef(), typestr, td);
 
@@ -453,7 +453,7 @@ public class YangContext {
 						"illegal_builtin", prefix + ":" + suffix);
 			boolean found = false;
 			if (getLocalPrefix() != null)
-				if( getLocalPrefix().getPrefix().compareTo(prefix) == 0){
+				if (getLocalPrefix().getPrefix().compareTo(prefix) == 0) {
 					found = true;
 					result = getSpec().getName() + ":" + suffix;
 				}
@@ -502,27 +502,6 @@ public class YangContext {
 	}
 
 	/**
-	 * Resolve types used inside an union type. Must be called after all
-	 * typedefs of a naming scope are added
-	 * 
-	 * @throws YangParserException
-	 *             if a type is not defined
-	 */
-	public void pendingUnions() throws YangParserException {
-		for (Enumeration<String> ek = pendinguniontypes.keys(); ek
-				.hasMoreElements();) {
-			String k = ek.nextElement();
-			YANG_Type ptype = pendinguniontypes.get(k);
-			if (spectypes.get(k) == null) {
-				throw new YangParserException("@" + ptype.getLine() + "."
-						+ ptype.getCol() + ":Type " + k
-						+ " in union is not defined");
-			}
-		}
-
-	}
-
-	/**
 	 * Get the built-in base type of the given type name
 	 * 
 	 * @param t
@@ -538,7 +517,6 @@ public class YangContext {
 	 * 
 	 * @param type
 	 * @return typedef
-	 * @throws YangParserException
 	 */
 	public YANG_TypeDef getBaseType(YANG_Type type) {
 		String t = canonicalTypeName(type, new Hashtable<String, YANG_Type>());
@@ -563,7 +541,7 @@ public class YangContext {
 	 *            the canonical name of the type
 	 * @return the typedef of null if the type is a built-in type
 	 */
-	public YANG_TypeDef getTypeDef(YANG_Type type)  {
+	public YANG_TypeDef getTypeDef(YANG_Type type) {
 		String t = canonicalTypeName(type, new Hashtable<String, YANG_Type>());
 		return getSpecTypes().getTypeDef(t);
 	}
@@ -578,7 +556,7 @@ public class YangContext {
 	public void addLocalPrefix(YANG_Prefix prefix) {
 
 		localPrefix = prefix;
-		
+
 	}
 
 }

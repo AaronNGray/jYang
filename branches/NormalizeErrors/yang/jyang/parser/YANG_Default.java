@@ -26,8 +26,7 @@ public class YANG_Default extends SimpleYangNode {
 
 	}
 
-	public void check(YangContext context, YANG_Choice choice)
-			throws YangParserException {
+	public void check(YangContext context, YANG_Choice choice){
 		choice.checkDefault(context, this);
 	}
 

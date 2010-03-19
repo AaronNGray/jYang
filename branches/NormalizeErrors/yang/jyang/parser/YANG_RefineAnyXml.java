@@ -47,72 +47,9 @@ public class YANG_RefineAnyXml extends MustRefineNode {
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
-	public void check(YANG_AnyXml ax)
-			throws YangParserException {
-		YangContext context = ax.getContext();
-		YANG_Config parentConfig = getParentConfig();
-		if (parentConfig != null) {
-			if (b_config) {
-				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& config.getConfigStr().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol()
-							+ ":config to true and parent config to false");
-			} else {
-				if (ax.getConfig() != null) {
-					if (parentConfig.getConfigStr().compareTo("false") == 0
-							&& ax.getConfig().getConfigStr().compareTo("true") == 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol()
-								+ ":config to true but parent config to false");
-
-				}
-			}
-		}
-
+	public void check(YANG_AnyXml ax) {
 	}
 
-	public void check(YangContext context, YANG_Grouping grouping)
-			throws YangParserException {
-		boolean found = false;
-		YANG_AnyXml ax = null;
-		for (Enumeration<YANG_DataDef> edd = grouping.getDataDefs().elements(); edd
-				.hasMoreElements()
-				&& !found;) {
-			YANG_DataDef ddef = edd.nextElement();
-			if (ddef instanceof YANG_AnyXml) {
-				ax = (YANG_AnyXml) ddef;
-				found = ax.getAnyXml().compareTo(getRefineNodeId()) == 0;
-			}
-		}
-		if (!found)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":refine any-xml " + getRefineNodeId()
-					+ " is not in the used grouping " + grouping.getGrouping());
-
-		YANG_Config parentConfig = getParentConfig();
-		if (parentConfig != null) {
-			if (b_config) {
-				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& config.getConfigStr().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol()
-							+ ":config to true and parent config to false");
-			} else {
-				if (ax.getConfig() != null) {
-					if (parentConfig.getConfigStr().compareTo("false") == 0
-							&& ax.getConfig().getConfigStr().compareTo("true") == 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":config to true in the grouping "
-								+ grouping.getBody() + " at line "
-								+ grouping.getLine()
-								+ "but parent config to false");
-
-				}
-			}
-		}
-
-	}
 
 	public String toString() {
 		String result = "";

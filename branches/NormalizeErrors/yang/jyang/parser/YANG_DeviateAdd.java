@@ -60,12 +60,7 @@ public class YANG_DeviateAdd extends DeviateAddReplace {
 				YANG_Leaf leaf = (YANG_Leaf) deviated.getNode();
 				if (leaf.getDefault() == null) {
 					leaf.setDefault(getDefault());
-					try {
-						leaf.check(context);
-					} catch (YangParserException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					leaf.check(context);
 				} else
 					YangErrorManager.tadd(getFileName(),
 							getDefault().getLine(), getDefault().getCol(),
@@ -197,14 +192,14 @@ public class YANG_DeviateAdd extends DeviateAddReplace {
 				if (mddef.getMusts().size() == 0)
 					mddef.setMusts(getMusts());
 				else
-					YangErrorManager.tadd(getFileName(), l,c,
-							"deviate_add", "must", mddef.getBody(), mddef
-									.getFileName(), mddef.getLine());
+					YangErrorManager.tadd(getFileName(), l, c, "deviate_add",
+							"must", mddef.getBody(), mddef.getFileName(), mddef
+									.getLine());
 			} else
-				YangErrorManager.tadd(getFileName(), l,c,
-						"bad_deviate_add", "must",
-						deviated.getNode().getBody(), deviated.getNode()
-								.getFileName(), deviated.getNode().getLine());
+				YangErrorManager.tadd(getFileName(), l, c, "bad_deviate_add",
+						"must", deviated.getNode().getBody(), deviated
+								.getNode().getFileName(), deviated.getNode()
+								.getLine());
 		}
 		if (uniques.size() != 0) {
 			int l = getUniques().get(0).getLine();
@@ -214,14 +209,14 @@ public class YANG_DeviateAdd extends DeviateAddReplace {
 				if (list.getUniques().size() == 0)
 					list.setUniques(getUniques());
 				else
-					YangErrorManager.tadd(getFileName(), l,c,
-							"deviate_add", "unique", list.getBody(), list
-									.getFileName(), list.getLine());
+					YangErrorManager.tadd(getFileName(), l, c, "deviate_add",
+							"unique", list.getBody(), list.getFileName(), list
+									.getLine());
 			} else
-				YangErrorManager.tadd(getFileName(), l,c,
-						"bad_deviate_add", "unique", deviated.getNode()
-								.getBody(), deviated.getNode().getFileName(),
-						deviated.getNode().getLine());
+				YangErrorManager.tadd(getFileName(), l, c, "bad_deviate_add",
+						"unique", deviated.getNode().getBody(), deviated
+								.getNode().getFileName(), deviated.getNode()
+								.getLine());
 		}
 	}
 

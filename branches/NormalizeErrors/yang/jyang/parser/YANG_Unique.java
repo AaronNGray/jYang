@@ -42,7 +42,7 @@ public class YANG_Unique extends SimpleYangNode {
 		super(p, id);
 	}
 
-	public void setUnique(String u) throws YangParserException {
+	public void setUnique(String u){
 		String un = unquote(u);
 		Matcher m = desc_sch_nid.matcher(un);
 		if (m.matches())

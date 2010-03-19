@@ -29,8 +29,6 @@ public abstract class StatuedNode extends DocumentedNode {
 		return status;
 	}
 
-	public void check(YangContext context) throws YangParserException {
-	}
 
 	public String toString() {
 		String result = "";

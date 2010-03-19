@@ -34,48 +34,6 @@ public class YANG_RefineList extends ListedRefineNode {
 	public void check(YANG_List list){
 	}
 
-	public void check(YangContext context, YANG_Grouping grouping)
-			throws YangParserException {
-		boolean found = false;
-		YANG_List list = null;
-		for (Enumeration<YANG_DataDef> edd = grouping.getDataDefs().elements(); edd
-				.hasMoreElements()
-				&& !found;) {
-			YANG_DataDef ddef = edd.nextElement();
-			if (ddef instanceof YANG_List) {
-				list = (YANG_List) ddef;
-				found = list.getList().compareTo(getRefineNodeId()) == 0;
-			}
-		}
-		if (!found)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":refine list " + getRefineNodeId()
-					+ " is not in the used grouping " + grouping.getGrouping());
-
-		YANG_Config parentConfig = getParentConfig();
-
-		if (parentConfig != null)
-			if (b_config) {
-				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& config.getConfigStr().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol()
-							+ ":config to true and parent config to false");
-			} else {
-				if (list.getConfig() != null) {
-					if (parentConfig.getConfigStr().compareTo("false") == 0
-							&& list.getConfig().getConfigStr()
-									.compareTo("true") == 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":config to true in the grouping "
-								+ grouping.getBody() + " at line "
-								+ grouping.getLine()
-								+ "but parent config to false");
-
-				}
-			}
-
-	}
 
 	public String toString() {
 		String result = "";

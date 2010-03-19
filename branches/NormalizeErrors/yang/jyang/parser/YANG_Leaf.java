@@ -110,7 +110,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 				|| b_mandatory;
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context) {
 		super.check(context);
 		setContext(context);
 		if (!b_type)
@@ -128,23 +128,13 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 						context.getTypeDef(getType()).check(context);
 				}
 		}
-/*
-		if (b_config) {
-			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig != null) {
-				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& getConfig().getConfigStr().compareTo("true") == 0)
-					YangErrorManager.tadd(filename, getLine(), getCol(),
-							"config_parent", "leaf", getBody());
-
-			}
-		}
-		*/
+		
 		if (b_mandatory) {
 			if (getMandatory().getMandatory().compareTo("true") == 0
 					&& b_default)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":no default value permitted when mandatory is true");
+				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+						"mand_def_val", getLeaf(), getDefault().getFileName(),
+						getDefault().getLine());
 		}
 		if (b_default)
 			if (getType() != null)
@@ -154,22 +144,9 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 					YANG_TypeDef defining = context.getTypeDef(getType());
 					while (defining != null) {
 						if (defining.getDefault() != null) {
-							try {
 								getType().checkDefaultValue(context, this,
 										defining.getDefault());
 								defining = null;
-							} catch (YangParserException ye) {
-								throw new YangParserException(
-										"@"
-												+ getLine()
-												+ "."
-												+ getCol()
-												+ ":default value "
-												+ defining.getDefault()
-														.getDefault()
-												+ " does no more match with current leaf "
-												+ getLeaf());
-							}
 						} else {
 							defining = context.getBaseTypeDef(defining);
 						}
@@ -227,7 +204,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 	public void deleteType() {
 		type = null;
 		b_type = false;
-		
+
 	}
 
 	public YANG_Leaf clone() {

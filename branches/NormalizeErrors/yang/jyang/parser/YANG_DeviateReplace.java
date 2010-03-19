@@ -20,7 +20,7 @@ public class YANG_DeviateReplace extends DeviateAddReplace {
 		return type;
 	}
 
-	public void setType(YANG_Type t) throws YangParserException {
+	public void setType(YANG_Type t) {
 		if (!b_type) {
 			this.type = t;
 			b_type = true;
@@ -37,31 +37,20 @@ public class YANG_DeviateReplace extends DeviateAddReplace {
 
 		YangContext context = deviated.getNode().getContext();
 		if (getType() != null) {
-			if (deviated.getNode() instanceof YANG_Leaf){
+			if (deviated.getNode() instanceof YANG_Leaf) {
 				YANG_Leaf leaf = (YANG_Leaf) deviated.getNode();
 				leaf.deleteType();
 				leaf.setType(getType());
-				try {
-					leaf.check(context);
-				} catch (YangParserException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-			} else if (deviated.getNode()instanceof YANG_LeafList){
+				leaf.check(context);
+			} else if (deviated.getNode() instanceof YANG_LeafList) {
 				YANG_LeafList leaflist = (YANG_LeafList) deviated.getNode();
 				leaflist.deleteType();
 				leaflist.setType(getType());
-				try {
-					leaflist.check(context);
-				} catch (YangParserException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else 
+				leaflist.check(context);
+			} else
 				YangErrorManager.tadd(getFileName(), getType().getLine(),
-						getType().getCol(), "bad_deviate_rep", "type",
-						deviated.getNode().getBody(), deviated.getNode()
+						getType().getCol(), "bad_deviate_rep", "type", deviated
+								.getNode().getBody(), deviated.getNode()
 								.getFileName(), deviated.getNode().getLine());
 		}
 		if (getDefault() != null) {
@@ -70,12 +59,7 @@ public class YANG_DeviateReplace extends DeviateAddReplace {
 				if (leaf.getDefault() != null) {
 					leaf.deleteDefault();
 					leaf.setDefault(getDefault());
-					try {
-						leaf.check(context);
-					} catch (YangParserException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					leaf.check(context);
 				} else
 					YangErrorManager.tadd(getFileName(),
 							getDefault().getLine(), getDefault().getCol(),

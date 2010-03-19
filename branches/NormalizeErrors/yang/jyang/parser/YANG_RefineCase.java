@@ -37,45 +37,11 @@ public class YANG_RefineCase extends YANG_Refine {
 	
 	}
 	
-	public void check(YangContext c, YANG_Grouping g) throws YangParserException {}
-	
-	
-	
-	public void check(YangContext context, YANG_Choice choice) throws YangParserException {
-		boolean found = false;
-		YANG_Case ycase = null;
-		YANG_ShortCase yscase = null;
-		for (Enumeration <YANG_Case> ec = choice.getCases().elements(); ec.hasMoreElements() && !found;){
-			ycase = ec.nextElement();
-			found = ycase.getCase().compareTo(getRefineNodeId()) == 0;
-		}
-		for (Enumeration <YANG_ShortCase> esc = choice.getShortCases().elements(); esc.hasMoreElements() && !found;){
-			yscase = esc.nextElement();
-			found = yscase.getBody().compareTo(getRefineNodeId()) == 0;
-		}
-		if (!found)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":refine case " 
-					+ getRefineNodeId()
-					+ " is not a case of the choice "
-					+ choice.getChoice()
-					+ " at line " 
-					+ choice.getLine()
-					+ " " + usedgrouping);
-		
-		
-	}
-
-	public String toString() {
+		public String toString() {
 		String result = "";
 		result += super.toString() + "\n";
 		return result;
 	}
 
-	//@Override
-//	public void check(YangContext context) throws YangParserException {
-		
-		
-	//}
 
 }

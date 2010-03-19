@@ -64,11 +64,6 @@ public class YANG_Case extends FeaturedNode {
 		return result;
 	}
 
-	@Override
-	public void check(YangContext context) throws YangParserException {
-		
-		
-	}
 
 	public void refines(YANG_RefineCase rl) {
 		if (rl.getDescription() != null)

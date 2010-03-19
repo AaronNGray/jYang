@@ -83,10 +83,7 @@ public class YANG_Grouping extends StatuedBody {
 		return datadefs;
 	}
 
-	public void check(YangContext context) throws YangParserException {
-	
-
-	}
+	public void check(YangContext context)  {}
 	
 	public boolean isChecked() {
 		return checked;

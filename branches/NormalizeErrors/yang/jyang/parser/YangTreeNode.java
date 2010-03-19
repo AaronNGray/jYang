@@ -428,12 +428,7 @@ public class YangTreeNode implements java.io.Serializable {
 						YANG_Leaf refinedleaf = (YANG_Leaf) body;
 						YANG_RefineLeaf refiningleaf = ((YANG_RefineAnyNode) ref)
 								.getRefineLeaf();
-						try {
 							refiningleaf.check(refinedleaf);
-						} catch (YangParserException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 						refinedleaf.refines(refiningleaf);
 					} else if (body instanceof YANG_Container) {
 						YANG_Container refinedcontainer = (YANG_Container) body;
@@ -445,12 +440,7 @@ public class YangTreeNode implements java.io.Serializable {
 						YANG_AnyXml refinedanyxml = (YANG_AnyXml) body;
 						YANG_RefineAnyXml refininganyxml = ((YANG_RefineAnyNode) ref)
 								.getRefineAnyXml();
-						try {
-							refininganyxml.check(refinedanyxml);
-						} catch (YangParserException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						refininganyxml.check(refinedanyxml);
 						refinedanyxml.refines(refininganyxml);
 					} else if (body instanceof CaseDataDef) {
 						CaseDataDef cddef = (CaseDataDef) body;
@@ -463,12 +453,7 @@ public class YangTreeNode implements java.io.Serializable {
 						YANG_Choice refinedchoice = (YANG_Choice) body;
 						YANG_RefineChoice refiningchoice = ((YANG_RefineAnyNode) ref)
 								.getRefineChoice();
-						try {
 							refiningchoice.check(refinedchoice);
-						} catch (YangParserException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 						refinedchoice.refines(refiningchoice);
 					} else if (body instanceof YANG_List) {
 						YANG_List refinedlist = (YANG_List) body;
@@ -481,12 +466,7 @@ public class YangTreeNode implements java.io.Serializable {
 						YANG_LeafList refinedleaflist = (YANG_LeafList) body;
 						YANG_RefineLeafList refiningleaflist = ((YANG_RefineAnyNode) ref)
 								.getRefineLeafList();
-						try {
 							refiningleaflist.check(refinedleaflist);
-						} catch (YangParserException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 						refinedleaflist.refines(refiningleaflist);
 					}
 				}
@@ -576,7 +556,7 @@ public class YangTreeNode implements java.io.Serializable {
 					configlist = null;
 			} else
 				configlist = list.getConfig().getConfigStr();
-			
+
 			YANG_Key k = list.getKey();
 			if (k != null) {
 				String Kstr = k.getKey();

@@ -98,7 +98,7 @@ public YANG_RefineAnyNode(int id) {
 	public YANG_MaxElement getMaxElement() {
 		return max;
 	}
-	public void setDefault(YANG_Default d) throws YangParserException {
+	public void setDefault(YANG_Default d) {
 		if (!b_default) {
 			b_default = true;
 			ydefault = d;

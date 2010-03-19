@@ -49,68 +49,13 @@ public class YANG_RefineChoice extends MandatoryRefineNode {
 		return ydefault;
 	}
 
-	public void check(YANG_Choice choice)
-			throws YangParserException {
+	public void check(YANG_Choice choice) {
 		YangContext context = choice.getContext();
 		if (getDefault() != null)
 			getDefault().check(context, choice);
 	}
 
-	/*
-	public void check(YangContext context, YANG_Grouping grouping)
-			throws YangParserException {
-		boolean found = false;
-		YANG_Choice choice = null;
-		for (Enumeration<YANG_DataDef> edd = grouping.getDataDefs().elements(); edd
-				.hasMoreElements()
-				&& !found;) {
-			YANG_DataDef ddef = edd.nextElement();
-			if (ddef instanceof YANG_Choice) {
-				choice = (YANG_Choice) ddef;
-				found = choice.getChoice().compareTo(getRefineNodeId()) == 0;
-				if (found)
-					check(context, choice, usedgrouping);
-			}
-		}
-		if (!found)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":refine choice " + getRefineNodeId() + usedgrouping);
-		// + " is not in the used grouping " + grouping.getGrouping()
-		// + " at line " + grouping.getLine());
-
-		YANG_Config parentConfig = getParentConfig();
-		if (parentConfig != null)
-			if (b_config) {
-				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& config.getConfigStr().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol()
-							+ ":config to true and parent config to false");
-			} else {
-				if (choice.getConfig() != null) {
-					if (parentConfig.getConfigStr().compareTo("false") == 0
-							&& choice.getConfig().getConfigStr().compareTo(
-									"true") == 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":config to true in the grouping "
-								+ grouping.getBody() + " at line "
-								+ grouping.getLine()
-								+ "but parent config to false");
-
-				}
-			}*/
-		/*
-		 * for (Enumeration<YANG_RefineCase> er = getRefineCases().elements();
-		 * er .hasMoreElements();) { YANG_RefineCase rcase = er.nextElement();
-		 * try { rcase.setUsedGrouping(" from the used grouping " +
-		 * grouping.getGrouping() + " at line " + grouping.getLine());
-		 * rcase.setParent(this); rcase.check(context, choice); } catch
-		 * (YangParserException ye) { throw new
-		 * YangParserException(ye.getMessage() + usedgrouping); // +
-		 * " from the used grouping " + grouping.getGrouping() // + " at line "
-		 * + grouping.getLine()); } }
-		 */
-//	}
+	
 
 	public String toString() {
 		String result = "";

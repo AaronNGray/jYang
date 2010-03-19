@@ -26,7 +26,7 @@ public abstract class FeaturedBody extends StatuedBody {
 		ifFeatures = ifs;
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context) {
 		for (YANG_IfFeature iff : ifFeatures) {
 			YANG_Body b = context.getFeature(iff);
 			if (b == null)

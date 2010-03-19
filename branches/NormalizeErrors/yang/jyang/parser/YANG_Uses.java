@@ -66,7 +66,7 @@ public class YANG_Uses extends YANG_DataDef {
 				|| usesaugments.size() != 0;
 	}
 
-	public void addRefinement(YANG_Refine r) throws YangParserException {
+	public void addRefinement(YANG_Refine r) {
 		refinements.add(r);
 	}
 
@@ -77,8 +77,8 @@ public class YANG_Uses extends YANG_DataDef {
 	public void addUsesAugment(YANG_UsesAugment ua) {
 		usesaugments.add(ua);
 	}
-	
-	public Vector<YANG_UsesAugment> getUsesAugments(){
+
+	public Vector<YANG_UsesAugment> getUsesAugments() {
 		return usesaugments;
 	}
 
@@ -93,15 +93,9 @@ public class YANG_Uses extends YANG_DataDef {
 		this.recursive = recursive;
 	}
 
-	public void check(YangContext context)  {
-		
-		try {
-			super.check(context);
-		} catch (YangParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void check(YangContext context) {
 
+		super.check(context);
 		if (!context.isGroupingDefined(this)) {
 			YangErrorManager.tadd(filename, getLine(), getCol(), "unknown",
 					"grouping", uses);
@@ -138,7 +132,6 @@ public class YANG_Uses extends YANG_DataDef {
 				}
 			}
 
-
 			checked = true;
 		}
 	}
@@ -163,8 +156,8 @@ public class YANG_Uses extends YANG_DataDef {
 		}
 		return true;
 	}
-	
-	public YANG_Uses clone(){
+
+	public YANG_Uses clone() {
 		return this;
 	}
 

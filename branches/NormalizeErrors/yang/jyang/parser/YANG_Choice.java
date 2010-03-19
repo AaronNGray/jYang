@@ -249,23 +249,7 @@ public class YANG_Choice extends ConfigDataDef {
 	}
 
 	public void check(YangContext context) {
-
-		try {
 			super.check(context);
-		} catch (YangParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		/*
-		 * if (b_config) { YANG_Config parentConfig = getParentConfig(); if
-		 * (parentConfig != null) if
-		 * (parentConfig.getConfigStr().compareTo("false") == 0 &&
-		 * getConfig().getConfigStr().compareTo("true") == 0)
-		 * YangErrorManager.tadd(getFileName(), getLine(), getCol(),
-		 * "config_parent", "choice", getBody());
-		 * 
-		 * }
-		 */
 		if (b_default) {
 			checkDefault(context, getDefault());
 

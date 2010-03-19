@@ -40,7 +40,7 @@ public class YANG_TypeDef extends StatuedBody {
 		return typedef;
 	}
 
-	public void setType(YANG_Type t) throws YangParserException {
+	public void setType(YANG_Type t){
 		if (!b_type) {
 			b_type = true;
 			ytype = t;
@@ -77,7 +77,7 @@ public class YANG_TypeDef extends StatuedBody {
 		return defaultstr;
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context) {
 
 		if (!isCorrect())
 			return;
@@ -94,22 +94,16 @@ public class YANG_TypeDef extends StatuedBody {
 		chainUnions(this, me, context);
 
 		if (b_default)
-			try {
 				getType().checkDefaultValue(context, this, getDefault());
-			} catch (YangParserException ye) {
-			}
 
 		else {
 			YANG_TypeDef defining = context.getBaseTypeDef(this);
 
 			while (defining != null) {
 				if (defining.getDefault() != null) {
-					try {
 						getType().checkDefaultValue(context, this,
 								defining.getDefault());
 						defining = context.getBaseTypeDef(defining);
-					} catch (YangParserException ye) {
-					}
 				} else
 					defining = context.getBaseTypeDef(defining);
 			}
@@ -121,7 +115,7 @@ public class YANG_TypeDef extends StatuedBody {
 	}
 
 	private void chainUnions(YANG_TypeDef zis, Vector<YANG_TypeDef> tds,
-			YangContext context) throws YangParserException {
+			YangContext context)  {
 		
 		if (zis == null)
 			return;
@@ -163,12 +157,8 @@ public class YANG_TypeDef extends StatuedBody {
 
 	public YANG_TypeDef clone() {
 		YANG_TypeDef ctd = new YANG_TypeDef(parser, id);
-		try {
 			ctd.setType(getType());
 			ctd.setFileName(filename);
-		} catch (YangParserException e) {
-			e.printStackTrace();
-		}
 		return ctd;
 	}
 

@@ -31,9 +31,6 @@ public class YANG_Deviation extends YANG_Body {
 		super(p, id);
 	}
 
-	public void check(YangContext context) throws YangParserException {
-
-	}
 
 	public String getBody() {
 		return getDeviation();
@@ -91,5 +88,8 @@ public class YANG_Deviation extends YANG_Body {
 			result += eda.nextElement().toString() + "\n";
 		return result;
 	}
+
+	@Override
+	public void check(YangContext context) {}
 
 }

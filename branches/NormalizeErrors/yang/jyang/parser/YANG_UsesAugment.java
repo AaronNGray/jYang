@@ -58,8 +58,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 		return super.isBracked() || cases.size() != 0;
 	}
 
-	public void checkUsesAugment(YANG_Body augmented_node)
-			throws YangParserException {
+	public void checkUsesAugment(YANG_Body augmented_node) {
 
 		if (getCases().size() != 0 && !(augmented_node instanceof YANG_Choice)) {
 			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
@@ -111,8 +110,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 		}
 	}
 
-	private void checkDouble(Vector<YANG_DataDef> vddef)
-			throws YangParserException {
+	private void checkDouble(Vector<YANG_DataDef> vddef) {
 		boolean found = false;
 		YANG_DataDef augddef = null;
 		YANG_DataDef targddef = null;
@@ -133,8 +131,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 							.getFileName(), targddef.getLine());
 	}
 
-	private void checkDoubleCase(Vector<YANG_Case> vcases)
-			throws YangParserException {
+	private void checkDoubleCase(Vector<YANG_Case> vcases){
 		boolean found = false;
 		YANG_Case ayc = null;
 		YANG_Case yc = null;

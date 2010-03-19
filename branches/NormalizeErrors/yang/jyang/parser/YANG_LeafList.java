@@ -79,12 +79,10 @@ public class YANG_LeafList extends ListedDataDef {
 		return super.isBracked() || b_type || b_units;
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context) {
 		super.check(context);
 		if (!b_type)
-			throw new YangParserException(
-					"Type statement not present in leaf-list " + leaflist,
-					getLine(), getCol());
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(), "expected", "type");
 
 		if (!YangBuiltInTypes.isBuiltIn(getType().getType()))
 			if (!context.isTypeDefined(getType())) {
@@ -92,15 +90,6 @@ public class YANG_LeafList extends ListedDataDef {
 						.getCol(), "unknown_type", getType().getType());
 			} else
 				context.getTypeDef(getType()).check(context);
-		/*
-		 * if (b_config) { YANG_Config parentConfig = getParentConfig(); if
-		 * (parentConfig != null) if
-		 * (parentConfig.getConfigStr().compareTo("false") == 0 &&
-		 * getConfig().getConfigStr().compareTo("true") == 0) throw new
-		 * YangParserException("@" + getLine() + "." + getCol() +
-		 * ":config to true and parent config to false"); }
-		 */
-
 	}
 
 	public YANG_LeafList clone() {

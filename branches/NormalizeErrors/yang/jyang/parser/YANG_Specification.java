@@ -135,7 +135,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		metas.add(m);
 	}
 
-	public void check() throws YangParserException {
+	public void check() {
 		String[] path = new String[1];
 		path[0] = ".";
 		Vector<String> cked = new Vector<String>();
@@ -152,31 +152,26 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	 * 
 	 * @param p
 	 *            path for yang files
-	 * @throws YangParserException
-	 *             if a semantical error occurs
 	 */
-	public void check(String[] path) throws YangParserException {
+	public void check(String[] path) {
 		Vector<String> cked = new Vector<String>();
 		check(path, cked);
 	}
 
-	public YangContext check(String[] p, Vector<String> checked)
-			throws YangParserException {
+	public YangContext check(String[] p, Vector<String> checked) {
 		YangContext c = check(p, checked, null);
 		checkTreeNode(p);
 		return c;
 
 	}
 
-	protected YangContext checkAsExternal(String[] p, Vector<String> checked)
-			throws YangParserException {
+	protected YangContext checkAsExternal(String[] p, Vector<String> checked) {
 		YangContext c = check(p, checked, null);
 		return c;
 	}
 
 	@SuppressWarnings("unchecked")
-	public YangContext check(String[] p, Vector<String> checkeds, YangContext c)
-			throws YangParserException {
+	public YangContext check(String[] p, Vector<String> checkeds, YangContext c) {
 
 		if (checkeds.contains(getName())) {
 			return c;
@@ -200,27 +195,22 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		return c;
 	}
 
-	private void checkBodies(String[] p, Vector<String> ckd, YangContext context)
-			throws YangParserException {
+	private void checkBodies(String[] p, Vector<String> ckd, YangContext context) {
 
 		for (Enumeration<YANG_Body> eb = getBodies().elements(); eb
 				.hasMoreElements();) {
 			YANG_Body body = eb.nextElement();
 			YangContext bodycontext = context.clone();
-			try {
-				body.setRootNode(true);
-				body.checkBody(bodycontext);
-			} catch (YangParserException ye) {
-				ye.printStackTrace();
-				System.err.println(getName() + ye.getMessage());
-			}
+
+			body.setRootNode(true);
+			body.checkBody(bodycontext);
 		}
 
 	}
 
 	@SuppressWarnings("unchecked")
 	public YangContext buildSpecContext(String[] paths, YangContext c,
-			Vector<String> builded) throws YangParserException {
+			Vector<String> builded) {
 		if (c == null)
 			c = new YangContext(getImports(), this);
 		if (getPrefix() != null)
@@ -251,25 +241,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			if (!builded.contains(importedmodulename)) {
 
 				Vector<String> cks = (Vector<String>) builded.clone();
-				try {
-					YangContext importedcontext = module.check(paths, builded);
-					// = module.buildSpecContext(
-					// paths, null, cks);
-					if (this instanceof YANG_Module)
-						c.merge(importedcontext);
-				} catch (YangParserException pe) {
-
-					if (pe.currentToken != null)
-						if (pe.currentToken.next != null)
-							YangErrorManager.tadd(getFileName(),
-									pe.currentToken.next.beginLine,
-									pe.currentToken.next.beginColumn,
-									"unex_kw", pe.currentToken.next.image);
-						else
-							System.out.println(pe);
-					else
-						System.out.println(pe);
-				}
+				YangContext importedcontext = module.check(paths, builded);
+				if (this instanceof YANG_Module)
+					c.merge(importedcontext);
 			} else
 				YangErrorManager.tadd(getFileName(), line, col, "circ_impo",
 						importedmodulename, getName());
@@ -287,26 +261,10 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				}
 			}
 			if (!builded.contains(includedsubmodulename)) {
-				try {
-					Vector<String> cks = (Vector<String>) builded.clone();
-					YangContext includedcontext = submodule.check(paths,
-							builded);
-					// submodule.buildSpecContext(
-					// paths, null, cks);
-					if (this instanceof YANG_Module)
-						c.mergeChecked(includedcontext);
-				} catch (YangParserException pe) {
-					if (pe.currentToken != null)
-						if (pe.currentToken.next != null)
-							YangErrorManager.tadd(getFileName(),
-									pe.currentToken.next.beginLine,
-									pe.currentToken.next.beginColumn,
-									"unex_kw", pe.currentToken.next.image);
-						else
-							System.out.println(pe);
-					else
-						System.out.println(pe);
-				}
+				Vector<String> cks = (Vector<String>) builded.clone();
+				YangContext includedcontext = submodule.check(paths, builded);
+				if (this instanceof YANG_Module)
+					c.mergeChecked(includedcontext);
 			} else
 				YangErrorManager.tadd(getFileName(), line, col, "circ_include",
 						includedsubmodulename, getName());
@@ -327,8 +285,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		return c;
 	}
 
-	public YangContext getThisSpecContext(YangContext context)
-			throws YangParserException {
+	public YangContext getThisSpecContext(YangContext context) {
 
 		for (Enumeration<YANG_Body> eb = getBodies().elements(); eb
 				.hasMoreElements();) {
@@ -343,8 +300,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 	public abstract String getName();
 
-	public Vector<YANG_Specification> getImportedModules(String[] paths)
-			throws YangParserException {
+	public Vector<YANG_Specification> getImportedModules(String[] paths) {
 		Vector<YANG_Specification> im = new Vector<YANG_Specification>();
 		for (Enumeration<YANG_Linkage> el = getLinkages().elements(); el
 				.hasMoreElements();) {
@@ -410,9 +366,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	 * these included or imported specifications
 	 * 
 	 * @param p
-	 * @throws YangParserException
 	 */
-	protected void checkLinkage(String[] paths) throws YangParserException {
+	protected void checkLinkage(String[] paths) {
 		checkImport(paths);
 		checkInclude(paths);
 	}
@@ -423,7 +378,6 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	 * @param paths
 	 *            directories paths where find yang modules and submodules
 	 * 
-	 * @throws YangParserException
 	 */
 	protected void checkImport(String[] paths) {
 
@@ -465,9 +419,17 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				try {
 					yang.setFileName(yangspecfilename);
 					externalspec = yang.Start();
-				} catch (ParseException p) {
-					System.err.println(externalmodulename + ":"
-							+ p.getMessage());
+				} catch (ParseException pe) {
+					if (pe.currentToken != null)
+						if (pe.currentToken.next != null)
+							YangErrorManager.tadd(getFileName(),
+									pe.currentToken.next.beginLine,
+									pe.currentToken.next.beginColumn,
+									"unex_kw", pe.currentToken.next.image);
+						else
+							System.out.println(pe);
+					else
+						System.out.println(pe);
 				}
 			} catch (NullPointerException np) {
 			} catch (FileNotFoundException fnf) {
@@ -483,25 +445,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		return externalspec;
 	}
 
-	/*
-	 * protected YANG_Specification getExternal(String[] paths, String
-	 * externalmodulename, boolean b) throws YangParserException { int i = 0;
-	 * boolean found = false; YANG_Specification externalspec = null; while (i <
-	 * paths.length && !found) { String directory = paths[i++]; String
-	 * yangspecfilename = directory + File.separator + externalmodulename +
-	 * ".yang"; if (checkedSpecs.containsKey(externalmodulename)) return
-	 * checkedSpecs.get(externalmodulename); try { File externalfile = new
-	 * File(yangspecfilename); yang.ReInit(new FileInputStream(externalfile));
-	 * found = true; try { yang.setFileName(yangspecfilename); externalspec =
-	 * yang.Start(); } catch (ParseException p) { throw new
-	 * YangParserException(externalmodulename + ":" + p.getMessage()); } } catch
-	 * (NullPointerException np) { } catch (FileNotFoundException fnf) { //
-	 * nothing to do // pass to the next path } } if (!found)
-	 * YangErrorManager.tadd(getName(), getLine(), getCol(), "file_not_found",
-	 * externalmodulename); else checkedSpecs.put(externalmodulename,
-	 * externalspec); return externalspec; }
-	 */
-	private void checkTreeNode(String[] p) throws YangParserException {
+	private void checkTreeNode(String[] p) {
 		Vector<String> builded = new Vector<String>();
 		Hashtable<String, YangTreeNode> importedtreenodes = new Hashtable<String, YangTreeNode>();
 		builded.add(getName());
@@ -641,12 +585,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 							taugs[i]);
 			} else {
 				YANG_Augment aug = vaugs.get(i);
-				try {
-					aug.checkAugment(augmentedbody);
-				} catch (YangParserException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				aug.checkAugment(augmentedbody);
+
 				YangTreeNode augmentednode = root.getNodeInTree(this, root,
 						importedtreenodes, taugs[i]);
 				augmentednode.augments(aug);
@@ -680,24 +620,18 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				}
 			}
 
-		try {
-			for (Enumeration<YANG_Specification> ei = getImportedModules(p)
-					.elements(); ei.hasMoreElements();) {
-				YANG_Specification spec = ei.nextElement();
-				if (spec != null)
-					if (!builded.contains(spec.getName())) {
-						builded.add(spec.getName());
-						YangTreeNode itn = spec.buildTreeNode(p, builded,
-								importedtreenodes);
-						importedtreenodes.put(spec.getName(), itn);
-					}
-			}
-
-		} catch (YangParserException e) {
-			System.err
-					.println("panic could not happen in buildTreeNode in YANG_Specification");
-			System.exit(-1);
+		for (Enumeration<YANG_Specification> ei = getImportedModules(p)
+				.elements(); ei.hasMoreElements();) {
+			YANG_Specification spec = ei.nextElement();
+			if (spec != null)
+				if (!builded.contains(spec.getName())) {
+					builded.add(spec.getName());
+					YangTreeNode itn = spec.buildTreeNode(p, builded,
+							importedtreenodes);
+					importedtreenodes.put(spec.getName(), itn);
+				}
 		}
+
 		return root;
 	}
 }

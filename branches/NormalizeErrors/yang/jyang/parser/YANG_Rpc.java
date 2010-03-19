@@ -80,7 +80,7 @@ public class YANG_Rpc extends TypedefGroupingBody {
 		return super.isBracked() || b_input || b_output;
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context) {
 		super.check(context);
 		if (input != null)
 			input.check(context);

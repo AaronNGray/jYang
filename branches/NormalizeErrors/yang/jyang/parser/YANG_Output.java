@@ -31,28 +31,10 @@ public class YANG_Output extends Io {
 		super(p, id);
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context)  {
 		if (datadefs.size() == 0)
 			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
 					"empty_output");
-
-		/*
-		 * for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
-		 * .hasMoreElements();) context.addNode(et.nextElement()); for
-		 * (Enumeration<YANG_Grouping> eg = groupings.elements(); eg
-		 * .hasMoreElements();) context.addNode(eg.nextElement()); for
-		 * (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
-		 * .hasMoreElements();) context.addNode(ed.nextElement()); for
-		 * (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
-		 * .hasMoreElements();) { YangContext cl = context.clone();
-		 * et.nextElement().check(cl); } for (Enumeration<YANG_Grouping> eg =
-		 * groupings.elements(); eg .hasMoreElements();) { YangContext cl =
-		 * context.clone(); eg.nextElement().checkBody(cl); } for
-		 * (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
-		 * .hasMoreElements();) { YangContext cl = context.clone();
-		 * ed.nextElement().checkBody(cl); }
-		 */
-
 	}
 
 	public String toString() {

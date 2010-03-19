@@ -41,9 +41,6 @@ public class CaseDataDef extends YANG_DataDef implements DataDefsContainer{
 	}
 
 
-	@Override
-	public void check(YangContext context) throws YangParserException {
-	}
 
 	@Override
 	public String getBody() {

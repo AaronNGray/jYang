@@ -49,71 +49,10 @@ public class YANG_RefineContainer extends MustRefineNode {
 		return presence;
 	}
 
-	public void icheck(YangContext context, YANG_Container container, String ug)
-			throws YangParserException {
-		/*
-		 * for (Enumeration<YANG_Refine> er = getRefinements().elements(); er
-		 * .hasMoreElements();) { YANG_Refine refine = er.nextElement();
-		 * refine.setUsedGrouping(ug); refine.setParent(this);
-		 * refine.check(context, container); }
-		 */
-	}
-
 	public void check(YANG_Container container){
 		
 	}
 	
-	public void check(YangContext context, YANG_Grouping grouping)
-			throws YangParserException {
-		boolean found = false;
-		YANG_Container container = null;
-		for (Enumeration<YANG_DataDef> edd = grouping.getDataDefs().elements(); edd
-				.hasMoreElements()
-				&& !found;) {
-			YANG_DataDef ddef = edd.nextElement();
-			if (ddef instanceof YANG_Container) {
-				container = (YANG_Container) ddef;
-				found = container.getContainer().compareTo(getRefineNodeId()) == 0;
-			}
-		}
-		if (!found)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":refine container " + getRefineNodeId()
-					+ " is not in the used grouping " + grouping.getGrouping()
-					+ " at line " + grouping.getLine());
-
-		YANG_Config parentConfig = getParentConfig();
-		if (parentConfig != null)
-			if (b_config) {
-				if (parentConfig.getConfigStr().compareTo("false") == 0
-						&& config.getConfigStr().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol()
-							+ ":config to true and parent config to false");
-			} else {
-				if (container.getConfig() != null) {
-					if (parentConfig.getConfigStr().compareTo("false") == 0
-							&& container.getConfig().getConfigStr().compareTo(
-									"true") == 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":config to true in the grouping "
-								+ grouping.getBody() + " at line "
-								+ grouping.getLine()
-								+ " but parent config to false");
-
-				}
-			}
-		/*
-		 * for (Enumeration<YANG_Refine> er = getRefinements().elements(); er
-		 * .hasMoreElements();) { YANG_Refine refine = er.nextElement(); try {
-		 * refine.setUsedGrouping(" from the used grouping " +
-		 * grouping.getGrouping() + " at line " + grouping.getLine());
-		 * refine.setParent(this); refine.check(context, container); } catch
-		 * (YangParserException ye) { throw new
-		 * YangParserException(ye.getMessage() + " from the used grouping " +
-		 * grouping.getGrouping() + " at line " + grouping.getLine()); } }
-		 */
-	}
 
 	public String toString() {
 		String result = "";

@@ -24,22 +24,16 @@ public class YANG_Feature extends FeaturedBody {
 		this.feature = unquote(feature);
 	}
 
-	
 	public void check(YangContext context) {
-		try {
-			super.check(context);
-		} catch (YangParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		super.check(context);
 		for (YANG_IfFeature iff : ifFeatures) {
 			YANG_Body depif = context.getFeature(iff);
 			if (depif != null) {
 				if (depif instanceof YANG_Feature) {
 					YANG_Feature ff = (YANG_Feature) depif;
 					checkRecursion(ff, context);
-				} 
-			} 
+				}
+			}
 		}
 	}
 

@@ -25,7 +25,7 @@ public abstract class YANG_Body extends DocumentedNode {
 
 	private YangContext context;
 
-	public abstract void check(YangContext context) throws YangParserException;
+	public abstract void check(YangContext context);
 
 	public abstract String getBody();
 
@@ -43,7 +43,7 @@ public abstract class YANG_Body extends DocumentedNode {
 		return result;
 	}
 
-	protected void checkBody(YangContext context) throws YangParserException {
+	protected void checkBody(YangContext context) {
 
 		Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
 		Vector<YANG_TypeDef> typedefs = new Vector<YANG_TypeDef>();
@@ -163,12 +163,7 @@ public abstract class YANG_Body extends DocumentedNode {
 			YANG_Body body = (YANG_Body) et.nextElement();
 			body.setParent(this);
 			YangContext clcts = context.clone();
-			try {
 				body.checkBody(clcts);
-			} catch (YangParserException e) {
-				System.err
-						.println(context.getSpec().getName() + e.getMessage());
-			}
 		}
 
 		for (Enumeration<YANG_Grouping> eg = groupings.elements(); eg
@@ -184,12 +179,8 @@ public abstract class YANG_Body extends DocumentedNode {
 			YANG_Body body = (YANG_Body) ed.nextElement();
 			body.setParent(this);
 			YangContext clcts = context.clone();
-			try {
-				body.checkBody(clcts);
-			} catch (YangParserException e) {
-				System.err
-						.println(context.getSpec().getName() + e.getMessage());
-			}
+
+			body.checkBody(clcts);
 		}
 
 		for (Enumeration<YANG_Unknown> eu = getUnknowns().elements(); eu
@@ -200,12 +191,8 @@ public abstract class YANG_Body extends DocumentedNode {
 
 		}
 
-		try {
-			check(context);
-			setContext(context.clone());
-		} catch (YangParserException e) {
-			System.err.println(context.getSpec().getName() + e.getMessage());
-		}
+		check(context);
+		setContext(context.clone());
 	}
 
 	public void setContext(YangContext clone) {
