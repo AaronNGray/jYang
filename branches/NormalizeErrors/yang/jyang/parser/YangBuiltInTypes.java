@@ -20,9 +20,13 @@ package jyang.parser;
 
  */
 import java.math.*;
+import java.util.regex.Pattern;
 
 public class YangBuiltInTypes {
 
+	public static final String ytrue = "true";
+	public static final String yfalse = "false";
+	
 	public static final String binary = "binary";
 	public static final String bits = "bits";
 	public static final String yboolean = "boolean";
@@ -203,6 +207,124 @@ public class YangBuiltInTypes {
 			return true;
 		else
 			return false;
+	}
+
+	public static String concat(String s) {
+		int state = 0;
+		String withes = "";
+		String result = "";
+		int i = 0;
+		boolean eof = i == s.length();
+		while (!eof) {
+			char c = s.charAt(i++);
+			switch (state) {
+			case 0: {
+				if (c == '\"')
+					state = 2;
+				else if (c == '\'')
+					state = 1;
+				break;
+			}
+			case 1: {
+				if (c != '\'')
+					result += String.valueOf(c);
+				else
+					state = 5;
+				break;
+			}
+			case 2: {
+				if (c == ' ' | c == '\t') {
+					withes += String.valueOf(c);
+					state = 3;
+				} else if (c == '\n') {
+					result += "\n";
+					state = 4;
+				} else if (c == '\\')
+					state = 10;
+				else if (c == '\"')
+					state = 5;
+				else
+					result += c;
+				break;
+			}
+			case 3: {
+				if (c == ' ' | c == '\t')
+					withes += String.valueOf(c);
+				else if (c == '\n') {
+					result += "\n";
+					withes = "";
+					state = 4;
+				} else if (c == '\"') {
+					state = 5;
+				} else {
+					result += withes;
+					result += String.valueOf(c);
+					withes = "";
+					state = 2;
+				}
+				break;
+			}
+			case 4: {
+				if (c == '\"')
+					state = 5;
+				else if (c != ' ' && c != '\t') {
+					result += String.valueOf(c);
+					state = 2;
+				}
+				break;
+			}
+			case 5: {
+				if (c == '/')
+					state = 6;
+				else if (c == '+')
+					state = 0;
+				break;
+			}
+			case 6: {
+				if (c == '/')
+					state = 7;
+				else if (c == '*')
+					state = 8;
+				break;
+			}
+			case 7: {
+				if (c == '\n')
+					state = 5;
+				break;
+			}
+			case 8: {
+				if (c == '*')
+					state = 9;
+				break;
+			}
+			case 9: {
+				if (c == '/')
+					state = 5;
+				else
+					state = 8;
+				break;
+			}
+			case 10: {
+				if ( c == ' ' | c == '\t'){
+					withes += String.valueOf(c);
+					result += '\\';
+					state = 2;
+				} else if (c == 't'){
+					result += '\t';
+					state = 2;
+				} else if (c == 'n'){
+					result += '\n';
+					state = 2;
+				} else if (c == '\\'){
+					result +='\\';
+					state = 2;
+				}
+			}
+			}
+			eof = i == s.length();
+		}
+		
+		return result;
 	}
 
 	public static String removeQuotesAndTrim(String qs) {

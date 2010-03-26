@@ -13,14 +13,17 @@ public class YANG_Mandatory extends SimpleYangNode {
 	}
 
 	public void setMandatory(String m) {
-		mandatory = unquote(m);
+		if (m.compareTo(YangBuiltInTypes.ytrue) == 0
+				|| m.compareTo(YangBuiltInTypes.yfalse) == 0)
+			mandatory = unquote(m);
+		else {
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(), "mand_exp", m);
+			mandatory = m;
+		}
 	}
 
 	public String getMandatory() {
 		return mandatory;
-	}
-
-	public void check(YangContext context) {
 	}
 
 	public String toString() {

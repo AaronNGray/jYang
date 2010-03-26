@@ -19,9 +19,10 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.io.Serializable;
 import java.util.*;
 
-public class YangContext {
+public class YangContext implements Serializable{
 
 	private YangSpecTypes spectypes = null;
 	private YangSpecNode specnodes = null;

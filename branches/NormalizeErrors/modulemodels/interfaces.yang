@@ -13,12 +13,15 @@ submodule interfaces {
 	}
 		
 	grouping interface {
+
 		list interface {
 			key name;
-			leaf name { type string;}
+			leaf name { type string;
+						config "t"+"ru" 
+						   +  /*t*/   'e';}
 			leaf mac-address { type string;
 								default "000000000000";
-								mandatory false;}
+								mandatory "fsal"+"se";}
 			leaf mtu { type uint32;}
 			container ipv4 {
 				leaf netmask { type string;}

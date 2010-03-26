@@ -256,7 +256,6 @@ public class jyang {
 		try {
 			YangErrorManager.print(System.out);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		parsingOk = noError;

@@ -19,10 +19,11 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.*;
 
-public class YangSpecNode {
+public class YangSpecNode implements Serializable {
 
 	protected Hashtable<String, YANG_Body> bodies = new Hashtable<String, YANG_Body>();
 
