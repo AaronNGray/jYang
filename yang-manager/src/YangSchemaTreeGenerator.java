@@ -57,7 +57,19 @@ public class YangSchemaTreeGenerator {
 	private jyang parser = null;
 
 	private static YangContext context = null;
-
+	
+/**
+ * 
+ * @param args : a list of parameters to build the tree node
+ * - IP address of the NETCONF server
+ * - the number of prefixes the server will recognize
+ *     - one prefix
+ *     - the urn or url of the prefix
+ *   repeated number or prefixes times
+ *  - the number of yang modules
+ *  - the filename of each yang module
+ *  - the name of each module, its location in the DataStore and its urn 
+ */
 	public YangSchemaTreeGenerator(String[] args) {
 		String ip = args[0];
 
@@ -90,13 +102,10 @@ public class YangSchemaTreeGenerator {
 		for (Enumeration<YANG_Specification> especs = specs.elements(); especs
 				.hasMoreElements();) {
 			YANG_Specification spec = especs.nextElement();
-			try {
 				context = spec.buildSpecContext(new String[0], null,
 						new Vector<String>());
-			} catch (YangParserException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				
 
 			treeMap.put(spec.getName(), buildModuleTree(spec));
 		}
@@ -228,12 +237,7 @@ public class YangSchemaTreeGenerator {
 			ContainerNode node = new ContainerNode(cont);
 			
 			for (YANG_TypeDef typeDef : cont.getTypeDefs()){
-				try {
 					context.addNode(typeDef);
-				} catch (YangParserException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 			
 			Vector<YangTreeNode> childs = ytn.getChilds();
@@ -248,12 +252,7 @@ public class YangSchemaTreeGenerator {
 			ListNode node = new ListNode(list, list.getKey().getKeyLeaves());
 			
 			for (YANG_TypeDef typeDef : list.getTypeDefs()){
-				try {
 					context.addNode(typeDef);
-				} catch (YangParserException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
@@ -311,8 +310,6 @@ public class YangSchemaTreeGenerator {
 			}
 
 			LeafType typeDef = null;
-
-			try {
 				if (context.getTypeDef(leaf.getType()) != null) {
 					YANG_TypeDef ytypeDef = context.getTypeDef(leaf.getType());
 					
@@ -325,9 +322,7 @@ public class YangSchemaTreeGenerator {
 				} else {
 					typeDef = new LeafType(leaf.getType());
 				}
-			} catch (YangParserException e) {
-				e.printStackTrace();
-			}
+			
 
 			node.setTypeDef(typeDef);
 			return node;
@@ -338,7 +333,6 @@ public class YangSchemaTreeGenerator {
 			
 			LeafType typeDef = null;
 
-			try {
 				if (context.getTypeDef(leafList.getType()) != null) {
 					YANG_TypeDef ytypeDef = context.getTypeDef(leafList.getType());
 					
@@ -350,9 +344,6 @@ public class YangSchemaTreeGenerator {
 				} else {
 					typeDef = new LeafType(leafList.getType());
 				}
-			} catch (YangParserException e) {
-				e.printStackTrace();
-			}
 			
 			node.setType(typeDef);
 			return node;
