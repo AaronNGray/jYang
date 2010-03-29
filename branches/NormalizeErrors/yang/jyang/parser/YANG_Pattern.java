@@ -21,12 +21,11 @@ public class YANG_Pattern extends ErrorTagedNode {
 
 	public void setPattern(String p) {
 
-		pattern = unquote(p);
+		pattern = p;
 		String canopattern = pattern.replaceAll("IsBasicLatin", "InBasicLatin");
 		pattern = canopattern;
 		try {
-			regexp = Pattern.compile(YangBuiltInTypes
-					.removeQuotesAndTrim(pattern));
+			regexp = Pattern.compile(pattern);
 		} catch (PatternSyntaxException pse) {
 
 			YangErrorManager.tadd(filename, getLine(), getCol(), "pattern_exp",
