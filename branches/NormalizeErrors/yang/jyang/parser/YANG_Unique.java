@@ -21,6 +21,7 @@ package jyang.parser;
  */
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class YANG_Unique extends SimpleYangNode {
 
@@ -54,12 +55,35 @@ public class YANG_Unique extends SimpleYangNode {
 	public String getUnique() {
 		return unique;
 	}
+	
+	public String[] getUniqueLeaves(){
+		String k = unique;
+		String[] result = null;
+		try{
+			result = k.split("\\s+");
+		} catch (PatternSyntaxException pe){
+			// Cannot occurs
+		}
+		return result;
+		
+		
+	}
 
 	public void check(YangContext context) {
 	}
 
 	public String toString() {
 		return "unique " + unique + ";";
+	}
+
+	public void removeUnique(String su) {
+		String[] us = getUniqueLeaves();
+		String newu = null;
+		for (int i = 0; i < us.length;i++)
+			if (su.compareTo(us[i]) != 0)
+				newu += us[i];
+				
+		unique = newu;
 	}
 
 }

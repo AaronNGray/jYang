@@ -29,7 +29,7 @@ public class YANG_DeviateAdd extends DeviateAddReplace {
 	}
 
 	public void addUnique(YANG_Unique u) {
-		this.uniques.add(u);
+		uniques.add(u);
 	}
 
 	public boolean isBracked() {
@@ -44,9 +44,8 @@ public class YANG_DeviateAdd extends DeviateAddReplace {
 			for (Enumeration<YANG_Must> em = musts.elements(); em
 					.hasMoreElements();)
 				result += em.nextElement() + "\n";
-			for (Enumeration<YANG_Unique> eu = uniques.elements(); eu
-					.hasMoreElements();)
-				result += eu.nextElement() + "\n";
+			for (YANG_Unique u : getUniques())
+				result += u.toString() + "\n";
 			result += "}";
 		} else
 			result += ";";
@@ -201,13 +200,14 @@ public class YANG_DeviateAdd extends DeviateAddReplace {
 								.getNode().getFileName(), deviated.getNode()
 								.getLine());
 		}
-		if (uniques.size() != 0) {
+		if (getUniques().size() != 0) {
 			int l = getUniques().get(0).getLine();
 			int c = getUniques().get(0).getCol();
 			if (deviated.getNode() instanceof YANG_List) {
 				YANG_List list = (YANG_List) deviated.getNode();
-				if (list.getUniques().size() == 0)
-					list.setUniques(getUniques());
+				if (list.getUniques() == null)
+					for (YANG_Unique u : getUniques())
+						list.addUnique(u);
 				else
 					YangErrorManager.tadd(getFileName(), l, c, "deviate_add",
 							"unique", list.getBody(), list.getFileName(), list

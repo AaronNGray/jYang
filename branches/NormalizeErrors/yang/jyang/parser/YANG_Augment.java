@@ -97,7 +97,6 @@ public class YANG_Augment extends DataDefBody {
 	}
 
 	public void check(YangContext context) {
-
 			super.check(context);
 
 		String nids[] = getAugment().split("/");

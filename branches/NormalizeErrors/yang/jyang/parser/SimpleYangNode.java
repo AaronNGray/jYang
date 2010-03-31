@@ -24,7 +24,7 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 	public void addUnknown(YANG_Unknown u) {
 		unknowns.add(u);
 	}
-	
+
 	public void setUnknowns(Vector<YANG_Unknown> u) {
 		unknowns = u;
 	}
@@ -104,14 +104,16 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 	}
 
 	public String unquote(String s) {
-		if (s.charAt(0) == '"') {
-			s = s.substring(1);
-			if (s.charAt(s.length() - 1) == '"')
-				s = s.substring(0, s.length() - 1);
-		} else if (s.charAt(0) == '\'') {
-			s = s.substring(1);
-			if (s.charAt(s.length() - 1) == '\'')
-				s = s.substring(0, s.length() - 1);
+		if (s.length() > 0) {
+			if (s.charAt(0) == '"') {
+				s = s.substring(1);
+				if (s.charAt(s.length() - 1) == '"')
+					s = s.substring(0, s.length() - 1);
+			} else if (s.charAt(0) == '\'') {
+				s = s.substring(1);
+				if (s.charAt(s.length() - 1) == '\'')
+					s = s.substring(0, s.length() - 1);
+			}
 		}
 		return s;
 	}

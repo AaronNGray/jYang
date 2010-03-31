@@ -579,10 +579,11 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					augmentedbody = ytn.getBodyInTree(this, root,
 							importedtreenodes, taugs[i]);
 				}
-				if (augmentedbody == null)
+				if (augmentedbody == null){
 					YangErrorManager.tadd(filename, vaugs.get(i).getLine(),
 							vaugs.get(i).getCol(), "augmented_not_found",
 							taugs[i]);
+				}
 			} else {
 				YANG_Augment aug = vaugs.get(i);
 				aug.checkAugment(augmentedbody);

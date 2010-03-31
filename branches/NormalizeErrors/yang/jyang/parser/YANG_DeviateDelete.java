@@ -28,8 +28,8 @@ public class YANG_DeviateDelete extends Deviate {
 		return uniques;
 	}
 
-	public void addUnique(YANG_Unique u) {
-		this.uniques.add(u);
+	public void setUnique(YANG_Unique u) {
+		uniques.add(u);
 	}
 
 	public boolean isBracked() {
@@ -148,6 +148,7 @@ public class YANG_DeviateDelete extends Deviate {
 								.getNode().getFileName(), deviated.getNode()
 								.getLine());
 		}
+		
 		if (getUniques().size() != 0) {
 			int l = getUniques().get(0).getLine();
 			int c = getUniques().get(0).getCol();
@@ -176,6 +177,7 @@ public class YANG_DeviateDelete extends Deviate {
 								.getNode().getFileName(), deviated.getNode()
 								.getLine());
 		}
+
 	}
 
 	public String toString() {
@@ -186,9 +188,8 @@ public class YANG_DeviateDelete extends Deviate {
 			for (Enumeration<YANG_Must> em = musts.elements(); em
 					.hasMoreElements();)
 				result += em.nextElement() + "\n";
-			for (Enumeration<YANG_Unique> eu = uniques.elements(); eu
-					.hasMoreElements();)
-				result += eu.nextElement() + "\n";
+			for(YANG_Unique u : getUniques())
+				result += u.toString() + "\n";
 			result += "}";
 		} else
 			result += ";";

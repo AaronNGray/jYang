@@ -70,10 +70,6 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 		uniques.add(u);
 	}
 
-	public void setUniques(Vector<YANG_Unique> u) {
-		uniques = u;
-	}
-
 	public Vector<YANG_Unique> getUniques() {
 		return uniques;
 	}
@@ -110,7 +106,8 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 	public void check(YangContext context) {
 		super.check(context);
 		if (datadefs.size() == 0)
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(), "expected", "data definition");
+			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					"expected", "data definition");
 
 		setContext(context);
 	}
@@ -148,9 +145,11 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 		return false;
 	}
 
-	public void deleteUniques(Vector<YANG_Unique> vuniques) {
-		getUniques().removeAll(vuniques);
+	public void deleteUniques(Vector<YANG_Unique> u) {
+		uniques.removeAll(u);
+
 	}
+
 	public YANG_List clone() {
 		YANG_List cl = new YANG_List(parser, id);
 		cl.setContext(getContext());
@@ -161,8 +160,8 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 		cl.setLine(getLine());
 		if (getKey() != null)
 			cl.setKey(getKey());
-		if (getUniques() != null)
-			cl.setUniques(getUniques());
+		for (YANG_Unique u : getUniques())
+			cl.addUnique(u);
 		if (getConfig() != null)
 			cl.setConfig(getConfig());
 		if (getDescription() != null)
@@ -190,9 +189,8 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 		result += "list " + list + "{\n";
 		if (b_key)
 			result += key.toString() + "\n";
-		for (Enumeration<YANG_Unique> eu = uniques.elements(); eu
-				.hasMoreElements();)
-			result += eu.nextElement().toString() + "\n";
+		for (YANG_Unique u : getUniques())
+			result += u.toString() + "\n";
 		result += super.toString() + "\n";
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 				.hasMoreElements();)
@@ -223,6 +221,5 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 		if (rl.getMaxElement() != null)
 			max = rl.getMaxElement();
 	}
-
 
 }

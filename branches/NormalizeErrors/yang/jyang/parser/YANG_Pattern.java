@@ -27,7 +27,6 @@ public class YANG_Pattern extends ErrorTagedNode {
 		try {
 			regexp = Pattern.compile(pattern);
 		} catch (PatternSyntaxException pse) {
-
 			YangErrorManager.tadd(filename, getLine(), getCol(), "pattern_exp",
 					pattern);
 		}

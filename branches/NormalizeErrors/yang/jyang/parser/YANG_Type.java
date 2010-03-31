@@ -21,15 +21,9 @@ package jyang.parser;
  */
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import sun.security.action.GetBooleanAction;
-
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 
 public class YANG_Type extends SimpleYangNode {
 
@@ -336,7 +330,6 @@ public class YANG_Type extends SimpleYangNode {
 						"numerical restriction", getType());
 
 			checkStringLength(context);
-			checkPattern(context);
 		} else if (YangBuiltInTypes.yboolean.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getStringRest() != null)
@@ -642,7 +635,7 @@ public class YANG_Type extends SimpleYangNode {
 		}
 
 	}
-
+/*
 	protected void checkPattern(YangContext context) {
 		if (getStringRest() == null)
 			return;
@@ -660,7 +653,7 @@ public class YANG_Type extends SimpleYangNode {
 			}
 		}
 	}
-
+*/
 	/**
 	 * check if the range is a restriction
 	 * 
