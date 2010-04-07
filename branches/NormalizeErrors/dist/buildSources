@@ -4,4 +4,4 @@ cd ../yang
 tar -cvf ../dist/jYangSources.tar *.java jyang/parser/*.java jyang/tools/*.java yang.jjt
 
 cd ../dist
-gzip jYangSources.tar
+gzip -f jYangSources.tar

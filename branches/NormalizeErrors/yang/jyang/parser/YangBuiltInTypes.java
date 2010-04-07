@@ -26,7 +26,7 @@ public class YangBuiltInTypes {
 
 	public static final String ytrue = "true";
 	public static final String yfalse = "false";
-	
+
 	public static final String binary = "binary";
 	public static final String bits = "bits";
 	public static final String yboolean = "boolean";
@@ -305,46 +305,50 @@ public class YangBuiltInTypes {
 				break;
 			}
 			case 10: {
-				if ( c == ' ' | c == '\t'){
+				if (c == ' ' | c == '\t') {
 					withes += String.valueOf(c);
 					result += '\\';
 					state = 2;
-				} else if (c == 't'){
+				} else if (c == 't') {
 					result += '\t';
 					state = 2;
-				} else if (c == 'n'){
+				} else if (c == 'n') {
 					result += '\n';
 					state = 2;
-				} else if (c == '\\'){
-					result +='\\';
+				} else if (c == '\\') {
+					result += '\\';
 					state = 2;
 				}
 			}
 			}
 			eof = i == s.length();
 		}
-		
+
 		return result;
 	}
 
 	public static String removeQuotesAndTrim(String qs) {
 		String s = new String(qs);
 		s = s.trim();
-		if (s.charAt(0) == '\"')
-			s = s.substring(1, s.length());
-		if (s.charAt(s.length() - 1) == '\"')
-			s = s.substring(0, s.length() - 1);
-		s = s.trim();
+		if (s.length() > 0) {
+			if (s.charAt(0) == '\"')
+				s = s.substring(1, s.length());
+			if (s.charAt(s.length() - 1) == '\"')
+				s = s.substring(0, s.length() - 1);
+			s = s.trim();
+		}
 		return s;
 	}
 
 	public static String removeQuotes(String qs) {
 		String s = new String(qs);
 		s = s.trim();
-		if (s.charAt(0) == '\"')
-			s = s.substring(1, s.length());
-		if (s.charAt(s.length() - 1) == '\"')
-			s = s.substring(0, s.length() - 1);
+		if (s.length() > 0) {
+			if (s.charAt(0) == '\"')
+				s = s.substring(1, s.length());
+			if (s.charAt(s.length() - 1) == '\"')
+				s = s.substring(0, s.length() - 1);
+		}
 		return s;
 	}
 }

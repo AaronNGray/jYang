@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
@@ -56,17 +57,17 @@ public class YangErrorManager {
 
 	static public ResourceBundle messages;
 
-	static protected Properties properties = new Properties(
-			"jyang.parser.resources");
+	//static protected Properties properties = new Properties(
+	//		"jyang.parser.resources");
 
 	// @SuppressWarnings("static-access")
 	static public ResourceBundle getMessages() {
 		return messages;
 	}
 
-	static public Properties getProperties() {
-		return properties;
-	}
+	//static public Properties getProperties() {
+	//	return properties;
+	//}
 
 	static public void init() {
 
@@ -75,10 +76,19 @@ public class YangErrorManager {
 		try {
 			messages = ResourceBundle.getBundle("jyang.parser.MessagesBundle");
 		} catch (MissingResourceException mre) {
-			Logger.getLogger("").logp(Level.SEVERE, "Yang Error Manager",
-					"static initialization",
-					"Can not read  MessagesBundle (messages properties files)",
-					mre);
+			try {
+				messages = ResourceBundle.getBundle(
+						"jyang.parser.MessagesBundle.properties");
+			} catch (MissingResourceException mre1) {
+				Logger
+						.getLogger("")
+						.logp(
+								Level.SEVERE,
+								"Yang Error Manager",
+								"static initialization",
+								"Can not read  MessagesBundle (messages properties files)",
+								mre1);
+			}
 		}
 	}
 

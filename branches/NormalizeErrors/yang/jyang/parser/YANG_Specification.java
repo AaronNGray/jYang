@@ -354,7 +354,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					includedspecname += "." + revision.getDate();
 				YANG_Specification includedspec = getExternal(paths,
 						includedspecname);
-				is.add(includedspec);
+				if (includedspec != null)
+					is.add(includedspec);
 			}
 		}
 		return is;
@@ -579,7 +580,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					augmentedbody = ytn.getBodyInTree(this, root,
 							importedtreenodes, taugs[i]);
 				}
-				if (augmentedbody == null){
+				if (augmentedbody == null) {
 					YangErrorManager.tadd(filename, vaugs.get(i).getLine(),
 							vaugs.get(i).getCol(), "augmented_not_found",
 							taugs[i]);
