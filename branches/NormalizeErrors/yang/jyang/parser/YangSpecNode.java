@@ -419,5 +419,14 @@ public class YangSpecNode implements Serializable {
 		return result;
 	}
 
+	public void removeNode(YangSpecNode specNodes) {
+		for (Enumeration<YANG_Body> eb = specNodes.getNodes().elements(); eb.hasMoreElements();){
+			YANG_Body b = eb.nextElement();
+			System.out.println("c : " +  b.getBody());
+			if (isDefined(b.getBody()))
+				System.out.println(b.getBody());
+		}
+	}
+
 
 }

@@ -1,11 +1,13 @@
-#Thu Apr 30 10:34:00 CEST 2009
+#Wed Feb 10 17:07:49 CET 2010
 CLEAR_CONSOLE=true
-JAVACC_OPTIONS=-JDK_VERSION\=1.5 -OUTPUT_DIRECTORY\=/home/manu/workspace/Parser/yang/jyang/parser
+JAVACC_OPTIONS=-JDK_VERSION\=1.6 -OUTPUT_DIRECTORY\=/root/workspace/Parser/yang/jyang/parser
 JJDOC_OPTIONS=
-JJTREE_OPTIONS=-NODE_PREFIX\=YANG_ -NODE_PACKAGE\=jyang.parser -JDK_VERSION\=1.5 -OUTPUT_DIRECTORY\=/home/manu/workspace/Parser/yang/jyang/parser
-JJ_NATURE=true
+JJTREE_OPTIONS=-NODE_PACKAGE\=jyang.parser -NODE_PREFIX\=YANG_ -JJTREE_OUTPUT_DIRECTORY\=/root/workspace/Parser/yang/jyang/parser
+JJ_NATURE=false
 JTB_OPTIONS=
 RUNTIME_JAR=/home/manu/eclipse/plugins/sf.eclipse.javacc_1.5.13/javacc.jar
+RUNTIME_JJJAR=/usr/local/src/eclipse/plugins/sf.eclipse.javacc_1.5.17/javacc.jar
+RUNTIME_JTBJAR=
 SHOW_CONSOLE=true
 SUPPRESS_WARNINGS=false
 eclipse.preferences.version=1

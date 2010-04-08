@@ -560,4 +560,10 @@ public class YangContext implements Serializable{
 
 	}
 
+	public void removeContext(YangContext importedcontext) {
+		specnodes.removeNode(importedcontext.getSpecNodes());
+		spectypes.removeType(importedcontext.getSpecTypes());
+		
+	}
+
 }

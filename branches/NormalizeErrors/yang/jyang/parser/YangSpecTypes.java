@@ -267,4 +267,9 @@ public class YangSpecTypes implements Serializable {
 		}
 		return result;
 	}
+
+	public void removeType(YangSpecTypes specTypes) {
+		// TODO Auto-generated method stub
+		
+	}
 }

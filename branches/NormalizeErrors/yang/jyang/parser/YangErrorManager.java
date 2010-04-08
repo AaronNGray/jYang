@@ -79,6 +79,8 @@ public class YangErrorManager {
 			try {
 				messages = ResourceBundle.getBundle(
 						"jyang.parser.MessagesBundle.properties");
+				System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+				
 			} catch (MissingResourceException mre1) {
 				Logger
 						.getLogger("")

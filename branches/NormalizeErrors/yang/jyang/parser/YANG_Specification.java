@@ -22,6 +22,7 @@ package jyang.parser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.rmi.server.ExportException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -209,17 +210,21 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	}
 
 	@SuppressWarnings("unchecked")
-	public YangContext buildSpecContext(String[] paths, YangContext c,
+	public YangContext buildSpecContext(String[] paths, YangContext context,
 			Vector<String> builded) {
-		if (c == null)
-			c = new YangContext(getImports(), this);
+		if (context == null)
+			context = new YangContext(getImports(), this);
 		if (getPrefix() != null)
-			c.addLocalPrefix(getPrefix());
+			context.addLocalPrefix(getPrefix());
+		
+		YangContext submodulecontext = context.clone();
 
 		if (importeds.size() == 0)
 			checkImport(paths);
 		if (includeds.size() == 0)
 			checkInclude(paths);
+		
+		YangContext importedcontext = null;
 
 		for (Enumeration<YANG_Module> es = importeds.elements(); es
 				.hasMoreElements();) {
@@ -241,9 +246,12 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			if (!builded.contains(importedmodulename)) {
 
 				Vector<String> cks = (Vector<String>) builded.clone();
-				YangContext importedcontext = module.check(paths, builded);
+				importedcontext = module.check(paths, builded);
 				if (this instanceof YANG_Module)
-					c.merge(importedcontext);
+					context.merge(importedcontext);
+				else {
+					submodulecontext.merge(importedcontext);
+				}
 			} else
 				YangErrorManager.tadd(getFileName(), line, col, "circ_impo",
 						importedmodulename, getName());
@@ -263,26 +271,38 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			if (!builded.contains(includedsubmodulename)) {
 				Vector<String> cks = (Vector<String>) builded.clone();
 				YangContext includedcontext = submodule.check(paths, builded);
-				if (this instanceof YANG_Module)
-					c.mergeChecked(includedcontext);
+				//if (this instanceof YANG_Module)
+					context.mergeChecked(includedcontext);
+					//context.merge(includedcontext);
 			} else
 				YangErrorManager.tadd(getFileName(), line, col, "circ_include",
 						includedsubmodulename, getName());
 		}
-
-		YangContext specontext = getThisSpecContext(c);
+		YangContext specontext = null;
+		if (this instanceof YANG_Module)
+		 specontext = getThisSpecContext(context);
+		else {
+			specontext = getThisSpecContext(submodulecontext);
+			
+			System.out.println(importedcontext);
+			specontext.removeContext(importedcontext);
+		}
+		
 		builded.add(getName());
 
-		if (c != null) {
-			if (c.contains(specontext))
-				return c;
+		
+		if (context != null) {
+			if (context.contains(specontext))
+				return context;
 			else
-				c.merge(specontext);
+				context.merge(specontext);
 
 		} else {
-			c = specontext;
+			context = specontext;
 		}
-		return c;
+		
+		
+		return specontext;
 	}
 
 	public YangContext getThisSpecContext(YangContext context) {
