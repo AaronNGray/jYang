@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cd ../bin
+jar cvf ../dist/YangApplet.jar  applet yangtree
+cd ../images
+jar uf ../dist/YangApplet.jar icons/*.png
+cd ../../Parser/yang
+jar uf /root/workspace/yang-manager/dist/YangApplet.jar jyang/parser/*.class
+
+

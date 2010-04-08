@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cd ../bin
+jar cvfm ../dist/YangTreeNodeGenerator.jar ../dist/MANIFEST.MF *.class applet yangtree
+cd ../images
+jar uf ../dist/YangTreeNodeGenerator.jar icons/*.png
+cd ../../Parser/yang
+jar uf /root/workspace/yang-manager/dist/YangTreeNodeGenerator.jar jyang.class jyang/parser/*.class jyang/parser/MessagesBundle_fr_FR.properties jyang/parser/resources.properties
+
+
