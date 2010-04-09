@@ -160,40 +160,37 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	}
 
 	public YangContext check(String[] p, Vector<String> checked) {
-		YangContext c = check(p, checked, null);
+		YangContext c = checkContext(p, checked);
 		checkTreeNode(p);
 		return c;
 
 	}
 
 	protected YangContext checkAsExternal(String[] p, Vector<String> checked) {
-		YangContext c = check(p, checked, null);
+		YangContext c = checkContext(p, checked);
 		return c;
 	}
 
 	@SuppressWarnings("unchecked")
-	public YangContext check(String[] p, Vector<String> checkeds, YangContext c) {
+	public YangContext checkContext(String[] p, Vector<String> checkeds) {
 
-		if (checkeds.contains(getName())) {
-			return c;
-		}
-		// checkeds.add(getName());
 		checkHeader(p);
 		checkLinkage(p);
 
-		YangContext localcontext = buildSpecContext(p, null,
+		YangContext localcontext = buildSpecContext(p,
 				(Vector<String>) checkeds.clone());
 
 		localcontext.pendingUnions();
 
 		localcontext.checkTypes();
+		
 
-		if (c != null)
-			c.merge(localcontext);
-		else
-			c = localcontext;
-		checkBodies(p, checkeds, c);
-		return c;
+		checkBodies(p, checkeds, localcontext);
+		if (this instanceof YANG_SubModule){
+			YANG_SubModule submodule = (YANG_SubModule) this;
+			localcontext.removeContext(submodule.getBelong().getBelong(), localcontext);
+		}
+		return localcontext;
 	}
 
 	private void checkBodies(String[] p, Vector<String> ckd, YangContext context) {
@@ -210,25 +207,21 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	}
 
 	@SuppressWarnings("unchecked")
-	public YangContext buildSpecContext(String[] paths, YangContext context,
-			Vector<String> builded) {
-		if (context == null)
-			context = new YangContext(getImports(), this);
+	public YangContext buildSpecContext(String[] paths, Vector<String> builded) {
+		YangContext context = new YangContext(getImports(), this);
 		if (getPrefix() != null)
 			context.addLocalPrefix(getPrefix());
-		
+
 		YangContext submodulecontext = context.clone();
 
 		if (importeds.size() == 0)
 			checkImport(paths);
 		if (includeds.size() == 0)
 			checkInclude(paths);
-		
+
 		YangContext importedcontext = null;
 
-		for (Enumeration<YANG_Module> es = importeds.elements(); es
-				.hasMoreElements();) {
-			YANG_Module module = es.nextElement();
+		for (YANG_Module module : importeds) {
 			String importedmodulename = module.getName();
 			int line = 0, col = 0;
 			for (YANG_Linkage lk : linkages) {
@@ -247,19 +240,14 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 				Vector<String> cks = (Vector<String>) builded.clone();
 				importedcontext = module.check(paths, builded);
-				if (this instanceof YANG_Module)
-					context.merge(importedcontext);
-				else {
-					context.merge(importedcontext);
-				}
+				context.merge(importedcontext);
+
 			} else
 				YangErrorManager.tadd(getFileName(), line, col, "circ_impo",
 						importedmodulename, getName());
 		}
 
-		for (Enumeration<YANG_SubModule> es = includeds.elements(); es
-				.hasMoreElements();) {
-			YANG_SubModule submodule = es.nextElement();
+		for (YANG_SubModule submodule : includeds) {
 			String includedsubmodulename = submodule.getName();
 			int line = 0, col = 0;
 			for (YANG_Linkage lk : linkages) {
@@ -271,38 +259,20 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			if (!builded.contains(includedsubmodulename)) {
 				Vector<String> cks = (Vector<String>) builded.clone();
 				YangContext includedcontext = submodule.check(paths, builded);
-				if (this instanceof YANG_SubModule)
-					context.merge(includedcontext);
+				if (this instanceof YANG_SubModule){
+					//context.merge(includedcontext);
+				}
 				else
 					context.mergeChecked(includedcontext);
 			} else
 				YangErrorManager.tadd(getFileName(), line, col, "circ_include",
 						includedsubmodulename, getName());
 		}
-		YangContext specontext = null;
-		if (this instanceof YANG_Module)
-		 specontext = getThisSpecContext(context);
-		else {
-			YANG_SubModule submodule = (YANG_SubModule) this;
-			specontext = getThisSpecContext(context);
-			
-			//specontext.removeContext(submodule.getBelong().getBelong(), importedcontext);
-		}
-		
+
+		YangContext specontext = getThisSpecContext(context);
+
 		builded.add(getName());
 
-		
-		if (context != null) {
-			if (context.contains(specontext))
-				return context;
-			else
-				context.merge(specontext);
-
-		} else {
-			context = specontext;
-		}
-		
-		
 		return specontext;
 	}
 

@@ -427,7 +427,9 @@ public class YangSpecNode implements Serializable {
 		YangSpecNode res = new YangSpecNode();
 		for (Enumeration<String> eb = getNodes().keys(); eb.hasMoreElements();){
 			String b = eb.nextElement();
-			if (!specNodes.bodies.containsKey(b))
+			String m = b.substring(b.indexOf(':')+1, b.indexOf(':', b.indexOf(':')+1));
+			
+			if (m.compareTo(module) == 0)
 				res.bodies.put(b, getNodes().get(b));
 		}
 		setNodes(res);
