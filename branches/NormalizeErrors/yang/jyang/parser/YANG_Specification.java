@@ -271,9 +271,10 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			if (!builded.contains(includedsubmodulename)) {
 				Vector<String> cks = (Vector<String>) builded.clone();
 				YangContext includedcontext = submodule.check(paths, builded);
-				//if (this instanceof YANG_Module)
+				if (this instanceof YANG_SubModule)
+					context.merge(includedcontext);
+				else
 					context.mergeChecked(includedcontext);
-					//context.merge(includedcontext);
 			} else
 				YangErrorManager.tadd(getFileName(), line, col, "circ_include",
 						includedsubmodulename, getName());
@@ -285,7 +286,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			YANG_SubModule submodule = (YANG_SubModule) this;
 			specontext = getThisSpecContext(context);
 			
-			specontext.removeContext(submodule.getBelong().getBelong(), importedcontext);
+			//specontext.removeContext(submodule.getBelong().getBelong(), importedcontext);
 		}
 		
 		builded.add(getName());

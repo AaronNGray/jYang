@@ -80,7 +80,8 @@ public class YangSpecTypes implements Serializable {
 			else
 				YangErrorManager.tadd(yst.getTypeDef(k).getFileName(), yst
 						.getTypeDef(k).getLine(), yst.getTypeDef(k).getCol(),
-						"dup_child", yst.getTypeDef(k).getBody()+"--------------------");
+						"dup_child", yst.getTypeDef(k).getBody(), typedefs.get(
+								k).getLine(), typedefs.get(k).getCol());
 		}
 	}
 
@@ -270,20 +271,20 @@ public class YangSpecTypes implements Serializable {
 
 	public void removeType(String module, YangSpecTypes st) {
 		YangSpecTypes res = new YangSpecTypes();
-		for (Enumeration<String> et = keys(); et.hasMoreElements();){
+		for (Enumeration<String> et = keys(); et.hasMoreElements();) {
 			String t = et.nextElement();
-			if (!st.deriveds.keySet().contains(t)){
+			if (!st.deriveds.keySet().contains(t)) {
 				res.deriveds.put(t, deriveds.get(t));
-			    res.typedefs.put(t, typedefs.get(t));
+				res.typedefs.put(t, typedefs.get(t));
 			}
 		}
 		setSpecTypes(res);
-		
+
 	}
 
 	private void setSpecTypes(YangSpecTypes res) {
 		deriveds = res.deriveds;
 		typedefs = res.typedefs;
-		
+
 	}
 }

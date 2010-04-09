@@ -112,7 +112,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 
 	public void check(YangContext context) {
 		super.check(context);
-		setContext(context);
+		//setContext(context);
 		if (!b_type)
 			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
 					"expected_kw", "type");

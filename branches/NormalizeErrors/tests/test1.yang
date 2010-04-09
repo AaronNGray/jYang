@@ -1,22 +1,10 @@
 module test1 {
+  namespace "http://test1.com/test1";
+  prefix "test1";
 
-    namespace "urn:ietf:params:xml:ns:yang:test1";
-    prefix "t1";
+  import test3 {
+    prefix "test3";
+  }
 
-    include test1a;
-    include test1b;
-
-    revision 2008-10-12 {
-        description "Initial revision.";
-    }
-
-    typedef AA {
-      type string {
-        pattern ".*";
-      }
-    }
-
-    leaf t22 { type boolean; }
-    leaf t23 { type string; config false; }
-
+  include test2;
 }
