@@ -268,8 +268,22 @@ public class YangSpecTypes implements Serializable {
 		return result;
 	}
 
-	public void removeType(YangSpecTypes specTypes) {
-		// TODO Auto-generated method stub
+	public void removeType(String module, YangSpecTypes st) {
+		YangSpecTypes res = new YangSpecTypes();
+		for (Enumeration<String> et = keys(); et.hasMoreElements();){
+			String t = et.nextElement();
+			if (!st.deriveds.keySet().contains(t)){
+				res.deriveds.put(t, deriveds.get(t));
+			    res.typedefs.put(t, typedefs.get(t));
+			}
+		}
+		setSpecTypes(res);
+		
+	}
+
+	private void setSpecTypes(YangSpecTypes res) {
+		deriveds = res.deriveds;
+		typedefs = res.typedefs;
 		
 	}
 }

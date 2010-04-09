@@ -250,7 +250,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				if (this instanceof YANG_Module)
 					context.merge(importedcontext);
 				else {
-					submodulecontext.merge(importedcontext);
+					context.merge(importedcontext);
 				}
 			} else
 				YangErrorManager.tadd(getFileName(), line, col, "circ_impo",
@@ -282,10 +282,10 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		if (this instanceof YANG_Module)
 		 specontext = getThisSpecContext(context);
 		else {
-			specontext = getThisSpecContext(submodulecontext);
+			YANG_SubModule submodule = (YANG_SubModule) this;
+			specontext = getThisSpecContext(context);
 			
-			System.out.println(importedcontext);
-			specontext.removeContext(importedcontext);
+			specontext.removeContext(submodule.getBelong().getBelong(), importedcontext);
 		}
 		
 		builded.add(getName());

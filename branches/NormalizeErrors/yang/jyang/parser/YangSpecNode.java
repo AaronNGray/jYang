@@ -409,6 +409,10 @@ public class YangSpecNode implements Serializable {
 	public Hashtable<String, YANG_Body> getNodes() {
 		return bodies;
 	}
+	
+	public void setNodes(YangSpecNode y){
+		bodies = y.getNodes();
+	}
 
 	public String toString() {
 		String result = new String();
@@ -419,13 +423,14 @@ public class YangSpecNode implements Serializable {
 		return result;
 	}
 
-	public void removeNode(YangSpecNode specNodes) {
-		for (Enumeration<YANG_Body> eb = specNodes.getNodes().elements(); eb.hasMoreElements();){
-			YANG_Body b = eb.nextElement();
-			System.out.println("c : " +  b.getBody());
-			if (isDefined(b.getBody()))
-				System.out.println(b.getBody());
+	public void removeNode(String module, YangSpecNode specNodes) {
+		YangSpecNode res = new YangSpecNode();
+		for (Enumeration<String> eb = getNodes().keys(); eb.hasMoreElements();){
+			String b = eb.nextElement();
+			if (!specNodes.bodies.containsKey(b))
+				res.bodies.put(b, getNodes().get(b));
 		}
+		setNodes(res);
 	}
 
 
