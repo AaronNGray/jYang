@@ -318,6 +318,9 @@ public class YangBuiltInTypes {
 				} else if (c == '\\') {
 					result += '\\';
 					state = 2;
+				} else {
+					result += "\\" + c;
+					state = 2;
 				}
 			}
 			}

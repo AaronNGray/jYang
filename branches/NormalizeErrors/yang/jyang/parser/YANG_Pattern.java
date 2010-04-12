@@ -24,11 +24,12 @@ public class YANG_Pattern extends ErrorTagedNode {
 		pattern = p;
 		String canopattern = pattern.replaceAll("IsBasicLatin", "InBasicLatin");
 		pattern = canopattern;
+		
 		try {
 			regexp = Pattern.compile(pattern);
 		} catch (PatternSyntaxException pse) {
 			YangErrorManager.tadd(filename, getLine(), getCol(), "pattern_exp",
-					pattern);
+			pse.getMessage());
 		}
 	}
 
