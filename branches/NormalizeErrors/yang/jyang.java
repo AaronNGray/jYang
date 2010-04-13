@@ -241,6 +241,7 @@ public class jyang {
 					noError = false;
 
 			} catch (ParseException pe) {
+				System.out.println(pe);
 				if (pe.currentToken != null)
 					if (pe.currentToken.next != null)
 						YangErrorManager.tadd(fname,
