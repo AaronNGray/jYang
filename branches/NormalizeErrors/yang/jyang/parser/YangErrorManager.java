@@ -14,11 +14,11 @@ import java.util.logging.Logger;
 
 public class YangErrorManager {
 
-	static private class Error {
-		String module;
-		int line;
-		int column;
-		String messageId;
+	static public class Error {
+		private String module;
+		private int line;
+		private int column;
+		private String messageId;
 
 		public Error(String m, int l, int c, String mi) {
 			if (m.contains("/"))
@@ -32,6 +32,22 @@ public class YangErrorManager {
 
 		public String toString() {
 			return module + ":" + line + ";" + column + ":" + messageId;
+		}
+
+		public String getModule() {
+			return module;
+		}
+
+		public int getLine() {
+			return line;
+		}
+
+		public int getColumn() {
+			return column;
+		}
+
+		public String getMessageId() {
+			return messageId;
 		}
 	}
 
@@ -117,4 +133,7 @@ public class YangErrorManager {
 		}
 	}
 
+	public static TreeSet<Error> getErrors() {
+		return errors;
+	}
 }
