@@ -244,7 +244,7 @@ public class jyang {
 				System.out.println(pe);
 				if (pe.currentToken != null)
 					if (pe.currentToken.next != null)
-						YangErrorManager.tadd(fname,
+						YangErrorManager.addError(fname,
 								pe.currentToken.next.beginLine,
 								pe.currentToken.next.beginColumn, "unex_kw",
 								pe.currentToken.next.image);
