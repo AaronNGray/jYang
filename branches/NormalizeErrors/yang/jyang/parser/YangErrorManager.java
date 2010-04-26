@@ -88,7 +88,8 @@ public class YangErrorManager {
 	static public void init() {
 
 		messages = null;
-
+		errors = new TreeSet<Error>(errorComp);
+		
 		try {
 			messages = ResourceBundle.getBundle("jyang.parser.MessagesBundle");
 		} catch (MissingResourceException mre) {
