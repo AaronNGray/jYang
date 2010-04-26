@@ -21,7 +21,7 @@ public abstract class StatuedNode extends DocumentedNode {
 			b_status = true;
 			status = s;
 		} else
-			YangErrorManager.tadd(filename, s.getLine(), s.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, s.getLine(), s.getCol(), "unex_kw",
 					"status");
 	}
 

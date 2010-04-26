@@ -58,7 +58,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 			b_type = true;
 			type = t;
 		} else
-			YangErrorManager.tadd(filename, t.getLine(), t.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, t.getLine(), t.getCol(), "unex_kw",
 					"type");
 	}
 
@@ -71,7 +71,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 			b_units = true;
 			units = u;
 		} else
-			YangErrorManager.tadd(filename, u.getLine(), u.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, u.getLine(), u.getCol(), "unex_kw",
 					"units");
 	}
 
@@ -84,7 +84,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 			b_default = true;
 			ydefault = d;
 		} else
-			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, d.getLine(), d.getCol(), "unex_kw",
 					"default");
 	}
 
@@ -97,7 +97,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"mandatory");
 	}
 
@@ -114,12 +114,12 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 		super.check(context);
 		//setContext(context);
 		if (!b_type)
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"expected_kw", "type");
 		else {
 			if (!YangBuiltInTypes.isBuiltIn(getType().getType()))
 				if (!context.isTypeDefined(getType())) {
-					YangErrorManager.tadd(filename, getType().getLine(),
+					YangErrorManager.addError(filename, getType().getLine(),
 							getType().getCol(), "unknown_type", getType()
 									.getType());
 				} else {
@@ -132,7 +132,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 		if (b_mandatory) {
 			if (getMandatory().getMandatory().compareTo("true") == 0
 					&& b_default)
-				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
 						"mand_def_val", getLeaf(), getDefault().getFileName(),
 						getDefault().getLine());
 		}

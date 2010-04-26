@@ -67,7 +67,7 @@ public class YANG_Length extends ErrorTagedNode {
 					lengths[j] = test[j].split("\\.\\.");
 					if (lengths[j].length != 2) {
 
-						YangErrorManager.tadd(filename, getLine(), getCol(),
+						YangErrorManager.addError(filename, getLine(), getCol(),
 								"length_exp");
 					}
 				}

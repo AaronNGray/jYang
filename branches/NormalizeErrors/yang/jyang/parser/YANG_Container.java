@@ -59,7 +59,7 @@ public class YANG_Container extends MustDataDef implements YANG_ShortCase,
 			b_presence = true;
 			presence = p;
 		} else
-			YangErrorManager.tadd(filename, p.getLine(), p.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, p.getLine(), p.getCol(), "unex_kw",
 					"presence");
 
 	}

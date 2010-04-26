@@ -18,7 +18,7 @@ public abstract class ListedRefineNode extends MustRefineNode {
 
 	public void setMinElement(YANG_MinElement m) {
 		if (b_min)
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"min");
 		else {
 			b_min = true;
@@ -32,7 +32,7 @@ public abstract class ListedRefineNode extends MustRefineNode {
 
 	public void setMaxElement(YANG_MaxElement m) {
 		if (b_max)
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"max");
 		else {
 			b_max = true;

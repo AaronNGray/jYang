@@ -29,7 +29,7 @@ public abstract class DeviateAddReplace extends Deviate {
 			this.config = c;
 			b_config = true;
 		} else
-			YangErrorManager.tadd(filename, c.getLine(), c.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, c.getLine(), c.getCol(), "unex_kw",
 					"config");
 	}
 
@@ -42,7 +42,7 @@ public abstract class DeviateAddReplace extends Deviate {
 			this.mandatory = m;
 			b_mandatory = true;
 		} else
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"mandatory");
 	}
 
@@ -55,7 +55,7 @@ public abstract class DeviateAddReplace extends Deviate {
 			this.min = m;
 			b_min = true;
 		} else
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"min");
 	}
 
@@ -68,7 +68,7 @@ public abstract class DeviateAddReplace extends Deviate {
 			this.max = m;
 			b_max = true;
 		} else
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"max");
 	}
 

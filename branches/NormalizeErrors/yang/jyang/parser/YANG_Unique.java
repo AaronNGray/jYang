@@ -49,7 +49,7 @@ public class YANG_Unique extends SimpleYangNode {
 		if (m.matches())
 			unique = un;
 		else
-			YangErrorManager.tadd(filename, getLine(), getCol(), "unique_exp");
+			YangErrorManager.addError(filename, getLine(), getCol(), "unique_exp");
 	}
 
 	public String getUnique() {

@@ -30,7 +30,7 @@ public class YANG_Import extends ImportIncludeNode implements YANG_Linkage {
 			prefix = p;
 			b_prefix = true;
 		} else
-			YangErrorManager.tadd(filename, p.getLine(), p.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, p.getLine(), p.getCol(), "unex_kw",
 					"prefix");
 	}
 

@@ -31,7 +31,7 @@ public abstract class FeaturedNode extends StatuedNode implements DataDefsContai
 
 	public void setWhen(YANG_When w) {
 		if (b_when)
-			YangErrorManager.tadd(filename, w.getLine(), w.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, w.getLine(), w.getCol(), "unex_kw",
 					"when");
 
 		b_when = true;

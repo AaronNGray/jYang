@@ -21,7 +21,7 @@ public abstract class MandatoryRefineNode extends ConfigRefineNode {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"mandatory");
 	}
 

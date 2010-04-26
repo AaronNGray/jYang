@@ -55,7 +55,7 @@ public class YANG_LeafList extends ListedDataDef {
 			b_type = true;
 			type = t;
 		} else
-			YangErrorManager.tadd(filename, t.getLine(), t.getCol(), "type");
+			YangErrorManager.addError(filename, t.getLine(), t.getCol(), "type");
 	}
 
 	public YANG_Type getType() {
@@ -67,7 +67,7 @@ public class YANG_LeafList extends ListedDataDef {
 			b_units = true;
 			units = u;
 		} else
-			YangErrorManager.tadd(filename, u.getLine(), u.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, u.getLine(), u.getCol(), "unex_kw",
 					"units");
 	}
 
@@ -82,11 +82,11 @@ public class YANG_LeafList extends ListedDataDef {
 	public void check(YangContext context) {
 		super.check(context);
 		if (!b_type)
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(), "expected", "type");
+			YangErrorManager.addError(getFileName(), getLine(), getCol(), "expected", "type");
 
 		if (!YangBuiltInTypes.isBuiltIn(getType().getType()))
 			if (!context.isTypeDefined(getType())) {
-				YangErrorManager.tadd(filename, getType().getLine(), getType()
+				YangErrorManager.addError(filename, getType().getLine(), getType()
 						.getCol(), "unknown_type", getType().getType());
 			} else
 				context.getTypeDef(getType()).check(context);

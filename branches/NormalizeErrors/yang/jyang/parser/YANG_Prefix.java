@@ -50,12 +50,12 @@ public class YANG_Prefix extends SimpleYangNode implements YANG_Header {
 		String lp = unquote(p);
 		lp = lp.trim();
 		if (lp.length() > YangBuiltInTypes.idlength)
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"prefix_too_long", lp);
 		Pattern pat = Pattern.compile("[a-zA-Z](\\w|\\-)*");
 		Matcher m = pat.matcher(lp);
 		if (!m.matches())
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"prefix_exp", lp);
 		prefix = lp;
 

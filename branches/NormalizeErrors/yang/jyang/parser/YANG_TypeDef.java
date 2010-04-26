@@ -45,7 +45,7 @@ public class YANG_TypeDef extends StatuedBody {
 			b_type = true;
 			ytype = t;
 		} else
-			YangErrorManager.tadd(filename, t.getLine(), t.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, t.getLine(), t.getCol(), "unex_kw",
 					"type");
 	}
 
@@ -58,7 +58,7 @@ public class YANG_TypeDef extends StatuedBody {
 			b_units = true;
 			units = u;
 		} else
-			YangErrorManager.tadd(filename, u.getLine(), u.getCol(), "units");
+			YangErrorManager.addError(filename, u.getLine(), u.getCol(), "units");
 	}
 
 	public YANG_Units getUnits() {
@@ -70,7 +70,7 @@ public class YANG_TypeDef extends StatuedBody {
 			b_default = true;
 			defaultstr = d;
 		} else
-			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "default");
+			YangErrorManager.addError(filename, d.getLine(), d.getCol(), "default");
 	}
 
 	public YANG_Default getDefault() {
@@ -83,7 +83,7 @@ public class YANG_TypeDef extends StatuedBody {
 			return;
 
 		if (!b_type) {
-			YangErrorManager.tadd(context.getSpec().getName(), getLine(),
+			YangErrorManager.addError(context.getSpec().getName(), getLine(),
 					getCol(), "type_expec");
 			return;
 		}
@@ -123,7 +123,7 @@ public class YANG_TypeDef extends StatuedBody {
 			setCorrect(false);
 			for (YANG_TypeDef ytd : tds) {
 				ytd.setCorrect(false);
-				YangErrorManager.tadd(ytd.getFileName(), ytd.getLine(), ytd.getCol(),
+				YangErrorManager.addError(ytd.getFileName(), ytd.getLine(), ytd.getCol(),
 						"circ_dep", ytd.getBody());
 			}
 			return;

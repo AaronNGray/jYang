@@ -40,7 +40,7 @@ public class YANG_RefineAnyXml extends MustRefineNode {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"mandatory");
 	}
 

@@ -33,7 +33,7 @@ public class YANG_AnyXml extends MustDataDef implements YANG_ShortCase {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"mandatory");
 	}
 

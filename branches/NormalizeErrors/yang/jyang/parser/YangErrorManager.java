@@ -15,12 +15,17 @@ import java.util.logging.Logger;
 public class YangErrorManager {
 
 	static public class Error {
+		public final static int SEVERITY_INFO = 0;
+		public final static int SEVERITY_WARNING = 1;
+		public final static int SEVERITY_ERROR = 2;
+
 		private String module;
 		private int line;
 		private int column;
 		private String messageId;
+		private int severity;
 
-		public Error(String m, int l, int c, String mi) {
+		public Error(String m, int l, int c, String mi, int s) {
 			if (m.contains("/"))
 				module = m.substring(m.lastIndexOf('/') + 1);
 			else
@@ -28,6 +33,7 @@ public class YangErrorManager {
 			line = l;
 			column = c;
 			messageId = mi;
+			severity = s;
 		}
 
 		public String toString() {
@@ -48,6 +54,10 @@ public class YangErrorManager {
 
 		public String getMessageId() {
 			return messageId;
+		}
+
+		public int getSeverity() {
+			return severity;
 		}
 	}
 
@@ -73,31 +83,31 @@ public class YangErrorManager {
 
 	static public ResourceBundle messages;
 
-	//static protected Properties properties = new Properties(
-	//		"jyang.parser.resources");
+	// static protected Properties properties = new Properties(
+	// "jyang.parser.resources");
 
 	// @SuppressWarnings("static-access")
 	static public ResourceBundle getMessages() {
 		return messages;
 	}
 
-	//static public Properties getProperties() {
-	//	return properties;
-	//}
+	// static public Properties getProperties() {
+	// return properties;
+	// }
 
 	static public void init() {
 
 		messages = null;
 		errors = new TreeSet<Error>(errorComp);
-		
+
 		try {
 			messages = ResourceBundle.getBundle("jyang.parser.MessagesBundle");
 		} catch (MissingResourceException mre) {
 			try {
-				messages = ResourceBundle.getBundle(
-						"jyang.parser.MessagesBundle.properties");
+				messages = ResourceBundle
+						.getBundle("jyang.parser.MessagesBundle.properties");
 				System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-				
+
 			} catch (MissingResourceException mre1) {
 				Logger
 						.getLogger("")
@@ -117,14 +127,27 @@ public class YangErrorManager {
 		module = m;
 	}
 
-	static public void tadd(String module, int line, int col, String mess,
+	static public void addInfo(String module, int line, int col, String mess,
 			Object... parameters) {
 		_add(module, line, col, MessageFormat.format(YangErrorManager.messages
-				.getString(mess), parameters));
+				.getString(mess), parameters), Error.SEVERITY_INFO);
 	}
 
-	static private void _add(String module, int line, int col, String mess) {
-		Error error = new Error(module, line, col, mess);
+	static public void addWarning(String module, int line, int col,
+			String mess, Object... parameters) {
+		_add(module, line, col, MessageFormat.format(YangErrorManager.messages
+				.getString(mess), parameters), Error.SEVERITY_WARNING);
+	}
+
+	static public void addError(String module, int line, int col, String mess,
+			Object... parameters) {
+		_add(module, line, col, MessageFormat.format(YangErrorManager.messages
+				.getString(mess), parameters), Error.SEVERITY_ERROR);
+	}
+
+	static private void _add(String module, int line, int col, String mess,
+			int sev) {
+		Error error = new Error(module, line, col, mess, sev);
 		errors.add(error);
 	}
 

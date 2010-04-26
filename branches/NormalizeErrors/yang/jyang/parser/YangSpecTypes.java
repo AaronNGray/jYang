@@ -78,7 +78,7 @@ public class YangSpecTypes implements Serializable {
 			if (!deriveds.containsKey(k))
 				add(k, yst.get(k), yst.getTypeDef(k));
 			else
-				YangErrorManager.tadd(yst.getTypeDef(k).getFileName(), yst
+				YangErrorManager.addError(yst.getTypeDef(k).getFileName(), yst
 						.getTypeDef(k).getLine(), yst.getTypeDef(k).getCol(),
 						"dup_child", yst.getTypeDef(k).getBody(), typedefs.get(
 								k).getLine(), typedefs.get(k).getCol());
@@ -136,7 +136,7 @@ public class YangSpecTypes implements Serializable {
 					}
 					if (td != null) {
 						td.setCorrect(false);
-						YangErrorManager.tadd(td.getFileName(), td.getLine(),
+						YangErrorManager.addError(td.getFileName(), td.getLine(),
 								td.getCol(), "unknown_type");
 					}
 				} /*
@@ -175,7 +175,7 @@ public class YangSpecTypes implements Serializable {
 					td.setCorrect(false);
 				}
 
-				YangErrorManager.tadd(o.getFileName(), o.getLine(), o.getCol(),
+				YangErrorManager.addError(o.getFileName(), o.getLine(), o.getCol(),
 						"circ_dep", unprefix(d));
 
 				return false;

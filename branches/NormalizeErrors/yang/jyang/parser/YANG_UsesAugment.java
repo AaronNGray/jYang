@@ -32,7 +32,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 		String aa = unquote(ua);
 		Matcher m = dsni.matcher(aa);
 		if (!m.matches())
-			YangErrorManager.tadd(filename, getLine(), getCol(),
+			YangErrorManager.addError(filename, getLine(), getCol(),
 					"uses_augment_exp", aa);
 		usesaugment = aa;
 
@@ -61,7 +61,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 	public void checkUsesAugment(YANG_Body augmented_node) {
 
 		if (getCases().size() != 0 && !(augmented_node instanceof YANG_Choice)) {
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"bad_choice_aug", augmented_node.getBody(), augmented_node
 							.getFileName(), augmented_node.getLine());
 		}
@@ -75,7 +75,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 					if (cddef.getConfig().getConfigStr().compareTo("true") == 0
 							&& container.getConfig().getConfigStr().compareTo(
 									"false") == 0)
-						YangErrorManager.tadd(filename, getLine(), getCol(),
+						YangErrorManager.addError(filename, getLine(), getCol(),
 								"config_parent", addef.getFileName(), addef
 										.getBody());
 				}
@@ -104,7 +104,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 		} else if (augmented_node instanceof IoDataDef) {
 		} else {
 
-			YangErrorManager.tadd(filename, getLine(), getCol(),
+			YangErrorManager.addError(filename, getLine(), getCol(),
 					"not_augmentable", augmented_node.getBody(), augmented_node
 							.getFileName(), augmented_node.getLine());
 		}
@@ -126,7 +126,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 			}
 		}
 		if (found)
-			YangErrorManager.tadd(augddef.getFileName(), augddef.getLine(),
+			YangErrorManager.addError(augddef.getFileName(), augddef.getLine(),
 					augddef.getCol(), "dup_child", augddef.getBody(), targddef
 							.getFileName(), targddef.getLine());
 	}
@@ -149,7 +149,7 @@ public class YANG_UsesAugment extends FeaturedNode {
 			}
 		}
 		if (found)
-			YangErrorManager.tadd(ayc.getFileName(), ayc.getLine(), ayc
+			YangErrorManager.addError(ayc.getFileName(), ayc.getLine(), ayc
 					.getCol(), "dup_child", ayc.getBody(), yc.getFileName(), yc
 					.getLine());
 	}

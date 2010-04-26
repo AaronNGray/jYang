@@ -47,7 +47,7 @@ public class YANG_Feature extends FeaturedBody {
 					if (depif instanceof YANG_Feature) {
 						YANG_Feature ff = (YANG_Feature) depif;
 						if (!checkRecursion(ff, context))
-							YangErrorManager.tadd(getFileName(), getLine(),
+							YangErrorManager.addError(getFileName(), getLine(),
 									getCol(), "rec_ifs", getBody(), f
 											.getFileName(), f.getLine());
 					}

@@ -58,7 +58,7 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 			b_key = true;
 			key = t;
 		} else
-			YangErrorManager.tadd(filename, t.getLine(), t.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, t.getLine(), t.getCol(), "unex_kw",
 					"key");
 	}
 
@@ -106,7 +106,7 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 	public void check(YangContext context) {
 		super.check(context);
 		if (datadefs.size() == 0)
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"expected", "data definition");
 
 		setContext(context);

@@ -81,7 +81,7 @@ public class YANG_Range extends ErrorTagedNode implements
 				try {
 					ranges[j] = test[j].split("\\.\\.");
 					if (ranges[j].length != 2) {
-						YangErrorManager.tadd(filename, getLine(), getCol(),
+						YangErrorManager.addError(filename, getLine(), getCol(),
 								"range_exp");
 					}
 				} catch (PatternSyntaxException pe) {

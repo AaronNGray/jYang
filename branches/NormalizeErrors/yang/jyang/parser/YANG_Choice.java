@@ -57,7 +57,7 @@ public class YANG_Choice extends ConfigDataDef {
 			b_default = true;
 			ydefault = d;
 		} else
-			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, d.getLine(), d.getCol(), "unex_kw",
 					"default");
 	}
 
@@ -70,7 +70,7 @@ public class YANG_Choice extends ConfigDataDef {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"mandatory");
 	}
 
@@ -106,12 +106,12 @@ public class YANG_Choice extends ConfigDataDef {
 			YANG_DataDef cdef = ecd.nextElement();
 			if (cdef instanceof YANG_AnyXml) {
 				if (!checkMandatory((YANG_AnyXml) cdef))
-					YangErrorManager.tadd(cdef.getFileName(), cdef.getLine(),
+					YangErrorManager.addError(cdef.getFileName(), cdef.getLine(),
 							cdef.getCol(), "mand_def_case", c.getBody(),
 							getChoice(), getFileName(), getLine());
 			} else if (cdef instanceof YANG_Leaf) {
 				if (!checkMandatory((YANG_Leaf) cdef))
-					YangErrorManager.tadd(cdef.getFileName(), cdef.getLine(),
+					YangErrorManager.addError(cdef.getFileName(), cdef.getLine(),
 							cdef.getCol(), "mand_def_case", c.getBody(),
 							getChoice(), getFileName(), getLine());
 			} else if (cdef instanceof YANG_Container) {
@@ -119,7 +119,7 @@ public class YANG_Choice extends ConfigDataDef {
 				trackMandatory(container.getDataDefs());
 			} else if (cdef instanceof ListedDataDef) {
 				if (!checkMandatory((ListedDataDef) cdef))
-					YangErrorManager.tadd(cdef.getFileName(), cdef.getLine(),
+					YangErrorManager.addError(cdef.getFileName(), cdef.getLine(),
 							cdef.getCol(), "mand_def_case", cdef.getBody(),
 							getChoice(), getFileName(), getLine());
 				if (cdef instanceof YANG_List)
@@ -131,19 +131,19 @@ public class YANG_Choice extends ConfigDataDef {
 	private void trackMandatory(YANG_ShortCase scase) {
 		if (scase instanceof YANG_AnyXml) {
 			if (!checkMandatory((YANG_AnyXml) scase))
-				YangErrorManager.tadd(scase.getFileName(), scase.getLine(),
+				YangErrorManager.addError(scase.getFileName(), scase.getLine(),
 						scase.getCol(), "mand_def_case", scase.getBody(),
 						getChoice(), getFileName(), getLine());
 		} else if (scase instanceof YANG_Leaf) {
 			if (!checkMandatory((YANG_Leaf) scase))
-				YangErrorManager.tadd(scase.getFileName(), scase.getLine(),
+				YangErrorManager.addError(scase.getFileName(), scase.getLine(),
 						scase.getCol(), "mand_def_case", scase.getBody(),
 						getChoice(), getFileName(), getLine());
 		} else if (scase instanceof YANG_Container) {
 			trackMandatory(((YANG_Container) scase).getDataDefs());
 		} else if (scase instanceof ListedDataDef) {
 			if (!checkMandatory((ListedDataDef) scase))
-				YangErrorManager.tadd(scase.getFileName(), scase.getLine(),
+				YangErrorManager.addError(scase.getFileName(), scase.getLine(),
 						scase.getCol(), "mand_def_case", scase.getBody(),
 						getChoice(), getFileName(), getLine());
 			if (scase instanceof YANG_List)
@@ -158,19 +158,19 @@ public class YANG_Choice extends ConfigDataDef {
 			YANG_DataDef ddef = edd.nextElement();
 			if (ddef instanceof YANG_AnyXml) {
 				if (!checkMandatory((YANG_AnyXml) ddef))
-					YangErrorManager.tadd(ddef.getFileName(), ddef.getLine(),
+					YangErrorManager.addError(ddef.getFileName(), ddef.getLine(),
 							ddef.getCol(), "mand_def_case", ddef.getBody(),
 							getChoice(), getFileName(), getLine());
 			} else if (ddef instanceof YANG_Leaf) {
 				if (!checkMandatory((YANG_Leaf) ddef))
-					YangErrorManager.tadd(ddef.getFileName(), ddef.getLine(),
+					YangErrorManager.addError(ddef.getFileName(), ddef.getLine(),
 							ddef.getCol(), "mand_def_case", ddef.getBody(),
 							getChoice(), getFileName(), getLine());
 			} else if (ddef instanceof YANG_Choice) {
 				YANG_Choice choice = (YANG_Choice) ddef;
 				if (choice.getMandatory() != null)
 					if (choice.getMandatory().getMandatory().compareTo("true") == 0)
-						YangErrorManager.tadd(choice.getFileName(), choice
+						YangErrorManager.addError(choice.getFileName(), choice
 								.getLine(), choice.getCol(), "mand_def_case",
 								choice.getBody(), getChoice(), getFileName(),
 								getLine());
@@ -186,7 +186,7 @@ public class YANG_Choice extends ConfigDataDef {
 			else if (ddef instanceof ListedDataDef) {
 				ListedDataDef lddef = (ListedDataDef) ddef;
 				if (!checkMandatory(lddef))
-					YangErrorManager.tadd(ddef.getFileName(), ddef.getLine(),
+					YangErrorManager.addError(ddef.getFileName(), ddef.getLine(),
 							ddef.getCol(), "mand_def_case", ddef.getBody(),
 							getChoice(), getFileName(), getLine());
 				if (ddef instanceof YANG_List)
@@ -244,7 +244,7 @@ public class YANG_Choice extends ConfigDataDef {
 				trackMandatory(scase);
 		}
 		if (!found)
-			YangErrorManager.tadd(filename, ydefault.getLine(), ydefault
+			YangErrorManager.addError(filename, ydefault.getLine(), ydefault
 					.getCol(), "default_case_not_found", getChoice(), defval);
 	}
 
@@ -255,7 +255,7 @@ public class YANG_Choice extends ConfigDataDef {
 
 			if (b_mandatory) {
 				if (getMandatory().getMandatory().compareTo("true") == 0) {
-					YangErrorManager.tadd(getMandatory().getFileName(),
+					YangErrorManager.addError(getMandatory().getFileName(),
 							getMandatory().getLine(), getMandatory().getCol(),
 							"def_mand", getDefault().getFileName(),
 							getDefault().getLine());
@@ -268,7 +268,7 @@ public class YANG_Choice extends ConfigDataDef {
 		for (YANG_Case ycase : cases) {
 			if (caseids.containsKey(ycase.getCase())) {
 				Integer c = caseids.get(ycase.getCase());
-				YangErrorManager.tadd(filename, ycase.getLine(),
+				YangErrorManager.addError(filename, ycase.getLine(),
 						ycase.getCol(), "dup_child", "case " + ycase.getBody(),
 						ycase.getFileName(), c);
 
@@ -278,7 +278,7 @@ public class YANG_Choice extends ConfigDataDef {
 		for (YANG_ShortCase ddef : shorts) {
 			if (caseids.containsKey(ddef.getBody())) {
 				Integer c = caseids.get(ddef.getBody());
-				YangErrorManager.tadd(filename, ddef.getLine(), ddef.getCol(),
+				YangErrorManager.addError(filename, ddef.getLine(), ddef.getCol(),
 						"dup_child", "case " + ddef.getBody(), ddef
 								.getFileName(), c);
 

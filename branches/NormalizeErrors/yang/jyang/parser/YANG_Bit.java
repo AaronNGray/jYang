@@ -30,7 +30,7 @@ public class YANG_Bit extends StatuedNode {
 			position = p;
 			b_position = true;
 		} else
-			YangErrorManager.tadd(filename, p.getLine(), p.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, p.getLine(), p.getCol(), "unex_kw",
 					"position");
 	}
 

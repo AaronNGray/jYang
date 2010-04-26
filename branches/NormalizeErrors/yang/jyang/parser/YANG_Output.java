@@ -33,7 +33,7 @@ public class YANG_Output extends Io {
 
 	public void check(YangContext context)  {
 		if (datadefs.size() == 0)
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"empty_output");
 	}
 

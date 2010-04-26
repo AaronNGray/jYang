@@ -67,7 +67,7 @@ public class YANG_Unknown extends YANG_Body {
 
 	public void check(YangContext context) {
 		if (!context.isExtensionDefined((YANG_Unknown) this)) {
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"unknown", "extension", prefix + ":" + extension);
 			return;
 		} else {
@@ -75,14 +75,14 @@ public class YANG_Unknown extends YANG_Body {
 					.getExtension((YANG_Unknown) this);
 			if (extension.getArgument() != null) {
 				if (getArgument() == null) {
-					YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					YangErrorManager.addError(getFileName(), getLine(), getCol(),
 							"extension_arg", extension.getBody(), extension
 									.getArgument().getArgument(), extension
 									.getFileName(), extension.getLine());
 				}
 			} else {
 				if (getArgument() != null)
-					YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					YangErrorManager.addError(getFileName(), getLine(), getCol(),
 							"unexpected_arg", extension.getBody(), extension
 									.getArgument().getArgument(), extension
 									.getFileName(), extension.getLine());

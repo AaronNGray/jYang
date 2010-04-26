@@ -41,7 +41,7 @@ public class YANG_RefineContainer extends MustRefineNode {
 			b_presence = true;
 			presence = p;
 		} else
-			YangErrorManager.tadd(filename, p.getLine(), p.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, p.getLine(), p.getCol(), "unex_kw",
 					"presence");
 	}
 

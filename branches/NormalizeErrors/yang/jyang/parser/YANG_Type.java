@@ -214,17 +214,17 @@ public class YANG_Type extends SimpleYangNode {
 
 		if (YangBuiltInTypes.union.compareTo(getType()) == 0)
 			if (getUnionSpec() == null)
-				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
 						"union_no_type");
 
 		if (YangBuiltInTypes.leafref.compareTo(getType()) == 0)
 			if (getLeafRef() == null)
-				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
 						"leafref_no_path");
 
 		if (YangBuiltInTypes.enumeration.compareTo(getType()) == 0) {
 			if (getEnums().size() == 0)
-				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
 						"empty_enumeration");
 
 			checkEnum(context);
@@ -232,7 +232,7 @@ public class YANG_Type extends SimpleYangNode {
 
 		if (YangBuiltInTypes.bits.compareTo(getType()) == 0) {
 			if (getBitSpec() == null)
-				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
 						"empty_bits");
 			checkBits();
 		}
@@ -272,7 +272,7 @@ public class YANG_Type extends SimpleYangNode {
 		checkTypeSyntax(context);
 
 		if (context.getBuiltInType(this) == null) {
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"unknown", "type", getType());
 			return;
 		}
@@ -280,180 +280,180 @@ public class YANG_Type extends SimpleYangNode {
 
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			if (getBitSpec() != null)
-				YangErrorManager.tadd(getBitSpec().getFileName(), getBitSpec()
+				YangErrorManager.addError(getBitSpec().getFileName(), getBitSpec()
 						.getLine(), getBitSpec().getCol(), "not_alw",
 						"bit specification", getType());
 
 			if (getEnums().size() != 0)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"enum specification", getType());
 			if (getLeafRef() != null)
-				YangErrorManager.tadd(getLeafRef().getFileName(), getLeafRef()
+				YangErrorManager.addError(getLeafRef().getFileName(), getLeafRef()
 						.getLine(), getLeafRef().getCol(), "not_alw",
 						"key reference specification", getType());
 			if (getStringRest() != null) {
 				YANG_StringRestriction ysr = getStringRest();
 				if (ysr.getLength() != null)
-					YangErrorManager.tadd(filename, getStringRest().getLine(),
+					YangErrorManager.addError(filename, getStringRest().getLine(),
 							getStringRest().getCol(), "not_alw",
 							"restriction length", getType());
 				if (ysr.getPatterns().size() != 0)
-					YangErrorManager.tadd(filename, getStringRest().getLine(),
+					YangErrorManager.addError(filename, getStringRest().getLine(),
 							getStringRest().getCol(), "not_alw",
 							"restriction pattern", getType());
 			}
 			if (getUnionSpec() != null)
-				YangErrorManager.tadd(getUnionSpec().getFileName(),
+				YangErrorManager.addError(getUnionSpec().getFileName(),
 						getUnionSpec().getLine(), getUnionSpec().getCol(),
 						"not_alw", "union specification", getType());
 			if (getInstanceIdentifierSpec() != null)
-				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
 						"not_alw", "require-instance", getType());
 
 			checkRange(context);
 		} else if (YangBuiltInTypes.string.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"bit specification", getType());
 			if (getEnums().size() != 0)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"enum specification", getType());
 			if (getLeafRef() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"key reference specification", getType());
 			if (getUnionSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"union specification", getType());
 			if (getNumRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"numerical restriction", getType());
 
 			checkStringLength(context);
 		} else if (YangBuiltInTypes.yboolean.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getStringRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"string restriction", getType());
 			if (getBitSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"bit specification", getType());
 			if (getEnums().size() != 0)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"enum specification", getType());
 			if (getLeafRef() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"leaf reference", getType());
 			if (getUnionSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"type specification", getType());
 			if (getNumRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"numeric restriction", getType());
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"bit specification", getType());
 			if (getLeafRef() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"leaf reference", getType());
 			if (getStringRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"string restriction", getType());
 			if (getUnionSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"type specification", getType());
 		} else if (YangBuiltInTypes.bits
 				.compareTo(context.getBuiltInType(this)) == 0) {
 			if (getStringRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"string restriction", getType());
 			if (getEnums().size() != 0)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"enum specification", getType());
 			if (getLeafRef() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"leaf reference", getType());
 			if (getUnionSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"type specification", getType());
 			if (getNumRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"numeric restriction", getType());
 		} else if (YangBuiltInTypes.binary.compareTo(context
 				.getBuiltInType(this)) == 0) {
 
 			if (getBitSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"bit specification", getType());
 			if (getEnums().size() != 0)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"enum specification", getType());
 			if (getLeafRef() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"leaf reference", getType());
 			if (getUnionSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"type specification", getType());
 			if (getNumRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"numeric restriction", getType());
 			checkStringLength(context);
 		} else if (YangBuiltInTypes.leafref.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"bit specification", getType());
 			if (getEnums().size() != 0)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"enum specification", getType());
 			if (getUnionSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"type specification", getType());
 			if (getNumRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"numeric restriction", getType());
 			if (getStringRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"string restriction", getType());
 
 		} else if (YangBuiltInTypes.empty.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"bit specification", getType());
 			if (getEnums().size() != 0)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"enum specification", getType());
 			if (getUnionSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"type specification", getType());
 			if (getNumRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"numeric restriction", getType());
 			if (getStringRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"string restriction", getType());
 			if (getLeafRef() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"leaf reference", getType());
 		} else if (YangBuiltInTypes.union.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"bit specification", getType());
 			if (getEnums().size() != 0)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"enum specification", getType());
 			if (getNumRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"numeric restriction", getType());
 			if (getStringRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"string restriction", getType());
 			if (getLeafRef() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"leaf reference", getType());
 			if (getUnionSpec() != null)
 				checkEmptyUnion(context, new Vector<YANG_Type>(),
@@ -462,22 +462,22 @@ public class YANG_Type extends SimpleYangNode {
 		} else if (YangBuiltInTypes.instanceidentifier.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"bit specification", getType());
 			if (getEnums().size() != 0)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"enum specification", getType());
 			if (getUnionSpec() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"type specification", getType());
 			if (getNumRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"numeric restriction", getType());
 			if (getStringRest() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"string restriction", getType());
 			if (getLeafRef() != null)
-				YangErrorManager.tadd(filename, getLine(), getCol(), "not_alw",
+				YangErrorManager.addError(filename, getLine(), getCol(), "not_alw",
 						"leaf reference", getType());
 		}
 		checked = true;
@@ -485,7 +485,7 @@ public class YANG_Type extends SimpleYangNode {
 
 	private void checkBits() {
 		if (getBitSpec() == null) {
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"empty_bits");
 			return;
 		}
@@ -505,7 +505,7 @@ public class YANG_Type extends SimpleYangNode {
 			if (bit.getPosition() == null) {
 				if (highest.compareTo(YangBuiltInTypes.uint32ub
 						.add(new BigInteger("1"))) == 0)
-					YangErrorManager.tadd(bit.getFileName(), bit.getLine(), bit
+					YangErrorManager.addError(bit.getFileName(), bit.getLine(), bit
 							.getCol(), "bits_max");
 				else {
 					bitspos.add(highest);
@@ -518,12 +518,12 @@ public class YANG_Type extends SimpleYangNode {
 				try {
 					biginteger = new BigInteger(strpos);
 				} catch (NumberFormatException e) {
-					YangErrorManager.tadd(bit.getFileName(), bit.getLine(), bit
+					YangErrorManager.addError(bit.getFileName(), bit.getLine(), bit
 							.getCol(), "bits_pos_not_int");
 					return;
 				}
 				if (biginteger.compareTo(YangBuiltInTypes.uint32ub) == 1)
-					YangErrorManager.tadd(bit.getFileName(), bit.getLine(), bit
+					YangErrorManager.addError(bit.getFileName(), bit.getLine(), bit
 							.getCol(), "bits_pos_too_high");
 				if (biginteger.compareTo(highest) > 0) {
 					highest = biginteger;
@@ -531,7 +531,7 @@ public class YANG_Type extends SimpleYangNode {
 					highest = highest.add(new BigInteger("1"));
 				} else if (biginteger.add(new BigInteger("1")).compareTo(
 						highest) == 0) {
-					YangErrorManager.tadd(filename,
+					YangErrorManager.addError(filename,
 							bit.getPosition().getLine(), bit.getPosition()
 									.getCol(), "dup_value", "position",
 							biginteger, "bit", bits[biginteger.subtract(
@@ -564,7 +564,7 @@ public class YANG_Type extends SimpleYangNode {
 			tenums[i] = yenum;
 			if (yenum.getValue() == null) {
 				if (maxraised)
-					YangErrorManager.tadd(filename, yenum.getLine(), yenum
+					YangErrorManager.addError(filename, yenum.getLine(), yenum
 							.getCol(), "enum_auto_too_big", yenum.getEnum());
 				if (highest == 2147483647)
 					maxraised = true;
@@ -576,7 +576,7 @@ public class YANG_Type extends SimpleYangNode {
 				try {
 					integer = Integer.parseInt(strenum);
 				} catch (NumberFormatException n) {
-					YangErrorManager.tadd(yenum.getFileName(), yenum.getLine(),
+					YangErrorManager.addError(yenum.getFileName(), yenum.getLine(),
 							yenum.getCol(), "enum_expr", strenum);
 					return;
 				}
@@ -586,7 +586,7 @@ public class YANG_Type extends SimpleYangNode {
 				} else if (integer.compareTo(new Integer((int) highest)) == -1) {
 					enumvalues[i++] = integer.intValue();
 				} else if (integer.compareTo(new Integer((int) highest)) == 0) {
-					YangErrorManager.tadd(yenum.getFileName(), yenum.getLine(),
+					YangErrorManager.addError(yenum.getFileName(), yenum.getLine(),
 							yenum.getCol(), "enum_ambigous");
 				}
 			}
@@ -608,7 +608,7 @@ public class YANG_Type extends SimpleYangNode {
 				}
 			}
 		if (duplicate) {
-			YangErrorManager.tadd(dupenum.getFileName(), dupenum.getValue()
+			YangErrorManager.addError(dupenum.getFileName(), dupenum.getValue()
 					.getLine(), dupenum.getValue().getCol(), "dupp_enum_val",
 					dupvalue, getFileName() + ":" + firstenum.getLine());
 			// return;
@@ -628,7 +628,7 @@ public class YANG_Type extends SimpleYangNode {
 
 			}
 		if (duplicate) {
-			YangErrorManager.tadd(filename, dupenum.getLine(),
+			YangErrorManager.addError(filename, dupenum.getLine(),
 					dupenum.getCol(), "dupp_enum_name", dupname, getFileName()
 							+ ":" + firstenum.getLine());
 			return;
@@ -873,13 +873,13 @@ public class YANG_Type extends SimpleYangNode {
 						inside = true;
 				}
 				if (!inside)
-					YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					YangErrorManager.addError(getFileName(), getLine(), getCol(),
 							"bad_subtyping", subranges[i][0] + ".."
 									+ subranges[i][1]);
 
 			}
 		} catch (NumberFormatException n) {
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"range_value");
 		}
 
@@ -1013,7 +1013,7 @@ public class YANG_Type extends SimpleYangNode {
 							BigInteger Bi = new BigInteger(bound, radix);
 							r[i][j] = Bi.toString();
 						} catch (NumberFormatException e) {
-							YangErrorManager.tadd(getFileName(), getLine(),
+							YangErrorManager.addError(getFileName(), getLine(),
 									getCol(), "range_not_int", bound);
 						}
 					}
@@ -1032,7 +1032,7 @@ public class YANG_Type extends SimpleYangNode {
 						try {
 							new BigDecimal(bound);
 						} catch (NumberFormatException e) {
-							YangErrorManager.tadd(getFileName(), getLine(),
+							YangErrorManager.addError(getFileName(), getLine(),
 									getCol(), "range_not_float", bound);
 						}
 
@@ -1051,16 +1051,16 @@ public class YANG_Type extends SimpleYangNode {
 		for (int i = 1; i < r.length; i++) {
 			String oldbs = bs;
 			if (compareTo(context, bi, bs) == 1)
-				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
 						"bad_range_order", bi + " > " + bs);
 			bi = r[i][0];
 			bs = r[i][1];
 			if (compareTo(context, oldbs, bi) != -1)
-				YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
 						"bad_range_order", oldbs + " >= " + bi);
 		}
 		if (compareTo(context, bi, bs) == 1)
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"bad_range_order", bi + " > " + bs);
 	}
 
@@ -1173,7 +1173,7 @@ public class YANG_Type extends SimpleYangNode {
 		if (typedef == null)
 			typedef = context.getTypeDef(this);
 		if (context.getBuiltInType(this) == null) {
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"type_not_found", getType());
 			return;
 		}
@@ -1202,12 +1202,12 @@ public class YANG_Type extends SimpleYangNode {
 			if (YangBuiltInTypes.isInteger(context.getBuiltInType(this))) {
 				if (value.compareTo("min") == 0) {
 					if (ranges[0][0].compareTo("min") != 0)
-						YangErrorManager.tadd(filename, getLine(), getCol(),
+						YangErrorManager.addError(filename, getLine(), getCol(),
 								"value_not_in_range", "min", context
 										.getBuiltInType(this));
 				} else if (value.compareTo("max") == 0) {
 					if (ranges[ranges.length - 1][1].compareTo("max") != 0)
-						YangErrorManager.tadd(filename, getLine(), getCol(),
+						YangErrorManager.addError(filename, getLine(), getCol(),
 								"value_not_in_range", "max", context
 										.getBuiltInType(this));
 
@@ -1358,7 +1358,7 @@ public class YANG_Type extends SimpleYangNode {
 						if (!inside) {
 							if (lnumrest == null) {
 								YANG_TypeDef td = this.getTypedef();
-								YangErrorManager.tadd(filename, ydefault
+								YangErrorManager.addError(filename, ydefault
 										.getLine(), ydefault.getCol(),
 										"default_match_fail", YangBuiltInTypes
 												.removeQuotes(value), td
@@ -1378,7 +1378,7 @@ public class YANG_Type extends SimpleYangNode {
 								String message = "";
 								if (t == this) {
 									message = "direct_default_match_fail";
-									YangErrorManager.tadd(filename, ydefault
+									YangErrorManager.addError(filename, ydefault
 											.getLine(), ydefault.getCol(),
 											message, YangBuiltInTypes
 													.removeQuotes(value),
@@ -1388,7 +1388,7 @@ public class YANG_Type extends SimpleYangNode {
 								} else {
 									message = "default_match_fail";
 									YANG_TypeDef td = this.getTypedef();
-									YangErrorManager.tadd(filename, lnumrest
+									YangErrorManager.addError(filename, lnumrest
 											.getLine(), lnumrest.getCol(),
 											message, YangBuiltInTypes
 													.removeQuotes(value), td
@@ -1404,7 +1404,7 @@ public class YANG_Type extends SimpleYangNode {
 						}
 
 					} catch (NumberFormatException ne) {
-						YangErrorManager.tadd(ydefault.getFileName(), ydefault
+						YangErrorManager.addError(ydefault.getFileName(), ydefault
 								.getLine(), ydefault.getCol(),
 								"default_not_int", value, getType());
 					}
@@ -1421,7 +1421,7 @@ public class YANG_Type extends SimpleYangNode {
 					if (idec != -1) {
 						int nbdec = value.length() - idec - 1;
 						if (fd < nbdec)
-							YangErrorManager.tadd(getFileName(), getLine(),
+							YangErrorManager.addError(getFileName(), getLine(),
 									getCol(), "too_many_fd", value, fd);
 
 					}
@@ -1430,14 +1430,14 @@ public class YANG_Type extends SimpleYangNode {
 				if (value.compareTo("min") == 0 || value.compareTo("-INF") == 0) {
 					if (ranges[0][0].compareTo("min") != 0
 							&& ranges[0][0].compareTo("-INF") != 0)
-						YangErrorManager.tadd(filename, getLine(), getCol(),
+						YangErrorManager.addError(filename, getLine(), getCol(),
 								"value_not_in_range", "-INF", context
 										.getBuiltInType(this));
 				} else if (value.compareTo("max") == 0
 						|| value.compareTo("INF") == 0) {
 					if (ranges[ranges.length - 1][1].compareTo("max") != 0
 							&& ranges[ranges.length - 1][1].compareTo("INF") != 0)
-						YangErrorManager.tadd(filename, getLine(), getCol(),
+						YangErrorManager.addError(filename, getLine(), getCol(),
 								"value_not_in_range", "INF", context
 										.getBuiltInType(this));
 				} else {
@@ -1473,7 +1473,7 @@ public class YANG_Type extends SimpleYangNode {
 						if (!inside) {
 							if (lnumrest == null) {
 								YANG_TypeDef td = this.getTypedef();
-								YangErrorManager.tadd(filename, ydefault
+								YangErrorManager.addError(filename, ydefault
 										.getLine(), ydefault.getCol(),
 										"default_match_fail", YangBuiltInTypes
 												.removeQuotes(value), td
@@ -1491,7 +1491,7 @@ public class YANG_Type extends SimpleYangNode {
 									t = getFirstRangeDefined(context, context
 											.getTypeDef(this));
 								if (t == this) {
-									YangErrorManager.tadd(filename, lnumrest
+									YangErrorManager.addError(filename, lnumrest
 											.getLine(), lnumrest.getCol(),
 											"direct_default_match_fail",
 											YangBuiltInTypes
@@ -1501,7 +1501,7 @@ public class YANG_Type extends SimpleYangNode {
 													+ ":" + getLine());
 								} else {
 									YANG_TypeDef td = this.getTypedef();
-									YangErrorManager.tadd(filename, lnumrest
+									YangErrorManager.addError(filename, lnumrest
 											.getLine(), lnumrest.getCol(),
 											"default_match_fail",
 											YangBuiltInTypes
@@ -1515,7 +1515,7 @@ public class YANG_Type extends SimpleYangNode {
 							}
 						}
 					} catch (NumberFormatException ne) {
-						YangErrorManager.tadd(ydefault.getFileName(), ydefault
+						YangErrorManager.addError(ydefault.getFileName(), ydefault
 								.getLine(), ydefault.getCol(),
 								"default_not_float", value);
 					}
@@ -1583,7 +1583,7 @@ public class YANG_Type extends SimpleYangNode {
 				}
 			}
 			if (!inside)
-				YangErrorManager.tadd(filename, ydefault.getLine(), ydefault
+				YangErrorManager.addError(filename, ydefault.getLine(), ydefault
 						.getCol(), "direct_default_match_fail",
 						YangBuiltInTypes.removeQuotes(value), "length error",
 						"length", this.getFileName() + ":");
@@ -1618,7 +1618,7 @@ public class YANG_Type extends SimpleYangNode {
 					YANG_Pattern pattern = patterns.nextElement();
 					if (!pattern.checkExp(value)) {
 						if (direct) {
-							YangErrorManager.tadd(filename, ydefault.getLine(),
+							YangErrorManager.addError(filename, ydefault.getLine(),
 									ydefault.getCol(),
 									"direct_default_match_fail",
 									YangBuiltInTypes.removeQuotes(value),
@@ -1626,7 +1626,7 @@ public class YANG_Type extends SimpleYangNode {
 											.getFileName()
 											+ ":" + pattern.getLine());
 						} else {
-							YangErrorManager.tadd(filename, ydefault.getLine(),
+							YangErrorManager.addError(filename, ydefault.getLine(),
 									ydefault.getCol(), "default_match_fail",
 									YangBuiltInTypes.removeQuotes(value),
 									indirectTd.getFileName() + ":"
@@ -1649,7 +1649,7 @@ public class YANG_Type extends SimpleYangNode {
 				}
 				Matcher m = path_arg.matcher(value);
 				if (!m.matches()) {
-					YangErrorManager.tadd(filename, getLine(), getCol(),
+					YangErrorManager.addError(filename, getLine(), getCol(),
 							"bad_binary_expr", value, getType());
 				}
 			}
@@ -1663,7 +1663,7 @@ public class YANG_Type extends SimpleYangNode {
 			while (!match && i < enums.length)
 				match = enums[i++].compareTo(value) == 0;
 			if (!match)
-				YangErrorManager.tadd(ydefault.getFileName(), ydefault
+				YangErrorManager.addError(ydefault.getFileName(), ydefault
 						.getLine(), ydefault.getCol(), "default_mismatch",
 						value, getType(), getFileName(), getLine());
 		} else if (YangBuiltInTypes.bits
@@ -1674,11 +1674,11 @@ public class YANG_Type extends SimpleYangNode {
 			for (int i = 0; i < bv.length && binary; i++)
 				binary = bv[i] == '1' || bv[i] == '0';
 			if (!binary)
-				YangErrorManager.tadd(ydefault.getFileName(), ydefault
+				YangErrorManager.addError(ydefault.getFileName(), ydefault
 						.getLine(), ydefault.getCol(), "default_mismatch",
 						value, getType(), getFileName(), getLine());
 			if (value.length() != getFirstBitDefined(context, this))
-				YangErrorManager.tadd(ydefault.getFileName(), ydefault
+				YangErrorManager.addError(ydefault.getFileName(), ydefault
 						.getLine(), ydefault.getCol(), "default_mismatch",
 						value, getType(), getFileName(), getLine());
 		} else if (YangBuiltInTypes.union.compareTo(context
@@ -1693,21 +1693,21 @@ public class YANG_Type extends SimpleYangNode {
 						|| type.checkUnionDefaultValue(context, ut, ydefault);
 			}
 			if (!found)
-				YangErrorManager.tadd(filename, getLine(), getCol(),
+				YangErrorManager.addError(filename, getLine(), getCol(),
 						"bad_default_union", value, ut.getFileName(), ut
 								.getLine());
 
 		} else if (YangBuiltInTypes.empty.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (value.length() != getFirstBitDefined(context, this))
-				YangErrorManager.tadd(ydefault.getFileName(), ydefault
+				YangErrorManager.addError(ydefault.getFileName(), ydefault
 						.getLine(), ydefault.getCol(), "default_mismatch",
 						value, getType(), getFileName(), getLine());
 		} else if (YangBuiltInTypes.yboolean.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			value = YangBuiltInTypes.removeQuotesAndTrim(value);
 			if (value.compareTo("true") != 0 && value.compareTo("false") != 0)
-				YangErrorManager.tadd(ydefault.getFileName(), ydefault
+				YangErrorManager.addError(ydefault.getFileName(), ydefault
 						.getLine(), ydefault.getCol(), "default_mismatch",
 						value, getType(), getFileName(), getLine());
 		}
@@ -2192,11 +2192,11 @@ public class YANG_Type extends SimpleYangNode {
 			if (empty) {
 				if (context.getTypeDef(utype) != null) {
 					YANG_TypeDef td = context.getTypeDef(utype);
-					YangErrorManager.tadd(utype.getFileName(), utype.getLine(),
+					YangErrorManager.addError(utype.getFileName(), utype.getLine(),
 							utype.getCol(), "empty_union", td.getFileName(), td
 									.getLine());
 				} else {
-					YangErrorManager.tadd(utype.getFileName(), utype.getLine(),
+					YangErrorManager.addError(utype.getFileName(), utype.getLine(),
 							utype.getCol(), "empty_union", utype.getFileName(),
 							utype.getLine());
 				}

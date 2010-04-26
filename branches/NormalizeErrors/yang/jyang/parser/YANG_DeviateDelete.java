@@ -46,12 +46,12 @@ public class YANG_DeviateDelete extends Deviate {
 							getUnits().getUnits()) == 0)
 						leaf.deleteUnits();
 					else
-						YangErrorManager.tadd(getFileName(), getUnits()
+						YangErrorManager.addError(getFileName(), getUnits()
 								.getLine(), getUnits().getCol(),
 								"deviate_del_diff", "units", leaf.getBody(),
 								leaf.getFileName(), leaf.getLine());
 				} else
-					YangErrorManager.tadd(getFileName(), getUnits().getLine(),
+					YangErrorManager.addError(getFileName(), getUnits().getLine(),
 							getUnits().getCol(), "deviate_del", "units", leaf
 									.getBody(), leaf.getFileName(), leaf
 									.getLine());
@@ -62,18 +62,18 @@ public class YANG_DeviateDelete extends Deviate {
 							getUnits().getUnits()) == 0)
 						leaflist.deleteUnits();
 					else
-						YangErrorManager.tadd(getFileName(), getUnits()
+						YangErrorManager.addError(getFileName(), getUnits()
 								.getLine(), getUnits().getCol(),
 								"deviate_del_diff", "units",
 								leaflist.getBody(), leaflist.getFileName(),
 								leaflist.getLine());
 				} else
-					YangErrorManager.tadd(getFileName(), getUnits().getLine(),
+					YangErrorManager.addError(getFileName(), getUnits().getLine(),
 							getUnits().getCol(), "deviate_del", "units",
 							leaflist.getBody(), leaflist.getFileName(),
 							leaflist.getLine());
 			} else
-				YangErrorManager.tadd(getFileName(), getUnits().getLine(),
+				YangErrorManager.addError(getFileName(), getUnits().getLine(),
 						getUnits().getCol(), "bad_deviate_del", "units",
 						deviated.getNode().getBody(), deviated.getNode()
 								.getFileName(), deviated.getNode().getLine());
@@ -86,12 +86,12 @@ public class YANG_DeviateDelete extends Deviate {
 							getDefault().getDefault()) == 0)
 						leaf.deleteDefault();
 					else
-						YangErrorManager.tadd(getFileName(), getDefault()
+						YangErrorManager.addError(getFileName(), getDefault()
 								.getLine(), getDefault().getCol(),
 								"deviate_del_diff", "default", leaf.getBody(),
 								leaf.getFileName(), leaf.getLine());
 				} else
-					YangErrorManager.tadd(getFileName(),
+					YangErrorManager.addError(getFileName(),
 							getDefault().getLine(), getDefault().getCol(),
 							"deviate_del", "default", leaf.getBody(), leaf
 									.getFileName(), leaf.getLine());
@@ -103,19 +103,19 @@ public class YANG_DeviateDelete extends Deviate {
 							getDefault().getDefault()) == 0)
 						choice.deleteDefault();
 					else
-						YangErrorManager.tadd(getFileName(), getDefault()
+						YangErrorManager.addError(getFileName(), getDefault()
 								.getLine(), getDefault().getCol(),
 								"deviate_del_diff", "default",
 								choice.getBody(), choice.getFileName(), choice
 										.getLine());
 				} else
-					YangErrorManager.tadd(getFileName(),
+					YangErrorManager.addError(getFileName(),
 							getDefault().getLine(), getDefault().getCol(),
 							"deviate_del", "default", choice.getBody(), choice
 									.getFileName(), choice.getLine());
 
 			} else
-				YangErrorManager.tadd(getFileName(), getDefault().getLine(),
+				YangErrorManager.addError(getFileName(), getDefault().getLine(),
 						getDefault().getCol(), "bad_deviate_del", "default",
 						deviated.getNode().getBody(), deviated.getNode()
 								.getFileName(), deviated.getNode().getLine());
@@ -135,15 +135,15 @@ public class YANG_DeviateDelete extends Deviate {
 					if (vmusts.size() == getMusts().size())
 						mddef.deleteMusts(vmusts);
 					else
-						YangErrorManager.tadd(getFileName(), l, c,
+						YangErrorManager.addError(getFileName(), l, c,
 								"deviate_del_diff", "must", mddef.getBody(),
 								mddef.getFileName(), mddef.getLine());
 				} else
-					YangErrorManager.tadd(getFileName(), l, c, "deviate_del",
+					YangErrorManager.addError(getFileName(), l, c, "deviate_del",
 							"must", mddef.getBody(), mddef.getFileName(), mddef
 									.getLine());
 			} else
-				YangErrorManager.tadd(getFileName(), l, c, "bad_deviate_del",
+				YangErrorManager.addError(getFileName(), l, c, "bad_deviate_del",
 						"must", deviated.getNode().getBody(), deviated
 								.getNode().getFileName(), deviated.getNode()
 								.getLine());
@@ -164,15 +164,15 @@ public class YANG_DeviateDelete extends Deviate {
 					if (vuniques.size() == getUniques().size())
 						list.deleteUniques(vuniques);
 					else
-						YangErrorManager.tadd(getFileName(), l, c,
+						YangErrorManager.addError(getFileName(), l, c,
 								"deviate_del_diff", "unique", list.getBody(),
 								list.getFileName(), list.getLine());
 				} else
-					YangErrorManager.tadd(getFileName(), l, c, "deviate_del",
+					YangErrorManager.addError(getFileName(), l, c, "deviate_del",
 							"unique", list.getBody(), list.getFileName(), list
 									.getLine());
 			} else
-				YangErrorManager.tadd(getFileName(), l, c, "bad_deviate_del",
+				YangErrorManager.addError(getFileName(), l, c, "bad_deviate_del",
 						"unique", deviated.getNode().getBody(), deviated
 								.getNode().getFileName(), deviated.getNode()
 								.getLine());

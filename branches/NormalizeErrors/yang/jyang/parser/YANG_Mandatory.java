@@ -17,7 +17,7 @@ public class YANG_Mandatory extends SimpleYangNode {
 				|| m.compareTo(YangBuiltInTypes.yfalse) == 0)
 			mandatory = unquote(m);
 		else {
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(), "mand_exp", m);
+			YangErrorManager.addError(getFileName(), getLine(), getCol(), "mand_exp", m);
 			mandatory = m;
 		}
 	}

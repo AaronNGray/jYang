@@ -98,7 +98,7 @@ public class YangContext implements Serializable{
 			String k = ek.nextElement();
 			YANG_Type ptype = pendinguniontypes.get(k);
 			if (spectypes.get(k) == null) {
-				YangErrorManager.tadd(ptype.getFileName(), ptype.getLine(),
+				YangErrorManager.addError(ptype.getFileName(), ptype.getLine(),
 						ptype.getCol(), "unlnow_type", ptype.getType());
 			}
 		}
@@ -349,7 +349,7 @@ public class YangContext implements Serializable{
 		// Are we trying to redefine a built-in type ?
 
 		if (YangBuiltInTypes.isBuiltIn(g.getGrouping())) {
-			YangErrorManager.tadd(spec.getName(), g.getLine(), g.getCol(),
+			YangErrorManager.addError(spec.getName(), g.getLine(), g.getCol(),
 					"grouping");
 			return;
 		}
@@ -367,7 +367,7 @@ public class YangContext implements Serializable{
 		// Are we trying to redefine a built-in type ?
 
 		if (YangBuiltInTypes.isBuiltIn(td.getTypeDef())) {
-			YangErrorManager.tadd(td.getFileName(), td.getLine(), td.getCol(),
+			YangErrorManager.addError(td.getFileName(), td.getLine(), td.getCol(),
 					"illegal_builtin", td.getBody());
 			return;
 		}
@@ -375,7 +375,7 @@ public class YangContext implements Serializable{
 		// Is there a type statement ?
 
 		if (td.getType() == null) {
-			YangErrorManager.tadd(getSpec().getName(), td.getLine(), td
+			YangErrorManager.addError(getSpec().getName(), td.getLine(), td
 					.getCol(), "type_expec");
 			return;
 		}
@@ -405,7 +405,7 @@ public class YangContext implements Serializable{
 			if (unionspec != null)
 				pendingUnionTypes(unionspec, pendinguniontype, imports, spec);
 			else
-				YangErrorManager.tadd(type.getFileName(), type.getLine(), type
+				YangErrorManager.addError(type.getFileName(), type.getLine(), type
 						.getCol(), "union_no_type");
 		}
 		return cn;
@@ -450,7 +450,7 @@ public class YangContext implements Serializable{
 				return getModuleSpecName() + ":" + suffix;
 		} else {
 			if (YangBuiltInTypes.isBuiltIn(suffix))
-				YangErrorManager.tadd(getModuleSpecName(), line, col,
+				YangErrorManager.addError(getModuleSpecName(), line, col,
 						"illegal_builtin", prefix + ":" + suffix);
 			boolean found = false;
 			if (getLocalPrefix() != null)
@@ -476,7 +476,7 @@ public class YangContext implements Serializable{
 					}
 				}
 				if (!found) {
-					YangErrorManager.tadd(getModuleSpecName(), line, col,
+					YangErrorManager.addError(getModuleSpecName(), line, col,
 							"not_imported_prefix", prefix);
 				}
 			}

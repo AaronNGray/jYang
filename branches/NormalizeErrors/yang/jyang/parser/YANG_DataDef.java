@@ -30,7 +30,7 @@ public abstract class YANG_DataDef extends FeaturedBody {
 			b_when = true;
 			this.when = w;
 		} else
-			YangErrorManager.tadd(filename, w.getLine(), w.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, w.getLine(), w.getCol(), "unex_kw",
 					"when");
 	}
 
@@ -103,7 +103,7 @@ public abstract class YANG_DataDef extends FeaturedBody {
 						if (ytn != ytn2
 								&& ytn.getNode().getBody().compareTo(
 										ytn2.getNode().getBody()) == 0)
-							YangErrorManager.tadd(uses.getFileName(), uses
+							YangErrorManager.addError(uses.getFileName(), uses
 									.getLine(), uses.getCol(), "dup_child", ytn
 									.getNode().getBody(), ytn.getNode()
 									.getFileName(), ytn.getNode().getLine());

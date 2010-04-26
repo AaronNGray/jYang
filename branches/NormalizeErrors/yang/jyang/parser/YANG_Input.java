@@ -33,7 +33,7 @@ public class YANG_Input extends Io {
 
 	public void check(YangContext context) {
 		if (datadefs.size() == 0)
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"empty_input");
 		/*
 		 * for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et

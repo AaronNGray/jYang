@@ -45,7 +45,7 @@ public class YANG_Deviation extends YANG_Body {
 			this.deviateNotSupported = d;
 			b_deviatenotsupported = true;
 		} else
-			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, d.getLine(), d.getCol(), "unex_kw",
 					"deviate-not-supported");
 	}
 

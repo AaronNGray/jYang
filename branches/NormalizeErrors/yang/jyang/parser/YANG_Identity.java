@@ -37,7 +37,7 @@ public class YANG_Identity extends StatuedBody {
 			base = b;
 			b_base = true;
 		} else
-			YangErrorManager.tadd(filename, b.getLine(), b.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, b.getLine(), b.getCol(), "unex_kw",
 					"base");
 	}
 
@@ -52,7 +52,7 @@ public class YANG_Identity extends StatuedBody {
 			YANG_Base base = getBase();
 			YANG_Body b = context.getIdentity(base);
 			if (b == null)
-				YangErrorManager.tadd(base.getFileName(), base.getLine(), base
+				YangErrorManager.addError(base.getFileName(), base.getLine(), base
 						.getCol(), "base_not_found", base.getBase());
 			else
 				checkRecursion(context, this, base);
@@ -68,7 +68,7 @@ public class YANG_Identity extends StatuedBody {
 			if (b instanceof YANG_Identity) {
 				YANG_Identity bid = (YANG_Identity) b;
 				if (bid.getIdentity().compareTo(id.getIdentity()) == 0)
-					YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+					YangErrorManager.addError(getFileName(), getLine(), getCol(),
 							"circ_identity", getBody());
 				else {
 					if (bid.getBase() != null)

@@ -26,7 +26,7 @@ public abstract class Deviate extends SimpleYangNode {
 			this.units = u;
 			b_units = true;
 		} else
-			YangErrorManager.tadd(filename, u.getLine(), u.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, u.getLine(), u.getCol(), "unex_kw",
 					"units");
 	}
 
@@ -39,7 +39,7 @@ public abstract class Deviate extends SimpleYangNode {
 			this.ydefault = d;
 			b_default = true;
 		} else
-			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, d.getLine(), d.getCol(), "unex_kw",
 					"default");
 	}
 

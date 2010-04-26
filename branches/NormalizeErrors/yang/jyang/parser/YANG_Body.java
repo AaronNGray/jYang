@@ -73,7 +73,7 @@ public abstract class YANG_Body extends DocumentedNode {
 			for (YANG_Case ycase : choice.getCases()) {
 				for (YANG_ShortCase ysc : choice.getShortCases()) {
 					if (ysc.getBody().compareTo(ycase.getBody()) == 0) {
-						YangErrorManager.tadd(ysc.getFileName(), ysc.getLine(),
+						YangErrorManager.addError(ysc.getFileName(), ysc.getLine(),
 								ysc.getCol(), "dup_child", ysc.getBody(), ycase
 										.getFileName(), ycase.getLine());
 					}

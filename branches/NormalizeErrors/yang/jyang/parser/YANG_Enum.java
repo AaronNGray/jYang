@@ -22,13 +22,13 @@ public class YANG_Enum extends StatuedNode {
 			enumid = e.trim();
 		else {
 			if (e.charAt(e.indexOf('\"') + 1) == ' ')
-				YangErrorManager.tadd(filename, getLine(), getCol(),
+				YangErrorManager.addError(filename, getLine(), getCol(),
 						"bad_value", "enum", e, "leading whitespace");
 			else if (e.charAt(e.lastIndexOf('\"') - 1) == ' ')
-				YangErrorManager.tadd(filename, getLine(), getCol(),
+				YangErrorManager.addError(filename, getLine(), getCol(),
 						"bad_value", "enum", e, "trailing whitespace");
 			else if (e.equals("\"\""))
-				YangErrorManager.tadd(filename, getLine(), getCol(),
+				YangErrorManager.addError(filename, getLine(), getCol(),
 						"bad_value", "enum", e, "empty string");
 			// even its a bad value
 			// to provide something if asked
@@ -45,7 +45,7 @@ public class YANG_Enum extends StatuedNode {
 			value = v;
 			b_value = true;
 		} else
-			YangErrorManager.tadd(filename, v.getLine(), v.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, v.getLine(), v.getCol(), "unex_kw",
 					"value");
 	}
 

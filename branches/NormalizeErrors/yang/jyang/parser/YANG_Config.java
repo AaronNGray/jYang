@@ -18,7 +18,7 @@ public class YANG_Config extends SimpleYangNode {
 		String ct = unquote(c);
 		if (ct.compareTo(YangBuiltInTypes.ytrue) != 0
 				&& ct.compareTo(YangBuiltInTypes.yfalse) != 0)
-			YangErrorManager.tadd(filename, getLine(), getCol(), "config_expr",
+			YangErrorManager.addError(filename, getLine(), getCol(), "config_expr",
 					ct);
 		config = c;
 	}

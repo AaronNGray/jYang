@@ -26,7 +26,7 @@ public abstract class DocumentedNode extends SimpleYangNode {
 			b_description = true;
 			description = d;
 		} else
-			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, d.getLine(), d.getCol(), "unex_kw",
 					"description");
 	}
 
@@ -39,7 +39,7 @@ public abstract class DocumentedNode extends SimpleYangNode {
 			b_reference = true;
 			reference = r;
 		} else
-			YangErrorManager.tadd(filename, r.getLine(), r.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, r.getLine(), r.getCol(), "unex_kw",
 					"reference");
 	}
 

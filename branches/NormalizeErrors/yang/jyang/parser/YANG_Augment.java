@@ -54,7 +54,7 @@ public class YANG_Augment extends DataDefBody {
 		if (m.matches())
 			augment = aa;
 		else
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"bad_aug_expr", aa);
 	}
 
@@ -75,7 +75,7 @@ public class YANG_Augment extends DataDefBody {
 			b_when = true;
 			this.when = w;
 		} else
-			YangErrorManager.tadd(filename, w.getLine(), w.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, w.getLine(), w.getCol(), "unex_kw",
 					"when");
 	}
 
@@ -117,7 +117,7 @@ public class YANG_Augment extends DataDefBody {
 				found = yimport.getPrefix().getPrefix().compareTo(prefix) == 0;
 			}
 			if (!found) {
-				YangErrorManager.tadd(context.getSpec().getName(), getLine(),
+				YangErrorManager.addError(context.getSpec().getName(), getLine(),
 						getCol(), "ipnf", prefix);
 				return;
 			}
@@ -126,14 +126,14 @@ public class YANG_Augment extends DataDefBody {
 				if (nids[i].indexOf(':') != -1) {
 					if (prefix.compareTo(nids[i].substring(0, nids[i]
 							.indexOf(':'))) != 0) {
-						YangErrorManager.tadd(context.getSpec().getName(),
+						YangErrorManager.addError(context.getSpec().getName(),
 								getLine(), getCol(), "cp", getBody());
 						return;
 					}
 
 				} else {
 					if (!localprefix) {
-						YangErrorManager.tadd(context.getSpec().getName(),
+						YangErrorManager.addError(context.getSpec().getName(),
 								getLine(), getCol(), "cp", getBody());
 						return;
 					}
@@ -146,7 +146,7 @@ public class YANG_Augment extends DataDefBody {
 				.hasMoreElements();) {
 			YANG_Case ycase = ec.nextElement();
 			if (caseids.contains(ycase.getCase())) {
-				YangErrorManager.tadd(context.getSpec().getName(), ycase
+				YangErrorManager.addError(context.getSpec().getName(), ycase
 						.getLine(), ycase.getCol(), "ad", ycase.getBody());
 			} else
 				caseids.add(ycase.getCase());
@@ -157,7 +157,7 @@ public class YANG_Augment extends DataDefBody {
 	public void checkAugment(YANG_Body augmented_node) {
 
 		if (getCases().size() != 0 && !(augmented_node instanceof YANG_Choice)) {
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"bad_choice_aug", augmented_node.getBody(), augmented_node
 							.getFileName(), augmented_node.getLine());
 		}
@@ -202,7 +202,7 @@ public class YANG_Augment extends DataDefBody {
 		} else if (augmented_node instanceof IoDataDef) {
 		} else {
 
-			YangErrorManager.tadd(filename, getLine(), getCol(),
+			YangErrorManager.addError(filename, getLine(), getCol(),
 					"not_augmentable", augmented_node.getBody(), augmented_node
 							.getFileName(), augmented_node.getLine());
 		}
@@ -224,7 +224,7 @@ public class YANG_Augment extends DataDefBody {
 			}
 		}
 		if (found)
-			YangErrorManager.tadd(augddef.getFileName(), augddef.getLine(),
+			YangErrorManager.addError(augddef.getFileName(), augddef.getLine(),
 					augddef.getCol(), "dup_child", augddef.getBody(), targddef
 							.getFileName(), targddef.getLine());
 	}
@@ -247,7 +247,7 @@ public class YANG_Augment extends DataDefBody {
 			}
 		}
 		if (found)
-			YangErrorManager.tadd(ayc.getFileName(), ayc.getLine(), ayc.getCol(),
+			YangErrorManager.addError(ayc.getFileName(), ayc.getLine(), ayc.getCol(),
 					"dup_child", ayc.getBody(), yc.getFileName(), yc.getLine());
 	}
 

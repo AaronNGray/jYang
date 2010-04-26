@@ -16,7 +16,7 @@ public class YANG_Status extends SimpleYangNode {
 		String st = unquote(s);
 		if (st.compareTo("current") != 0 && st.compareTo("obsolete") != 0
 				&& st.compareTo("deprecated") != 0)
-			YangErrorManager.tadd(filename, getLine(), getCol(), "status_exp");
+			YangErrorManager.addError(filename, getLine(), getCol(), "status_exp");
 		status = st;
 	}
 

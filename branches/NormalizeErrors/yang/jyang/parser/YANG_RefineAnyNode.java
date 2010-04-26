@@ -50,7 +50,7 @@ public YANG_RefineAnyNode(int id) {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"mandatory");
 	}
 
@@ -60,7 +60,7 @@ public YANG_RefineAnyNode(int id) {
 
 	public void setMinElement(YANG_MinElement m) {
 		if (b_min)
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"min");
 		else {
 			b_min = true;
@@ -73,7 +73,7 @@ public YANG_RefineAnyNode(int id) {
 			b_presence = true;
 			presence = p;
 		} else
-			YangErrorManager.tadd(filename, p.getLine(), p.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, p.getLine(), p.getCol(), "unex_kw",
 					"presence");
 	}
 
@@ -87,7 +87,7 @@ public YANG_RefineAnyNode(int id) {
 
 	public void setMaxElement(YANG_MaxElement m) {
 		if (b_max)
-			YangErrorManager.tadd(filename, m.getLine(), m.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
 					"max");
 		else {
 			b_max = true;
@@ -103,7 +103,7 @@ public YANG_RefineAnyNode(int id) {
 			b_default = true;
 			ydefault = d;
 		} else
-			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, d.getLine(), d.getCol(), "unex_kw",
 					"default");
 	}
 
@@ -132,7 +132,7 @@ public YANG_RefineAnyNode(int id) {
 			b_config = true;
 			config = c;
 		} else
-			YangErrorManager.tadd(filename, c.getLine(), c.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, c.getLine(), c.getCol(), "unex_kw",
 					"config");
 	}
 

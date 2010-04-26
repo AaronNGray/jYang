@@ -30,10 +30,10 @@ public abstract class FeaturedBody extends StatuedBody {
 		for (YANG_IfFeature iff : ifFeatures) {
 			YANG_Body b = context.getFeature(iff);
 			if (b == null)
-				YangErrorManager.tadd(iff.getFileName(), iff.getLine(), iff
+				YangErrorManager.addError(iff.getFileName(), iff.getLine(), iff
 						.getCol(), "feature_not_found", iff.getIfFeature());
 			else if (!(b instanceof YANG_Feature))
-				YangErrorManager.tadd(iff.getFileName(), iff.getLine(), iff
+				YangErrorManager.addError(iff.getFileName(), iff.getLine(), iff
 						.getCol(), "feature_not_found", iff.getIfFeature());
 		}
 	}

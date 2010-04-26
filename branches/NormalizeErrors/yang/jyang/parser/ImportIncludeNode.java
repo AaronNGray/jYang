@@ -24,7 +24,7 @@ public abstract class ImportIncludeNode extends SimpleYangNode {
 			this.revision = r;
 			b_revision = true;
 		} else
-			YangErrorManager.tadd(filename, r.getLine(), r.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, r.getLine(), r.getCol(), "unex_kw",
 					"revision");
 	}
 

@@ -55,7 +55,7 @@ public class YANG_Rpc extends TypedefGroupingBody {
 			b_input = true;
 			input = i;
 		} else
-			YangErrorManager.tadd(filename, i.getLine(), i.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, i.getLine(), i.getCol(), "unex_kw",
 					"input");
 	}
 
@@ -68,7 +68,7 @@ public class YANG_Rpc extends TypedefGroupingBody {
 			b_output = true;
 			output = o;
 		} else
-			YangErrorManager.tadd(filename, o.getLine(), o.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, o.getLine(), o.getCol(), "unex_kw",
 					"output");
 	}
 

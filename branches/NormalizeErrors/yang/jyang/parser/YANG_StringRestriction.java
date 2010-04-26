@@ -42,7 +42,7 @@ public class YANG_StringRestriction extends SimpleYangNode {
 			b_length = true;
 			length = l;
 		} else
-			YangErrorManager.tadd(filename, l.getLine(), l.getCol(), "length");
+			YangErrorManager.addError(filename, l.getLine(), l.getCol(), "length");
 	}
 
 	public YANG_Length getLength() {

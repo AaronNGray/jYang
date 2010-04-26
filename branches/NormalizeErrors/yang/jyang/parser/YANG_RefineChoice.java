@@ -41,7 +41,7 @@ public class YANG_RefineChoice extends MandatoryRefineNode {
 			b_default = true;
 			ydefault = d;
 		} else
-			YangErrorManager.tadd(filename, d.getLine(), d.getCol(), "unex_kw",
+			YangErrorManager.addError(filename, d.getLine(), d.getCol(), "unex_kw",
 					"default");
 	}
 

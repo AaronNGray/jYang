@@ -61,7 +61,7 @@ public class YANG_Module extends YANG_Specification {
 				b_yangversion = true;
 				yangversion = (YANG_YangVersion) m;
 			} else
-				YangErrorManager.tadd(filename, m.getLine(), m.getCol(),
+				YangErrorManager.addError(filename, m.getLine(), m.getCol(),
 						"unex_kw", "version");
 
 		}
@@ -70,7 +70,7 @@ public class YANG_Module extends YANG_Specification {
 				b_namespace = true;
 				namespace = (YANG_NameSpace) m;
 			} else
-				YangErrorManager.tadd(filename, m.getLine(), m.getCol(),
+				YangErrorManager.addError(filename, m.getLine(), m.getCol(),
 						"unex_kw", "namespace");
 
 		}
@@ -79,7 +79,7 @@ public class YANG_Module extends YANG_Specification {
 				b_prefix = true;
 				prefix = (YANG_Prefix) m;
 			} else
-				YangErrorManager.tadd(filename, m.getLine(), m.getCol(),
+				YangErrorManager.addError(filename, m.getLine(), m.getCol(),
 						"unex_kw", "prefix");
 
 		}
@@ -92,10 +92,10 @@ public class YANG_Module extends YANG_Specification {
 	 */
 	public void checkHeader(String[] p) {
 		if (!b_prefix)
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"expected", "prefix");
 		if (!b_namespace)
-			YangErrorManager.tadd(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"expected_kw", "namespace");
 	}
 
@@ -114,13 +114,13 @@ public class YANG_Module extends YANG_Specification {
 				}
 			}
 			if (!(includedspec instanceof YANG_SubModule)) {
-				YangErrorManager.tadd(getFileName(), l, c, "not_submodule",
+				YangErrorManager.addError(getFileName(), l, c, "not_submodule",
 						includedspec.getName());
 			} else {
 				YANG_SubModule submod = (YANG_SubModule) includedspec;
 
 				if (!submod.getBelong().getBelong().equals(getModule()))
-					YangErrorManager.tadd(getFileName(), l, c, "not_belong",
+					YangErrorManager.addError(getFileName(), l, c, "not_belong",
 							submod.getSubModule(), getName());
 				else
 					includeds.add(submod);

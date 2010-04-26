@@ -97,7 +97,7 @@ public class YANG_Uses extends YANG_DataDef {
 
 		super.check(context);
 		if (!context.isGroupingDefined(this)) {
-			YangErrorManager.tadd(filename, getLine(), getCol(), "unknown",
+			YangErrorManager.addError(filename, getLine(), getCol(), "unknown",
 					"grouping", uses);
 			return;
 		} else {
@@ -123,7 +123,7 @@ public class YANG_Uses extends YANG_DataDef {
 						Set<YANG_Grouping> s = new HashSet<YANG_Grouping>();
 						s.add(grouping);
 						if (!checkRecursiveUses(context, s, used)) {
-							YangErrorManager.tadd(getFileName(), getLine(),
+							YangErrorManager.addError(getFileName(), getLine(),
 									getCol(), "rec_grouping", uses);
 							setGrouping(null);
 							setRecursive(true);
