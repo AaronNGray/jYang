@@ -7,6 +7,17 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 	protected yang parser;
 	private Vector<YANG_Unknown> unknowns = new Vector<YANG_Unknown>();
 	protected String filename;
+	private String label;
+	
+	
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
 
 	private boolean isRootNode = false;
 

@@ -15,6 +15,10 @@ public interface YangNode extends Node {
     public String getFileName();
     
     public void setFileName(String f);
+    
+    public void setLabel(String s);
+    
+    public String getLabel();
 
 
 }
