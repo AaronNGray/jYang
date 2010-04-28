@@ -92,7 +92,7 @@ public class YANG_Module extends YANG_Specification {
 	 */
 	public void checkHeader(String[] p) {
 		if (!b_prefix)
-			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine()+1, getCol(),
 					"expected", "prefix");
 		if (!b_namespace)
 			YangErrorManager.addError(getFileName(), getLine(), getCol(),
