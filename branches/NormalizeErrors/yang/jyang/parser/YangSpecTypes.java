@@ -136,8 +136,8 @@ public class YangSpecTypes implements Serializable {
 					}
 					if (td != null) {
 						td.setCorrect(false);
-						YangErrorManager.addError(td.getFileName(), td.getLine(),
-								td.getCol(), "unknown_type");
+						YangErrorManager.addError(td.getFileName(), td
+								.getLine(), td.getCol(), "unknown_type", td.getType().getType());
 					}
 				} /*
 				 * else { String der = deriveds.get(basetype); if
@@ -157,8 +157,10 @@ public class YangSpecTypes implements Serializable {
 			if (!YangBuiltInTypes.isBuiltIn(basetype)) {
 				Vector<String> chain = new Vector<String>();
 				chain.add(basetype);
-				YANG_TypeDef origin = typedefs.get(deriveds.get(basetype));
-				checkChain(origin, chain, deriveds.get(basetype));
+				if (deriveds.get(basetype) != null) {
+					YANG_TypeDef origin = typedefs.get(deriveds.get(basetype));
+					checkChain(origin, chain, deriveds.get(basetype));
+				}
 			}
 		}
 	}
@@ -175,8 +177,8 @@ public class YangSpecTypes implements Serializable {
 					td.setCorrect(false);
 				}
 
-				YangErrorManager.addError(o.getFileName(), o.getLine(), o.getCol(),
-						"circ_dep", unprefix(d));
+				YangErrorManager.addError(o.getFileName(), o.getLine(), o
+						.getCol(), "circ_dep", unprefix(d));
 
 				return false;
 			} else

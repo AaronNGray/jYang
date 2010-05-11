@@ -1,0 +1,18 @@
+module file {
+
+	namespace "conf";
+	prefix f;
+	
+	grouping  file {
+	 
+		container  file  {   
+			leaf name {  type string { l length 2se..-12 ;  }  }      
+			leaf rights { sfze type  string; }
+			leaf owner { type string }
+			leaf group g  { type string; }
+		}
+		
+		leaf a { type l  int8}
+	}
+	typedef t { type stridng; }
+}

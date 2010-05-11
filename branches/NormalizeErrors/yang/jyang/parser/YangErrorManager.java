@@ -106,7 +106,6 @@ public class YangErrorManager {
 			try {
 				messages = ResourceBundle
 						.getBundle("jyang.parser.MessagesBundle.properties");
-				System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
 			} catch (MissingResourceException mre1) {
 				Logger
@@ -159,5 +158,14 @@ public class YangErrorManager {
 
 	public static TreeSet<Error> getErrors() {
 		return errors;
+	}
+	
+	public static void removeFromLine(int l){
+		for (Iterator<Error> i = errors.iterator(); i.hasNext();) {
+			Error err = i.next();
+			if (err.getLine() > l){
+				errors.remove(err);
+			}
+		}
 	}
 }

@@ -1,0 +1,11 @@
+module service {
+
+	namespace "service";
+	prefix svc;
+	
+	grouping service {
+		container service {
+			leaf name
+		}	
+	}
+}

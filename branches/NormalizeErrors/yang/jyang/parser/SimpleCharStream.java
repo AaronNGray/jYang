@@ -29,7 +29,7 @@ public class SimpleCharStream
   static protected char[] buffer;
   static protected int maxNextCharInd = 0;
   static protected int inBuf = 0;
-  static protected int tabSize = 8;
+  static protected int tabSize = 4;
 
   static public void setTabSize(int i) { tabSize = i; }
   static public int getTabSize(int i) { return tabSize; }

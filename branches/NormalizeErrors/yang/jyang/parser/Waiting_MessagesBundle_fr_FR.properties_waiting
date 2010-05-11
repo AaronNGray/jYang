@@ -218,7 +218,7 @@ when = when already defined
 
 #### expression errors messages
 
-pattern_exp = pattern error : {0} 
+pattern_exp = the pattern "{0}" is not a regular one
 prefix_too_long = prefix "{0}" is too much long (> 63 chars)
 prefix_exp = illegal prefix value  "{0}" 
 length_exp = BAD_LENGTH_EXP
@@ -234,7 +234,6 @@ mand_exp = bad mandatory expression : {0}
 ### expected messages
 
 expected_kw = keyword {0} expected
-token_exp = {0} expected
 
 
 alert = !!!!!!!!!!!!!!!!! GRAVE ERROR : {0}
