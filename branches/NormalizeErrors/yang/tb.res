@@ -33,7 +33,7 @@ f.yang:17;3:node x is config "true" and its parent is config "false"
 f.yang:36;5:empty type for the key z2 of the list ff
 f.yang:38;5:unique node foo not found in the list ff
 ../../pyangTests/test_bad/augment-super.yang
-augment-super.yang:8;17:duplicate child name : ifEntry is already defined at augment.yang:7
+augment-super.yang:8;9:duplicate child name : ifEntry is already defined at augment.yang:7
 ../../pyangTests/test_bad/augment.yang
 ../../pyangTests/test_bad/b.yang
 a.yang:10;5:typedef xx is already defined at a.yang:9
@@ -70,6 +70,7 @@ f.yang:17;3:node x is config "true" and its parent is config "false"
 f.yang:36;5:empty type for the key z2 of the list ff
 f.yang:38;5:unique node foo not found in the list ff
 ../../pyangTests/test_bad/bad-uses.yang
+bad-uses.yang:6;5:keyword type expected
 bad-uses.yang:7;7:unexpected keyword "uses"
 ../../pyangTests/test_bad/c.yang
 a.yang:10;5:typedef xx is already defined at a.yang:9
@@ -145,7 +146,13 @@ f.yang:17;3:node x is config "true" and its parent is config "false"
 f.yang:36;5:empty type for the key z2 of the list ff
 f.yang:38;5:unique node foo not found in the list ff
 ../../pyangTests/test_bad/g.yang
+g.yang:12;9:config of the list a is "true" but no key is defined
 g.yang:30;15:unexpected keyword "d"
+g.yang:34;5:augmented node /foo/d/x not found
+g.yang:47;17:default value "-1" does not match its base type at g.yang:41 - range error for the inherited default value for range defined at g.yang:42 
+g.yang:58;17:default value "1" does not match its base type - range error for the default value for range defined at g.yang:52 
+g.yang:64;21:default value "2" does not match its base type - range error for the default value for range defined at g.yang:52 
+g.yang:68;9:unexpected keyword "input"
 ../../pyangTests/test_bad/id.yang
 id.yang:9;3:circular feature references for "x" from id.yang:13
 id.yang:13;3:circular feature references for "y" from id.yang:9
@@ -167,8 +174,8 @@ list2.yang:21;11:mandatory node "m" in the default case of the choice "test" at 
 ../../pyangTests/test_bad/lists.yang
 lists.yang:13;5:config value of the key "observed-speed" is not the same as the list interface at lists.yang:5
 ../../pyangTests/test_bad/rpc.yang
-rpc.yang:6;17:a rpc input must have at least one data definition
-rpc.yang:8;17:a rpc output must have at least one data definition
+rpc.yang:6;9:a rpc input must have at least one data definition
+rpc.yang:8;9:a rpc output must have at least one data definition
 ../../pyangTests/test_bad/separator.yang
 ../../pyangTests/test_bad/smi1.yang
 ../../pyangTests/test_bad/submodule1.yang
@@ -194,7 +201,7 @@ xt1.yang:285;5:augmented node /sub2 not found
 xt1.yang:305;7:the node r at xt1.yang:303 can not be augmented
 xt1.yang:311;9:duplicate child name : c is already defined at xt1.yang:295
 xt1.yang:320;7:bad uses augment expression : /bar/interface
-xt3.yang:1;1:prefix expected
+xt3.yang:2;1:prefix expected
 xt4.yang:12;5:too many fraction digit : 1.506 for 2 digit(s) max
 xt4.yang:25;5:subtyping error -INF..3.11
 xt4.yang:26;7:default value "3.14" does not match its base type at xt4.yang:18 - range error for the inherited default value for range defined at xt4.yang:25 
@@ -203,7 +210,7 @@ xt4.yang:70;7:illegal delete a different default statement from the node a at xt
 xt4.yang:71;8:illegal delete a different must statement from the node a at xt4.yang:52
 ../../pyangTests/test_bad/xt1s1.yang
 xt1.yang:320;7:bad uses augment expression : /bar/interface
-xt3.yang:1;1:prefix expected
+xt3.yang:2;1:prefix expected
 xt4.yang:12;5:too many fraction digit : 1.506 for 2 digit(s) max
 xt4.yang:25;5:subtyping error -INF..3.11
 xt4.yang:26;7:default value "3.14" does not match its base type at xt4.yang:18 - range error for the inherited default value for range defined at xt4.yang:25 
@@ -215,7 +222,7 @@ xt1s2:1;1:file "foo".yang not found
 xt1s2.yang:2;3:the name foo is not a module name
 ../../pyangTests/test_bad/xt2.yang
 ../../pyangTests/test_bad/xt3.yang
-xt3.yang:1;1:prefix expected
+xt3.yang:2;1:prefix expected
 xt4.yang:12;5:too many fraction digit : 1.506 for 2 digit(s) max
 xt4.yang:25;5:subtyping error -INF..3.11
 xt4.yang:26;7:default value "3.14" does not match its base type at xt4.yang:18 - range error for the inherited default value for range defined at xt4.yang:25 
@@ -230,10 +237,10 @@ xt4.yang:31;5:require-instance is not allowed for the base type dc1
 xt4.yang:70;7:illegal delete a different default statement from the node a at xt4.yang:52
 xt4.yang:71;8:illegal delete a different must statement from the node a at xt4.yang:52
 ../../pyangTests/test_bad/yt1.yang
-yt1.yang:22;9:default value "7" does not match its base type - range error for the default value for range defined at yt1.yang:25 
+yt1.yang:22;5:default value "7" does not match its base type - range error for the default value for range defined at yt1.yang:25 
 yt1.yang:38;9:default value : foo is not an integer
 ../../pyangTests/test_bad/yt2.yang
-yt1.yang:22;9:default value "7" does not match its base type - range error for the default value for range defined at yt1.yang:25 
+yt1.yang:22;5:default value "7" does not match its base type - range error for the default value for range defined at yt1.yang:25 
 yt1.yang:38;9:default value : foo is not an integer
 ../../pyangTests/test_bad/yt3a.yang
 ../../pyangTests/test_bad/yt4.yang

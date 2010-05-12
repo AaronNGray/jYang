@@ -455,6 +455,19 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 	public YangTreeNode buildTreeNode(String[] p, Vector<String> builded,
 			Hashtable<String, YangTreeNode> importedtreenodes) {
+		
+		
+		for (Enumeration<YANG_Specification> ei = getImportedModules(p)
+					.elements(); ei.hasMoreElements();) {
+				YANG_Specification spec = ei.nextElement();
+				if (spec != null)
+					if (!builded.contains(spec.getName())) {
+						builded.add(spec.getName());
+						YangTreeNode itn = spec.buildTreeNode(p, builded,
+								importedtreenodes);
+						importedtreenodes.put(spec.getName(), itn);
+					}
+			}
 
 		YangTreeNode root = new YangTreeNode();
 
@@ -566,10 +579,12 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			YANG_Body augmentedbody = root.getBodyInTree(this, root,
 					importedtreenodes, taugs[i]);
 			if (augmentedbody == null) {
+					YANG_Body augmented = null;
 				for (String pref : importedtreenodes.keySet()) {
 					YangTreeNode ytn = importedtreenodes.get(pref);
-					augmentedbody = ytn.getBodyInTree(this, root,
+					augmented = ytn.getBodyInTree(this, root,
 							importedtreenodes, taugs[i]);
+					if (augmented != null) augmentedbody = augmented;
 				}
 				if (augmentedbody == null) {
 					YangErrorManager.addError(filename, vaugs.get(i).getLine(),
@@ -613,17 +628,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				}
 			}
 
-		for (Enumeration<YANG_Specification> ei = getImportedModules(p)
-				.elements(); ei.hasMoreElements();) {
-			YANG_Specification spec = ei.nextElement();
-			if (spec != null)
-				if (!builded.contains(spec.getName())) {
-					builded.add(spec.getName());
-					YangTreeNode itn = spec.buildTreeNode(p, builded,
-							importedtreenodes);
-					importedtreenodes.put(spec.getName(), itn);
-				}
-		}
+		
 
 		return root;
 	}
