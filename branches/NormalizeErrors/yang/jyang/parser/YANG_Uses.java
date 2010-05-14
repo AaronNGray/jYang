@@ -25,7 +25,7 @@ import java.util.*;
 public class YANG_Uses extends YANG_DataDef {
 
 	private String uses = null;
-	private Vector<YANG_Refine> refinements = new Vector<YANG_Refine>();
+	private Vector<YANG_RefineAnyNode> refinements = new Vector<YANG_RefineAnyNode>();
 	private Vector<YANG_UsesAugment> usesaugments = new Vector<YANG_UsesAugment>();
 
 	/**
@@ -68,11 +68,11 @@ public class YANG_Uses extends YANG_DataDef {
 				|| usesaugments.size() != 0;
 	}
 
-	public void addRefinement(YANG_Refine r) {
+	public void addRefinement(YANG_RefineAnyNode r) {
 		refinements.add(r);
 	}
 
-	public Vector<YANG_Refine> getRefinements() {
+	public Vector<YANG_RefineAnyNode> getRefinements() {
 		return refinements;
 	}
 
@@ -169,7 +169,7 @@ public class YANG_Uses extends YANG_DataDef {
 		cl.setLine(getLine());
 		for (YANG_UsesAugment u : getUsesAugments())
 			cl.addUsesAugment(u);
-		for (YANG_Refine r : getRefinements())
+		for (YANG_RefineAnyNode r : getRefinements())
 			cl.addRefinement(r);
 		if (getDescription() != null)
 			cl.setDescription(getDescription());

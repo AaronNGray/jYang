@@ -807,7 +807,7 @@ public class Yang2Yin {
 						+ "\n";
 			if (uses.getReference() != null)
 				result += gReference(uses.getReference(), prefix + "  ") + "\n";
-			for (Enumeration<YANG_Refine> er = uses.getRefinements().elements(); er
+			for (Enumeration<YANG_RefineAnyNode> er = uses.getRefinements().elements(); er
 					.hasMoreElements();)
 				result += gRefinement(er.nextElement(), prefix + "  ") + "\n";
 			result += prefix + "</uses>";
@@ -937,18 +937,38 @@ public class Yang2Yin {
 
 	private String gRefinement(YANG_Refine r, String prefix) {
 		if (r instanceof YANG_RefineAnyNode)
-			return gRefineContainer((YANG_RefineAnyNode) r, prefix);
-		if (r instanceof YANG_RefineAnyNode)
-			return gRefineLeaf((YANG_RefineAnyNode) r, prefix);
-		if (r instanceof YANG_RefineAnyNode)
-			return gRefineLeafList((YANG_RefineAnyNode) r, prefix);
-		if (r instanceof YANG_RefineAnyNode)
-			return gRefineList((YANG_RefineAnyNode) r, prefix);
-		if (r instanceof YANG_RefineAnyNode)
-			return gRefineChoice((YANG_RefineAnyNode) r, prefix);
-		if (r instanceof YANG_RefineAnyXml)
-			return gRefineAnyXml((YANG_RefineAnyNode) r, prefix);
+			return gRefineAnyNode((YANG_RefineAnyNode) r, prefix);
 		return "";
+	}
+
+	private String gRefineAnyNode(YANG_RefineAnyNode r, String prefix) {
+		String result = new String();
+		if (r.isBracked()) {
+			 result += prefix + "<refine name=\"" + r.getRefineAnyNodeId()
+			 + "\">\n";
+			for (Enumeration<YANG_Must> em = r.getMusts().elements(); em
+					.hasMoreElements();)
+				result += gMust(em.nextElement(), prefix + "  ") + "\n";
+			if (r.getConfig() != null)
+				result += gConfig(r.getConfig(), prefix + "  ") + "\n";
+			if (r.getMinElement() != null)
+				result += gMinElement(r.getMinElement(), prefix + "  ") + "\n";
+			if (r.getMaxElement() != null)
+				result += gMaxElement(r.getMaxElement(), prefix + "  ") + "\n";
+			if (r.getDefault() != null)
+				result += gDefault(r.getDefault(), prefix + "  ") + "\n";
+			if (r.getMandatory() != null)
+				result += gMandatory(r.getMandatory(), prefix + "  ") + "\n";
+			if (r.getDescription() != null)
+				result += gDescription(r.getDescription(), prefix + "  ")
+						+ "\n";
+			if (r.getReference() != null)
+				result += gReference(r.getReference(), prefix + "  ") + "\n";
+
+			return result + prefix + "<refine/>";
+		}
+		return "";
+
 	}
 
 	private String gRefineList(YANG_RefineAnyNode l, String prefix) {
