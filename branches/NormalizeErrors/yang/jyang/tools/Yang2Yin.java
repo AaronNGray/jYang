@@ -108,39 +108,31 @@ public class Yang2Yin {
 
 			if (linkage instanceof YANG_Import) {
 				YANG_Import yimport = (YANG_Import) linkage;
-				int i = 0;
-				boolean found = false;
-				YANG_Specification externalspec = null;
-				while (i < paths.length && !found) {
-					String directory = paths[i++];
-					String yangspecfilename = directory + File.separator
-							+ yimport.getImportedModule() + ".yang";
-					try {
-						File externalfile = new File(yangspecfilename);
-						yang.ReInit(new FileInputStream(externalfile));
-						found = true;
-						try {
-							externalspec = yang.Start();
-
-							out.println("        xmlns:"
-									+ unquote(yimport.getPrefix().getPrefix())
-									+ "=\""
-									+ unquote(externalspec.getNameSpace()
-											.getNameSpace()) + "\"");
-						} catch (ParseException p) {
-							// must not occurs because already done
-
-						}
-					} catch (NullPointerException np) {
-						// Must not occurs
-						np.printStackTrace();
-						System.err.println("Panic, abort");
-						System.exit(-3);
-					} catch (FileNotFoundException fnf) {
-						// nothing to do
-						// pass to the next path
-					}
-				}
+				YANG_Specification externalspec = yimport.getImportedmodule();
+				out.println("        xmlns:"
+						+ unquote(yimport.getPrefix().getPrefix()) + "=\""
+						+ unquote(externalspec.getNameSpace().getNameSpace())
+						+ "\"");
+				/*
+				 * int i = 0; boolean found = false; while (i < paths.length &&
+				 * !found) { String directory = paths[i++]; String
+				 * yangspecfilename = directory + File.separator +
+				 * yimport.getImportedModule() + ".yang"; try { File
+				 * externalfile = new File(yangspecfilename); yang.ReInit(new
+				 * FileInputStream(externalfile)); found = true; try {
+				 * externalspec = yang.Start();
+				 * 
+				 * out.println("        xmlns:" +
+				 * unquote(yimport.getPrefix().getPrefix()) + "=\"" +
+				 * unquote(externalspec.getNameSpace() .getNameSpace()) + "\"");
+				 * } catch (ParseException p) { // must not occurs because
+				 * already done
+				 * 
+				 * } } catch (NullPointerException np) { // Must not occurs
+				 * np.printStackTrace(); System.err.println("Panic, abort");
+				 * System.exit(-3); } catch (FileNotFoundException fnf) { //
+				 * nothing to do // pass to the next path } }
+				 */
 			}
 
 			else if (linkage instanceof YANG_Include) {
@@ -234,17 +226,17 @@ public class Yang2Yin {
 	private String gBody(YANG_Body body, String prefix) {
 		String result = new String();
 		if (body instanceof YANG_Extension)
-			result = gExtension((YANG_Extension) body, prefix) + "\n";
+			result = gExtension((YANG_Extension) body, prefix);
 		else if (body instanceof YANG_TypeDef)
-			result = gTypeDef((YANG_TypeDef) body, prefix) + "\n";
+			result = gTypeDef((YANG_TypeDef) body, prefix);
 		else if (body instanceof YANG_Grouping)
-			result = gGrouping((YANG_Grouping) body, prefix) + "\n";
+			result = gGrouping((YANG_Grouping) body, prefix);
 		else if (body instanceof YANG_DataDef)
-			result = gDataDef((YANG_DataDef) body, prefix) + "\n";
+			result = gDataDef((YANG_DataDef) body, prefix);
 		else if (body instanceof YANG_Rpc)
-			result = gRpc((YANG_Rpc) body, prefix) + "\n";
+			result = gRpc((YANG_Rpc) body, prefix);
 		else if (body instanceof YANG_Notification)
-			result = gNotification((YANG_Notification) body, prefix) + "\n";
+			result = gNotification((YANG_Notification) body, prefix);
 		return result;
 	}
 
@@ -807,8 +799,8 @@ public class Yang2Yin {
 						+ "\n";
 			if (uses.getReference() != null)
 				result += gReference(uses.getReference(), prefix + "  ") + "\n";
-			for (Enumeration<YANG_RefineAnyNode> er = uses.getRefinements().elements(); er
-					.hasMoreElements();)
+			for (Enumeration<YANG_RefineAnyNode> er = uses.getRefinements()
+					.elements(); er.hasMoreElements();)
 				result += gRefinement(er.nextElement(), prefix + "  ") + "\n";
 			result += prefix + "</uses>";
 		} else
@@ -944,8 +936,8 @@ public class Yang2Yin {
 	private String gRefineAnyNode(YANG_RefineAnyNode r, String prefix) {
 		String result = new String();
 		if (r.isBracked()) {
-			 result += prefix + "<refine name=\"" + r.getRefineAnyNodeId()
-			 + "\">\n";
+			result += prefix + "<refine name=\"" + r.getRefineAnyNodeId()
+					+ "\">\n";
 			for (Enumeration<YANG_Must> em = r.getMusts().elements(); em
 					.hasMoreElements();)
 				result += gMust(em.nextElement(), prefix + "  ") + "\n";
@@ -1166,7 +1158,7 @@ public class Yang2Yin {
 		for (int i = 0; i < tkeys.length; i++) {
 			keys += tkeys[i] + " ";
 		}
-		keys.trim();
+		keys = keys.trim();
 		return prefix + "<key value=\"" + keys + "\"/>";
 	}
 

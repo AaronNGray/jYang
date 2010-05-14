@@ -6,10 +6,20 @@ public class YANG_Import extends ImportIncludeNode implements YANG_Linkage {
 
 	private String importstr = null;
 	private YANG_Prefix prefix = null;
+	
+	private YANG_Specification importedmodule = null;
 
 	private boolean b_prefix = false;
 	
 	private boolean used = false;
+
+	public YANG_Specification getImportedmodule() {
+		return importedmodule;
+	}
+
+	public void setImportedmodule(YANG_Specification importedmodule) {
+		this.importedmodule = importedmodule;
+	}
 
 	public boolean isUsed() {
 		return used;

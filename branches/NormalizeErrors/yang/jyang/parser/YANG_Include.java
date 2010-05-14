@@ -4,10 +4,18 @@ public class YANG_Include extends ImportIncludeNode implements YANG_Linkage {
 
 	private String include = null;
 
-
+	private YANG_Specification includedsubmodule = null;
 
 	public YANG_Include(int id) {
 		super(id);
+	}
+
+	public YANG_Specification getIncludedsubmodule() {
+		return includedsubmodule;
+	}
+
+	public void setIncludedsubmodule(YANG_Specification includedsubmodule) {
+		this.includedsubmodule = includedsubmodule;
 	}
 
 	public YANG_Include(yang p, int id) {

@@ -351,8 +351,11 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					includedspecname += "." + revision.getDate();
 				YANG_Specification includedspec = getExternal(paths,
 						includedspecname);
-				if (includedspec != null)
+				
+				if (includedspec != null) {
+					included.setIncludedsubmodule(includedspec);
 					is.add(includedspec);
+				}
 			}
 		}
 		return is;
@@ -388,6 +391,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					importedspecname += "." + revision.getDate();
 				YANG_Specification importedspec = getExternal(paths,
 						importedspecname);
+				imported.setImportedmodule(importedspec);
 				if (!(importedspec instanceof YANG_Module))
 					YangErrorManager.addError(filename, imported.getLine(),
 							imported.getCol(), "not_module", importedspecname);
