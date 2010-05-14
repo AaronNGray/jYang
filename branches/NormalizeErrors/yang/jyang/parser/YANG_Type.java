@@ -277,6 +277,8 @@ public class YANG_Type extends SimpleYangNode {
 			return;
 		}
 		typedef = context.getTypeDef(this);
+		if (typedef != null)
+			typedef.setUsed(true);
 
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			if (getBitSpec() != null)

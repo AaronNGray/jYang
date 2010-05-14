@@ -73,9 +73,10 @@ public abstract class YANG_Body extends DocumentedNode {
 			for (YANG_Case ycase : choice.getCases()) {
 				for (YANG_ShortCase ysc : choice.getShortCases()) {
 					if (ysc.getBody().compareTo(ycase.getBody()) == 0) {
-						YangErrorManager.addError(ysc.getFileName(), ysc.getLine(),
-								ysc.getCol(), "dup_child", ysc.getBody(), ycase
-										.getFileName(), ycase.getLine());
+						YangErrorManager.addError(ysc.getFileName(), ysc
+								.getLine(), ysc.getCol(), "dup_child", ysc
+								.getBody(), ycase.getFileName(), ycase
+								.getLine());
 					}
 				}
 				for (YANG_DataDef cdef : ycase.getDataDefs()) {
@@ -163,7 +164,7 @@ public abstract class YANG_Body extends DocumentedNode {
 			YANG_Body body = (YANG_Body) et.nextElement();
 			body.setParent(this);
 			YangContext clcts = context.clone();
-				body.checkBody(clcts);
+			body.checkBody(clcts);
 		}
 
 		for (Enumeration<YANG_Grouping> eg = groupings.elements(); eg
@@ -193,6 +194,17 @@ public abstract class YANG_Body extends DocumentedNode {
 
 		check(context);
 		setContext(context.clone());
+
+		for (YANG_Grouping gping : groupings) {
+			if (!gping.isUsed())
+				YangErrorManager.addWarning(getFileName(), gping.getLine(),
+						gping.getCol(), "unused", "grouping", gping.getBody());
+		}
+		for (YANG_TypeDef tdef : typedefs){
+			if (!tdef.isUsed())
+				YangErrorManager.addWarning(getFileName(), tdef.getLine(),
+						tdef.getCol(), "unused", "typedef", tdef.getBody());
+		}
 	}
 
 	public void setContext(YangContext clone) {

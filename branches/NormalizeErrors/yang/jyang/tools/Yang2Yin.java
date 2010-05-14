@@ -64,6 +64,7 @@ import jyang.parser.YANG_Pattern;
 import jyang.parser.YANG_Presence;
 import jyang.parser.YANG_Range;
 import jyang.parser.YANG_Reference;
+import jyang.parser.YANG_RefineAnyNode;
 import jyang.parser.YANG_RefineAnyXml;
 import jyang.parser.YANG_RefineCase;
 import jyang.parser.YANG_RefineChoice;
@@ -935,22 +936,22 @@ public class Yang2Yin {
 	}
 
 	private String gRefinement(YANG_Refine r, String prefix) {
-		if (r instanceof YANG_RefineContainer)
-			return gRefineContainer((YANG_RefineContainer) r, prefix);
-		if (r instanceof YANG_RefineLeaf)
-			return gRefineLeaf((YANG_RefineLeaf) r, prefix);
-		if (r instanceof YANG_RefineLeafList)
-			return gRefineLeafList((YANG_RefineLeafList) r, prefix);
-		if (r instanceof YANG_RefineList)
-			return gRefineList((YANG_RefineList) r, prefix);
-		if (r instanceof YANG_RefineChoice)
-			return gRefineChoice((YANG_RefineChoice) r, prefix);
+		if (r instanceof YANG_RefineAnyNode)
+			return gRefineContainer((YANG_RefineAnyNode) r, prefix);
+		if (r instanceof YANG_RefineAnyNode)
+			return gRefineLeaf((YANG_RefineAnyNode) r, prefix);
+		if (r instanceof YANG_RefineAnyNode)
+			return gRefineLeafList((YANG_RefineAnyNode) r, prefix);
+		if (r instanceof YANG_RefineAnyNode)
+			return gRefineList((YANG_RefineAnyNode) r, prefix);
+		if (r instanceof YANG_RefineAnyNode)
+			return gRefineChoice((YANG_RefineAnyNode) r, prefix);
 		if (r instanceof YANG_RefineAnyXml)
-			return gRefineAnyXml((YANG_RefineAnyXml) r, prefix);
+			return gRefineAnyXml((YANG_RefineAnyNode) r, prefix);
 		return "";
 	}
 
-	private String gRefineList(YANG_RefineList l, String prefix) {
+	private String gRefineList(YANG_RefineAnyNode l, String prefix) {
 		String result = new String();
 		if (l.isBracked()) {
 			// result += prefix + "<list name=\"" + unquote(l.getRefineList())
@@ -980,7 +981,7 @@ public class Yang2Yin {
 		return result;
 	}
 
-	private String gRefineChoice(YANG_RefineChoice c, String prefix) {
+	private String gRefineChoice(YANG_RefineAnyNode c, String prefix) {
 		String result = new String();
 		if (c.isBracked()) {
 			// result += prefix + "<choice name=\"" +
@@ -1007,7 +1008,7 @@ public class Yang2Yin {
 		return result;
 	}
 
-	private String gRefineCase(YANG_RefineCase c, String prefix) {
+	private String gRefineCase(YANG_RefineAnyNode c, String prefix) {
 		String result = new String();
 		if (c.isBracked()) {
 			// result += prefix + "<case name=\"" + unquote(c.getRefineCase())
@@ -1028,7 +1029,7 @@ public class Yang2Yin {
 		return result;
 	}
 
-	private String gRefineAnyXml(YANG_RefineAnyXml a, String prefix) {
+	private String gRefineAnyXml(YANG_RefineAnyNode a, String prefix) {
 		String result = new String();
 		if (a.isBracked()) {
 			// result += prefix + "<anyxml name=\"" +
@@ -1052,7 +1053,7 @@ public class Yang2Yin {
 		return result;
 	}
 
-	private String gRefineLeafList(YANG_RefineLeafList l, String prefix) {
+	private String gRefineLeafList(YANG_RefineAnyNode l, String prefix) {
 		String result = new String();
 		if (l.isBracked()) {
 			// result += prefix + "<leaf-list name=\""
@@ -1080,7 +1081,7 @@ public class Yang2Yin {
 		return result;
 	}
 
-	private String gRefineContainer(YANG_RefineContainer c, String prefix) {
+	private String gRefineContainer(YANG_RefineAnyNode c, String prefix) {
 		String result = new String();
 		if (c.isBracked()) {
 			// result += prefix + "<container name=\""
@@ -1111,7 +1112,7 @@ public class Yang2Yin {
 		return result;
 	}
 
-	private String gRefineLeaf(YANG_RefineLeaf l, String prefix) {
+	private String gRefineLeaf(YANG_RefineAnyNode l, String prefix) {
 		String result = new String();
 		if (l.isBracked()) {
 			// result += prefix + "<leaf name=\"" + unquote(l.getRefineLeaf())

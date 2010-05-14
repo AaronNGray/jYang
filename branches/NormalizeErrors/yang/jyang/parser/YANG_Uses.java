@@ -39,6 +39,8 @@ public class YANG_Uses extends YANG_DataDef {
 
 	public void setGrouping(YANG_Grouping g) {
 		this.grouping = g;
+		if (grouping != null)
+			grouping.setUsed(true);
 	}
 
 	public YANG_Uses(int id) {
@@ -158,7 +160,28 @@ public class YANG_Uses extends YANG_DataDef {
 	}
 
 	public YANG_Uses clone() {
-		return this;
+		YANG_Uses cl = new YANG_Uses(parser, id);
+		cl.setContext(getContext());
+		cl.setUses(getUses());
+		cl.setFileName(getFileName());
+		cl.setParent(getParent());
+		cl.setCol(getCol());
+		cl.setLine(getLine());
+		for (YANG_UsesAugment u : getUsesAugments())
+			cl.addUsesAugment(u);
+		for (YANG_Refine r : getRefinements())
+			cl.addRefinement(r);
+		if (getDescription() != null)
+			cl.setDescription(getDescription());
+		cl.setIfFeature(getIfFeatures());
+		cl.setUnknowns(getUnknowns());
+		if (getReference() != null)
+			cl.setReference(getReference());
+		if (getStatus() != null)
+			cl.setStatus(getStatus());
+		if (getWhen() != null)
+			cl.setWhen(getWhen());
+		return cl;
 	}
 
 	public String toString() {

@@ -19,6 +19,8 @@ public class YangErrorManager {
 		public final static int SEVERITY_WARNING = 1;
 		public final static int SEVERITY_ERROR = 2;
 
+		private String[] tseverity = { "INFO", "WARNING", "ERROR" };
+
 		private String module;
 		private int line;
 		private int column;
@@ -37,7 +39,8 @@ public class YangErrorManager {
 		}
 
 		public String toString() {
-			return module + ":" + line + ";" + column + ":" + messageId;
+			return module + ":" + line + ";" + column + "\t - "
+					+ tseverity[severity] + " - \t" + messageId;
 		}
 
 		public String getModule() {
@@ -66,7 +69,9 @@ public class YangErrorManager {
 		// @Override
 		public int compare(Object o0, Object o1) {
 			Error e0 = (Error) o0, e1 = (Error) o1;
-			if (e0.module.compareTo(e1.module) != 0)
+			if (e0.severity != e1.severity)
+				return e0.getSeverity() - e1.getSeverity();
+			else if (e0.module.compareTo(e1.module) != 0)
 				return e0.module.compareTo(e1.module);
 			else if (e0.line != e1.line)
 				return e0.line - e1.line;
@@ -159,11 +164,11 @@ public class YangErrorManager {
 	public static TreeSet<Error> getErrors() {
 		return errors;
 	}
-	
-	public static void removeFromLine(int l){
+
+	public static void removeFromLine(int l) {
 		for (Iterator<Error> i = errors.iterator(); i.hasNext();) {
 			Error err = i.next();
-			if (err.getLine() > l){
+			if (err.getLine() > l) {
 				errors.remove(err);
 			}
 		}

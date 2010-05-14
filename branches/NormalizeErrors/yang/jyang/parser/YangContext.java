@@ -466,6 +466,7 @@ public class YangContext implements Serializable{
 				if (impo.getPrefix().getPrefix().compareTo(prefix) == 0) {
 					result = impo.getImportedModule() + ":" + suffix;
 					found = true;
+					impo.setUsed(found);
 				}
 			}
 			if (!found) {

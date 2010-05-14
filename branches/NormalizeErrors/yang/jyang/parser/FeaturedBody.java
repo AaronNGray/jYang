@@ -39,7 +39,7 @@ public abstract class FeaturedBody extends StatuedBody {
 	}
 
 	public boolean isBracked() {
-		return ifFeatures.size() != 0;
+		return super.isBracked() || ifFeatures.size() != 0;
 	}
 
 	public String toString() {

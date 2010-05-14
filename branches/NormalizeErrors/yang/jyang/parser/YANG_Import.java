@@ -8,6 +8,16 @@ public class YANG_Import extends ImportIncludeNode implements YANG_Linkage {
 	private YANG_Prefix prefix = null;
 
 	private boolean b_prefix = false;
+	
+	private boolean used = false;
+
+	public boolean isUsed() {
+		return used;
+	}
+
+	public void setUsed(boolean used) {
+		this.used = used;
+	}
 
 	public YANG_Import(int id) {
 		super(id);

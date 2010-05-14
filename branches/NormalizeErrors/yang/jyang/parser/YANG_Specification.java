@@ -141,6 +141,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		path[0] = ".";
 		Vector<String> cked = new Vector<String>();
 		check(path, cked);
+		
 	}
 
 	public static boolean isCheckOk() {
@@ -183,12 +184,12 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		localcontext.pendingUnions();
 
 		localcontext.checkTypes();
-		
 
 		checkBodies(p, checkeds, localcontext);
-		if (this instanceof YANG_SubModule){
+		if (this instanceof YANG_SubModule) {
 			YANG_SubModule submodule = (YANG_SubModule) this;
-			localcontext.removeContext(submodule.getBelong().getBelong(), localcontext);
+			localcontext.removeContext(submodule.getBelong().getBelong(),
+					localcontext);
 		}
 		return localcontext;
 	}
@@ -202,6 +203,12 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 			body.setRootNode(true);
 			body.checkBody(bodycontext);
+		}
+
+		for (YANG_Import impo : getImports()) {
+			if (!impo.isUsed())
+				YangErrorManager.addWarning(getFileName(), impo.getLine(), impo
+						.getCol(), "unused", "import", impo.getName());
 		}
 
 	}
@@ -243,8 +250,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				context.merge(importedcontext);
 
 			} else
-				YangErrorManager.addError(getFileName(), line, col, "circ_impo",
-						importedmodulename, getName());
+				YangErrorManager.addError(getFileName(), line, col,
+						"circ_impo", importedmodulename, getName());
 		}
 
 		for (YANG_SubModule submodule : includeds) {
@@ -259,14 +266,13 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			if (!builded.contains(includedsubmodulename)) {
 				Vector<String> cks = (Vector<String>) builded.clone();
 				YangContext includedcontext = submodule.check(paths, builded);
-				if (this instanceof YANG_SubModule){
-					//context.merge(includedcontext);
-				}
-				else
+				if (this instanceof YANG_SubModule) {
+					// context.merge(includedcontext);
+				} else
 					context.mergeChecked(includedcontext);
 			} else
-				YangErrorManager.addError(getFileName(), line, col, "circ_include",
-						includedsubmodulename, getName());
+				YangErrorManager.addError(getFileName(), line, col,
+						"circ_include", includedsubmodulename, getName());
 		}
 
 		YangContext specontext = getThisSpecContext(context);
@@ -455,19 +461,18 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 	public YangTreeNode buildTreeNode(String[] p, Vector<String> builded,
 			Hashtable<String, YangTreeNode> importedtreenodes) {
-		
-		
+
 		for (Enumeration<YANG_Specification> ei = getImportedModules(p)
-					.elements(); ei.hasMoreElements();) {
-				YANG_Specification spec = ei.nextElement();
-				if (spec != null)
-					if (!builded.contains(spec.getName())) {
-						builded.add(spec.getName());
-						YangTreeNode itn = spec.buildTreeNode(p, builded,
-								importedtreenodes);
-						importedtreenodes.put(spec.getName(), itn);
-					}
-			}
+				.elements(); ei.hasMoreElements();) {
+			YANG_Specification spec = ei.nextElement();
+			if (spec != null)
+				if (!builded.contains(spec.getName())) {
+					builded.add(spec.getName());
+					YangTreeNode itn = spec.buildTreeNode(p, builded,
+							importedtreenodes);
+					importedtreenodes.put(spec.getName(), itn);
+				}
+		}
 
 		YangTreeNode root = new YangTreeNode();
 
@@ -579,12 +584,13 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			YANG_Body augmentedbody = root.getBodyInTree(this, root,
 					importedtreenodes, taugs[i]);
 			if (augmentedbody == null) {
-					YANG_Body augmented = null;
+				YANG_Body augmented = null;
 				for (String pref : importedtreenodes.keySet()) {
 					YangTreeNode ytn = importedtreenodes.get(pref);
 					augmented = ytn.getBodyInTree(this, root,
 							importedtreenodes, taugs[i]);
-					if (augmented != null) augmentedbody = augmented;
+					if (augmented != null)
+						augmentedbody = augmented;
 				}
 				if (augmentedbody == null) {
 					YangErrorManager.addError(filename, vaugs.get(i).getLine(),
@@ -608,8 +614,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				YangTreeNode deviatednode = root.getNodeInTree(this, root,
 						importedtreenodes, deviated);
 				if (deviatednode == null) {
-					YangErrorManager.addError(getFileName(), deviation.getLine(),
-							deviation.getCol(), "deviate_not_found", deviated);
+					YangErrorManager.addError(getFileName(), deviation
+							.getLine(), deviation.getCol(),
+							"deviate_not_found", deviated);
 				} else {
 					if (deviation.getDeviateNotSupported() != null) {
 						deviatednode.getParent().removeChild(deviatednode);
@@ -628,8 +635,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				}
 			}
 
-		
-
 		return root;
 	}
+
 }

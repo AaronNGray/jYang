@@ -30,7 +30,15 @@ public class YANG_Grouping extends StatuedBody {
 	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
 
-	private boolean bracked = false;
+	private boolean bracked = false, used = false;
+
+	public boolean isUsed() {
+		return used;
+	}
+
+	public void setUsed(boolean used) {
+		this.used = used;
+	}
 
 	public YANG_Grouping(int id) {
 		super(id);

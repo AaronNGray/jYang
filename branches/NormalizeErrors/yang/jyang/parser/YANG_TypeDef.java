@@ -15,6 +15,7 @@ public class YANG_TypeDef extends StatuedBody {
 
 	private boolean used = false, correct = true;
 	private boolean checked = false;
+	
 
 	public boolean isChecked() {
 		return checked;
