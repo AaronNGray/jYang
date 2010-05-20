@@ -62,6 +62,10 @@ public class YangErrorManager {
 		public int getSeverity() {
 			return severity;
 		}
+
+		public boolean isWarning() {
+			return getSeverity() == 1;
+		}
 	}
 
 	static private class ErrorsComparator implements Comparator {
@@ -129,6 +133,10 @@ public class YangErrorManager {
 
 	static public void setCurrentModule(String m) {
 		module = m;
+		if (module.contains("/"))
+			module = m.substring(m.lastIndexOf('/') + 1);
+		if (module.endsWith(".yang"))
+			module = module.substring(0,module.lastIndexOf(".yang"));
 	}
 
 	static public void addInfo(String module, int line, int col, String mess,
@@ -172,5 +180,27 @@ public class YangErrorManager {
 				errors.remove(err);
 			}
 		}
+	}
+
+	public static void cleanWarning(String s) {
+		if (s.compareTo(module) != 0) {
+			TreeSet<Error> nerrors = new TreeSet<Error>(errorComp);
+			for (Error e : errors) {
+				String em = e.getModule().substring(0, e.getModule().lastIndexOf(".yang"));
+				if (s.compareTo(em) != 0)
+					nerrors.add(e);
+			}
+			errors = nerrors;
+		}
+	}
+
+	public static void supressWarning() {
+		TreeSet<Error> nerrors = new TreeSet<Error>(errorComp);
+		for (Error e : errors) {
+			if (!e.isWarning())
+				nerrors.add(e);
+		}
+		errors = nerrors;
+		
 	}
 }

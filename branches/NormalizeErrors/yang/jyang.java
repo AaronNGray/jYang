@@ -32,6 +32,7 @@ public class jyang {
 
 	private Hashtable<String, YANG_Specification> yangsSpecs = new Hashtable<String, YANG_Specification>();
 	private boolean parsingOk;
+	private boolean warning = false;
 
 	public static void main(String args[]) {
 		new jyang(args);
@@ -79,11 +80,12 @@ public class jyang {
 					switch (flag) {
 					case 'h':
 						System.out
-								.println("Usage : java jyang [-h] [-o output_file] [-p paths] "
+								.println("Usage : java jyang [-h] [-w] [-o output_file] [-p paths] "
 										+ "[-f output_format]  filename");
 						System.exit(0);
 						break;
-					case 'n':
+					case 'w':
+						warning = true;
 						break;
 					default:
 						System.err.println("Illegal option " + flag);
@@ -256,7 +258,9 @@ public class jyang {
 			}
 		}
 		try {
-			YangErrorManager.print(System.out);
+			if (!warning)
+				YangErrorManager.supressWarning();
+			YangErrorManager.print(System.err);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -107,28 +107,28 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 		if (m instanceof YANG_Organization) {
 			if (organization)
-				YangErrorManager.addError(filename, m.getLine(), m.getCol(),
+				YangErrorManager.addError(getFileName(), m.getLine(), m.getCol(),
 						"unex_kw", "organization");
 			else
 				organization = true;
 		}
 		if (m instanceof YANG_Contact) {
 			if (contact)
-				YangErrorManager.addError(filename, m.getLine(), m.getCol(),
+				YangErrorManager.addError(getFileName(), m.getLine(), m.getCol(),
 						"unex_kw", "contact");
 			else
 				contact = true;
 		}
 		if (m instanceof YANG_Description) {
 			if (description)
-				YangErrorManager.addError(filename, m.getLine(), m.getCol(),
+				YangErrorManager.addError(getFileName(), m.getLine(), m.getCol(),
 						"unex_kw", "description");
 			else
 				description = true;
 		}
 		if (m instanceof YANG_Reference) {
 			if (reference)
-				YangErrorManager.addError(filename, m.getLine(), m.getCol(),
+				YangErrorManager.addError(getFileName(), m.getLine(), m.getCol(),
 						"unex_kw", "reference");
 			else
 				reference = true;
@@ -141,7 +141,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		path[0] = ".";
 		Vector<String> cked = new Vector<String>();
 		check(path, cked);
-		
+
 	}
 
 	public static boolean isCheckOk() {
@@ -204,14 +204,31 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			body.setRootNode(true);
 			body.checkBody(bodycontext);
 		}
+		for (YANG_Body bd : getBodies()) {
+			if (bd instanceof YANG_Grouping) {
+				YANG_Grouping gping = (YANG_Grouping) bd;
+				if (!gping.isUsed())
+					YangErrorManager.addWarning(getFileName(), gping.getLine(),
+							gping.getCol(), "unused", "grouping", gping
+									.getBody());
+			} else if (bd instanceof YANG_TypeDef) {
+				YANG_TypeDef tdef = (YANG_TypeDef) bd;
+				if (!tdef.isUsed())
+					YangErrorManager.addWarning(getFileName(), tdef.getLine(),
+							tdef.getCol(), "unused", "typedef", tdef.getBody());
+			}
+		}
 
 		for (YANG_Import impo : getImports()) {
 			if (!impo.isUsed())
 				YangErrorManager.addWarning(getFileName(), impo.getLine(), impo
 						.getCol(), "unused", "import", impo.getName());
 		}
+		cleanExternalWarning();
 
 	}
+	
+	protected abstract void cleanExternalWarning();
 
 	@SuppressWarnings("unchecked")
 	public YangContext buildSpecContext(String[] paths, Vector<String> builded) {
@@ -351,7 +368,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					includedspecname += "." + revision.getDate();
 				YANG_Specification includedspec = getExternal(paths,
 						includedspecname);
-				
+
 				if (includedspec != null) {
 					included.setIncludedsubmodule(includedspec);
 					is.add(includedspec);
@@ -393,7 +410,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 						importedspecname);
 				imported.setImportedmodule(importedspec);
 				if (!(importedspec instanceof YANG_Module))
-					YangErrorManager.addError(filename, imported.getLine(),
+					YangErrorManager.addError(getFileName(), imported.getLine(),
 							imported.getCol(), "not_module", importedspecname);
 				else if (!importeds.contains(importedspec))
 					importeds.add((YANG_Module) importedspec);
@@ -440,7 +457,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			}
 		}
 		if (!found)
-			YangErrorManager.addError(getName(), getLine(), getCol(),
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"file_not_found", externalmodulename);
 		if (externalmodulename != null && externalspec != null)
 			checkedSpecs.put(externalmodulename, externalspec);
@@ -597,7 +614,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 						augmentedbody = augmented;
 				}
 				if (augmentedbody == null) {
-					YangErrorManager.addError(filename, vaugs.get(i).getLine(),
+					YangErrorManager.addError(getFileName(), vaugs.get(i).getLine(),
 							vaugs.get(i).getCol(), "augmented_not_found",
 							taugs[i]);
 				}

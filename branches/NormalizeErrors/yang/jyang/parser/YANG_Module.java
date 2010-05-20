@@ -86,6 +86,14 @@ public class YANG_Module extends YANG_Specification {
 		nbheader++;
 		headers.add(m);
 	}
+	
+	public YANG_NameSpace getNameSpace(){
+		return namespace;
+	}
+	
+	public YANG_Prefix getPrefix(){
+		return prefix;
+	}
 
 	/**
 	 * Check the presence of the namespace and the prefix statements
@@ -126,6 +134,10 @@ public class YANG_Module extends YANG_Specification {
 					includeds.add(submod);
 			}
 		}
+	}
+	
+	public void cleanExternalWarning(){
+		YangErrorManager.cleanWarning(getModule());
 	}
 
 	public String toString() {

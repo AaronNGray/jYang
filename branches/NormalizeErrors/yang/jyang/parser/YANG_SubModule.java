@@ -147,4 +147,9 @@ public class YANG_SubModule extends YANG_Specification {
 		return result;
 	}
 
+	@Override
+	protected void cleanExternalWarning() {
+		
+	}
+
 }

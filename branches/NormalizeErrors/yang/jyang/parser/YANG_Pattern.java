@@ -22,27 +22,36 @@ public class YANG_Pattern extends ErrorTagedNode {
 	public void setPattern(String p) {
 
 		pattern = p;
+
 		String canopattern = pattern.replaceAll("IsBasicLatin", "InBasicLatin");
 		pattern = canopattern;
-		
-		try {
-			regexp = Pattern.compile(pattern);
-		} catch (PatternSyntaxException pse) {
-			YangErrorManager.addWarning(filename, getLine(), getCol(), "pattern_exp",
-			pse.getMessage());
-		}
+		//		
+		// try {
+		// regexp = Pattern.compile(pattern);
+		// } catch (PatternSyntaxException pse) {
+		// YangErrorManager.addWarning(filename, getLine(), getCol(),
+		// "pattern_exp",
+		// pse.getMessage());
+		// }
 	}
 
 	public String getPattern() {
 		return pattern;
 	}
 
-	public boolean checkExp(String exp)  {
-		Matcher m = regexp.matcher(exp);
-		if (!m.matches())
-			return false;
-		else
+	public boolean checkExp(String exp) {
+		try {
+			regexp = Pattern.compile(pattern);
+			Matcher m = regexp.matcher(exp);
+			if (!m.matches())
+				return false;
+			else
+				return true;
+		} catch (PatternSyntaxException pse) {
+			YangErrorManager.addWarning(filename, getLine(), getCol(),
+					"pattern_exp", pse.getMessage());
 			return true;
+		}
 
 	}
 

@@ -22,80 +22,21 @@ package jyang.tools;
 import java.util.*;
 import java.io.*;
 
-import jyang.parser.ParseException;
-import jyang.parser.YANG_AnyXml;
-import jyang.parser.YANG_Argument;
-import jyang.parser.YANG_Augment;
-import jyang.parser.YANG_Bit;
-import jyang.parser.YANG_Body;
-import jyang.parser.YANG_Case;
-import jyang.parser.YANG_Choice;
-import jyang.parser.YANG_Config;
-import jyang.parser.YANG_Contact;
-import jyang.parser.YANG_Container;
-import jyang.parser.YANG_DataDef;
-import jyang.parser.YANG_Default;
-import jyang.parser.YANG_Description;
-import jyang.parser.YANG_Enum;
-import jyang.parser.YANG_ErrorMessage;
-import jyang.parser.YANG_Extension;
-import jyang.parser.YANG_Grouping;
-import jyang.parser.YANG_Import;
-import jyang.parser.YANG_Include;
-import jyang.parser.YANG_Input;
-import jyang.parser.YANG_Key;
-import jyang.parser.YANG_Leaf;
-import jyang.parser.YANG_LeafList;
-import jyang.parser.YANG_Length;
-import jyang.parser.YANG_Linkage;
-import jyang.parser.YANG_List;
-import jyang.parser.YANG_Mandatory;
-import jyang.parser.YANG_MaxElement;
-import jyang.parser.YANG_Meta;
-import jyang.parser.YANG_MinElement;
-import jyang.parser.YANG_Module;
-import jyang.parser.YANG_Must;
-import jyang.parser.YANG_Notification;
-import jyang.parser.YANG_NumericalRestriction;
-import jyang.parser.YANG_OrderedBy;
-import jyang.parser.YANG_Organization;
-import jyang.parser.YANG_Output;
-import jyang.parser.YANG_Pattern;
-import jyang.parser.YANG_Presence;
-import jyang.parser.YANG_Range;
-import jyang.parser.YANG_Reference;
-import jyang.parser.YANG_RefineAnyNode;
-import jyang.parser.YANG_RefineAnyXml;
-import jyang.parser.YANG_RefineCase;
-import jyang.parser.YANG_RefineChoice;
-import jyang.parser.YANG_RefineContainer;
-import jyang.parser.YANG_RefineLeaf;
-import jyang.parser.YANG_RefineLeafList;
-import jyang.parser.YANG_RefineList;
-import jyang.parser.YANG_Refine;
-import jyang.parser.YANG_Revision;
-import jyang.parser.YANG_Rpc;
-import jyang.parser.YANG_ShortCase;
-import jyang.parser.YANG_Specification;
-import jyang.parser.YANG_Status;
-import jyang.parser.YANG_StringRestriction;
-import jyang.parser.YANG_Type;
-import jyang.parser.YANG_TypeDef;
-import jyang.parser.YANG_Unique;
-import jyang.parser.YANG_Units;
-import jyang.parser.YANG_Uses;
-import jyang.parser.YANG_Value;
-import jyang.parser.YANG_When;
-import jyang.parser.yang;
+import jyang.parser.*;
 
 public class Yang2Yin {
+	
+	private final static String INDENT = "  ";
 
 	public Yang2Yin(YANG_Specification n, String[] paths, PrintStream out) {
 
 		// try {
 		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		if (n instanceof YANG_Module) {
-			out.println("<module xmlns=\"urn:ietf:params:xml:ns:yin:1\"");
+			YANG_Module module = (YANG_Module) n;
+			out.println("<module\txmlns=\"urn:ietf:params:xml:ns:yin:1\"");
+			out.print("\txmlns:" + module.getPrefix().getPrefix() + "=\""
+					+ module.getNameSpace().getNameSpace() + "\"");
 		} else {
 			out.println("<submodule xmlns=\"urn:ietf:params:xml:ns:yin:1\"");
 		}
@@ -105,41 +46,17 @@ public class Yang2Yin {
 		for (Enumeration<YANG_Linkage> el = linkages.elements(); el
 				.hasMoreElements();) {
 			YANG_Linkage linkage = el.nextElement();
-
 			if (linkage instanceof YANG_Import) {
 				YANG_Import yimport = (YANG_Import) linkage;
 				YANG_Specification externalspec = yimport.getImportedmodule();
-				out.println("        xmlns:"
+				out.print("\n\txmlns:"
 						+ unquote(yimport.getPrefix().getPrefix()) + "=\""
 						+ unquote(externalspec.getNameSpace().getNameSpace())
 						+ "\"");
-				/*
-				 * int i = 0; boolean found = false; while (i < paths.length &&
-				 * !found) { String directory = paths[i++]; String
-				 * yangspecfilename = directory + File.separator +
-				 * yimport.getImportedModule() + ".yang"; try { File
-				 * externalfile = new File(yangspecfilename); yang.ReInit(new
-				 * FileInputStream(externalfile)); found = true; try {
-				 * externalspec = yang.Start();
-				 * 
-				 * out.println("        xmlns:" +
-				 * unquote(yimport.getPrefix().getPrefix()) + "=\"" +
-				 * unquote(externalspec.getNameSpace() .getNameSpace()) + "\"");
-				 * } catch (ParseException p) { // must not occurs because
-				 * already done
-				 * 
-				 * } } catch (NullPointerException np) { // Must not occurs
-				 * np.printStackTrace(); System.err.println("Panic, abort");
-				 * System.exit(-3); } catch (FileNotFoundException fnf) { //
-				 * nothing to do // pass to the next path } }
-				 */
-			}
-
-			else if (linkage instanceof YANG_Include) {
+			} else if (linkage instanceof YANG_Include) {
 			}
 		}
-
-		out.println("        name=\"" + yangspec.getName() + "\">");
+		out.println("/>");
 
 		// Header generation
 
@@ -207,7 +124,7 @@ public class Yang2Yin {
 			out.println("  <revision date=\"" + unquote(revision.getDate())
 					+ "\">");
 			if (revision.getDescription() != null)
-				out.println(gDescription(revision.getDescription(), "    "));
+				out.println(gDescription(revision.getDescription(), INDENT));
 			out.println("  </revision>");
 		}
 
@@ -227,22 +144,107 @@ public class Yang2Yin {
 		String result = new String();
 		if (body instanceof YANG_Extension)
 			result = gExtension((YANG_Extension) body, prefix);
+		else if (body instanceof YANG_Feature)
+			result = gFeature((YANG_Feature) body, prefix);
+		else if (body instanceof YANG_Identity)
+			result = gIdentity((YANG_Identity) body, prefix);
 		else if (body instanceof YANG_TypeDef)
 			result = gTypeDef((YANG_TypeDef) body, prefix);
 		else if (body instanceof YANG_Grouping)
 			result = gGrouping((YANG_Grouping) body, prefix);
 		else if (body instanceof YANG_DataDef)
 			result = gDataDef((YANG_DataDef) body, prefix);
+		else if (body instanceof YANG_Augment)
+			result = gAugment((YANG_Augment) body, prefix);
 		else if (body instanceof YANG_Rpc)
 			result = gRpc((YANG_Rpc) body, prefix);
 		else if (body instanceof YANG_Notification)
 			result = gNotification((YANG_Notification) body, prefix);
+		else if (body instanceof YANG_Deviation)
+			result = gDeviation((YANG_Deviation) body, prefix);
+		return result;
+	}
+
+	private String gDeviation(YANG_Deviation body, String prefix) {
+		String result = prefix + "<deviation name=\"" + body.getDeviation() + "\">";
+		if (body.getDeviateNotSupported() != null)
+			result += gDeviateNotSupported(body.getDeviateNotSupported(), prefix + INDENT) + "\n";
+		for (YANG_DeviateAdd da : body.getDeviateAdds())
+			result += gDeviateAdd(da, prefix + INDENT) + "\n";
+		for (YANG_DeviateReplace dr : body.getDeviateReplaces())
+			result += gDeviateReplace(dr, prefix + INDENT) + "\n";
+		for (YANG_DeviateDelete dd : body.getDeviateDeletes())
+			result += gDeviateDelete(dd, prefix + INDENT) + "\n";
+		return result + prefix + "</deviation>";
+	}
+
+	private String gDeviateDelete(YANG_DeviateDelete dd, String string) {
+		return null;
+	}
+
+	private String gDeviateReplace(YANG_DeviateReplace dr, String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private String gDeviateAdd(YANG_DeviateAdd da, String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private String gDeviateNotSupported(
+			YANG_DeviateNotSupported deviateNotSupported, String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private String gIdentity(YANG_Identity body, String prefix) {
+		String result = prefix + "<identity name=\"" + body.getIdentity() + "\"";
+		if (!body.isBracked())
+			result += "/>\n";
+		else {
+			result += ">\n" + prefix + INDENT;
+			if (body.getBase() != null)
+				result += gBase(body.getBase(), prefix + INDENT) + "\n" + prefix + INDENT;
+			if (body.getStatus() != null)
+				result += gStatus(body.getStatus(), prefix) + "\n" + prefix +  INDENT;
+			if (body.getDescription() != null)
+				result += gDescription(body.getDescription(), prefix + INDENT) + "\n" + prefix + INDENT;
+			if (body.getReference() != null)
+				result += gReference(body.getReference(), prefix + INDENT) + "\n" + prefix + INDENT;
+			result += prefix + "</identity>";
+		}
+		return result;
+	}
+
+	private String gBase(YANG_Base base, String prefix) {
+		return prefix + "<base name=\"" + base.getBase() + "\"/>";
+	}
+
+	private String gFeature(YANG_Feature body, String prefix) {
+		
+		String result = prefix + "<feature name =\"" + body.getFeature() + "\"";
+		if (!body.isBracked())
+			result += "/>";
+		else{
+			result += ">\n" + prefix + "    ";
+		if (body.getIfFeatures().size() != 0)
+			for (YANG_IfFeature iff : body.getIfFeatures())
+				result += "<if-feature name=\"" + iff.getIfFeature() + "\"/>\n" + prefix + "    ";
+		if (body.getStatus() != null)
+			result += gStatus(body.getStatus(), prefix) + "\n" + prefix +  INDENT;
+		if (body.getDescription() != null)
+			result += gDescription(body.getDescription(), prefix + INDENT) + "\n" + prefix + INDENT;
+		if (body.getReference() != null)
+			result += gReference(body.getReference(), prefix + INDENT) + "\n" + prefix + INDENT;
+		result += "</feature>";
+		}
 		return result;
 	}
 
 	private String gDescription(YANG_Description desc, String prefix) {
-		return prefix + "<description>\n  " + prefix + "<text>\n    " + prefix
-				+ unquote(desc.getDescription()) + "\n  " + prefix
+		return prefix + "<description>\n" + prefix + INDENT + "<text>\n" + prefix + INDENT
+				+ unquote(desc.getDescription()) + "\n" + prefix + INDENT
 				+ "</text>\n" + prefix + "</description>";
 	}
 
@@ -256,13 +258,13 @@ public class Yang2Yin {
 		result += prefix + "<typedef name=\"" + unquote(typedef.getTypeDef())
 				+ "\">\n";
 		if (typedef.getType() != null)
-			result += gType(typedef.getType(), prefix + "  ") + "\n";
+			result += gType(typedef.getType(), prefix + INDENT) + "\n";
 		if (typedef.getUnits() != null)
-			result += gUnits(typedef.getUnits(), prefix + "  ") + "\n";
+			result += gUnits(typedef.getUnits(), prefix + INDENT) + "\n";
 		if (typedef.getStatus() != null)
-			result += gStatus(typedef.getStatus(), prefix + "  ") + "\n";
+			result += gStatus(typedef.getStatus(), prefix + INDENT) + "\n";
 		if (typedef.getDescription() != null)
-			result += gDescription(typedef.getDescription(), prefix + "  ")
+			result += gDescription(typedef.getDescription(), prefix + INDENT)
 					+ "\n";
 		result += prefix + "</typedef>";
 		return result;
@@ -551,8 +553,6 @@ public class Yang2Yin {
 			result += gAnyXml((YANG_AnyXml) datadef, prefix);
 		else if (datadef instanceof YANG_Uses)
 			result += gUses((YANG_Uses) datadef, prefix);
-		// else if (datadef instanceof YANG_Augment)
-		// result += gAugment((YANG_Augment) datadef, prefix);
 		return result;
 	}
 
