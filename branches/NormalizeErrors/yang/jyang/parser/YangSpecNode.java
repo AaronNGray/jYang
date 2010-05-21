@@ -146,37 +146,37 @@ public class YangSpecNode implements Serializable {
 		String modulefilename = b.getFileName();
 		if (b instanceof YANG_TypeDef) {
 			if (isDefinedAsTypeDef(name)) {
-				YangErrorManager.addError(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "typedef", b.getBody(), get(name)
-								.getFileName(), get(name).getLine());
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_name", "typedef", b.getBody(),
+						get(name).getFileName(), get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Grouping) {
 			if (isDefinedAsGrouping(name)) {
-				YangErrorManager.addError(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "grouping", b.getBody(), get(name)
-								.getFileName(), get(name).getLine());
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_name", "grouping", b.getBody(), get(
+						name).getFileName(), get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Extension) {
 			if (isDefinedAsExtension(name)) {
-				YangErrorManager.addError(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "extension", b.getBody(), get(name)
-								.getFileName(), get(name).getLine());
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_name", "extension", b.getBody(), get(
+						name).getFileName(), get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Identity) {
 			if (isDefinedAsIdentity(name)) {
-				YangErrorManager.addError(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "identity", b.getBody(), get(name)
-								.getFileName(), get(name).getLine());
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_name", "identity", b.getBody(), get(
+						name).getFileName(), get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Feature) {
 			if (isDefinedAsFeature(name)) {
-				YangErrorManager.addError(modulefilename, b.getLine(), b.getCol(),
-						"dup_name", "feature", b.getBody(), get(name)
-								.getFileName(), get(name).getLine());
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_name", "feature", b.getBody(),
+						get(name).getFileName(), get(name).getLine());
 				return;
 			}
 		} else {
@@ -196,9 +196,9 @@ public class YangSpecNode implements Serializable {
 					found = true;
 			}
 			if (found) {
-				YangErrorManager.addError(modulefilename, b.getLine(), b.getCol(),
-						"dup_child", b.getBody(), get(name).getFileName(), get(
-								name).getLine());
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_child", b.getBody(), get(name)
+						.getFileName(), get(name).getLine());
 				return;
 			}
 		}
@@ -235,23 +235,23 @@ public class YangSpecNode implements Serializable {
 		String modulefilename = b.getFileName();
 		if (b instanceof YANG_TypeDef) {
 			if (isDefinedAsTypeDef(name)) {
-				YangErrorManager.addError(modulefilename, b.getLine(), b.getCol(),
-						"typedef", b.getBody(), modulefilename, get(name)
-								.getLine());
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "typedef", b.getBody(), modulefilename, get(
+						name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Grouping) {
 			if (isDefinedAsGrouping(name)) {
-				YangErrorManager.addError(modulefilename, b.getLine(), b.getCol(),
-						"grouping", b.getBody(), modulefilename, get(name)
-								.getLine());
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "grouping", b.getBody(), modulefilename,
+						get(name).getLine());
 				return;
 			}
 		} else if (b instanceof YANG_Extension) {
 			if (isDefinedAsExtension(name)) {
-				YangErrorManager.addError(modulefilename, b.getLine(), b.getCol(),
-						"extension", b.getBody(), modulefilename, get(name)
-								.getLine());
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "extension", b.getBody(), modulefilename,
+						get(name).getLine());
 				return;
 			}
 		} else {
@@ -271,9 +271,10 @@ public class YangSpecNode implements Serializable {
 					found = true;
 			}
 			if (found) {
-				YangErrorManager.addError(uses.getFileName(), uses.getLine(), uses
-						.getCol(), "dup_child_used", b.getBody(), get(name)
-						.getFileName(), get(name).getLine(), uses.getUses());
+				YangErrorManager.addError(uses.getFileName(), uses.getLine(),
+						uses.getCol(), "dup_child_used", b.getBody(), get(name)
+								.getFileName(), get(name).getLine(), uses
+								.getUses());
 				return;
 			}
 		}
@@ -308,7 +309,7 @@ public class YangSpecNode implements Serializable {
 				return bodies.get(fprefix + k);
 		return null;
 	}
-	
+
 	public YANG_Body getIdentity(String k) {
 		if (isDefined(k))
 			if (bodies.containsKey(iprefix + k))
@@ -382,11 +383,16 @@ public class YangSpecNode implements Serializable {
 			String k = ek.nextElement();
 			if (!bodies.containsKey(k)) {
 				bodies.put(k, p.bodies.get(k));
-			} else
-				YangErrorManager.addError(p.getNodes().get(k).getFileName(), p
-						.getNodes().get(k).getLine(), p.getNodes().get(k)
-						.getCol(), "dup_child", p.getNodes().get(k).getBody(),
-						bodies.get(k).getFileName(), bodies.get(k).getLine());
+			} else {
+				if (p.getNodes().get(k).getFileName().compareTo(
+						bodies.get(k).getFileName()) != 0)
+					YangErrorManager.addError(
+							p.getNodes().get(k).getFileName(), p.getNodes()
+									.get(k).getLine(), p.getNodes().get(k)
+									.getCol(), "dup_child", p.getNodes().get(k)
+									.getBody(), bodies.get(k).getFileName(),
+							bodies.get(k).getLine());
+			}
 		}
 	}
 
@@ -409,8 +415,8 @@ public class YangSpecNode implements Serializable {
 	public Hashtable<String, YANG_Body> getNodes() {
 		return bodies;
 	}
-	
-	public void setNodes(YangSpecNode y){
+
+	public void setNodes(YangSpecNode y) {
 		bodies = y.getNodes();
 	}
 
@@ -425,15 +431,15 @@ public class YangSpecNode implements Serializable {
 
 	public void removeNode(String module, YangSpecNode specNodes) {
 		YangSpecNode res = new YangSpecNode();
-		for (Enumeration<String> eb = getNodes().keys(); eb.hasMoreElements();){
+		for (Enumeration<String> eb = getNodes().keys(); eb.hasMoreElements();) {
 			String b = eb.nextElement();
-			String m = b.substring(b.indexOf(':')+1, b.indexOf(':', b.indexOf(':')+1));
-			
+			String m = b.substring(b.indexOf(':') + 1, b.indexOf(':', b
+					.indexOf(':') + 1));
+
 			if (m.compareTo(module) == 0)
 				res.bodies.put(b, getNodes().get(b));
 		}
 		setNodes(res);
 	}
-
 
 }

@@ -284,9 +284,11 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				Vector<String> cks = (Vector<String>) builded.clone();
 				YangContext includedcontext = submodule.check(paths, builded);
 				if (this instanceof YANG_SubModule) {
-					// context.merge(includedcontext);
-				} else
+					 context.merge(includedcontext);
+				} else {
+					//context.mergeChecked(includedcontext);
 					context.mergeChecked(includedcontext);
+				}
 			} else
 				YangErrorManager.addError(getFileName(), line, col,
 						"circ_include", includedsubmodulename, getName());
