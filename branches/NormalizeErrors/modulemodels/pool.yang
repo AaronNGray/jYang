@@ -1,0 +1,32 @@
+submodule pool {
+  belongs-to module {
+    prefix "Module";
+  }
+
+
+  grouping BwPool-Mos {
+            list BwPool {
+              min-elements 1;
+              max-elements 16;
+              key "rdnId";
+              leaf rdnId {
+                mandatory true;
+                type uint8 {
+                  range "1..16";
+                }
+              }
+
+              list IpFlow {
+                max-elements 4;
+                key "rdnId";
+                leaf rdnId {
+                  mandatory true;
+                  type uint8 {
+                    range "1..4";
+                  }
+                }
+              }
+          }
+      }
+}
+

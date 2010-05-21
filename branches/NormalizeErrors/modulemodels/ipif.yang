@@ -1,0 +1,23 @@
+submodule ipif {
+  belongs-to module {
+    prefix "Module";
+  }
+
+  include pool;
+
+  grouping IpIf-Mos {
+          list IpIf {
+            max-elements 16383;
+            key "rdnId";
+            leaf rdnId {
+              mandatory true;
+              type uint16 {
+                range "1..16383";
+              }
+            }
+
+            uses BwPool-Mos;
+      }
+   }
+}
+

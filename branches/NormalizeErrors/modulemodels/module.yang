@@ -1,0 +1,10 @@
+module module {
+  namespace "http://module.com/module";
+  prefix "Module";
+
+  include ipif;
+
+  container Module { 
+    uses IpIf-Mos;
+  }
+}
