@@ -50,8 +50,8 @@ public class Yang2Yin {
 				YANG_Import yimport = (YANG_Import) linkage;
 				YANG_Specification externalspec = yimport.getImportedmodule();
 				out.print("\n\txmlns:"
-						+ unquote(yimport.getPrefix().getPrefix()) + "=\""
-						+ unquote(externalspec.getNameSpace().getNameSpace())
+						+ yimport.getPrefix().getPrefix() + "=\""
+						+ externalspec.getNameSpace().getNameSpace()
 						+ "\"");
 			} else if (linkage instanceof YANG_Include) {
 			}
@@ -62,10 +62,10 @@ public class Yang2Yin {
 
 		if (yangspec instanceof YANG_Module) {
 			out.println(INDENT + "<namespace uri=\""
-					+ unquote(yangspec.getNameSpace().getNameSpace()) + "\"/>");
+					+ yangspec.getNameSpace().getNameSpace() + "\"/>");
 
 			out.println(INDENT + "<prefix value=\""
-					+ unquote(yangspec.getPrefix().getPrefix()) + "\"/>");
+					+ yangspec.getPrefix().getPrefix() + "\"/>");
 		}
 		if (yangspec.getYangVersion() != null)
 			out.println(INDENT + "<yang-version=\""

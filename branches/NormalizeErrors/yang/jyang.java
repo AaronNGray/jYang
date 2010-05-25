@@ -25,6 +25,7 @@ import jyang.parser.YANG_Specification;
 import jyang.parser.YangErrorManager;
 import jyang.parser.yang;
 import jyang.tools.Yang2Applet;
+import jyang.tools.Yang2Dsdl;
 import jyang.tools.Yang2Ensuite;
 import jyang.tools.Yang2Yin;
 
@@ -231,13 +232,13 @@ public class jyang {
 					if (format != null) {
 						if (format.compareTo("yin") == 0) {
 							new Yang2Yin(yangspec, paths, out);
-						} /*
-						 * else if (format.compareTo("ensuite") == 0) { new
-						 * Yang2Ensuite(yangspec, paths, out); }
-						 */
+						} 
+						  else if (format.compareTo("dsdl") == 0) {  }
+						 
 						else
 							System.err
-									.println("only yin (incomplete),  dsdl format will be possible");
+									.println("only yin, " +
+											" dsdl format will be possible");
 					}
 				} else
 					noError = false;
@@ -265,10 +266,9 @@ public class jyang {
 			e.printStackTrace();
 		}
 		parsingOk = noError;
-		/*
-		 * if (format.compareTo("applet") == 0) { new Yang2Applet(yangsSpecs,
-		 * paths, out); }
-		 */
+		
+		 if (format.compareTo("dsdl") == 0) { new Yang2Dsdl(yangsSpecs,out); }
+		 
 	}
 
 	public boolean isParsingOk() {
