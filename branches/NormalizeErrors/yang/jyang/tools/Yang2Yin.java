@@ -25,7 +25,7 @@ import java.io.*;
 import jyang.parser.*;
 
 public class Yang2Yin {
-	
+
 	private final static String INDENT = "  ";
 
 	public Yang2Yin(YANG_Specification n, String[] paths, PrintStream out) {
@@ -49,9 +49,8 @@ public class Yang2Yin {
 			if (linkage instanceof YANG_Import) {
 				YANG_Import yimport = (YANG_Import) linkage;
 				YANG_Specification externalspec = yimport.getImportedmodule();
-				out.print("\n\txmlns:"
-						+ yimport.getPrefix().getPrefix() + "=\""
-						+ externalspec.getNameSpace().getNameSpace()
+				out.print("\n\txmlns:" + yimport.getPrefix().getPrefix()
+						+ "=\"" + externalspec.getNameSpace().getNameSpace()
 						+ "\"");
 			} else if (linkage instanceof YANG_Include) {
 			}
@@ -99,8 +98,8 @@ public class Yang2Yin {
 			if (ymeta instanceof YANG_Organization) {
 				YANG_Organization org = (YANG_Organization) ymeta;
 				out.println(INDENT + "<organization>\n  <info>\n    "
-						+ unquote(org.getOrganization())
-						+ "\n"+ INDENT + "</info>\n  </organization>");
+						+ unquote(org.getOrganization()) + "\n" + INDENT
+						+ "</info>\n  </organization>");
 			} else if (ymeta instanceof YANG_Contact) {
 				YANG_Contact cont = (YANG_Contact) ymeta;
 				out.println("  <contact>\n  <info>\n  "
@@ -121,8 +120,8 @@ public class Yang2Yin {
 		for (Enumeration<YANG_Revision> erev = yangspec.getRevisions()
 				.elements(); erev.hasMoreElements();) {
 			YANG_Revision revision = erev.nextElement();
-			out.println(INDENT + "<revision date=\"" + unquote(revision.getDate())
-					+ "\">");
+			out.println(INDENT + "<revision date=\""
+					+ unquote(revision.getDate()) + "\">");
 			if (revision.getDescription() != null)
 				out.println(gDescription(revision.getDescription(), INDENT));
 			out.println("  </revision>");
@@ -166,9 +165,12 @@ public class Yang2Yin {
 	}
 
 	private String gDeviation(YANG_Deviation body, String prefix) {
-		String result = prefix + "<deviation name=\"" + body.getDeviation() + "\">\n";
+		String result = prefix + "<deviation name=\"" + body.getDeviation()
+				+ "\">\n";
 		if (body.getDeviateNotSupported() != null)
-			result += gDeviateNotSupported(body.getDeviateNotSupported(), prefix + INDENT) + "\n";
+			result += gDeviateNotSupported(body.getDeviateNotSupported(),
+					prefix + INDENT)
+					+ "\n";
 		for (YANG_DeviateAdd da : body.getDeviateAdds())
 			result += gDeviateAdd(da, prefix + INDENT) + "\n";
 		for (YANG_DeviateReplace dr : body.getDeviateReplaces())
@@ -180,10 +182,9 @@ public class Yang2Yin {
 
 	private String gDeviateDelete(YANG_DeviateDelete dd, String prefix) {
 		String result = prefix + "<deviate name=\"delete\"";
-		if (!dd.isBracked()){
+		if (!dd.isBracked()) {
 			result += "/>\n";
-		}
-		else {
+		} else {
 			result += ">\n";
 			if (dd.getUnits() != null)
 				result += gUnits(dd.getUnits(), prefix + INDENT) + "\n";
@@ -200,10 +201,9 @@ public class Yang2Yin {
 
 	private String gDeviateReplace(YANG_DeviateReplace dr, String prefix) {
 		String result = prefix + "<deviate name=\"replace\"";
-		if (!dr.isBracked()){
+		if (!dr.isBracked()) {
 			result += "/>\n";
-		}
-		else {
+		} else {
 			result += ">\n";
 			if (dr.getType() != null)
 				result += gType(dr.getType(), prefix + INDENT) + "\n";
@@ -216,9 +216,11 @@ public class Yang2Yin {
 			if (dr.getMandatory() != null)
 				result += gMandatory(dr.getMandatory(), prefix + INDENT) + "\n";
 			if (dr.getMinElement() != null)
-				result += gMinElement(dr.getMinElement(), prefix + INDENT) + "\n";
+				result += gMinElement(dr.getMinElement(), prefix + INDENT)
+						+ "\n";
 			if (dr.getMaxElement() != null)
-				result += gMaxElement(dr.getMaxElement(), prefix + INDENT) + "\n";
+				result += gMaxElement(dr.getMaxElement(), prefix + INDENT)
+						+ "\n";
 			result += prefix + "</deviate>";
 		}
 		return result;
@@ -226,10 +228,9 @@ public class Yang2Yin {
 
 	private String gDeviateAdd(YANG_DeviateAdd da, String prefix) {
 		String result = prefix + "<deviate name=\"add\"";
-		if (!da.isBracked()){
+		if (!da.isBracked()) {
 			result += "/>\n";
-		}
-		else {
+		} else {
 			result += ">\n";
 			if (da.getUnits() != null)
 				result += gUnits(da.getUnits(), prefix + INDENT) + "\n";
@@ -244,9 +245,11 @@ public class Yang2Yin {
 			if (da.getMandatory() != null)
 				result += gMandatory(da.getMandatory(), prefix + INDENT) + "\n";
 			if (da.getMinElement() != null)
-				result += gMinElement(da.getMinElement(), prefix + INDENT) + "\n";
+				result += gMinElement(da.getMinElement(), prefix + INDENT)
+						+ "\n";
 			if (da.getMaxElement() != null)
-				result += gMaxElement(da.getMaxElement(), prefix + INDENT) + "\n";
+				result += gMaxElement(da.getMaxElement(), prefix + INDENT)
+						+ "\n";
 			result += prefix + "</deviate>";
 		}
 		return result;
@@ -258,19 +261,24 @@ public class Yang2Yin {
 	}
 
 	private String gIdentity(YANG_Identity body, String prefix) {
-		String result = prefix + "<identity name=\"" + body.getIdentity() + "\"";
+		String result = prefix + "<identity name=\"" + body.getIdentity()
+				+ "\"";
 		if (!body.isBracked())
 			result += "/>\n";
 		else {
 			result += ">\n";
 			if (body.getBase() != null)
-				result += gBase(body.getBase(), prefix + INDENT) + "\n" + prefix + INDENT;
+				result += gBase(body.getBase(), prefix + INDENT) + "\n"
+						+ prefix + INDENT;
 			if (body.getStatus() != null)
-				result += gStatus(body.getStatus(), prefix) + "\n" + prefix +  INDENT;
+				result += gStatus(body.getStatus(), prefix) + "\n" + prefix
+						+ INDENT;
 			if (body.getDescription() != null)
-				result += gDescription(body.getDescription(), prefix + INDENT) + "\n" + prefix + INDENT;
+				result += gDescription(body.getDescription(), prefix + INDENT)
+						+ "\n" + prefix + INDENT;
 			if (body.getReference() != null)
-				result += gReference(body.getReference(), prefix + INDENT) + "\n" + prefix + INDENT;
+				result += gReference(body.getReference(), prefix + INDENT)
+						+ "\n" + prefix + INDENT;
 			result += prefix + "</identity>";
 		}
 		return result;
@@ -281,30 +289,33 @@ public class Yang2Yin {
 	}
 
 	private String gFeature(YANG_Feature body, String prefix) {
-		
+
 		String result = prefix + "<feature name =\"" + body.getFeature() + "\"";
 		if (!body.isBracked())
 			result += "/>";
-		else{
+		else {
 			result += ">\n";
-		if (body.getIfFeatures().size() != 0)
-			for (YANG_IfFeature iff : body.getIfFeatures())
-				result += prefix + INDENT + "<if-feature name=\"" + iff.getIfFeature() + "\"/>\n" ;
-		if (body.getStatus() != null)
-			result += gStatus(body.getStatus(), prefix) + "\n";
-		if (body.getDescription() != null)
-			result += gDescription(body.getDescription(), prefix + INDENT) + "\n";
-		if (body.getReference() != null)
-			result += gReference(body.getReference(), prefix + INDENT) + "\n";
-		result += "</feature>";
+			if (body.getIfFeatures().size() != 0)
+				for (YANG_IfFeature iff : body.getIfFeatures())
+					result += prefix + INDENT + "<if-feature name=\""
+							+ iff.getIfFeature() + "\"/>\n";
+			if (body.getStatus() != null)
+				result += gStatus(body.getStatus(), prefix) + "\n";
+			if (body.getDescription() != null)
+				result += gDescription(body.getDescription(), prefix + INDENT)
+						+ "\n";
+			if (body.getReference() != null)
+				result += gReference(body.getReference(), prefix + INDENT)
+						+ "\n";
+			result += "</feature>";
 		}
 		return result;
 	}
 
 	private String gDescription(YANG_Description desc, String prefix) {
-		return prefix + "<description>\n" + prefix + INDENT + "<text>\n" + prefix + INDENT
-				+ unquote(desc.getDescription()) + "\n" + prefix + INDENT
-				+ "</text>\n" + prefix + "</description>";
+		return prefix + "<description>\n" + prefix + INDENT + "<text>\n"
+				+ prefix + INDENT + unquote(desc.getDescription()) + "\n"
+				+ prefix + INDENT + "</text>\n" + prefix + "</description>";
 	}
 
 	private String gReference(YANG_Reference ref, String prefix) {
@@ -383,8 +394,7 @@ public class Yang2Yin {
 						+ "\n";
 			result += prefix + "</enum>";
 		} else
-			result += prefix + "  <enum name=\"" + unquote(yenum.getEnum())
-					+ "\"/>";
+			result += prefix + "  <enum name=\"" + yenum.getEnum() + "\"/>";
 		return result;
 	}
 
@@ -401,7 +411,8 @@ public class Yang2Yin {
 		if (bit.getStatus() != null)
 			result += gStatus(bit.getStatus(), prefix + INDENT) + "\n";
 		if (bit.getDescription() != null)
-			result += gDescription(bit.getDescription(), prefix + INDENT) + "\n";
+			result += gDescription(bit.getDescription(), prefix + INDENT)
+					+ "\n";
 		if (bit.getReference() != null)
 			result += gReference(bit.getReference(), prefix + INDENT) + "\n";
 		result += prefix + "</bit>";
@@ -543,7 +554,8 @@ public class Yang2Yin {
 				result += gDescription(ext.getDescription(), prefix + INDENT)
 						+ "\n";
 			if (ext.getReference() != null)
-				result += gReference(ext.getReference(), prefix + INDENT) + "\n";
+				result += gReference(ext.getReference(), prefix + INDENT)
+						+ "\n";
 			result += prefix + "</extension>";
 		} else
 			result += prefix + "<extension name=\""
@@ -627,9 +639,11 @@ public class Yang2Yin {
 				result += gPresence(container.getPresence(), prefix + INDENT)
 						+ "\n";
 			if (container.getConfig() != null)
-				result += gConfig(container.getConfig(), prefix + INDENT) + "\n";
+				result += gConfig(container.getConfig(), prefix + INDENT)
+						+ "\n";
 			if (container.getStatus() != null)
-				result += gStatus(container.getStatus(), prefix + INDENT) + "\n";
+				result += gStatus(container.getStatus(), prefix + INDENT)
+						+ "\n";
 			if (container.getDescription() != null)
 				result += gDescription(container.getDescription(), prefix
 						+ INDENT)
@@ -671,7 +685,8 @@ public class Yang2Yin {
 		if (leaf.getStatus() != null)
 			result += gStatus(leaf.getStatus(), prefix + INDENT) + "\n";
 		if (leaf.getDescription() != null)
-			result += gDescription(leaf.getDescription(), prefix + INDENT) + "\n";
+			result += gDescription(leaf.getDescription(), prefix + INDENT)
+					+ "\n";
 		if (leaf.getReference() != null)
 			result += gReference(leaf.getReference(), prefix + INDENT) + "\n";
 		result += prefix + "</leaf>";
@@ -697,14 +712,16 @@ public class Yang2Yin {
 			result += gMaxElement(leaflist.getMaxElement(), prefix + INDENT)
 					+ "\n";
 		if (leaflist.getOrderedBy() != null)
-			result += gOrderedBy(leaflist.getOrderedBy(), prefix + INDENT) + "\n";
+			result += gOrderedBy(leaflist.getOrderedBy(), prefix + INDENT)
+					+ "\n";
 		if (leaflist.getStatus() != null)
 			result += gStatus(leaflist.getStatus(), prefix + INDENT) + "\n";
 		if (leaflist.getDescription() != null)
 			result += gDescription(leaflist.getDescription(), prefix + INDENT)
 					+ "\n";
 		if (leaflist.getReference() != null)
-			result += gReference(leaflist.getReference(), prefix + INDENT) + "\n";
+			result += gReference(leaflist.getReference(), prefix + INDENT)
+					+ "\n";
 		result += prefix + "</leaflist>";
 		return result;
 	}
@@ -730,7 +747,8 @@ public class Yang2Yin {
 		if (list.getStatus() != null)
 			result += gStatus(list.getStatus(), prefix + INDENT) + "\n";
 		if (list.getDescription() != null)
-			result += gDescription(list.getDescription(), prefix + INDENT) + "\n";
+			result += gDescription(list.getDescription(), prefix + INDENT)
+					+ "\n";
 		if (list.getReference() != null)
 			result += gReference(list.getReference(), prefix + INDENT) + "\n";
 		for (Enumeration<YANG_TypeDef> et = list.getTypeDefs().elements(); et
@@ -857,7 +875,8 @@ public class Yang2Yin {
 				result += gDescription(uses.getDescription(), prefix + INDENT)
 						+ "\n";
 			if (uses.getReference() != null)
-				result += gReference(uses.getReference(), prefix + INDENT) + "\n";
+				result += gReference(uses.getReference(), prefix + INDENT)
+						+ "\n";
 			for (Enumeration<YANG_RefineAnyNode> er = uses.getRefinements()
 					.elements(); er.hasMoreElements();)
 				result += gRefinement(er.nextElement(), prefix + INDENT) + "\n";
@@ -880,7 +899,8 @@ public class Yang2Yin {
 			result += gDescription(augment.getDescription(), prefix + INDENT)
 					+ "\n";
 		if (augment.getReference() != null)
-			result += gReference(augment.getReference(), prefix + INDENT) + "\n";
+			result += gReference(augment.getReference(), prefix + INDENT)
+					+ "\n";
 		// if (augment.getInput() != null)
 		// result += gInput(augment.getInput(), prefix + " ") + "\n";
 		// if (augment.getOutput() != null)
@@ -1003,9 +1023,11 @@ public class Yang2Yin {
 			if (r.getConfig() != null)
 				result += gConfig(r.getConfig(), prefix + INDENT) + "\n";
 			if (r.getMinElement() != null)
-				result += gMinElement(r.getMinElement(), prefix + INDENT) + "\n";
+				result += gMinElement(r.getMinElement(), prefix + INDENT)
+						+ "\n";
 			if (r.getMaxElement() != null)
-				result += gMaxElement(r.getMaxElement(), prefix + INDENT) + "\n";
+				result += gMaxElement(r.getMaxElement(), prefix + INDENT)
+						+ "\n";
 			if (r.getDefault() != null)
 				result += gDefault(r.getDefault(), prefix + INDENT) + "\n";
 			if (r.getMandatory() != null)
@@ -1033,9 +1055,11 @@ public class Yang2Yin {
 			if (l.getConfig() != null)
 				result += gConfig(l.getConfig(), prefix + INDENT) + "\n";
 			if (l.getMinElement() != null)
-				result += gMinElement(l.getMinElement(), prefix + INDENT) + "\n";
+				result += gMinElement(l.getMinElement(), prefix + INDENT)
+						+ "\n";
 			if (l.getMaxElement() != null)
-				result += gMaxElement(l.getMaxElement(), prefix + INDENT) + "\n";
+				result += gMaxElement(l.getMaxElement(), prefix + INDENT)
+						+ "\n";
 			if (l.getDescription() != null)
 				result += gDescription(l.getDescription(), prefix + INDENT)
 						+ "\n";
@@ -1135,9 +1159,11 @@ public class Yang2Yin {
 			if (l.getConfig() != null)
 				result += gConfig(l.getConfig(), prefix + INDENT) + "\n";
 			if (l.getMinElement() != null)
-				result += gMinElement(l.getMinElement(), prefix + INDENT) + "\n";
+				result += gMinElement(l.getMinElement(), prefix + INDENT)
+						+ "\n";
 			if (l.getMaxElement() != null)
-				result += gMaxElement(l.getMaxElement(), prefix + INDENT) + "\n";
+				result += gMaxElement(l.getMaxElement(), prefix + INDENT)
+						+ "\n";
 			if (l.getDescription() != null)
 				result += gDescription(l.getDescription(), prefix + INDENT)
 						+ "\n";
@@ -1255,7 +1281,8 @@ public class Yang2Yin {
 				result += gDescription(must.getDescription(), prefix + INDENT)
 						+ "\n";
 			if (must.getReference() != null)
-				result += gReference(must.getReference(), prefix + INDENT) + "\n";
+				result += gReference(must.getReference(), prefix + INDENT)
+						+ "\n";
 			result += prefix + "</must>";
 		} else
 			result += prefix + "<must condition=\"" + unquote(must.getMust())
@@ -1295,10 +1322,12 @@ public class Yang2Yin {
 	}
 
 	private String unquote(String s) {
-		if (s.charAt(0) == '"')
-			s = s.substring(1);
-		if (s.charAt(s.length() - 1) == '"')
-			s = s.substring(0, s.length() - 1);
+		if (s.length() != 0) {
+			if (s.charAt(0) == '"')
+				s = s.substring(1);
+			if (s.charAt(s.length() - 1) == '"')
+				s = s.substring(0, s.length() - 1);
+		}
 		return s;
 	}
 }

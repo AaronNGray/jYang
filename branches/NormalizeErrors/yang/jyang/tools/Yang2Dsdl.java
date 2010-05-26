@@ -79,6 +79,17 @@ public class Yang2Dsdl {
 	private final static String RB = ">";
 	private final static String NMT = "nmt";
 	private final static String DC = "dc";
+	private final static String GRAMMAR = "grammar";
+	private final static String START = "start";
+	private final static String INTLV = "interleave";
+	private final static String OPT = "optional";
+	private final static String ELT = "element";
+	private final static String ZoM = "ZeroOrMore";
+	private final static String OoM = "OneOrMore";
+	
+	
+	
+	
 	private final static String NETMODTREE = "netmod-tree";
 	private final static String TOP = "top";
 	private final static String RPCMETHODS = "rpc-methods";

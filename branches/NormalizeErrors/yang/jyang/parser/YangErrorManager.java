@@ -1,5 +1,6 @@
 package jyang.parser;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.MessageFormat;
@@ -27,9 +28,10 @@ public class YangErrorManager {
 		private String messageId;
 		private int severity;
 
+		
 		public Error(String m, int l, int c, String mi, int s) {
-			if (m.contains("/"))
-				module = m.substring(m.lastIndexOf('/') + 1);
+			if (m.contains(File.separator))
+				module = m.substring(m.lastIndexOf(File.separatorChar) + 1);
 			else
 				module = m;
 			line = l;
@@ -133,8 +135,8 @@ public class YangErrorManager {
 
 	static public void setCurrentModule(String m) {
 		module = m;
-		if (module.contains("/"))
-			module = m.substring(m.lastIndexOf('/') + 1);
+		if (module.contains(File.separator))
+			module = m.substring(m.lastIndexOf(File.separatorChar) + 1);
 		if (module.endsWith(".yang"))
 			module = module.substring(0,module.lastIndexOf(".yang"));
 	}
