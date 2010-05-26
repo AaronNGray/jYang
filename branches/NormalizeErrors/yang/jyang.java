@@ -232,20 +232,19 @@ public class jyang {
 					if (format != null) {
 						if (format.compareTo("yin") == 0) {
 							new Yang2Yin(yangspec, paths, out);
-						} 
-						  else if (format.compareTo("dsdl") == 0) {  }
-						 
+						} else if (format.compareTo("dsdl") == 0) {
+						}
+
 						else
-							System.err
-									.println("only yin, " +
-											" dsdl format will be possible");
+							System.err.println("only yin, "
+									+ " dsdl format will be possible");
 					}
 				} else
 					noError = false;
 
 			} catch (ParseException pe) {
-//				pe.printStackTrace();
-//				System.out.println(pe);
+				// pe.printStackTrace();
+				// System.out.println(pe);
 				if (pe.currentToken != null)
 					if (pe.currentToken.next != null)
 						YangErrorManager.addError(fname,
@@ -266,9 +265,11 @@ public class jyang {
 			e.printStackTrace();
 		}
 		parsingOk = noError;
-		
-		 if (format.compareTo("dsdl") == 0) { new Yang2Dsdl(yangsSpecs,out); }
-		 
+		if (format != null)
+			if (format.compareTo("dsdl") == 0) {
+				new Yang2Dsdl(yangsSpecs, out);
+			}
+
 	}
 
 	public boolean isParsingOk() {
