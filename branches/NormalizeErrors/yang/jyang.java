@@ -24,9 +24,7 @@ import jyang.parser.ParseException;
 import jyang.parser.YANG_Specification;
 import jyang.parser.YangErrorManager;
 import jyang.parser.yang;
-import jyang.tools.Yang2Applet;
 import jyang.tools.Yang2Dsdl;
-import jyang.tools.Yang2Ensuite;
 import jyang.tools.Yang2Yin;
 
 public class jyang {
@@ -34,13 +32,23 @@ public class jyang {
 	private Hashtable<String, YANG_Specification> yangsSpecs = new Hashtable<String, YANG_Specification>();
 	private boolean parsingOk;
 	private boolean warning = false;
+	private boolean output = true;
 	private static boolean reinit = false;
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		new jyang(args);
 	}
 
-	public jyang(String args[]) {
+	public jyang(String[] args, boolean output) {
+		this.output = output;
+		parse(args);
+	}
+
+	public jyang(String[] args) {
+		this (args, true);
+	}
+
+	public void parse(String[] args) {
 		// Parsing arguments
 		if (args.length == 0) {
 			System.err.println("no module name");
@@ -186,7 +194,7 @@ public class jyang {
 							+ " cannot be read, ignore it.");
 				else if (paths[pos].compareTo(".") != 0) // We will force the
 					// . at the end
-					// TODO force it if it is not given in YANGPAT
+					// Force it if it is not given in YANGPAT
 					pathsHT.put(paths[pos], paths[pos]);
 			} catch (NullPointerException np) {
 				System.err.println("Null path name, maybe a trailing \""
@@ -260,7 +268,8 @@ public class jyang {
 		try {
 			if (!warning)
 				YangErrorManager.supressWarning();
-			YangErrorManager.print(System.err);
+			if (output)
+				YangErrorManager.print(System.err);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -278,13 +287,5 @@ public class jyang {
 
 	public Hashtable<String, YANG_Specification> getYangsSpecs() {
 		return yangsSpecs;
-	}
-
-	public boolean isReinit() {
-		return reinit;
-	}
-
-	public void setReinit(boolean reinit) {
-		this.reinit = reinit;
 	}
 }
