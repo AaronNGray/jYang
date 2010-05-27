@@ -34,22 +34,13 @@ public class jyang {
 	private Hashtable<String, YANG_Specification> yangsSpecs = new Hashtable<String, YANG_Specification>();
 	private boolean parsingOk;
 	private boolean warning = false;
-	private boolean reinit = false;
+	private static boolean reinit = false;
 
 	public static void main(String args[]) {
 		new jyang(args);
 	}
 
-	public jyang(String args[], boolean ri) {
-		reinit = ri;
-		parse(args);
-	}
-
 	public jyang(String args[]) {
-		parse(args);
-	}
-
-	public void parse(String args[]) {
 		// Parsing arguments
 		if (args.length == 0) {
 			System.err.println("no module name");
