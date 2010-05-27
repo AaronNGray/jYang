@@ -465,6 +465,50 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			checkedSpecs.put(externalmodulename, externalspec);
 		return externalspec;
 	}
+	
+	protected YANG_Specification getExternal(String[] paths,
+			String externalmodulename, String external) {
+		int i = 0;
+		boolean found = false;
+		YANG_Specification externalspec = null;
+		while (i < paths.length && !found) {
+			String directory = paths[i++];
+			String yangspecfilename = directory + File.separator
+					+ externalmodulename + ".yang";
+			if (checkedSpecs.containsKey(externalmodulename))
+				return checkedSpecs.get(externalmodulename);
+			try {
+				File externalfile = new File(yangspecfilename);
+				yang.ReInit(new FileInputStream(externalfile));
+				found = true;
+				try {
+					yang.setFileName(yangspecfilename);
+					externalspec = yang.Start();
+				} catch (ParseException pe) {
+					if (pe.currentToken != null)
+						if (pe.currentToken.next != null)
+							YangErrorManager.addError(getFileName(),
+									pe.currentToken.next.beginLine,
+									pe.currentToken.next.beginColumn,
+									"unex_kw", pe.currentToken.next.image);
+						else
+							System.out.println(pe);
+					else
+						System.out.println(pe);
+				}
+			} catch (NullPointerException np) {
+			} catch (FileNotFoundException fnf) {
+				// nothing to do
+				// pass to the next path
+			}
+		}
+		if (!found)
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+					"file_not_found", externalmodulename);
+		if (externalmodulename != null && externalspec != null)
+			checkedSpecs.put(externalmodulename, externalspec);
+		return externalspec;
+	}
 
 	private void checkTreeNode(String[] p) {
 		Vector<String> builded = new Vector<String>();

@@ -34,6 +34,7 @@ public class jyang {
 	private Hashtable<String, YANG_Specification> yangsSpecs = new Hashtable<String, YANG_Specification>();
 	private boolean parsingOk;
 	private boolean warning = false;
+	private boolean reinit = false;
 
 	public static void main(String args[]) {
 		new jyang(args);
@@ -211,7 +212,6 @@ public class jyang {
 		// Parse yang specs
 
 		YangErrorManager.init();
-		boolean reinit = false;
 		boolean noError = true;
 		for (Enumeration<String> ei = specs.keys(); ei.hasMoreElements();) {
 			String fname = ei.nextElement();
@@ -278,5 +278,13 @@ public class jyang {
 
 	public Hashtable<String, YANG_Specification> getYangsSpecs() {
 		return yangsSpecs;
+	}
+
+	public boolean isReinit() {
+		return reinit;
+	}
+
+	public void setReinit(boolean reinit) {
+		this.reinit = reinit;
 	}
 }
