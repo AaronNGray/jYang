@@ -40,7 +40,16 @@ public class jyang {
 		new jyang(args);
 	}
 
+	public jyang(String args[], boolean ri) {
+		reinit = ri;
+		parse(args);
+	}
+
 	public jyang(String args[]) {
+		parse(args);
+	}
+
+	public void parse(String args[]) {
 		// Parsing arguments
 		if (args.length == 0) {
 			System.err.println("no module name");
