@@ -1676,18 +1676,24 @@ public class YANG_Type extends SimpleYangNode {
 		} else if (YangBuiltInTypes.bits
 				.compareTo(context.getBuiltInType(this)) == 0) {
 			value = YangBuiltInTypes.removeQuotesAndTrim(value);
-			byte[] bv = value.getBytes();
-			boolean binary = true;
-			for (int i = 0; i < bv.length && binary; i++)
-				binary = bv[i] == '1' || bv[i] == '0';
-			if (!binary)
+			String[] bv = value.split("\\s");
+			
+			if (bv.length > getFirstBitDefined(context, this))
 				YangErrorManager.addError(ydefault.getFileName(), ydefault
 						.getLine(), ydefault.getCol(), "default_mismatch",
 						value, getType(), getFileName(), getLine());
-			if (value.length() != getFirstBitDefined(context, this))
-				YangErrorManager.addError(ydefault.getFileName(), ydefault
-						.getLine(), ydefault.getCol(), "default_mismatch",
-						value, getType(), getFileName(), getLine());
+			else {
+				YANG_BitSpecification bs = getBitSpec();
+				boolean allfound = true;
+				for (String defbit : bv){
+					boolean foundone = false;
+					for (YANG_Bit bit : bs.getBits()){
+						if (bit.getBit().compareTo(defbit) == 0)
+							foundone = true;
+					}
+					allfound = allfound && foundone;
+				}
+			}
 		} else if (YangBuiltInTypes.union.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			YANG_Type ut = getFirstUnionDefined(context, this);

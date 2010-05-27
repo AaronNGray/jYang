@@ -107,29 +107,29 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 		if (m instanceof YANG_Organization) {
 			if (organization)
-				YangErrorManager.addError(getFileName(), m.getLine(), m.getCol(),
-						"unex_kw", "organization");
+				YangErrorManager.addError(getFileName(), m.getLine(), m
+						.getCol(), "unex_kw", "organization");
 			else
 				organization = true;
 		}
 		if (m instanceof YANG_Contact) {
 			if (contact)
-				YangErrorManager.addError(getFileName(), m.getLine(), m.getCol(),
-						"unex_kw", "contact");
+				YangErrorManager.addError(getFileName(), m.getLine(), m
+						.getCol(), "unex_kw", "contact");
 			else
 				contact = true;
 		}
 		if (m instanceof YANG_Description) {
 			if (description)
-				YangErrorManager.addError(getFileName(), m.getLine(), m.getCol(),
-						"unex_kw", "description");
+				YangErrorManager.addError(getFileName(), m.getLine(), m
+						.getCol(), "unex_kw", "description");
 			else
 				description = true;
 		}
 		if (m instanceof YANG_Reference) {
 			if (reference)
-				YangErrorManager.addError(getFileName(), m.getLine(), m.getCol(),
-						"unex_kw", "reference");
+				YangErrorManager.addError(getFileName(), m.getLine(), m
+						.getCol(), "unex_kw", "reference");
 			else
 				reference = true;
 		}
@@ -227,7 +227,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		cleanExternalWarning();
 
 	}
-	
+
 	protected abstract void cleanExternalWarning();
 
 	@SuppressWarnings("unchecked")
@@ -284,9 +284,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				Vector<String> cks = (Vector<String>) builded.clone();
 				YangContext includedcontext = submodule.check(paths, builded);
 				if (this instanceof YANG_SubModule) {
-					 context.merge(includedcontext);
+					context.merge(includedcontext);
 				} else {
-					//context.mergeChecked(includedcontext);
+					// context.mergeChecked(includedcontext);
 					context.mergeChecked(includedcontext);
 				}
 			} else
@@ -366,10 +366,13 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				YANG_Include included = (YANG_Include) linkage;
 				String includedspecname = included.getIncludedModule();
 				YANG_Revision revision = included.getRevision();
-				if (revision != null)
+				YANG_Specification includedspec = null;
+				if (revision != null) {
+					String incname = includedspecname;
 					includedspecname += "." + revision.getDate();
-				YANG_Specification includedspec = getExternal(paths,
-						includedspecname);
+					includedspec = getExternal(paths, includedspecname, incname);
+				} else
+					includedspec = getExternal(paths, includedspecname);
 
 				if (includedspec != null) {
 					included.setIncludedsubmodule(includedspec);
@@ -406,14 +409,19 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				YANG_Import imported = (YANG_Import) link;
 				String importedspecname = imported.getImportedModule();
 				YANG_Revision revision = imported.getRevision();
-				if (revision != null)
+				YANG_Specification importedspec = null;
+				if (revision != null) {
+					String impname = importedspecname;
 					importedspecname += "." + revision.getDate();
-				YANG_Specification importedspec = getExternal(paths,
-						importedspecname);
-				imported.setImportedmodule(importedspec);
+					importedspec = getExternal(paths, importedspecname, impname);
+				} else
+					importedspec = getExternal(paths, importedspecname);
+				if (importedspec != null)
+					imported.setImportedmodule(importedspec);
 				if (!(importedspec instanceof YANG_Module))
-					YangErrorManager.addError(getFileName(), imported.getLine(),
-							imported.getCol(), "not_module", importedspecname);
+					YangErrorManager.addError(getFileName(),
+							imported.getLine(), imported.getCol(),
+							"not_module", importedspecname);
 				else if (!importeds.contains(importedspec))
 					importeds.add((YANG_Module) importedspec);
 			}
@@ -465,18 +473,18 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			checkedSpecs.put(externalmodulename, externalspec);
 		return externalspec;
 	}
-	
+
 	protected YANG_Specification getExternal(String[] paths,
-			String externalmodulename, String external) {
+			String revisionmodulename, String external) {
 		int i = 0;
 		boolean found = false;
 		YANG_Specification externalspec = null;
 		while (i < paths.length && !found) {
 			String directory = paths[i++];
 			String yangspecfilename = directory + File.separator
-					+ externalmodulename + ".yang";
-			if (checkedSpecs.containsKey(externalmodulename))
-				return checkedSpecs.get(externalmodulename);
+					+ revisionmodulename + ".yang";
+			if (checkedSpecs.containsKey(revisionmodulename))
+				return checkedSpecs.get(revisionmodulename);
 			try {
 				File externalfile = new File(yangspecfilename);
 				yang.ReInit(new FileInputStream(externalfile));
@@ -503,10 +511,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			}
 		}
 		if (!found)
-			YangErrorManager.addError(getFileName(), getLine(), getCol(),
-					"file_not_found", externalmodulename);
-		if (externalmodulename != null && externalspec != null)
-			checkedSpecs.put(externalmodulename, externalspec);
+			externalspec = getExternal(paths, external);
+		if (revisionmodulename != null && externalspec != null)
+			checkedSpecs.put(revisionmodulename, externalspec);
 		return externalspec;
 	}
 
@@ -660,9 +667,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 						augmentedbody = augmented;
 				}
 				if (augmentedbody == null) {
-					YangErrorManager.addError(getFileName(), vaugs.get(i).getLine(),
-							vaugs.get(i).getCol(), "augmented_not_found",
-							taugs[i]);
+					YangErrorManager.addError(getFileName(), vaugs.get(i)
+							.getLine(), vaugs.get(i).getCol(),
+							"augmented_not_found", taugs[i]);
 				}
 			} else {
 				YANG_Augment aug = vaugs.get(i);
