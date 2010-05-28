@@ -5,7 +5,20 @@ submodule ipif {
 
   include pool;
 
+  extension substatement {
+    argument name;
+  }
+
+
+  extension action {
+    argument name;
+    Module:substatement "input";
+    Module:substatement "output";
+  }
+
+
   grouping IpIf-Mos {
+
           list IpIf {
             max-elements 16383;
             key "rdnId";
@@ -15,6 +28,18 @@ submodule ipif {
                 range "1..16383";
               }
             }
+
+        Module:action switchOver {
+ 
+         input {
+//             leaf a {}
+          }
+          output {
+//              leaf b {}
+
+          }
+        }
+
 
             uses BwPool-Mos;
       }

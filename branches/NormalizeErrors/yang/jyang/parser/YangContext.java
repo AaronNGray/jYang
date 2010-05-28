@@ -203,7 +203,7 @@ public class YangContext implements Serializable{
 			String suffix = uses
 					.substring(uses.indexOf(':') + 1, uses.length());
 			String cn = null;
-			cn = canonicalTypeName(prefix, suffix, u.getLine(), u.getCol(),
+			cn = canonicalTypeName(prefix, suffix,u.getFileName(), u.getLine(), u.getCol(),
 					new Hashtable<String, YANG_Type>());
 			return specnodes.isDefinedAsGrouping(cn);
 		} else
@@ -223,7 +223,7 @@ public class YangContext implements Serializable{
 			String suffix = uses
 					.substring(uses.indexOf(':') + 1, uses.length());
 			String cn = null;
-			cn = canonicalTypeName(prefix, suffix, u.getLine(), u.getCol(),
+			cn = canonicalTypeName(prefix, suffix, u.getFileName(), u.getLine(), u.getCol(),
 					new Hashtable<String, YANG_Type>());
 			return specnodes.getUsedGrouping(cn);
 		} else {
@@ -398,7 +398,7 @@ public class YangContext implements Serializable{
 			prefix = type.getPrefix();
 		suffix = type.getSuffix();
 		String cn = null;
-		cn = canonicalTypeName(prefix, suffix, type.getLine(), type.getCol(),
+		cn = canonicalTypeName(prefix, suffix, type.getFileName(), type.getLine(), type.getCol(),
 				pendinguniontype);
 		if (YangBuiltInTypes.union.compareTo(suffix) == 0) {
 			YANG_UnionSpecification unionspec = type.getUnionSpec();
@@ -421,7 +421,7 @@ public class YangContext implements Serializable{
 			prefix = iff.getPrefix();
 		suffix = iff.getSuffix();
 		String cn = null;
-		cn = canonicalTypeName(prefix, suffix, iff.getLine(), iff.getCol(),
+		cn = canonicalTypeName(prefix, suffix, iff.getFileName(), iff.getLine(), iff.getCol(),
 				pendinguniontype);
 		return cn;
 	}
@@ -435,12 +435,12 @@ public class YangContext implements Serializable{
 			prefix = base.getPrefix();
 		suffix = base.getSuffix();
 		String cn = null;
-		cn = canonicalTypeName(prefix, suffix, base.getLine(), base.getCol(),
+		cn = canonicalTypeName(prefix, suffix, base.getFileName(), base.getLine(), base.getCol(),
 				pendinguniontype);
 		return cn;
 	}
 
-	private String canonicalTypeName(String prefix, String suffix, int line,
+	private String canonicalTypeName(String prefix, String suffix, String filename, int line,
 			int col, Hashtable<String, YANG_Type> pendinguniontype) {
 		String result = null;
 		if (prefix == null) {
@@ -450,7 +450,7 @@ public class YangContext implements Serializable{
 				return getModuleSpecName() + ":" + suffix;
 		} else {
 			if (YangBuiltInTypes.isBuiltIn(suffix))
-				YangErrorManager.addError(getModuleSpecName(), line, col,
+				YangErrorManager.addError(filename, line, col,
 						"illegal_builtin", prefix + ":" + suffix);
 			boolean found = false;
 			if (getLocalPrefix() != null)
@@ -477,7 +477,7 @@ public class YangContext implements Serializable{
 					}
 				}
 				if (!found) {
-					YangErrorManager.addError(getModuleSpecName(), line, col,
+					YangErrorManager.addError(filename, line, col,
 							"not_imported_prefix", prefix);
 				}
 			}

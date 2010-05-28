@@ -119,7 +119,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 		else {
 			if (!YangBuiltInTypes.isBuiltIn(getType().getType()))
 				if (!context.isTypeDefined(getType())) {
-					YangErrorManager.addError(filename, getType().getLine(),
+					YangErrorManager.addError(getFileName(), getType().getLine(),
 							getType().getCol(), "unknown_type", getType()
 									.getType());
 				} else {

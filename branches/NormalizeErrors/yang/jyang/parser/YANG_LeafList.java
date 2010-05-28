@@ -88,7 +88,7 @@ public class YANG_LeafList extends ListedDataDef {
 		else if (!YangBuiltInTypes.isBuiltIn(getType().getType()))
 			if (!context.isTypeDefined(getType())) {
 				YangErrorManager
-						.addError(filename, getType().getLine(), getType()
+						.addError(getFileName(), getType().getLine(), getType()
 								.getCol(), "unknown_type", getType().getType());
 			} else
 				context.getTypeDef(getType()).check(context);

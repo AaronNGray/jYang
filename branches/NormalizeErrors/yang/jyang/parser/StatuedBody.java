@@ -20,7 +20,7 @@ public abstract class StatuedBody extends YANG_Body {
 			b_status = true;
 			status = s;
 		} else
-			YangErrorManager.addError(filename, s.getLine(), s.getCol(), "unex_kw",
+			YangErrorManager.addError(getFileName(), s.getLine(), s.getCol(), "unex_kw",
 					"status");
 
 	}

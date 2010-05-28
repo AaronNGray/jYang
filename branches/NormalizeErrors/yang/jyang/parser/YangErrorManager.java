@@ -41,8 +41,8 @@ public class YangErrorManager {
 		}
 
 		public String toString() {
-			return module + ":" + line + ";" + column + "\t - "
-					+ tseverity[severity] + " - \t" + messageId;
+			return module + "#(" + line + "," + column + ")#"
+					+ tseverity[severity] + "#" + messageId;
 		}
 
 		public String getModule() {
