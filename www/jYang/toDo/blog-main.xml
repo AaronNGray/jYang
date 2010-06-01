@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<rss xmlns:iweb="http://www.apple.com/iweb" version="2.0">
+  <channel>
+    <title>toDo</title>
+    <link>http://jyang.gforge.inria.fr/jYang/toDo</link>
+    <description></description>
+    <item>
+      <title>config</title>
+      <link>http://jyang.gforge.inria.fr/jYang/toDo/Entrees/2009/6/24_config.html</link>
+      <guid isPermaLink="false">c5014725-37a9-4c6c-9d4d-db0ecc122bbb</guid>
+      <pubDate>Wed, 24 Jun 2009 11:53:31 +0200</pubDate>
+      <description>A list that is configuration data must have a key statement.&lt;br/&gt;If the parent list is a configuration data, so the list is also a configuration data.&lt;br/&gt;&lt;br/&gt;Theses modules : &lt;br/&gt;ietf-netconf-partial-lock, ipfixpsamp, system, and test &lt;br/&gt;of the netconfcentral module page (&lt;a href="http://www.netconfcentral.com/modulelist"&gt;http://www.netconfcentral.com/modulelist&lt;/a&gt;) have a list with no key.</description>
+      <iweb:comment link="http://jyang.gforge.inria.fr/jYang/toDo/Entrees/2009/6/24_config.html#comment_layer" count="0" enabled="0"></iweb:comment>
+    </item>
+    <item>
+      <title>revision</title>
+      <link>http://jyang.gforge.inria.fr/jYang/toDo/Entrees/2009/6/22_revision.html</link>
+      <guid isPermaLink="false">d595c735-7233-4df5-b603-aeb7fe42a817</guid>
+      <pubDate>Mon, 22 Jun 2009 17:47:17 +0200</pubDate>
+      <description>When a module is imported by revision I must check if the revision date is in the imported module revisions.</description>
+      <iweb:comment link="http://jyang.gforge.inria.fr/jYang/toDo/Entrees/2009/6/22_revision.html#comment_layer" count="0" enabled="0"></iweb:comment>
+    </item>
+    <item>
+      <title>xPath</title>
+      <link>http://jyang.gforge.inria.fr/jYang/toDo/Entrees/2009/6/22_xPath.html</link>
+      <guid isPermaLink="false">63a3ddf9-eb95-4674-b347-d9c377c3e099</guid>
+      <pubDate>Mon, 22 Jun 2009 17:08:36 +0200</pubDate>
+      <description>xPath expression are not checked inside must, when and leafref statements. &lt;br/&gt;They are checked inside augment statements (but not for uses augment).&lt;br/&gt;</description>
+      <iweb:comment link="http://jyang.gforge.inria.fr/jYang/toDo/Entrees/2009/6/22_xPath.html#comment_layer" count="0" enabled="0"></iweb:comment>
+    </item>
+    <iweb:dateFormat>dd/MM/yy</iweb:dateFormat>
+    <iweb:baseURL>http://jyang.gforge.inria.fr/jYang/toDo</iweb:baseURL>
+    <iweb:maximumSummaryItems>10</iweb:maximumSummaryItems>
+  </channel>
+</rss>

@@ -1,0 +1,99 @@
+module veto-conf {
+
+namespace "http://www.w3.org/2001/XMLSchema-instance";
+prefix "vt";
+
+typedef vtNumber { type uint64 ; }
+typedef vtIdentifier { 
+    type string {
+	    pattern "([a-z]|[A-Z])(([a-z]|[A-Z]|[0-9]|_|-)*)";
+	}
+}
+typedef vtValue { 
+	type union {
+	      type vtNumber;
+	      type vtIdentifier;
+	 }
+}
+typedef vtTerm { 
+    type string {
+	    pattern "(request|response|message)\. " +
+				"(method|status-code|uri|Call-ID)";
+    }
+}
+typedef vtPropertyName { 
+    type string {
+	    pattern "target|include|locality|ressource";
+	}
+}
+typedef vtProto { 
+    type string {
+	    pattern "tcp|udp|sip";
+	}
+}
+typedef vtPort { type int32 {range "0..65535";} }
+typedef vtLocality { 
+    type string {
+       pattern "very low|low|medium|high|very high";
+    }
+}
+typedef contextIdType { type string;}
+typedef eventIDType { type string;}
+typedef definitionIDType { type string;}
+typedef vetoIdType { type string;}
+
+
+list context {
+
+   description "A list of veto context blocs";
+ 
+   key id;
+   
+   leaf id { type vetoIdType; }
+   list target {
+      
+      key uri/address;
+      
+      container uri {
+          leaf proto { type vtProto; }
+          leaf address {
+              type string;
+              mandatory true;
+          }
+          leaf port { type vtPort; }
+      }
+      leaf date { type string; }
+      leaf version { type string; }
+   }
+   leaf-list include { type contextIdType; }
+   leaf locality { type vtLocality; }
+   list resource {
+   
+       key name;
+   
+       leaf name { type string; }
+       leaf-list value { 
+           type string;
+           min-element 1; 
+       }
+   }
+}
+
+list definition {
+
+    key id;
+    
+    leaf id { type vetoIdType; }
+}
+
+list veto-rule {
+
+    key id;
+    
+    leaf id { type vetoIdType; }
+}
+
+
+
+
+}

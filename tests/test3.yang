@@ -1,0 +1,10 @@
+module test3 {
+  namespace "http://test3.com/test3";
+  prefix test3;
+
+  typedef asciiString {
+    type string {
+      pattern '[ -~]*';
+    }
+  }
+}

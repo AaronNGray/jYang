@@ -1,0 +1,8 @@
+module config {
+
+	namespace "htp://";
+	prefix cf;
+	
+	include configfile;
+	
+}
