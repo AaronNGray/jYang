@@ -5,7 +5,7 @@ package jyang.parser;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import sun.applet.GetWindowPluginCallRequest;
+//import sun.applet.GetWindowPluginCallRequest;
 
 public class YANG_RefineAnyNode extends YANG_Refine {
 	private String refineAnyNodeId;
