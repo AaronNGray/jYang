@@ -1,0 +1,199 @@
+module veto {
+
+namespace "http://www.w3.org/2001/XMLSchema-instance";
+prefix  vt;
+
+typedef vtNumber { type int64 {
+		     range "0..max";
+		  }
+}
+
+typedef vtIdentifier { type string {
+		          pattern "([a-z]|[A-Z])([a-z]|[A-Z]|[0-9]|_|-)*";
+		       }
+}
+
+typedef vtValue { 
+	type union {
+	      type vtNumber;
+	      type vtIdentifier;
+	 }
+}
+
+typedef vtTerm { type string {
+	           pattern "(request|response|message)\.(method|status-code|uri|Call-ID)";
+		 }
+}
+
+typedef vtOperator { type string {
+		       pattern "match|!match";
+		     }
+}
+
+
+typedef vtPropertyName { type string {
+		          pattern "target|include|locality|ressource";
+			}
+}
+
+typedef vtProto { type string {
+	            pattern "tcp|udp|sip";
+		  }
+	      }
+
+typedef vtPort { type int32 {
+	           range "0..65535";
+		 }
+}
+
+
+typedef vtLocality { type string{
+       		       pattern "very low|low|medium|high|very high";
+		     }
+}
+
+typedef vtIpAddr { type string;}
+
+typedef vtIpRange { type string;}
+
+typedef vtHostName { type string;}
+
+typedef vtRessourceName { type string;}
+		      
+typedef vtPattern { type string;}
+
+typedef vtEventName { type vtIdentifier;}
+
+typedef vtStateName { type vtIdentifier;}
+
+typedef vtCounterName { type vtIdentifier; }
+
+typedef vtVariableName { type vtIdentifier; }
+
+typedef vtTimerName { type vtIdentifier;}
+
+typedef vtCollectionType { type string {
+			   	pattern "set|list|bag";
+			}
+}
+
+typedef vtCollectionName { type vtIdentifier;}
+
+typedef vtBlockName { type vtIdentifier;}
+
+typedef vtContextID { type string;}
+
+typedef eventIDType { type string;}
+
+typedef definitionIDType { type string;}
+
+typedef vetoIDType { type string;}
+
+typedef vtEventPattern { type string;}
+
+typedef vtDefinitionBlockName { type string;}
+
+typedef vtCondition { type string;}
+
+
+list contextProperty {
+		key propertyName;
+		leaf propertyName { type vtPropertyName;
+		     		    mandatory true;}
+		choice property {
+		       case target {
+		       	    container targetURI {
+			    	      leaf protocol { type vtProto;}
+				      choice protoChoice {
+				      	     case ipAddr { leaf ip { type vtIpAddr;}}
+					     case ipRange{ leaf iprange {type vtIpRange;}}
+					     case hostName { leaf hostname {type vtHostName;}}
+				       }
+				       leaf port { type vtPort;}
+		 	     }
+		       }
+		       case include {
+		       	    leaf-list contextID { type vtContextID;}
+		       }
+		       case locality {
+		       	    leaf locality { type vtLocality;}
+		       }
+		       case ressource {
+		       	    leaf ressourceName { type vtRessourceName;}
+			    leaf-list value { type vtValue;}
+		       }
+		}
+}
+
+container definitionblock {
+	  leaf definitionBlockName { type vtDefinitionBlockName;}
+	  list definitionRule {
+	       key "when operator pattern"; 
+	       leaf when { type vtTerm;}
+	       leaf operator { type vtOperator;}
+	       leaf pattern { type vtPattern;}
+	       list action {
+	              key actionID;
+	       	     leaf actionID { type vtIdentifier;}
+	       	      choice actionChoice {
+		      		   case event {
+				   	leaf eventName { type vtEventName;}
+				   }
+				   case state {
+				   	leaf stateName { type vtStateName;}
+				   }
+				   case counter {
+				   	leaf counterName {type vtCounterName;}
+					leaf-list counterParameter { type vtValue;}
+				   }
+				   case timer {
+				   	leaf timerName {type vtTimerName;}
+					leaf-list timerParameter { type vtValue;}
+				   }
+				   case collection {
+				   	leaf collectionType { type vtCollectionType;}
+					leaf term { type vtTerm;}
+					leaf collectionName { type vtCollectionName;}
+				   }
+		      }
+	       }
+	    }
+}
+
+container vetoBlock {
+	  leaf blockName { type vtBlockName;}
+	  leaf contextID { type vtContextID;}
+	  leaf usedDef { type vtDefinitionBlockName;}
+	  list vetoRule {
+	       key eventPattern;
+	       leaf eventPattern { type vtEventPattern;}
+	       container body {
+	       		 leaf condition { type vtCondition;}
+			 list action {
+			     key actionID;
+			      leaf actionID { type vtIdentifier;}
+			      choice actionChoice {
+			      	     case disruptive {
+				     	  leaf drop { type empty;}
+				     }
+				     case nonDisruptive {
+				     	  choice nonDisChoice {
+					  	 case store { 
+						      leaf collectionName { type vtCollectionName;}
+						 }
+						 case  assign {
+						       leaf variableName {type vtVariableName;}
+						       leaf value { type vtValue; }
+						 }
+					  }
+				     }
+			      }
+			 }
+	       }
+	  }
+}
+
+
+
+
+}
