@@ -1,7 +1,0 @@
-#!/bin/csh
-
-foreach y (../standardmodels/*.yang) 
-    echo $y
-    java jyang -p ../standardmodels $y
-end
-
