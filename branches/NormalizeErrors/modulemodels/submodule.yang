@@ -1,6 +1,0 @@
-submodule submodule {
- 	belongs-to module{
- // namespace "http://submodule.com/submodule";
-  prefix sub;}
-
-}
