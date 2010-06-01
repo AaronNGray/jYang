@@ -11,213 +11,187 @@ public interface yangConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int DECVALUE = 7;
+  int CMT = 1;
   /** RegularExpression Id. */
-  int NEGDECVALUE = 8;
+  int STRING = 2;
   /** RegularExpression Id. */
-  int NONZERO = 9;
+  int WSP = 3;
   /** RegularExpression Id. */
-  int DQUOTE = 10;
+  int CRLF = 4;
   /** RegularExpression Id. */
-  int SQUOTE = 11;
+  int LB = 5;
   /** RegularExpression Id. */
-  int DDOT = 12;
+  int RB = 6;
   /** RegularExpression Id. */
-  int DATE = 13;
+  int SC = 7;
   /** RegularExpression Id. */
-  int FDIGIT = 14;
+  int anyxmlkeyword = 8;
   /** RegularExpression Id. */
-  int TDIGIT = 15;
+  int argumentkeyword = 9;
   /** RegularExpression Id. */
-  int STRING = 16;
+  int augmentkeyword = 10;
   /** RegularExpression Id. */
-  int FLOAT = 17;
+  int basekeyword = 11;
   /** RegularExpression Id. */
-  int EXPONENT = 18;
+  int belongstokeyword = 12;
   /** RegularExpression Id. */
-  int anyxmlkeyword = 19;
+  int bitkeyword = 13;
   /** RegularExpression Id. */
-  int argumentkeyword = 20;
+  int casekeyword = 14;
   /** RegularExpression Id. */
-  int augmentkeyword = 21;
+  int choicekeyword = 15;
   /** RegularExpression Id. */
-  int basekeyword = 22;
+  int configkeyword = 16;
   /** RegularExpression Id. */
-  int belongstokeyword = 23;
+  int contactkeyword = 17;
   /** RegularExpression Id. */
-  int bitkeyword = 24;
+  int containerkeyword = 18;
   /** RegularExpression Id. */
-  int casekeyword = 25;
+  int defaultkeyword = 19;
   /** RegularExpression Id. */
-  int choicekeyword = 26;
+  int descriptionkeyword = 20;
   /** RegularExpression Id. */
-  int configkeyword = 27;
+  int enumkeyword = 21;
   /** RegularExpression Id. */
-  int contactkeyword = 28;
+  int errorapptagkeyword = 22;
   /** RegularExpression Id. */
-  int containerkeyword = 29;
+  int errormessagekeyword = 23;
   /** RegularExpression Id. */
-  int defaultkeyword = 30;
+  int extensionkeyword = 24;
   /** RegularExpression Id. */
-  int descriptionkeyword = 31;
+  int deviationkeyword = 25;
   /** RegularExpression Id. */
-  int enumkeyword = 32;
+  int deviatekeyword = 26;
   /** RegularExpression Id. */
-  int errorapptagkeyword = 33;
+  int featurekeyword = 27;
   /** RegularExpression Id. */
-  int errormessagekeyword = 34;
+  int fractiondigitskeyword = 28;
   /** RegularExpression Id. */
-  int extensionkeyword = 35;
+  int groupingkeyword = 29;
   /** RegularExpression Id. */
-  int deviationkeyword = 36;
+  int identitykeyword = 30;
   /** RegularExpression Id. */
-  int deviatekeyword = 37;
+  int iffeaturekeyword = 31;
   /** RegularExpression Id. */
-  int featurekeyword = 38;
+  int importkeyword = 32;
   /** RegularExpression Id. */
-  int fractiondigitskeyword = 39;
+  int includekeyword = 33;
   /** RegularExpression Id. */
-  int groupingkeyword = 40;
+  int inputkeyword = 34;
   /** RegularExpression Id. */
-  int identitykeyword = 41;
+  int keykeyword = 35;
   /** RegularExpression Id. */
-  int iffeaturekeyword = 42;
+  int leafkeyword = 36;
   /** RegularExpression Id. */
-  int importkeyword = 43;
+  int leaflistkeyword = 37;
   /** RegularExpression Id. */
-  int includekeyword = 44;
+  int lengthkeyword = 38;
   /** RegularExpression Id. */
-  int inputkeyword = 45;
+  int listkeyword = 39;
   /** RegularExpression Id. */
-  int keykeyword = 46;
+  int mandatorykeyword = 40;
   /** RegularExpression Id. */
-  int leafkeyword = 47;
+  int maxelementskeyword = 41;
   /** RegularExpression Id. */
-  int leaflistkeyword = 48;
+  int minelementskeyword = 42;
   /** RegularExpression Id. */
-  int lengthkeyword = 49;
+  int modulekeyword = 43;
   /** RegularExpression Id. */
-  int listkeyword = 50;
+  int mustkeyword = 44;
   /** RegularExpression Id. */
-  int mandatorykeyword = 51;
+  int namespacekeyword = 45;
   /** RegularExpression Id. */
-  int maxelementskeyword = 52;
+  int notificationkeyword = 46;
   /** RegularExpression Id. */
-  int minelementskeyword = 53;
+  int orderedbykeyword = 47;
   /** RegularExpression Id. */
-  int modulekeyword = 54;
+  int organizationkeyword = 48;
   /** RegularExpression Id. */
-  int mustkeyword = 55;
+  int outputkeyword = 49;
   /** RegularExpression Id. */
-  int namespacekeyword = 56;
+  int pathkeyword = 50;
   /** RegularExpression Id. */
-  int notificationkeyword = 57;
+  int patternkeyword = 51;
   /** RegularExpression Id. */
-  int orderedbykeyword = 58;
+  int positionkeyword = 52;
   /** RegularExpression Id. */
-  int organizationkeyword = 59;
+  int prefixkeyword = 53;
   /** RegularExpression Id. */
-  int outputkeyword = 60;
+  int presencekeyword = 54;
   /** RegularExpression Id. */
-  int pathkeyword = 61;
+  int rangekeyword = 55;
   /** RegularExpression Id. */
-  int patternkeyword = 62;
+  int referencekeyword = 56;
   /** RegularExpression Id. */
-  int positionkeyword = 63;
+  int refinekeyword = 57;
   /** RegularExpression Id. */
-  int prefixkeyword = 64;
+  int requireinstancekeyword = 58;
   /** RegularExpression Id. */
-  int presencekeyword = 65;
+  int revisionkeyword = 59;
   /** RegularExpression Id. */
-  int rangekeyword = 66;
+  int revisiondatekeyword = 60;
   /** RegularExpression Id. */
-  int referencekeyword = 67;
+  int rpckeyword = 61;
   /** RegularExpression Id. */
-  int refinekeyword = 68;
+  int statuskeyword = 62;
   /** RegularExpression Id. */
-  int requireinstancekeyword = 69;
+  int submodulekeyword = 63;
   /** RegularExpression Id. */
-  int revisionkeyword = 70;
+  int typekeyword = 64;
   /** RegularExpression Id. */
-  int revisiondatekeyword = 71;
+  int typedefkeyword = 65;
   /** RegularExpression Id. */
-  int rpckeyword = 72;
+  int uniquekeyword = 66;
   /** RegularExpression Id. */
-  int statuskeyword = 73;
+  int unitskeyword = 67;
   /** RegularExpression Id. */
-  int submodulekeyword = 74;
+  int useskeyword = 68;
   /** RegularExpression Id. */
-  int typekeyword = 75;
+  int valuekeyword = 69;
   /** RegularExpression Id. */
-  int typedefkeyword = 76;
+  int whenkeyword = 70;
   /** RegularExpression Id. */
-  int uniquekeyword = 77;
+  int yangversionkeyword = 71;
   /** RegularExpression Id. */
-  int unitskeyword = 78;
+  int yinelementkeyword = 72;
   /** RegularExpression Id. */
-  int useskeyword = 79;
+  int addkeyword = 73;
   /** RegularExpression Id. */
-  int valuekeyword = 80;
+  int currentkeyword = 74;
   /** RegularExpression Id. */
-  int whenkeyword = 81;
+  int deprecatedkeyword = 75;
   /** RegularExpression Id. */
-  int yangversionkeyword = 82;
+  int deletekeyword = 76;
   /** RegularExpression Id. */
-  int yinelementkeyword = 83;
+  int falsekeyword = 77;
   /** RegularExpression Id. */
-  int addkeyword = 84;
+  int minkeyword = 78;
   /** RegularExpression Id. */
-  int currentkeyword = 85;
+  int maxkeyword = 79;
   /** RegularExpression Id. */
-  int deprecatedkeyword = 86;
+  int nankeyword = 80;
   /** RegularExpression Id. */
-  int deletekeyword = 87;
+  int neginfkeyword = 81;
   /** RegularExpression Id. */
-  int falsekeyword = 88;
+  int notsupportedkeyword = 82;
   /** RegularExpression Id. */
-  int minkeyword = 89;
+  int obsoletekeyword = 83;
   /** RegularExpression Id. */
-  int maxkeyword = 90;
+  int posinfkeyword = 84;
   /** RegularExpression Id. */
-  int nankeyword = 91;
+  int replacekeyword = 85;
   /** RegularExpression Id. */
-  int neginfkeyword = 92;
+  int systemkeyword = 86;
   /** RegularExpression Id. */
-  int notsupportedkeyword = 93;
+  int truekeyword = 87;
   /** RegularExpression Id. */
-  int obsoletekeyword = 94;
+  int unboundedkeyword = 88;
   /** RegularExpression Id. */
-  int posinfkeyword = 95;
+  int userkeyword = 89;
   /** RegularExpression Id. */
-  int replacekeyword = 96;
+  int P = 90;
   /** RegularExpression Id. */
-  int systemkeyword = 97;
-  /** RegularExpression Id. */
-  int truekeyword = 98;
-  /** RegularExpression Id. */
-  int unboundedkeyword = 99;
-  /** RegularExpression Id. */
-  int userkeyword = 100;
-  /** RegularExpression Id. */
-  int IDENTIFIER = 101;
-  /** RegularExpression Id. */
-  int LETTER = 102;
-  /** RegularExpression Id. */
-  int DIGIT = 103;
-  /** RegularExpression Id. */
-  int ONEWORD = 104;
-  /** RegularExpression Id. */
-  int FIRST = 105;
-  /** RegularExpression Id. */
-  int ABSNODEID = 106;
-  /** RegularExpression Id. */
-  int NAMESPACE = 107;
-  /** RegularExpression Id. */
-  int SEC = 108;
-  /** RegularExpression Id. */
-  int COL = 109;
-  /** RegularExpression Id. */
-  int PREFIXEDID = 110;
+  int S = 91;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -225,24 +199,13 @@ public interface yangConstants {
   /** Literal token values. */
   String[] tokenImage = {
     "<EOF>",
-    "\" \"",
-    "\"\\t\"",
-    "\"\\n\"",
-    "\"\\r\"",
-    "<token of kind 5>",
-    "<token of kind 6>",
-    "<DECVALUE>",
-    "<NEGDECVALUE>",
-    "<NONZERO>",
-    "\"\\\"\"",
-    "\"\\\'\"",
-    "\"..\"",
-    "<DATE>",
-    "<FDIGIT>",
-    "<TDIGIT>",
+    "<CMT>",
     "<STRING>",
-    "<FLOAT>",
-    "<EXPONENT>",
+    "<WSP>",
+    "<CRLF>",
+    "\"{\"",
+    "\"}\"",
+    "\";\"",
     "\"anyxml\"",
     "\"argument\"",
     "\"augment\"",
@@ -325,27 +288,8 @@ public interface yangConstants {
     "\"true\"",
     "\"unbounded\"",
     "\"user\"",
-    "<IDENTIFIER>",
-    "<LETTER>",
-    "<DIGIT>",
-    "<ONEWORD>",
-    "<FIRST>",
-    "<ABSNODEID>",
-    "<NAMESPACE>",
-    "<SEC>",
-    "\":\"",
-    "<PREFIXEDID>",
-    "\"{\"",
-    "\"}\"",
-    "\";\"",
-    "\"/\"",
-    "\"[\"",
-    "\"]\"",
-    "\".\"",
-    "\"=\"",
-    "\"(\"",
-    "\")\"",
-    "\"+\"",
+    "<P>",
+    "<S>",
   };
 
 }
