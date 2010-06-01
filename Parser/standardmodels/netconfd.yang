@@ -2,7 +2,7 @@ module netconfd {
 
     namespace "http://netconfcentral.com/ns/netconfd";
 
-    prefix "nd";
+    prefix "nc";
 
     import ncx { prefix ncx; }
 
