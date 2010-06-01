@@ -1,0 +1,15 @@
+modusle test1 {
+    prefiex "test1";
+    namespaece "http://test1.com/test1";
+
+  import testq3 {
+    prefix "test3";
+  }
+
+  include test2;
+  
+  
+  leaf l { type int82; }
+  container c;
+  
+}

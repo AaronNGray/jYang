@@ -1,0 +1,14 @@
+submodule configfile {
+
+	belongs-to config {prefix cf;}
+	import file { prefix f; }
+	
+	container passwd g{
+		uses f:file;
+		must "file/name == /etc/passwd && file/rights == 600";
+		}
+	}
+	container pe pd {
+		leaf a { type string; }
+	}
+}

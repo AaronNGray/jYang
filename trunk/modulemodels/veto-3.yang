@@ -1,0 +1,149 @@
+module veto {
+
+namespace "http://www.w3.org/2001/XMLSchema-instance";
+prefix "vt";
+
+typedef vtNumber { type int64{
+		   range "0..max";
+		   }
+}
+
+typedef vtIdentifier { type string{
+		       pattern "([a-z]|[A-Z])(([a-z]|[A-Z]|[0-9]|_|-)*)";}
+}
+
+typedef vtValue { 
+	type union {
+	      type vtNumber;
+	      type vtIdentifier;
+	 }
+}
+
+typedef vtTerm { type string {
+	         pattern "(request|response|message)\. " +
+				"(method|status-code|uri|Call-ID)";}
+}
+
+
+typedef vtPropertyName { type string {
+		       pattern "target|include|locality|ressource";}
+}
+
+typedef vtProto { type string {
+	        pattern "tcp|udp|sip";}
+	     }
+
+typedef vtPort { type int32 {range "0..65535";} }
+
+
+typedef vtLocality { type string {
+       		  pattern "very low|low|medium|high|very high";}
+		}
+
+
+
+typedef contextIDType { type string;}
+
+typedef eventIDType { type string;}
+
+typedef definitionIDType { type string;}
+
+typedef vetoIDType { type string;}
+
+
+
+list contextProperty {
+		key propertyName;
+		leaf propertyName { type vtPropertyName;}
+		choice property {
+		       	    container targetURI {
+			    	    leaf protocol { type vtProto;}
+				      	choice protoChoice {
+				      	    leaf ip { type string;}
+					     	leaf iprange {type string;}
+					     	leaf hostname {type string;}
+					   	}
+		
+				       	leaf port { type vtPort;}
+			}
+			leaf-list contextID { type contextIDType;}
+			leaf locality { type vtLocality;}
+			case ressource {
+		       	    leaf ressourceName { type string;}
+				    leaf-list value { type vtValue;}
+			}
+		}
+}
+
+container definitionblock {
+
+	  leaf definitionBlockName { type string;}
+	  list definitionRule {
+	  	   key "when operator pattern";
+	       leaf when { type vtTerm;}
+	       leaf operator { type string;}
+	       leaf pattern { type string;}
+	       list patternAction {
+	       		key patternId;
+	       		leaf patternId {type string;}
+				choice actionChoice {
+		      		leaf eventName { type string;}
+					leaf stateName { type string;}
+					case counter {
+				   		leaf counterName {type string;}
+						leaf-list count_parameter { type string;}
+				   	}
+					case timer {
+						leaf timerName {type string;}
+						leaf-list time_parameter { type string;}
+					}
+					case collection {
+				   		leaf collectionType { type string;}
+						leaf term { type string;}
+						leaf collectionName { type string;}
+				   	}
+				}
+	       }
+	    }
+}
+
+
+
+
+
+
+
+container vetoBlock {
+	  leaf blockName { type string;}
+	  leaf contextID { type contextIDType;}
+	  leaf usedDef { type string;}
+	  list vetoRule {
+	       key eventPattern;
+	       leaf eventPattern { type string;}
+	       container body {
+	       		 leaf condition { type string;}
+			 	 list action {
+			 	    key actionId;
+			 	    leaf actionId { type string;} 
+			        choice actionChoice {
+			      	      leaf drop { type string;}
+			      	      case nonDisCase {
+				 	         choice nonDisChoice {
+					  	        leaf collectionName { type string;}
+						         case  assign {
+						           leaf variableName {type string;}
+						           leaf value { type string; }
+						         }
+					          }
+					       }
+				     }
+			      }
+			 }
+	       }
+	  }
+}
+
+
+
+
+}

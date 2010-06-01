@@ -1,0 +1,18 @@
+module m2 {
+
+	namespace "fr:loria:madynes:module2";
+	prefix p2;
+
+
+  grouping G {
+  	leaf l { type int8;}
+  }
+  
+  uses G;
+  uses G;
+  
+  container a {}
+  container a {}
+  
+
+}

@@ -1,0 +1,23 @@
+module module {
+  namespace "http://module.com/module";
+  prefix "Module";
+
+// first error (as I understand jYang should search firstly for submodule.<rev_date>.yang, otherwise (if first search failed) for submodule.yang.)
+   include submodule {
+      revision-date 2010-01-01;
+   }
+
+
+// second error (cannot set default value of the bit type)
+      leaf leaf1 {
+        default "b1 b2";
+        type bits {
+          bit b1;
+          bit b2;
+          bit b3;
+        }
+      }
+      
+      leaf leaf2 { type rmd:asciiString;}
+
+}

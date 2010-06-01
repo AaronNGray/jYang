@@ -1,0 +1,52 @@
+submodule interfaces {
+
+	belongs-to netconf { prefix net;}
+	
+
+	grouping generic-state {
+	    leaf bytes {type uint64;}
+	    leaf packets { type uint64;}
+	    leaf drop { type uint64;}
+	    leaf compressed {type uint64;}
+	    leaf fifo { type uint64;}
+	    leaf errs {type uint64;}
+	}
+	
+	toto:titi;
+	
+	extension ext1 {
+	  argument arg {
+	  	test2:arg1-type {
+	  		type enumeration {
+	  			enum a;
+	  			enum b;
+	  			enum e;
+	  		}
+	  	}
+	  }
+	}
+		
+	grouping interface {
+
+		list interface {
+			key name;
+			leaf name { type string;
+						config "t"+"ru" 
+						   +  /*t*/   'e';}
+			leaf mac-address { type string;
+								default "000000000000";
+								mandatory "fal"+"se";}
+			leaf mtu { type uint32;}
+			container ipv4 {
+				leaf netmask { type string;}
+				leaf broadcast {type string;}
+				leaf address-v4 {type string;}
+			}
+			container stats {
+				container received { uses generic-state;}
+				container transmit { uses generic-state;}
+			}
+		}
+		  
+	}
+}
