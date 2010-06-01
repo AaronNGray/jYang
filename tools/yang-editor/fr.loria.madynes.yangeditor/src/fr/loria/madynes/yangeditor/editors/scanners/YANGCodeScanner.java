@@ -59,16 +59,13 @@ public class YANGCodeScanner extends RuleBasedScanner {
 
 	public YANGCodeScanner(ColorManager manager) {
 		IToken string = new Token(new TextAttribute(manager
-				.getColor(YANGPreferences
-						.getColor(YANGPreferences.KEY_COLOR_STRING))));
+				.getColor(YANGPreferences.getStringColor())));
 
 		IToken token = new Token(new TextAttribute(manager
-				.getColor(YANGPreferences
-						.getColor(YANGPreferences.KEY_COLOR_TOKEN))));
+				.getColor(YANGPreferences.getTokenColor())));
 
 		IToken type = new Token(new TextAttribute(manager
-				.getColor(YANGPreferences
-						.getColor(YANGPreferences.KEY_COLOR_TYPE))));
+				.getColor(YANGPreferences.getTypeColor())));
 
 		YANGWordRule wr = new YANGWordRule();
 		wr.addWords(tokens, token);

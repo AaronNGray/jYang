@@ -28,7 +28,7 @@ import fr.loria.madynes.yangeditor.*;
 public class YANGPreferences extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
 
-	// / Keys
+	// Keys
 	public static final String KEY_PARSER_ACTIVE = "parser_active";
 	public static final String KEY_COLOR_TEXT = "color_text";
 	public static final String KEY_COLOR_STRING = "color_string";
@@ -102,21 +102,6 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 				DEFAULT_COLOR_COMMENT);
 		PreferenceConverter.setDefault(store, KEY_COLOR_BRACKET,
 				DEFAULT_COLOR_BRACKET);
-		
-
-		store.setValue(KEY_PARSER_ACTIVE, DEFAULT_PARSER_ACTIVE);
-		PreferenceConverter.setValue(store, KEY_COLOR_TEXT,
-				DEFAULT_COLOR_TEXT);
-		PreferenceConverter.setValue(store, KEY_COLOR_STRING,
-				DEFAULT_COLOR_STRING);
-		PreferenceConverter.setValue(store, KEY_COLOR_TOKEN,
-				DEFAULT_COLOR_TOKEN);
-		PreferenceConverter.setValue(store, KEY_COLOR_TYPE,
-				DEFAULT_COLOR_TYPE);
-		PreferenceConverter.setValue(store, KEY_COLOR_COMMENT,
-				DEFAULT_COLOR_COMMENT);
-		PreferenceConverter.setValue(store, KEY_COLOR_BRACKET,
-				DEFAULT_COLOR_BRACKET);
 	}
 
 	@Override
@@ -126,13 +111,66 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 		setDescription(Activator.getResourceString("Preference.Description"));
 	}
 
-	public static boolean getBoolean(String key) {
+	public static boolean getParserActive() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		return store.getBoolean(key);
+		if (store.contains(KEY_PARSER_ACTIVE)) {
+			return store.getBoolean(KEY_PARSER_ACTIVE);
+		} else {
+			return DEFAULT_PARSER_ACTIVE;
+		}
 	}
 
-	public static RGB getColor(String key) {
+	public static RGB getTextColor() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		return PreferenceConverter.getColor(store, key);
+		if (store.contains(KEY_COLOR_TEXT)) {
+			return PreferenceConverter.getColor(store, KEY_COLOR_TEXT);
+		} else {
+			return DEFAULT_COLOR_TEXT;
+		}
+	}
+
+	public static RGB getStringColor() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		if (store.contains(KEY_COLOR_STRING)) {
+			return PreferenceConverter.getColor(store, KEY_COLOR_STRING);
+		} else {
+			return DEFAULT_COLOR_STRING;
+		}
+	}
+
+	public static RGB getTokenColor() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		if (store.contains(KEY_COLOR_TOKEN)) {
+			return PreferenceConverter.getColor(store, KEY_COLOR_TOKEN);
+		} else {
+			return DEFAULT_COLOR_TOKEN;
+		}
+	}
+
+	public static RGB getTypeColor() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		if (store.contains(KEY_COLOR_TYPE)) {
+			return PreferenceConverter.getColor(store, KEY_COLOR_TYPE);
+		} else {
+			return DEFAULT_COLOR_TYPE;
+		}
+	}
+
+	public static RGB getCommentColor() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		if (store.contains(KEY_COLOR_COMMENT)) {
+			return PreferenceConverter.getColor(store, KEY_COLOR_COMMENT);
+		} else {
+			return DEFAULT_COLOR_COMMENT;
+		}
+	}
+
+	public static RGB getBracketColor() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		if (store.contains(KEY_COLOR_BRACKET)) {
+			return PreferenceConverter.getColor(store, KEY_COLOR_BRACKET);
+		} else {
+			return DEFAULT_COLOR_BRACKET;
+		}
 	}
 }

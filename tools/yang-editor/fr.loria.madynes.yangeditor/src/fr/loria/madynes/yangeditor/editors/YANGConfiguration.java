@@ -65,8 +65,7 @@ public class YANGConfiguration extends TextSourceViewerConfiguration {
 		if (codeScanner == null) {
 			codeScanner = new YANGCodeScanner(colorManager);
 			codeScanner.setDefaultReturnToken(new Token(new TextAttribute(
-					colorManager.getColor(YANGPreferences
-							.getColor(YANGPreferences.KEY_COLOR_TEXT)))));
+					colorManager.getColor(YANGPreferences.getTextColor()))));
 		}
 		return codeScanner;
 	}
@@ -88,13 +87,12 @@ public class YANGConfiguration extends TextSourceViewerConfiguration {
 
 		NonRuleBasedDamagerRepairer ndr = new NonRuleBasedDamagerRepairer(
 				new TextAttribute(colorManager.getColor(YANGPreferences
-						.getColor(YANGPreferences.KEY_COLOR_BRACKET))));
+						.getBracketColor())));
 		reconciler.setDamager(ndr, YANGPartitionScanner.YANG_BRACKET);
 		reconciler.setRepairer(ndr, YANGPartitionScanner.YANG_BRACKET);
 
 		ndr = new NonRuleBasedDamagerRepairer(new TextAttribute(colorManager
-				.getColor(YANGPreferences
-						.getColor(YANGPreferences.KEY_COLOR_COMMENT))));
+				.getColor(YANGPreferences.getCommentColor())));
 		reconciler.setDamager(ndr, YANGPartitionScanner.YANG_COMMENT);
 		reconciler.setRepairer(ndr, YANGPartitionScanner.YANG_COMMENT);
 
