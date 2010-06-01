@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_Contact extends SimpleNode implements YANG_Meta{
+public class YANG_Contact extends SimpleYangNode implements YANG_Meta{
 
     private String contact = null;
 
@@ -14,7 +14,7 @@ public class YANG_Contact extends SimpleNode implements YANG_Meta{
   }
 
     public void setContact(String c){
-	contact = c;
+	contact = unquote(c);
     }
 
     public String getContact(){

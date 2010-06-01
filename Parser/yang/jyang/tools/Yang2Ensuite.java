@@ -19,7 +19,7 @@ public class Yang2Ensuite {
 
 		setDataDefRoots(n, paths);
 
-		//setModule(n, paths, out);
+		// setModule(n, paths, out);
 	}
 
 	private void setModule(YANG_Specification n, String[] paths, PrintStream out) {
@@ -62,20 +62,17 @@ public class Yang2Ensuite {
 	}
 
 	public void setDataDefRoots(YANG_Specification s, String[] paths) {
-		try {
-			for (Enumeration<YANG_Specification> es = s.getIncludedSubModules(paths).elements(); es.hasMoreElements();)
-				setDataDefRoots(es.nextElement(), paths);
-			for (Enumeration<YANG_Body> ed = s.getBodies().elements(); ed
-					.hasMoreElements();) {
-				YANG_Body body = ed.nextElement();
-				if (body instanceof YANG_DataDef) {
-					datadefs.put(body.getBody(), (YANG_DataDef) body);
-					System.out.println(body.getBody());
-				}
+
+		for (Enumeration<YANG_Specification> es = s
+				.getIncludedSubModules(paths).elements(); es.hasMoreElements();)
+			setDataDefRoots(es.nextElement(), paths);
+		for (Enumeration<YANG_Body> ed = s.getBodies().elements(); ed
+				.hasMoreElements();) {
+			YANG_Body body = ed.nextElement();
+			if (body instanceof YANG_DataDef) {
+				datadefs.put(body.getBody(), (YANG_DataDef) body);
+				System.out.println(body.getBody());
 			}
-		} catch (YangParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 

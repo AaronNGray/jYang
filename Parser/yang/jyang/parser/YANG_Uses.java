@@ -19,14 +19,18 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
-public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
+public class YANG_Uses extends YANG_DataDef {
 
 	private String uses = null;
-	private Vector<YANG_Refinement> refinements = new Vector<YANG_Refinement>();
+	private Vector<YANG_RefineAnyNode> refinements = new Vector<YANG_RefineAnyNode>();
 	private Vector<YANG_UsesAugment> usesaugments = new Vector<YANG_UsesAugment>();
 
+	/**
+	 * Grouping used reference
+	 */
 	private YANG_Grouping grouping = null;
 
 	public YANG_Grouping getGrouping() {
@@ -35,6 +39,8 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 
 	public void setGrouping(YANG_Grouping g) {
 		this.grouping = g;
+		if (grouping != null)
+			grouping.setUsed(true);
 	}
 
 	public YANG_Uses(int id) {
@@ -46,7 +52,7 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 	}
 
 	public void setUses(String u) {
-		uses = u;
+		uses = unquote(u);
 	}
 
 	public String getBody() {
@@ -62,12 +68,11 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 				|| usesaugments.size() != 0;
 	}
 
-	public void addRefinement(YANG_Refinement r) throws YangParserException {
-
+	public void addRefinement(YANG_RefineAnyNode r) {
 		refinements.add(r);
 	}
 
-	public Vector<YANG_Refinement> getRefinements() {
+	public Vector<YANG_RefineAnyNode> getRefinements() {
 		return refinements;
 	}
 
@@ -75,16 +80,27 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 		usesaugments.add(ua);
 	}
 
-	private boolean checked = false;
+	public Vector<YANG_UsesAugment> getUsesAugments() {
+		return usesaugments;
+	}
 
-	public void check(YangContext context) throws YangParserException {
-		// if (checked)
-		// return;
+	private boolean checked = false;
+	private boolean recursive = false;
+
+	public boolean isRecursive() {
+		return recursive;
+	}
+
+	public void setRecursive(boolean recursive) {
+		this.recursive = recursive;
+	}
+
+	public void check(YangContext context) {
+
+		super.check(context);
 		if (!context.isGroupingDefined(this)) {
-			System.err
-					.println(context.getSpec().getName() + "@" + getLine()
-							+ "." + getCol() + ":grouping " + uses
-							+ " cannot be found");
+			YangErrorManager.addError(filename, getLine(), getCol(), "unknown",
+					"grouping", uses);
 			return;
 		} else {
 
@@ -94,55 +110,9 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 
 			String gping = getGrouping().getGrouping();
 
-			if (YangBuiltInTypes.isBuiltIn(gping)) {
-				System.err.println(context.getSpec().getName() + "@"
-						+ getLine() + "." + getCol()
-						+ ":a built-in type cannot be used : " + uses);
-				return;
-			}
-
 			if (!grouping.isChecked()) {
 
-				Vector<YANG_TypeDef> typedefs = grouping.getTypeDefs();
-				Vector<YANG_Grouping> groupings = grouping.getGroupings();
 				Vector<YANG_DataDef> datadefs = grouping.getDataDefs();
-
-				for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
-						.hasMoreElements();) {
-					YANG_TypeDef typedef = (YANG_TypeDef) et.nextElement();
-					context.addNode(typedef);
-				}
-
-				for (Enumeration<YANG_Grouping> eg = groupings.elements(); eg
-						.hasMoreElements();) {
-					YANG_Grouping g = (YANG_Grouping) eg.nextElement();
-					context.addNode(g);
-				}
-
-				for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
-						.hasMoreElements();)
-					context.addNode(ed.nextElement());
-
-				for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
-						.hasMoreElements();) {
-					YANG_Body body = (YANG_Body) et.nextElement();
-					body.setParent(this);
-					YangContext clcts = context.clone();
-					try {
-						body.checkBody(clcts);
-					} catch (YangParserException e) {
-						System.err.println(context.getSpec().getName()
-								+ e.getMessage());
-					}
-				}
-
-				for (Enumeration<YANG_Grouping> eg = groupings.elements(); eg
-						.hasMoreElements();) {
-					YANG_Body body = (YANG_Body) eg.nextElement();
-					body.setParent(getParent());
-					YangContext clcts = context.clone();
-					body.checkBody(clcts);
-				}
 
 				for (Enumeration<YANG_DataDef> ed = datadefs.elements(); ed
 						.hasMoreElements();) {
@@ -150,50 +120,82 @@ public class YANG_Uses extends YANG_DataDefInfoWhen implements YANG_CaseDef {
 
 					body.setParent(getParent());
 					YangContext clcts = context.clone();
-					try {
-						body.checkBody(clcts);
-					} catch (YangParserException e) {
-						System.err.println(context.getSpec().getName()
-								+ e.getMessage());
+					if (body instanceof YANG_Uses) {
+						YANG_Uses used = (YANG_Uses) body;
+						Set<YANG_Grouping> s = new HashSet<YANG_Grouping>();
+						s.add(grouping);
+						if (!checkRecursiveUses(context, s, used)) {
+							YangErrorManager.addError(getFileName(), getLine(),
+									getCol(), "rec_grouping", uses);
+							setGrouping(null);
+							setRecursive(true);
+						}
 					}
-
-					grouping.setChecked(true);
 				}
 			}
 
-			for (Enumeration<YANG_Refinement> er = refinements.elements(); er
-					.hasMoreElements();) {
-				YANG_Refinement ref = er.nextElement();
-				try {
-					ref.setUsedGrouping("from the used grouping "
-							+ grouping.getGrouping() + " at line "
-							+ grouping.getLine());
-					ref.setParent(this);
-					ref.check(context, grouping);
-				} catch (YangParserException ye) {
-					System.err.println(context.getModuleSpecName()
-							+ ye.getMessage());
-				}
-			}
 			checked = true;
 		}
+	}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	private boolean checkRecursiveUses(YangContext context,
+			Set<YANG_Grouping> setG, YANG_Uses used) {
+		YANG_Grouping g = context.getUsedGrouping(used);
+		if (g == null) // the uses is not good so it is not recursive
+			return true;
+		if (setG.contains(g)) {
+			return false;
+		} else {
+			setG.add(g);
+			for (YANG_DataDef ddef : g.getDataDefs()) {
+				if (ddef instanceof YANG_Uses)
+					return checkRecursiveUses(context, setG, (YANG_Uses) ddef);
+			}
+		}
+		return true;
+	}
+
+	public YANG_Uses clone() {
+		YANG_Uses cl = new YANG_Uses(parser, id);
+		cl.setContext(getContext());
+		cl.setUses(getUses());
+		cl.setFileName(getFileName());
+		cl.setParent(getParent());
+		cl.setCol(getCol());
+		cl.setLine(getLine());
+		for (YANG_UsesAugment u : getUsesAugments())
+			cl.addUsesAugment(u);
+		for (YANG_RefineAnyNode r : getRefinements())
+			cl.addRefinement(r);
+		if (getDescription() != null)
+			cl.setDescription(getDescription());
+		cl.setIfFeature(getIfFeatures());
+		cl.setUnknowns(getUnknowns());
+		if (getReference() != null)
+			cl.setReference(getReference());
+		if (getStatus() != null)
+			cl.setStatus(getStatus());
+		if (getWhen() != null)
+			cl.setWhen(getWhen());
+		return cl;
 	}
 
 	public String toString() {
 		String result = new String();
 		result += "uses " + uses;
-		if (isBracked()) {
-			result += "{\n";
-			result += super.toString() + "\n";
-			for (Enumeration<YANG_Refinement> er = refinements.elements(); er
-					.hasMoreElements();)
-				result += er.nextElement().toString() + "\n";
-			for (Enumeration<YANG_UsesAugment> er = usesaugments.elements(); er
-					.hasMoreElements();)
-				result += er.nextElement().toString() + "\n";
-			result += "}";
-		} else
-			result += ";";
+		// if (isBracked()) {
+		// result += " {\n";
+		result += super.toString() + "\n";
+		for (YANG_UsesAugment er : usesaugments)
+			result += er.toString() + "\n";
+		for (YANG_Refine er : refinements)
+			result += er.toString() + "\n";
+		// } else
+		result += ";";
 
 		return result;
 	}

@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_Start extends SimpleNode {
+public class YANG_Start extends SimpleYangNode {
   public YANG_Start(int id) {
     super(id);
   }

@@ -1,22 +1,25 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Vector;
 
-public class YANG_TypeDef extends YANG_Body {
+public class YANG_TypeDef extends StatuedBody {
 
 	private String typedef = null;
 	private YANG_Type ytype = null;
 	private YANG_Units units = null;
 	private YANG_Default defaultstr = null;
-	private YANG_Status status = null;
-	private YANG_Description description = null;
-	private YANG_Reference reference = null;
 
-	private boolean b_type = false, b_units = false, b_default = false,
-			b_status = false, b_description = false, b_reference = false;
-	
+	private boolean b_type = false, b_units = false, b_default = false;
+
 	private boolean used = false, correct = true;
+	private boolean checked = false;
+	
+
+	public boolean isChecked() {
+		return checked;
+	}
 
 	public YANG_TypeDef(int id) {
 		super(id);
@@ -27,7 +30,7 @@ public class YANG_TypeDef extends YANG_Body {
 	}
 
 	public void setTypedef(String t) {
-		typedef = t;
+		typedef = unquote(t);
 	}
 
 	public String getBody() {
@@ -38,143 +41,105 @@ public class YANG_TypeDef extends YANG_Body {
 		return typedef;
 	}
 
-	public void setType(YANG_Type t) throws YangParserException {
-		if (b_type)
-			throw new YangParserException("Type already defined in typedef "
-					+ typedef, t.getLine(), t.getCol());
-		b_type = true;
-		ytype = t;
+	public void setType(YANG_Type t){
+		if (!b_type) {
+			b_type = true;
+			ytype = t;
+		} else
+			YangErrorManager.addError(filename, t.getLine(), t.getCol(), "unex_kw",
+					"type");
 	}
 
 	public YANG_Type getType() {
 		return ytype;
 	}
 
-	public void setUnits(YANG_Units u) throws YangParserException {
-		if (b_units)
-			throw new YangParserException("Units already defined in typedef "
-					+ typedef, u.getLine(), u.getCol());
-		b_units = true;
-		units = u;
+	public void setUnits(YANG_Units u) {
+		if (!b_units) {
+			b_units = true;
+			units = u;
+		} else
+			YangErrorManager.addError(filename, u.getLine(), u.getCol(), "units");
 	}
 
 	public YANG_Units getUnits() {
 		return units;
 	}
 
-	public void setStatus(YANG_Status s) throws YangParserException {
-		if (b_status)
-			throw new YangParserException("Status already defined in typedef "
-					+ typedef, s.getLine(), s.getCol());
-		b_status = true;
-		status = s;
-	}
-
-	public YANG_Status getStatus() {
-		return status;
-	}
-
-	public void setDescription(YANG_Description d) throws YangParserException {
-		if (b_description)
-			throw new YangParserException(
-					"Description already defined in typedef " + typedef, d
-							.getLine(), d.getCol());
-		b_description = true;
-		description = d;
-	}
-
-	public YANG_Description getDescription() {
-		return description;
-	}
-
-	public void setDefault(YANG_Default d) throws YangParserException {
-		if (b_default)
-			throw new YangParserException("Default already defined in typedef "
-					+ typedef, d.getLine(), d.getCol());
-		b_default = true;
-		defaultstr = d;
+	public void setDefault(YANG_Default d) {
+		if (!b_default) {
+			b_default = true;
+			defaultstr = d;
+		} else
+			YangErrorManager.addError(filename, d.getLine(), d.getCol(), "default");
 	}
 
 	public YANG_Default getDefault() {
 		return defaultstr;
 	}
 
-	public void setReference(YANG_Reference r) throws YangParserException {
-		if (b_reference)
-			throw new YangParserException(
-					"Reference already defined in typedef " + typedef, r
-							.getLine(), r.getCol());
-		b_reference = true;
-		reference = r;
-	}
+	public void check(YangContext context) {
 
-	public YANG_Reference getReference() {
-		return reference;
-	}
-
-	public void check(YangContext context) throws YangParserException {
-		
 		if (!isCorrect())
 			return;
-		
-		if (!b_type)
-			throw new YangParserException("Type statement expected in typedef "
-					+ typedef, getLine(), getCol());
 
-		
+		if (!b_type) {
+			YangErrorManager.addError(context.getSpec().getName(), getLine(),
+					getCol(), "type_expec");
+			return;
+		}
+
 		getType().check(context);
 
 		Vector<YANG_TypeDef> me = new Vector<YANG_TypeDef>();
 		chainUnions(this, me, context);
 
 		if (b_default)
-			getDefault().check(context, getType());
+				getType().checkDefaultValue(context, this, getDefault());
 
 		else {
 			YANG_TypeDef defining = context.getBaseTypeDef(this);
 
 			while (defining != null) {
 				if (defining.getDefault() != null) {
-					try {
-						getType().checkValue(context,
-								defining.getDefault().getDefault());
-						defining = null;
-					} catch (YangParserException ye) {
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":default value "
-								+ defining.getDefault().getDefault()
-								+ " does no more match with current typedef "
-								+ getTypeDef());
-					}
+						getType().checkDefaultValue(context, this,
+								defining.getDefault());
+						defining = context.getBaseTypeDef(defining);
 				} else
 					defining = context.getBaseTypeDef(defining);
 			}
 		}
 
+		checked = true;
+		correct = true;
+
 	}
 
 	private void chainUnions(YANG_TypeDef zis, Vector<YANG_TypeDef> tds,
-			YangContext context) throws YangParserException {
+			YangContext context)  {
+		
 		if (zis == null)
 			return;
-		if (tds.contains(zis)){
+		if (tds.contains(zis)) {
 			setCorrect(false);
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":recursive union from " + zis.getTypeDef());
+			for (YANG_TypeDef ytd : tds) {
+				ytd.setCorrect(false);
+				YangErrorManager.addError(ytd.getFileName(), ytd.getLine(), ytd.getCol(),
+						"circ_dep", ytd.getBody());
+			}
+			return;
 		}
-
-		if (YangBuiltInTypes.union.compareTo(context.getBuiltInType(zis
-				.getType())) == 0) {
-			YANG_Type ut = zis.getType();
-			if (ut.getUnionSpec() != null) {
-				for (Enumeration<YANG_Type> eus = ut.getUnionSpec().getTypes()
-						.elements(); eus.hasMoreElements();) {
-					YANG_Type utt = eus.nextElement();
-					tds.add(zis);
-					chainUnions(context.getTypeDef(utt), tds, context);
+		String builtin = context.getBuiltInType(zis.getType());
+		if (builtin != null)
+			if (YangBuiltInTypes.union.compareTo(builtin) == 0) {
+				YANG_Type ut = zis.getType();
+				if (ut.getUnionSpec() != null) {
+					for (YANG_Type utt : ut.getUnionSpec().getTypes()) {
+						tds.add(zis);
+						chainUnions(context.getTypeDef(utt), tds, context);
+					}
 				}
 			}
-		}
 	}
 
 	public String toString() {
@@ -186,24 +151,15 @@ public class YANG_TypeDef extends YANG_Body {
 			result += units.toString() + "\n";
 		if (defaultstr != null)
 			result += defaultstr.toString() + "\n";
-		if (status != null)
-			result += status.toString() + "\n";
-		if (description != null)
-			result += description.toString() + "\n";
-		if (reference != null)
-			result += reference.toString() + "\n";
+		result += super.toString();
 		result += "}";
 		return result;
 	}
 
 	public YANG_TypeDef clone() {
 		YANG_TypeDef ctd = new YANG_TypeDef(parser, id);
-		try {
 			ctd.setType(getType());
-		} catch (YangParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			ctd.setFileName(filename);
 		return ctd;
 	}
 

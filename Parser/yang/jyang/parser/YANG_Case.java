@@ -22,10 +22,9 @@ package jyang.parser;
 import java.util.*;
 
 
-public class YANG_Case extends YANG_DataDefInfoWhen {
+public class YANG_Case extends FeaturedNode {
 
 	private String ycase = null;
-	private Vector<YANG_CaseDef> casedatadefs = new Vector<YANG_CaseDef>();
 
 
 
@@ -38,7 +37,7 @@ public class YANG_Case extends YANG_DataDefInfoWhen {
 	}
 
 	public void setCase(String c) {
-		ycase = c;
+		ycase = unquote(c);
 	}
 
 	public String getCase() {
@@ -49,17 +48,8 @@ public class YANG_Case extends YANG_DataDefInfoWhen {
 		return getCase();
 	}
 
-	
-	public void addCaseDef(YANG_CaseDef c) {
-		casedatadefs.add(c);
-	}
-
-	public Vector<YANG_CaseDef> getCaseDefs() {
-		return casedatadefs;
-	}
-
 	public boolean isBracked() {
-		return super.isBracked() || casedatadefs.size() != 0;
+		return super.isBracked();
 	}
 
 	public String toString() {
@@ -68,19 +58,18 @@ public class YANG_Case extends YANG_DataDefInfoWhen {
 		if (isBracked()) {
 			result += " {\n";
 			result += super.toString() + "\n";
-			for (Enumeration<YANG_CaseDef> ec = casedatadefs.elements(); ec
-					.hasMoreElements();)
-				result += ec.nextElement().toString() + "\n";
 			result += "}";
 		} else
 			result += ";";
 		return result;
 	}
 
-	@Override
-	public void check(YangContext context) throws YangParserException {
-		
-		
+
+	public void refines(YANG_RefineCase rl) {
+		if (rl.getDescription() != null)
+			description = rl.getDescription();
+		if (rl.getReference() != null)
+			reference = rl.getReference();
 	}
 
 }

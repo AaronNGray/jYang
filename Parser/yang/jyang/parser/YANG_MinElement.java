@@ -1,31 +1,34 @@
 package jyang.parser;
 
+public class YANG_MinElement extends SimpleYangNode {
 
-public class YANG_MinElement extends SimpleNode {
+	private String min = null;
 
-    private String min = null;
+	public YANG_MinElement(int id) {
+		super(id);
+	}
 
-  public YANG_MinElement(int id) {
-    super(id);
-  }
+	public YANG_MinElement(yang p, int id) {
+		super(p, id);
+	}
 
-  public YANG_MinElement(yang p, int id) {
-    super(p, id);
-  }
+	public void setMinElement(String m) {
+		min = unquote(m);
+	}
 
-    public void setMinElement(String m){
-	min = m;
-    }
+	public String getMinElement() {
+		return min;
+	}
+	
+	public int getMinElementInt(){
+		return Integer.parseInt(min);
+	}
 
-    public String getMinElement(){
-	return min;
-    }
+	public void check(YangContext context) {
+	}
 
-    public void check(YangContext context){
-    }
-
-    public String toString(){
-	return "min-elements " + min + ";";
-    }
+	public String toString() {
+		return "min-elements " + min + ";";
+	}
 
 }

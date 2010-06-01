@@ -1,0 +1,7 @@
+#!/bin/csh
+
+./tb > tmp
+cmp tmp tb.res
+if ($status == 0) then
+ rm tmp
+endif

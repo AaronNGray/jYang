@@ -19,12 +19,11 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
-
-
-public class YANG_Container extends YANG_DataDefConfigMust implements
-		YANG_CaseDef, YANG_ShortCase {
+public class YANG_Container extends MustDataDef implements YANG_ShortCase,
+		DataDefsContainer {
 
 	private String container = null;
 
@@ -44,7 +43,7 @@ public class YANG_Container extends YANG_DataDefConfigMust implements
 	}
 
 	public void setContainer(String c) {
-		container = c;
+		container = unquote(c);
 	}
 
 	public String getBody() {
@@ -55,13 +54,14 @@ public class YANG_Container extends YANG_DataDefConfigMust implements
 		return container;
 	}
 
-	public void setPresence(YANG_Presence p) throws YangParserException {
-		if (b_presence)
-			throw new YangParserException(
-					"Presence already defined in container " + container, p
-							.getLine(), p.getCol());
-		b_presence = true;
-		presence = p;
+	public void setPresence(YANG_Presence p) {
+		if (!b_presence) {
+			b_presence = true;
+			presence = p;
+		} else
+			YangErrorManager.addError(filename, p.getLine(), p.getCol(), "unex_kw",
+					"presence");
+
 	}
 
 	public YANG_Presence getPresence() {
@@ -97,14 +97,8 @@ public class YANG_Container extends YANG_DataDefConfigMust implements
 				|| groupings.size() != 0 || datadefs.size() != 0;
 	}
 
-	public void check(YangContext context) throws YangParserException {
-		if (b_config) {
-			YANG_Config parentConfig = getParentConfig();
-			if (parentConfig.getConfig().compareTo("false") == 0
-					&& getConfig().getConfig().compareTo("true") == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":config to true and parent config to false");
-		}
+	public void check(YangContext context) {
+			super.check(context);
 
 	}
 
@@ -131,14 +125,43 @@ public class YANG_Container extends YANG_DataDefConfigMust implements
 
 		return result;
 	}
-	
+
 	public YANG_Container clone() {
-		YANG_Container cc = new YANG_Container( parser, id);
-		cc.setContainer(getContainer());
-		cc.setLine(getLine());
-		cc.setCol(getCol());
-		return cc;
-		
+		YANG_Container cl = new YANG_Container(parser, id);
+		cl.setContainer(getContainer());
+		cl.setLine(getLine());
+		cl.setCol(getCol());
+		cl.setFileName(getFileName());
+		if (getContext() != null)
+			cl.setContext(getContext());
+		if (getPresence() != null)
+			cl.setPresence(getPresence());
+		if (getConfig() != null)
+			cl.setConfig(getConfig());
+		if (getDescription() != null)
+			cl.setDescription(getDescription());
+		if (getReference() != null)
+			cl.setReference(getReference());
+		if (getStatus() != null)
+			cl.setStatus(getStatus());
+		if (getWhen() != null)
+		cl.setWhen(getWhen());
+		cl.setIfFeature(getIfFeatures());
+		return cl;
+	}
+
+	public void refines(YANG_RefineContainer rl) {
+		if (rl.getConfig() != null)
+			config = rl.getConfig();
+		if (rl.getDescription() != null)
+			description = rl.getDescription();
+		if (rl.getReference() != null)
+			reference = rl.getReference();
+		if (rl.getPresence() != null)
+			presence = rl.getPresence();
+		for (YANG_Must must : rl.getMusts())
+			addMust(must);
+
 	}
 
 }

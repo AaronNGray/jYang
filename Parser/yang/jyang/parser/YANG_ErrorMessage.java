@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_ErrorMessage extends SimpleNode {
+public class YANG_ErrorMessage extends SimpleYangNode {
 	
 	private String errormessage = null;
 	
@@ -14,7 +14,7 @@ public class YANG_ErrorMessage extends SimpleNode {
   }
   
   public void setErrorMessage(String e){
-	  errormessage = e;
+	  errormessage = unquote(e);
   }
   
   public String getErrorMessage() {

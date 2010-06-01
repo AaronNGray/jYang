@@ -1,32 +1,30 @@
 package jyang.parser;
 
+public class YANG_Description extends SimpleYangNode implements YANG_Meta {
 
-public class YANG_Description extends SimpleNode implements YANG_Meta{
+	private String description = null;
 
-    private String description = null;
+	public YANG_Description(int id) {
+		super(id);
+	}
 
-  public YANG_Description(int id) {
-    super(id);
-  }
+	public YANG_Description(yang p, int id) {
+		super(p, id);
+	}
 
-  public YANG_Description(yang p, int id) {
-    super(p, id);
-  }
+	public void setDescription(String d) {
+		description = unquote(d);
+	}
 
-    public void setDescription(String d){
-	description = d;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public String getDescription(){
-	return description;
-    }
+	public void check(YangContext context) {
+	}
 
-    public void check(YangContext context){
-    }
-
-    public String toString(){
-	return "description\n\t " + description + ";";
-    }
-    
+	public String toString() {
+		return "description\n\t " + "\"" + description + "\"" + ";";
+	}
 
 }

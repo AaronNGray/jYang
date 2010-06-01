@@ -1,7 +1,6 @@
 package jyang.parser;
 
-
-public class YANG_OrderedBy extends SimpleNode {
+public class YANG_OrderedBy extends SimpleYangNode {
 
 	private String orderedby = null;
 
@@ -13,14 +12,11 @@ public class YANG_OrderedBy extends SimpleNode {
 		super(p, id);
 	}
 
-	public void setOrderedBy(String o) throws YangParserException {
-		if (o == null)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":Panic in ordered-by value");
-		String ot = YangBuiltInTypes.removeQuotesAndTrim(o);
+	public void setOrderedBy(String o) {
+
+		String ot = unquote(o);
 		if (ot.compareTo("system") != 0 && ot.compareTo("user") != 0)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":config value not correct " + ot);
+			YangErrorManager.addError(filename, getLine(), getCol(), "ordered_exp");
 		orderedby = ot;
 	}
 

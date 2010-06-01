@@ -1,10 +1,16 @@
 package jyang.parser;
 
 
-public class YANG_Argument extends SimpleNode {
+public class YANG_Argument extends SimpleYangNode {
 
-    private String argument = null;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6256309128763772225L;
+	
+	private String argument = null;
     private YANG_Yin yin = null;
+    private String added = "";
 
     private boolean bracked = false;
 
@@ -17,7 +23,7 @@ public class YANG_Argument extends SimpleNode {
   }
 
     public void setArgument(String a){
-	argument = a;
+	argument = unquote(a);
     }
 
     public String getArgument(){
@@ -36,12 +42,17 @@ public class YANG_Argument extends SimpleNode {
     public boolean isBracked(){
 	return bracked;
     }
+    
+    public void addArgument(String a){
+    	added += " " + a;
+    }
+    
 
     public String toString(){
 	String result = new String();
 	result += "argument " + argument;
-	if(yin != null)
-	    result += "{" + yin.toString() + "}";
+	if(isBracked())
+	    result += "{\n" + yin.toString() + "}";
 	else
 	    result += ";";
 	return result;

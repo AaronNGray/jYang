@@ -1,7 +1,6 @@
 package jyang.parser;
 
-
-public class YANG_Status extends SimpleNode {
+public class YANG_Status extends SimpleYangNode {
 
 	private String status = null;
 
@@ -13,15 +12,11 @@ public class YANG_Status extends SimpleNode {
 		super(p, id);
 	}
 
-	public void setStatus(String s) throws YangParserException {
-		if (s == null)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":Panic in status value");
-		String st = YangBuiltInTypes.removeQuotesAndTrim(s);
+	public void setStatus(String s) {
+		String st = unquote(s);
 		if (st.compareTo("current") != 0 && st.compareTo("obsolete") != 0
 				&& st.compareTo("deprecated") != 0)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":status value not correct : " + s);
+			YangErrorManager.addError(filename, getLine(), getCol(), "status_exp");
 		status = st;
 	}
 

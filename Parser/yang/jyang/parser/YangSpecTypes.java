@@ -19,9 +19,11 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.*;
 
-public class YangSpecTypes {
+public class YangSpecTypes implements Serializable {
 
 	private Hashtable<String, String> deriveds = new Hashtable<String, String>();
 	private Hashtable<String, YANG_TypeDef> typedefs = new Hashtable<String, YANG_TypeDef>();
@@ -70,6 +72,19 @@ public class YangSpecTypes {
 		}
 	}
 
+	public void mergeChecked(YangSpecTypes yst) {
+		for (Enumeration<String> ek = yst.keys(); ek.hasMoreElements();) {
+			String k = ek.nextElement();
+			if (!deriveds.containsKey(k))
+				add(k, yst.get(k), yst.getTypeDef(k));
+			else
+				YangErrorManager.addError(yst.getTypeDef(k).getFileName(), yst
+						.getTypeDef(k).getLine(), yst.getTypeDef(k).getCol(),
+						"dup_child", yst.getTypeDef(k).getBody(), typedefs.get(
+								k).getLine(), typedefs.get(k).getCol());
+		}
+	}
+
 	/**
 	 * Get the typedef of the given type
 	 * 
@@ -92,12 +107,6 @@ public class YangSpecTypes {
 
 	}
 
-	/*
-	 * public void add(String prefix, YangSpecTypes yst) throws
-	 * YangParserException { for (Enumeration<String> ek = yst.keys();
-	 * ek.hasMoreElements();) { String k = ek.nextElement(); add(prefix + ":" +
-	 * k, yst.get(k)); } }
-	 */
 	public boolean isEmpty() {
 		return deriveds.size() == 0;
 	}
@@ -108,13 +117,11 @@ public class YangSpecTypes {
 		return true;
 	}
 
-	public void check(String module) throws YangParserException {
+	public void check() {
 		for (Enumeration<String> et = deriveds.elements(); et.hasMoreElements();) {
 			String basetype = et.nextElement();
 			if (!YangBuiltInTypes.isBuiltIn(basetype)) {
 				String s = null;
-				// if (basetype.substring(0, basetype.indexOf(':')).compareTo(
-				// module) == 0) {
 				if (!deriveds.containsKey(basetype)) {
 					YANG_TypeDef td = null;
 					boolean found = false;
@@ -129,24 +136,20 @@ public class YangSpecTypes {
 					}
 					if (td != null) {
 						td.setCorrect(false);
-						//throw new YangParserException
-						System.err.println(module + "@:type " + basetype
-								+ " used by the typedef " + s + " at line "
-								+ td.getLine() + " is not defined");
+						YangErrorManager.addError(td.getFileName(), td
+								.getLine(), td.getCol(), "unknown_type", td.getType().getType());
 					}
-					// }
-				} else {
-					String der = deriveds.get(basetype);
-					if (der.compareTo(basetype) == 0) {
-						YANG_TypeDef td = typedefs.get(basetype);
-						td.setCorrect(false);
-						//throw new YangParserException(
-								System.err.println(
-								module + "@" + td.getLine() + "."
-								+ td.getCol() + ":typedef " + td.getBody()
-								+ " is self defining");
-					}
-				}
+				} /*
+				 * else { String der = deriveds.get(basetype); if
+				 * (der.compareTo(basetype) == 0) { YANG_TypeDef td =
+				 * typedefs.get(basetype); td.setCorrect(false);
+				 * YangErrorManager .add(td.getFileName(), td.getLine(),
+				 * td.getCol(),
+				 * MessageFormat.format(YangErrorManager.messages.getString
+				 * ("circ_dep"),basetype));
+				 * 
+				 * } }
+				 */
 			}
 		}
 		for (Enumeration<String> et = deriveds.elements(); et.hasMoreElements();) {
@@ -154,32 +157,42 @@ public class YangSpecTypes {
 			if (!YangBuiltInTypes.isBuiltIn(basetype)) {
 				Vector<String> chain = new Vector<String>();
 				chain.add(basetype);
-					checkChain(module, chain, deriveds.get(basetype));
+				if (deriveds.get(basetype) != null) {
+					YANG_TypeDef origin = typedefs.get(deriveds.get(basetype));
+					checkChain(origin, chain, deriveds.get(basetype));
+				}
 			}
 		}
 	}
 
-	protected boolean checkChain(String module, Vector<String> b, String d)
-			throws YangParserException {
+	protected boolean checkChain(YANG_TypeDef o, Vector<String> b, String d) {
 		if (b.contains(d)) {
 			YANG_TypeDef bt = typedefs.get(d);
-			bt.setCorrect(false);
-			for (Enumeration<String> es = b.elements();es.hasMoreElements();){
-				String tn = es.nextElement();
-				YANG_TypeDef td = typedefs.get(tn);
-				td.setCorrect(false);
-			}
-			//throw new YangParserException
-			System.err.println(module + "@" + bt.getLine() + "."
-					+ bt.getCol() + ":circular dependency for type \"" + d
-					+ "\"");
-			return false;
+			if (bt.isCorrect()) {
+				bt.setCorrect(false);
+				for (Enumeration<String> es = b.elements(); es
+						.hasMoreElements();) {
+					String tn = es.nextElement();
+					YANG_TypeDef td = typedefs.get(tn);
+					td.setCorrect(false);
+				}
+
+				YangErrorManager.addError(o.getFileName(), o.getLine(), o
+						.getCol(), "circ_dep", unprefix(d));
+
+				return false;
+			} else
+				return false;
 		}
 		if (!YangBuiltInTypes.isBuiltIn(d)) {
 			b.add(d);
-			return checkChain(module, b, deriveds.get(d));
+			return checkChain(o, b, deriveds.get(d));
 		}
 		return true;
+	}
+
+	private String unprefix(String s) {
+		return s.substring(s.indexOf(':') + 1);
 	}
 
 	public String getBuiltInType(String t) {
@@ -256,5 +269,24 @@ public class YangSpecTypes {
 			result += k + "\t:  " + deriveds.get(k) + "\n";
 		}
 		return result;
+	}
+
+	public void removeType(String module, YangSpecTypes st) {
+		YangSpecTypes res = new YangSpecTypes();
+		for (Enumeration<String> et = keys(); et.hasMoreElements();) {
+			String t = et.nextElement();
+			if (!st.deriveds.keySet().contains(t)) {
+				res.deriveds.put(t, deriveds.get(t));
+				res.typedefs.put(t, typedefs.get(t));
+			}
+		}
+		setSpecTypes(res);
+
+	}
+
+	private void setSpecTypes(YangSpecTypes res) {
+		deriveds = res.deriveds;
+		typedefs = res.typedefs;
+
 	}
 }

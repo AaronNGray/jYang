@@ -28,12 +28,6 @@ public class YANG_SubModule extends YANG_Specification {
 	 */
 	private int nbheader = 0;
 	private boolean b_yangversion = false, b_belong = false;
-	/**
-	 * Meta statement flags
-	 */
-	private int nbmeta = 0;
-	private boolean organization = false, contact = false, description = false,
-			reference = false;
 
 	public YANG_SubModule(int id) {
 		super(id);
@@ -59,31 +53,24 @@ public class YANG_SubModule extends YANG_Specification {
 		return getSubModule();
 	}
 
-	public void addHeader(YANG_Header m) throws YangParserException {
+	public void addHeader(YANG_Header m) {
 
-		if (nbheader == 2)
-			throw new YangParserException(
-					"No more than two headers in  submodule " + submodule, m
-							.getLine(), m.getCol());
 		if (m instanceof YANG_YangVersion) {
-			if (b_yangversion)
-				throw new YangParserException(
-						"Yang version already defined in submodule "
-								+ submodule, m.getLine(), m.getCol());
-			else
+			if (!b_yangversion) {
 				b_yangversion = true;
-			yangversion = (YANG_YangVersion) m;
+				yangversion = (YANG_YangVersion) m;
+			} else
+				YangErrorManager.addError(filename, m.getLine(), m.getCol(),
+						"version");
 		}
+
 		if (m instanceof YANG_Belong) {
-			if (b_belong)
-				throw new YangParserException(
-						"Belonging module already defined in submodule "
-								+ submodule, m.getLine(), m.getCol());
-			else
+			if (!b_belong)
 				b_belong = true;
 			belong = (YANG_Belong) m;
+		} else
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "belong");
 
-		}
 		headers.add(m);
 	}
 
@@ -91,88 +78,48 @@ public class YANG_SubModule extends YANG_Specification {
 		return belong;
 	}
 
-	public void addMeta(YANG_Meta m) throws YangParserException {
-		if (nbmeta == 4)
-			throw new YangParserException(
-					"No more than four meta statement in  submodule "
-							+ submodule, m.getLine(), m.getCol());
-		if (m instanceof YANG_Organization) {
-			if (organization)
-				throw new YangParserException(
-						"Organization already defined in  submodule "
-								+ submodule, m.getLine(), m.getCol());
-			else
-				organization = true;
-		}
-		if (m instanceof YANG_Contact) {
-			if (contact)
-				throw new YangParserException(
-						"Contact already defined in  submodule " + submodule, m
-								.getLine(), m.getCol());
-			else
-				contact = true;
-		}
-		if (m instanceof YANG_Description) {
-			if (description)
-				throw new YangParserException(
-						"Description already defined in submodule " + submodule,
-						m.getLine(), m.getCol());
-			else
-				description = true;
-		}
-		if (m instanceof YANG_Reference) {
-			if (reference)
-				throw new YangParserException(
-						"Reference already defined in  submodule " + submodule,
-						m.getLine(), m.getCol());
-			else
-				reference = true;
-		}
-		nbmeta++;
-		metas.add(m);
-	}
-
 	/**
 	 * Check if the belongs-to statement is present and if it refers to an
 	 * existing module. The presence of the module and its syntax are checked
 	 * but no semantical checking.
 	 */
-	public void checkHeader(String[] p) throws YangParserException {
+	public void checkHeader(String[] p) {
 		if (!b_belong)
-			throw new YangParserException(
-					"Belonging module must be defined in submodule "
-							+ submodule);
-		YANG_Specification belonged = getExternal(p, belong.getBelong(), true);
-		if (!(belonged instanceof YANG_Module))
-			throw new YangParserException(belonged.getName()
-					+ " is not a module", belonged.getLine(), belonged.getCol());
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+					"expected_kw", "belongs-to");
+		else {
+			YANG_Specification belonged = getExternal(p, belong.getBelong());
+			if (!(belonged instanceof YANG_Module))
+				YangErrorManager.addError(getFileName(), belong.getLine(), belong
+						.getCol(), "not_module", belong.getBelong());
+		}
 	}
 
 	/**
 	 * Check if included submodule belong to the same module than this submodule
 	 */
 
-	protected void checkInclude(String[] paths) throws YangParserException {
-		Vector<YANG_Specification> included = getIncludedSubModules(paths);
-		for (Enumeration<YANG_Specification> es = included.elements(); es
-				.hasMoreElements();) {
-			YANG_Specification includedspec = es.nextElement();
+	protected void checkInclude(String[] paths) {
+
+		for (YANG_Specification includedspec : getIncludedSubModules(paths)) {
+			int l = 0, c = 0;
+			for (YANG_Linkage lk : linkages) {
+				if (lk.getName().compareTo(includedspec.getName()) == 0) {
+					l = lk.getLine();
+					c = lk.getCol();
+				}
+			}
 			if (!(includedspec instanceof YANG_SubModule))
-				throw new YangParserException(
-						"Only submodule can be included : "
-								+ includedspec.getName()
-								+ " is not a submodule");
+				YangErrorManager.addError(getFileName(), l, c, "not_submodule",
+						includedspec.getName());
 			else {
 				YANG_SubModule submod = (YANG_SubModule) includedspec;
 
-				if (!submod.getBelong().getBelong().equals(
-						getBelong().getBelong()))
-					throw new YangParserException("Included submodule "
-							+ submod.getSubModule() + " in submodule "
-							+ getSubModule()
-							+ " does not belongs to the same module "
-							+ getBelong().getBelong());
-				if (!includeds.contains(submod))
+				if (submod.getBelong().getBelong().compareTo(
+						getBelong().getBelong()) != 0)
+					YangErrorManager.addError(getFileName(), l, c, "not_belong",
+							submod.getName(), getBelong().getBelong());
+				else if (!includeds.contains(submod))
 					includeds.add(submod);
 			}
 		}
@@ -198,6 +145,11 @@ public class YANG_SubModule extends YANG_Specification {
 		}
 		result += "}";
 		return result;
+	}
+
+	@Override
+	protected void cleanExternalWarning() {
+		
 	}
 
 }

@@ -23,7 +23,7 @@ import java.util.regex.PatternSyntaxException;
 
 
 
-public class YANG_Key extends SimpleNode {
+public class YANG_Key extends SimpleYangNode {
 
 	private String key = null;
 
@@ -36,15 +36,15 @@ public class YANG_Key extends SimpleNode {
 	}
 
 	public void setKey(String k) {
-		key = k.trim();
+		key = unquote(k);
 	}
 
 	public String getKey() {
-		return YangBuiltInTypes.removeQuotesAndTrim(key);
+		return key;
 	}
 
 	public String[] getKeyLeaves() {
-		String k = YangBuiltInTypes.removeQuotesAndTrim(getKey());
+		String k = key;
 		String[] result = null;
 		try{
 			result = k.split("\\s+");

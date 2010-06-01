@@ -1,7 +1,7 @@
 package jyang.parser;
 
 
-public class YANG_Organization extends SimpleNode implements YANG_Meta{
+public class YANG_Organization extends SimpleYangNode implements YANG_Meta{
 
     private String organization = null;
 
@@ -14,7 +14,7 @@ public class YANG_Organization extends SimpleNode implements YANG_Meta{
   }
 
     public void setOrganization(String o){
-	organization = o;
+	organization = unquote(o);
     }
 
     public String getOrganization(){

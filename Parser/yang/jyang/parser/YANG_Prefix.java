@@ -1,29 +1,28 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-
-public class YANG_Prefix extends SimpleNode implements YANG_Header {
+public class YANG_Prefix extends SimpleYangNode implements YANG_Header {
 
 	private String prefix = null;
 
@@ -35,7 +34,7 @@ public class YANG_Prefix extends SimpleNode implements YANG_Header {
 		super(p, id);
 	}
 
-	public void setPrefix(String p) throws YangParserException {
+	public void setPrefix(String p){
 		checkPrefix(p);
 	}
 
@@ -47,17 +46,17 @@ public class YANG_Prefix extends SimpleNode implements YANG_Header {
 		return "prefix " + prefix + ";";
 	}
 
-	private void checkPrefix(String p) throws YangParserException {
-		String lp = YangBuiltInTypes.removeQuotes(p);
+	private void checkPrefix(String p){
+		String lp = unquote(p);
 		lp = lp.trim();
 		if (lp.length() > YangBuiltInTypes.idlength)
-			throw new YangParserException("@" + getLine() + ":" + getCol()
-					+ ":prefix identifier too long (>63)");
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+					"prefix_too_long", lp);
 		Pattern pat = Pattern.compile("[a-zA-Z](\\w|\\-)*");
 		Matcher m = pat.matcher(lp);
 		if (!m.matches())
-			throw new YangParserException("@" + getLine() + ":" + getCol()
-					+ ":prefix syntax " + lp);
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+					"prefix_exp", lp);
 		prefix = lp;
 
 	}

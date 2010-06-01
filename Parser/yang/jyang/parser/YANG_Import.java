@@ -1,13 +1,33 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
 
-public class YANG_Import extends SimpleNode implements YANG_Linkage {
+public class YANG_Import extends ImportIncludeNode implements YANG_Linkage {
 
 	private String importstr = null;
 	private YANG_Prefix prefix = null;
-	private YANG_Revision revision = null;
 	
-	private boolean b_prefix = false, b_revision = false;
+	private YANG_Specification importedmodule = null;
+
+	private boolean b_prefix = false;
+	
+	private boolean used = false;
+
+	public YANG_Specification getImportedmodule() {
+		return importedmodule;
+	}
+
+	public void setImportedmodule(YANG_Specification importedmodule) {
+		this.importedmodule = importedmodule;
+	}
+
+	public boolean isUsed() {
+		return used;
+	}
+
+	public void setUsed(boolean used) {
+		this.used = used;
+	}
 
 	public YANG_Import(int id) {
 		super(id);
@@ -18,46 +38,36 @@ public class YANG_Import extends SimpleNode implements YANG_Linkage {
 	}
 
 	public void setIdentifier(String s) {
-		importstr = s;
+		importstr = unquote(s);
 	}
 
 	public String getImportedModule() {
 		return importstr;
 	}
 
-	public void setPrefix(YANG_Prefix p)  throws YangParserException {
-		if (b_prefix)
-			throw new YangParserException(
-					"Prefix is already defined in import " + importstr, p
-							.getLine(), p.getCol());
-		prefix = p;
-		b_prefix = true;
+	public void setPrefix(YANG_Prefix p) {
+		if (!b_prefix) {
+			prefix = p;
+			b_prefix = true;
+		} else
+			YangErrorManager.addError(filename, p.getLine(), p.getCol(), "unex_kw",
+					"prefix");
 	}
 
 	public YANG_Prefix getPrefix() {
 		return prefix;
 	}
+	
+	public String getName(){
+		return getImportedModule();
+	}
 
 	public String toString() {
-		String result =  " import " + importstr + " {" + prefix.toString();
-		if (b_revision)
-			result += "\n" + revision.toString();
+		String result = " import " + importstr + " {" + prefix.toString();
+		result += super.toString() + "\n";
 		result += "}";
 		return result;
-		
-	}
 
-	public YANG_Revision getRevision() {
-		return revision;
-	}
-
-	public void setRevision(YANG_Revision r)  throws YangParserException  {
-		if (b_revision)
-			throw new YangParserException(
-					"Revision is already defined in import " + importstr, r
-							.getLine(), r.getCol());
-		this.revision = r;
-		b_revision = true;
 	}
 
 }

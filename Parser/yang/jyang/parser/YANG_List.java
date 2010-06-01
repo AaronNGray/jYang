@@ -19,23 +19,19 @@ package jyang.parser;
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.text.MessageFormat;
 import java.util.*;
 
-public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
-		YANG_ShortCase {
+public class YANG_List extends ListedDataDef implements DataDefsContainer {
 
 	private String list = null;
 	private YANG_Key key = null;
 	private Vector<YANG_Unique> uniques = new Vector<YANG_Unique>();
-	private YANG_MinElement min = null;
-	private YANG_MaxElement max = null;
-	private YANG_OrderedBy orderedby = null;
 	private Vector<YANG_TypeDef> typedefs = new Vector<YANG_TypeDef>();
 	private Vector<YANG_Grouping> groupings = new Vector<YANG_Grouping>();
 	private Vector<YANG_DataDef> datadefs = new Vector<YANG_DataDef>();
 
-	private boolean b_key = false, b_min = false, b_max = false,
-			b_ordered = false;
+	private boolean b_key = false;
 
 	public YANG_List(int id) {
 		super(id);
@@ -46,7 +42,7 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 	}
 
 	public void setList(String l) {
-		list = l;
+		list = unquote(l);
 	}
 
 	public String getBody() {
@@ -57,13 +53,13 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 		return list;
 	}
 
-	public void setKey(YANG_Key t) throws YangParserException {
-		if (b_key)
-			throw new YangParserException(
-					"Key already defined in list " + list, t.getLine(), t
-							.getCol());
-		b_key = true;
-		key = t;
+	public void setKey(YANG_Key t) {
+		if (!b_key) {
+			b_key = true;
+			key = t;
+		} else
+			YangErrorManager.addError(filename, t.getLine(), t.getCol(), "unex_kw",
+					"key");
 	}
 
 	public YANG_Key getKey() {
@@ -76,45 +72,6 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 
 	public Vector<YANG_Unique> getUniques() {
 		return uniques;
-	}
-
-	public void setMinElement(YANG_MinElement m) throws YangParserException {
-		if (b_min)
-			throw new YangParserException(
-					"Min element already defined in leaf-list " + list, m
-							.getLine(), m.getCol());
-		b_min = true;
-		min = m;
-	}
-
-	public YANG_MinElement getMinElement() {
-		return min;
-	}
-
-	public void setMaxElement(YANG_MaxElement m) throws YangParserException {
-		if (b_max)
-			throw new YangParserException(
-					"Max element already defined in leaf-list " + list, m
-							.getLine(), m.getCol());
-		b_max = true;
-		max = m;
-	}
-
-	public YANG_MaxElement getMaxElement() {
-		return max;
-	}
-
-	public void setOrderedBy(YANG_OrderedBy o) throws YangParserException {
-		if (b_ordered)
-			throw new YangParserException(
-					"Ordered-by already defined in leaf-list " + list, o
-							.getLine(), o.getCol());
-		b_ordered = true;
-		orderedby = o;
-	}
-
-	public YANG_OrderedBy getOrderedBy() {
-		return orderedby;
 	}
 
 	public void addTypeDef(YANG_TypeDef t) {
@@ -142,122 +99,17 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 	}
 
 	public boolean isBracked() {
-		return super.isBracked() || b_key || b_max || b_min || b_ordered
-				|| datadefs.size() != 0 || groupings.size() != 0;
+		return super.isBracked() || b_key || datadefs.size() != 0
+				|| groupings.size() != 0;
 	}
 
-	public void check(YangContext context) throws YangParserException {
-		if (!b_key) {
-			if (b_config) {
-				if (getConfig().getConfig().compareTo("true") == 0)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":key not present in list "
-							+ getList() + " with config true");
-			} else {
-				YANG_Config parentConfig = getParentConfig();
-				if (parentConfig != null)
-					if (parentConfig.getConfig().compareTo("true") == 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":key not present in list "
-								+ getList() + " with parent config true");
-			}
-		} else {
-
-			if (b_config) {
-				YANG_Config parentConfig = getParentConfig();
-				if (parentConfig != null)
-					if (parentConfig.getConfig().compareTo("false") == 0
-							&& getConfig().getConfig().compareTo("true") == 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol()
-								+ ":config to true and parent config to false");
-			}
-
-			String[] kleafs = getKey().getKeyLeaves();
-			for (int i = 0; i < kleafs.length; i++) {
-				for (int j = i + 1; j < kleafs.length; j++)
-					if (kleafs[i].compareTo(kleafs[j]) == 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":dupplicate key leaf in list "
-								+ getList());
-				boolean found = false;
-				String configlist = null;
-				if (!b_config) {
-					configlist = getParentConfig().getConfig();
-				} else
-					configlist = getConfig().getConfig();
-				if (configlist != null)
-					for (Enumeration<YANG_DataDef> ed = getDataDefs()
-							.elements(); !found && ed.hasMoreElements();) {
-						YANG_DataDef dd = ed.nextElement();
-						found = findKey(context, kleafs[i], dd);
-						if (found) {
-							if (dd instanceof YANG_Leaf) {
-								YANG_Leaf leaf = (YANG_Leaf) dd;
-								if (context.getBuiltInType(leaf.getType()) != null) {
-									if (YangBuiltInTypes.empty
-											.compareTo(context
-													.getBuiltInType(leaf
-															.getType())) == 0)
-										throw new YangParserException(
-												"@"
-														+ getLine()
-														+ "."
-														+ getCol()
-														+ ":key leaf "
-														+ kleafs[i]
-														+ " can not be of the empty type in list "
-														+ getList());
-									String configkeyleaf = null;
-									if (leaf.getConfig() == null)
-										configkeyleaf = configlist;
-									else
-										configkeyleaf = YangBuiltInTypes
-												.removeQuotesAndTrim(leaf
-														.getConfig()
-														.getConfig());
-									if (configlist.compareTo(configkeyleaf) != 0)
-										throw new YangParserException(
-												"@"
-														+ getLine()
-														+ "."
-														+ getCol()
-														+ ":key leaf "
-														+ kleafs[i]
-														+ " has not the same config of the list "
-														+ getList());
-								}
-							}
-						}
-					}
-				if (!found)
-					throw new YangParserException("@" + getLine() + "."
-							+ getCol() + ":key leaf " + kleafs[i]
-							+ " not found in list " + getList());
-			}
-		}
-		/*
-		 * for (Enumeration<YANG_Unique> eu = getUniques().elements(); eu
-		 * .hasMoreElements();) { YANG_Unique unique = eu.nextElement(); }
-		 */
+	public void check(YangContext context) {
+		super.check(context);
 		if (datadefs.size() == 0)
-			throw new YangParserException("@" + getLine() + ":" + getCol()
-					+ ":no data in list " + list);
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+					"expected", "data definition");
 
-		/*
-		 * 
-		 * Hashtable<String , YANG_DataDef> nodes = new Hashtable<String,
-		 * YANG_DataDef>(); for (Enumeration <YANG_DataDef> edd =
-		 * getDataDefs().elements(); edd.hasMoreElements();){ YANG_DataDef ddef
-		 * = edd.nextElement(); if (!(ddef instanceof YANG_Uses)){
-		 * nodes.put(ddef.getBody(), ddef); } if (ddef instanceof YANG_Uses){
-		 * YANG_Uses uses = (YANG_Uses) ddef; for (Enumeration <YANG_Refinement>
-		 * er = uses.getRefinements().elements(); er.hasMoreElements();){
-		 * YANG_Refinement ref = er.nextElement(); if
-		 * (nodes.containsKey(ref.getBody())) throw new YangParserException("@"
-		 * + ref.getLine() + "." + ref.getCol() + ":refinement " + ref.getBody()
-		 * + " is already defined in list " + getBody()); } } }
-		 */
+		setContext(context);
 	}
 
 	private boolean findKey(YangContext context, String k, YANG_DataDef dd) {
@@ -280,9 +132,9 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 			for (Enumeration<YANG_Case> ecases = c.getCases().elements(); ecases
 					.hasMoreElements();) {
 				YANG_Case ca = ecases.nextElement();
-				for (Enumeration<YANG_CaseDef> ecdef = ca.getCaseDefs()
+				for (Enumeration<YANG_DataDef> ecdef = ca.getDataDefs()
 						.elements(); ecdef.hasMoreElements();) {
-					YANG_CaseDef cdef = ecdef.nextElement();
+					YANG_DataDef cdef = ecdef.nextElement();
 					if (cdef instanceof YANG_DataDef)
 						if (findKey(context, k, (YANG_DataDef) cdef))
 							return true;
@@ -293,20 +145,53 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 		return false;
 	}
 
+	public void deleteUniques(Vector<YANG_Unique> u) {
+		uniques.removeAll(u);
+
+	}
+
+	public YANG_List clone() {
+		YANG_List cl = new YANG_List(parser, id);
+		cl.setContext(getContext());
+		cl.setList(getList());
+		cl.setFileName(getFileName());
+		cl.setParent(getParent());
+		cl.setCol(getCol());
+		cl.setLine(getLine());
+		if (getKey() != null)
+			cl.setKey(getKey());
+		for (YANG_Unique u : getUniques())
+			cl.addUnique(u);
+		if (getConfig() != null)
+			cl.setConfig(getConfig());
+		if (getDescription() != null)
+			cl.setDescription(getDescription());
+		cl.setIfFeature(getIfFeatures());
+		cl.setMusts(getMusts());
+		cl.setUnknowns(getUnknowns());
+		if (getReference() != null)
+			cl.setReference(getReference());
+		if (getStatus() != null)
+			cl.setStatus(getStatus());
+		if (getWhen() != null)
+			cl.setWhen(getWhen());
+		if (getMaxElement() != null)
+			cl.setMaxElement(getMaxElement());
+		if (getMinElement() != null)
+			cl.setMinElement(getMinElement());
+		if (getOrderedBy() != null)
+			cl.setOrderedBy(getOrderedBy());
+		return cl;
+	}
+
 	public String toString() {
 		String result = new String();
 		result += "list " + list + "{\n";
-		if (key != null)
+		if (b_key)
 			result += key.toString() + "\n";
-		for (Enumeration<YANG_Unique> eu = uniques.elements(); eu
-				.hasMoreElements();)
-			result += eu.nextElement().toString() + "\n";
-		if (min != null)
-			result += min.toString() + "\n";
-		if (max != null)
-			result += max.toString() + "\n";
-		if (orderedby != null)
-			result += orderedby.toString() + "\n";
+		for (YANG_Unique u : getUniques())
+			result += u.toString() + "\n";
+		result += super.toString() + "\n";
 		for (Enumeration<YANG_TypeDef> et = typedefs.elements(); et
 				.hasMoreElements();)
 			result += et.nextElement().toString() + "\n";
@@ -320,6 +205,21 @@ public class YANG_List extends YANG_DataDefConfigMust implements YANG_CaseDef,
 		result += "}\n";
 
 		return result;
+	}
+
+	public void refines(YANG_RefineList rl) {
+		if (rl.getConfig() != null)
+			config = rl.getConfig();
+		if (rl.getDescription() != null)
+			description = rl.getDescription();
+		if (rl.getReference() != null)
+			reference = rl.getReference();
+		for (YANG_Must must : rl.getMusts())
+			addMust(must);
+		if (rl.getMinElement() != null)
+			min = rl.getMinElement();
+		if (rl.getMaxElement() != null)
+			max = rl.getMaxElement();
 	}
 
 }

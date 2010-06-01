@@ -1,7 +1,8 @@
 package jyang.parser;
 
+import java.text.MessageFormat;
 
-public class YANG_Config extends SimpleNode {
+public class YANG_Config extends SimpleYangNode {
 
 	private String config = null;
 
@@ -13,18 +14,16 @@ public class YANG_Config extends SimpleNode {
 		super(p, id);
 	}
 
-	public void setConfig(String c) throws YangParserException {
-		if (c == null)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":Panic in config value");
-		String ct = YangBuiltInTypes.removeQuotesAndTrim(c);
-		if (ct.compareTo("true") != 0 && ct.compareTo("false") != 0)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":config value not correct : " + ct);
+	public void setConfig(String c) {
+		String ct = unquote(c);
+		if (ct.compareTo(YangBuiltInTypes.ytrue) != 0
+				&& ct.compareTo(YangBuiltInTypes.yfalse) != 0)
+			YangErrorManager.addError(filename, getLine(), getCol(), "config_expr",
+					ct);
 		config = c;
 	}
 
-	public String getConfig() {
+	public String getConfigStr() {
 		return config;
 	}
 

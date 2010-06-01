@@ -22,21 +22,33 @@ import java.io.*;
 
 import jyang.parser.ParseException;
 import jyang.parser.YANG_Specification;
+import jyang.parser.YangErrorManager;
 import jyang.parser.yang;
-import jyang.tools.Yang2Applet;
-import jyang.tools.Yang2Ensuite;
+import jyang.tools.Yang2Dsdl;
 import jyang.tools.Yang2Yin;
 
 public class jyang {
 
 	private Hashtable<String, YANG_Specification> yangsSpecs = new Hashtable<String, YANG_Specification>();
 	private boolean parsingOk;
+	private boolean warning = false;
+	private boolean output = true;
+	private static boolean reinit = false;
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		new jyang(args);
 	}
 
-	public jyang(String args[]) {
+	public jyang(String[] args, boolean output) {
+		this.output = output;
+		parse(args);
+	}
+
+	public jyang(String[] args) {
+		this (args, true);
+	}
+
+	public void parse(String[] args) {
 		// Parsing arguments
 		if (args.length == 0) {
 			System.err.println("no module name");
@@ -78,11 +90,12 @@ public class jyang {
 					switch (flag) {
 					case 'h':
 						System.out
-								.println("Usage : java jyang [-h] [-o output_file] [-p paths] "
+								.println("Usage : java jyang [-h] [-w] [-o output_file] [-p paths] "
 										+ "[-f output_format]  filename");
 						System.exit(0);
 						break;
-					case 'n':
+					case 'w':
+						warning = true;
 						break;
 					default:
 						System.err.println("Illegal option " + flag);
@@ -100,11 +113,12 @@ public class jyang {
 		}
 
 		// Input yang specifications
-		Vector<InputStream> specs = new Vector<InputStream>();
+		// Vector<InputStream> specs = new Vector<InputStream>();
+		Hashtable<String, InputStream> specs = new Hashtable<String, InputStream>();
 		for (int f = i; f < args.length; f++) {
 			try {
 				FileInputStream specfile = new FileInputStream(args[f]);
-				specs.add(specfile);
+				specs.put(args[f], specfile);
 			} catch (FileNotFoundException fnf) {
 				System.err.println(args[f] + " file not found, ignore it");
 			} catch (SecurityException se) {
@@ -180,7 +194,7 @@ public class jyang {
 							+ " cannot be read, ignore it.");
 				else if (paths[pos].compareTo(".") != 0) // We will force the
 					// . at the end
-					// TODO force it if it is not given in YANGPAT
+					// Force it if it is not given in YANGPAT
 					pathsHT.put(paths[pos], paths[pos]);
 			} catch (NullPointerException np) {
 				System.err.println("Null path name, maybe a trailing \""
@@ -204,48 +218,67 @@ public class jyang {
 		}
 
 		// Parse yang specs
-		
-		boolean reinit = false;
+
+		YangErrorManager.init();
 		boolean noError = true;
-		for (Enumeration<InputStream> ei = specs.elements(); ei
-				.hasMoreElements();) {
+		for (Enumeration<String> ei = specs.keys(); ei.hasMoreElements();) {
+			String fname = ei.nextElement();
+			YangErrorManager.setCurrentModule(fname);
 			if (!reinit) {
 				reinit = true;
-				new yang(ei.nextElement());
+				new yang(specs.get(fname));
 			} else {
-				yang.ReInit(ei.nextElement());
+				yang.ReInit(specs.get(fname));
 			}
 			try {
+				yang.setFileName(fname);
 				YANG_Specification yangspec = yang.Start();
-				Vector<String> checkeds = new Vector<String>();
-				yangspec.check(paths, checkeds);
+				yangspec.check(paths);
 				if (YANG_Specification.isCheckOk()) {
 					yangsSpecs.put(yangspec.getName(), yangspec);
 
 					if (format != null) {
 						if (format.compareTo("yin") == 0) {
 							new Yang2Yin(yangspec, paths, out);
-						} /*else if (format.compareTo("ensuite") == 0) {
-							new Yang2Ensuite(yangspec, paths, out);
-						}  */ 
+						} else if (format.compareTo("dsdl") == 0) {
+						}
+
 						else
-							System.err
-									.println("only yin (incomplete),  dsdl format will be possible");
+							System.err.println("only yin, "
+									+ " dsdl format will be possible");
 					}
-				}
-				else
+				} else
 					noError = false;
 
 			} catch (ParseException pe) {
-				System.err.println(pe.getMessage());
-				System.exit(-1);
+				// pe.printStackTrace();
+				// System.out.println(pe);
+				if (pe.currentToken != null)
+					if (pe.currentToken.next != null)
+						YangErrorManager.addError(fname,
+								pe.currentToken.next.beginLine,
+								pe.currentToken.next.beginColumn, "unex_kw",
+								pe.currentToken.next.image);
+					else
+						System.out.println(pe);
+				else
+					System.out.println(pe);
 			}
 		}
+		try {
+			if (!warning)
+				YangErrorManager.supressWarning();
+			if (output)
+				YangErrorManager.print(System.err);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		parsingOk = noError;
-		/*
-		if (format.compareTo("applet") == 0) {
-			new Yang2Applet(yangsSpecs, paths, out);
-		}*/
+		if (format != null)
+			if (format.compareTo("dsdl") == 0) {
+				new Yang2Dsdl(yangsSpecs, out);
+			}
+
 	}
 
 	public boolean isParsingOk() {

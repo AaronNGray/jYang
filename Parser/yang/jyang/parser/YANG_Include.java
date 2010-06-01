@@ -1,28 +1,21 @@
 package jyang.parser;
 
-
-public class YANG_Include extends SimpleNode implements YANG_Linkage {
+public class YANG_Include extends ImportIncludeNode implements YANG_Linkage {
 
 	private String include = null;
-	
-	private YANG_Revision revision = null;
-	private boolean b_revision = false;
-	
-	public YANG_Revision getRevision() {
-		return revision;
-	}
 
-	public void setRevision(YANG_Revision r) throws YangParserException  {
-		if (b_revision)
-			throw new YangParserException(
-					"Revision is already defined in import " + include, r
-							.getLine(), r.getCol());
-		this.revision = r;
-		b_revision = true;
-	}
+	private YANG_Specification includedsubmodule = null;
 
 	public YANG_Include(int id) {
 		super(id);
+	}
+
+	public YANG_Specification getIncludedsubmodule() {
+		return includedsubmodule;
+	}
+
+	public void setIncludedsubmodule(YANG_Specification includedsubmodule) {
+		this.includedsubmodule = includedsubmodule;
 	}
 
 	public YANG_Include(yang p, int id) {
@@ -30,15 +23,29 @@ public class YANG_Include extends SimpleNode implements YANG_Linkage {
 	}
 
 	public void setIdentifier(String s) {
-		include = s;
+		include = unquote(s);
 	}
 
 	public String getIncludedModule() {
 		return include;
 	}
+	
+	public String getName(){
+		return getIncludedModule();
+	}
+	
+	public boolean isBracked() {
+		return super.isBracked();
+	}
 
 	public String toString() {
-		return " include " + include + ";";
+		String result = "";
+		result += " include " + include;
+		if (isBracked())
+			result += "{\n" + super.toString() + "\n}";
+		else
+			result += ";";
+		return result;
 	}
 
 }

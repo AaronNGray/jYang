@@ -18,7 +18,37 @@ package jyang.parser;
     along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.util.Enumeration;
 
-public interface YANG_ModuleHeaderStmt extends Node{
+
+public  abstract class YANG_Refine extends DocumentedNode {
+	
+	protected String usedgrouping = null;
+	protected String refineNodeId = null;
+	
+	
+
+	public YANG_Refine(int id) {
+		super(id);
+	}
+
+	public YANG_Refine(yang p, int id) {
+		super(p, id);
+	}
+
+	public  String getBody(){return "";}
+
+	public void setUsedGrouping(String g){
+		usedgrouping = unquote(g);
+	}
+	
+	public String getRefineNodeId() {
+		return refineNodeId;
+	}
+
+	public void setRefineNodeId(String nodeId) {
+		this.refineNodeId = nodeId;
+	}
+	
 
 }

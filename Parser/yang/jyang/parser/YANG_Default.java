@@ -2,7 +2,7 @@ package jyang.parser;
 
 
 
-public class YANG_Default extends SimpleNode {
+public class YANG_Default extends SimpleYangNode {
 
 	private String defaultstr = null;
 
@@ -15,24 +15,18 @@ public class YANG_Default extends SimpleNode {
 	}
 
 	public void setDefault(String d) {
-		defaultstr = d;
+		defaultstr = unquote(d);
 	}
 
 	public String getDefault() {
 		return defaultstr;
 	}
 
-	public void check(YangContext context, YANG_Type t)
-			throws YangParserException {
-		t.checkValue(context, getDefault());
-	}
-
 	public void check(YangContext context, YANG_RefineLeaf rleaf) {
 
 	}
 
-	public void check(YangContext context, YANG_Choice choice)
-			throws YangParserException {
+	public void check(YangContext context, YANG_Choice choice){
 		choice.checkDefault(context, this);
 	}
 

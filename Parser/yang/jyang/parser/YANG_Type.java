@@ -22,10 +22,10 @@ package jyang.parser;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
-public class YANG_Type extends SimpleNode {
+public class YANG_Type extends SimpleYangNode {
 
 	private String type = null;
 	private Vector<YANG_Enum> enums = new Vector<YANG_Enum>();
@@ -71,6 +71,11 @@ public class YANG_Type extends SimpleNode {
 	}
 
 	private boolean bracked = false;
+	private boolean checked;
+
+	public boolean isChecked() {
+		return checked;
+	}
 
 	public YANG_Type(int id) {
 		super(id);
@@ -81,11 +86,11 @@ public class YANG_Type extends SimpleNode {
 	}
 
 	public void setType(String t) {
-		type = t;
+		type = unquote(t);
 	}
 
 	public String getType() {
-		return unquote(type);
+		return type;
 	}
 
 	public void addEnum(YANG_Enum e) {
@@ -164,7 +169,7 @@ public class YANG_Type extends SimpleNode {
 			return type;
 	}
 
-	public String[][] getRanges(YangContext context) throws YangParserException {
+	public String[][] getRanges(YangContext context) {
 		String[][] ranges = null;
 		if (numrest != null) {
 			if (numrest instanceof YANG_Range) {
@@ -189,8 +194,7 @@ public class YANG_Type extends SimpleNode {
 		return ranges;
 	}
 
-	private String[][] getLength(YangContext context)
-			throws YangParserException {
+	private String[][] getLength(YangContext context) {
 		String[][] ranges = null;
 		if (getStringRest() != null)
 			if (getStringRest().getLength() != null) {
@@ -206,36 +210,36 @@ public class YANG_Type extends SimpleNode {
 
 	}
 
-	public void checkTypeSyntax() throws YangParserException {
+	public void checkTypeSyntax(YangContext context) {
 
 		if (YangBuiltInTypes.union.compareTo(getType()) == 0)
 			if (getUnionSpec() == null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":union type must have at least one type");
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
+						"union_no_type");
 
 		if (YangBuiltInTypes.leafref.compareTo(getType()) == 0)
 			if (getLeafRef() == null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":keyref type must have at one path");
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
+						"leafref_no_path");
 
 		if (YangBuiltInTypes.enumeration.compareTo(getType()) == 0) {
 			if (getEnums().size() == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":enumeration must have at least one enum");
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
+						"empty_enumeration");
 
-			checkEnum();
+			checkEnum(context);
 		}
 
 		if (YangBuiltInTypes.bits.compareTo(getType()) == 0) {
 			if (getBitSpec() == null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bits  must have at least one bit");
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
+						"empty_bits");
 			checkBits();
 		}
 
 	}
 
-	public void checkTypeSyntax2() {
+	public void checkTypeSyntax2(YangContext c) {
 
 		if (YangBuiltInTypes.union.compareTo(getType()) == 0)
 			if (getUnionSpec() == null)
@@ -251,332 +255,264 @@ public class YANG_Type extends SimpleNode {
 			if (getEnums().size() == 0)
 				System.err.println("@" + getLine() + "." + getCol()
 						+ ":enumeration must have at least one enum");
-			try {
-				checkEnum();
-			} catch (YangParserException e) {
-				System.err.println(e.getMessage());
-			}
+
+			checkEnum(c);
 		}
 
 		if (YangBuiltInTypes.bits.compareTo(getType()) == 0) {
 			if (getBitSpec() == null)
 				System.err.println("@" + getLine() + "." + getCol()
 						+ ":bits  must have at least one bit");
-			try {
-				checkBits();
-			} catch (YangParserException e) {
-				System.err.println(e.getMessage());
-			}
+			checkBits();
 		}
-
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context) {
 
-		checkTypeSyntax();
+		checkTypeSyntax(context);
 
 		if (context.getBuiltInType(this) == null) {
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":type " + getType() + " is not defined");
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+					"unknown", "type", getType());
+			return;
 		}
-		typedef = context.getBaseType(this);
+		typedef = context.getTypeDef(this);
+		if (typedef != null)
+			typedef.setUsed(true);
 
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getBitSpec().getLine()
-						+ "." + getBitSpec().getCol()
-						+ ":numeric type can not have bit specification");
+				YangErrorManager.addError(getBitSpec().getFileName(),
+						getBitSpec().getLine(), getBitSpec().getCol(),
+						"not_alw", "bit specification", getType());
+
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":numeric type can not have enum specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "enum specification", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLeafRef().getLine()
-								+ "."
-								+ getLeafRef().getCol()
-								+ ":numeric type can not have key reference specification");
-			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getStringRest().getLine()
-								+ "."
-								+ getStringRest().getCol()
-								+ ":numeric type can not have length or pattern specification");
+				YangErrorManager.addError(getLeafRef().getFileName(),
+						getLeafRef().getLine(), getLeafRef().getCol(),
+						"not_alw", "key reference specification", getType());
+			if (getStringRest() != null) {
+				YANG_StringRestriction ysr = getStringRest();
+				if (ysr.getLength() != null)
+					YangErrorManager.addError(filename, getStringRest()
+							.getLine(), getStringRest().getCol(), "not_alw",
+							"restriction length", getType());
+				if (ysr.getPatterns().size() != 0)
+					YangErrorManager.addError(filename, getStringRest()
+							.getLine(), getStringRest().getCol(), "not_alw",
+							"restriction pattern", getType());
+			}
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":numeric type can not have type specification");
+				YangErrorManager.addError(getUnionSpec().getFileName(),
+						getUnionSpec().getLine(), getUnionSpec().getCol(),
+						"not_alw", "union specification", getType());
+			if (getInstanceIdentifierSpec() != null)
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
+						"not_alw", "require-instance", getType());
 
 			checkRange(context);
 		} else if (YangBuiltInTypes.string.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getBitSpec().getLine()
-						+ "." + getBitSpec().getCol()
-						+ ":string type can not have bit specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":string type can not have enum specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "enum specification", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLeafRef().getLine()
-								+ "."
-								+ getLeafRef().getCol()
-								+ ":string type can not have key reference specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "key reference specification", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getUnionSpec().getLine()
-						+ "." + getUnionSpec().getCol()
-						+ ":string type can not have type specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "union specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":string type can not have numeric restriction");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "numerical restriction", getType());
 
 			checkStringLength(context);
-			checkPattern(context);
 		} else if (YangBuiltInTypes.yboolean.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":boolean type can not have length or pattern specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "string restriction", getType());
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":boolean type can not have bit specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":boolean type can not have enum specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "enum specification", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":boolean type can not have key reference specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "leaf reference", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":boolean type can not have type specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":boolean type can not have numeric restriction");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "numeric restriction", getType());
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":enumeration type can not have bit specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "bit specification", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":enumeration type can not have key reference specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "leaf reference", getType());
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":enumeration type can not have length or pattern specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "string restriction", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":enumeration type can not have type specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "type specification", getType());
 		} else if (YangBuiltInTypes.bits
 				.compareTo(context.getBuiltInType(this)) == 0) {
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":bits type can not have length or pattern specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "string restriction", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bits type can not have enum specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "enum specification", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":boolean type can not have key reference specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "leaf reference", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bits type can not have type specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bits type can not have numeric restriction");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "numeric restriction", getType());
 		} else if (YangBuiltInTypes.binary.compareTo(context
 				.getBuiltInType(this)) == 0) {
 
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":binary type can not have bit specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":binary type can not have enum specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "enum specification", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":binary type can not have key reference specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "leaf reference", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":binary type can not have type specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":binary type can not have numeric restriction");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "numeric restriction", getType());
 			checkStringLength(context);
 		} else if (YangBuiltInTypes.leafref.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":keyref type can not have bit specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":keyref type can not have enum specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "enum specification", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":keyref type can not have type specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":keyref type can not have numeric restriction");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "numeric restriction", getType());
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":keyref type can not have length or pattern specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "string restriction", getType());
+
 		} else if (YangBuiltInTypes.empty.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":empty type can not have bit specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":empty type can not have enum specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "enum specification", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":empty type can not have type specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":empty type can not have numeric restriction");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "numeric restriction", getType());
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":empty type can not have length or pattern specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "string restriction", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":empty type can not have key reference specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "leaf reference", getType());
 		} else if (YangBuiltInTypes.union.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":union type can not have bit specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":union type can not have enum specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "enum specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":union type can not have numeric restriction");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "numeric restriction", getType());
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":union type can not have length or pattern specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "string restriction", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":union type can not have key reference specification");
-
-			checkEmptyUnion(context, new Vector<YANG_Type>(), getUnionSpec().getTypes());
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "leaf reference", getType());
+			if (getUnionSpec() != null)
+				checkEmptyUnion(context, new Vector<YANG_Type>(),
+						getUnionSpec().getTypes());
 
 		} else if (YangBuiltInTypes.instanceidentifier.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have bit specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "bit specification", getType());
 			if (getEnums().size() != 0)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have enum specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "enum specification", getType());
 			if (getUnionSpec() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have type specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "type specification", getType());
 			if (getNumRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have numeric restriction");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "numeric restriction", getType());
 			if (getStringRest() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have length or pattern specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "string restriction", getType());
 			if (getLeafRef() != null)
-				throw new YangParserException(
-						"@"
-								+ getLine()
-								+ "."
-								+ getCol()
-								+ ":instance-identifier type can not have key reference specification");
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"not_alw", "leaf reference", getType());
 		}
+		checked = true;
 	}
 
-	private void checkBits() throws YangParserException {
-		if (getBitSpec() == null)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":bits must have at least one bit");
+	private void checkBits() {
+		if (getBitSpec() == null) {
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+					"empty_bits");
+			return;
+		}
+		YANG_Bit bit = null;
 		YANG_BitSpecification bs = getBitSpec();
+		YANG_Bit[] bits = new YANG_Bit[bs.getBits().size()];
 		BigInteger highest = new BigInteger("0");
 		Vector<BigInteger> bitspos = new Vector<BigInteger>();
 		String[] bitnames = new String[bs.getBits().size()];
+
 		int i = 0;
 		for (Enumeration<YANG_Bit> eb = bs.getBits().elements(); eb
 				.hasMoreElements();) {
-			YANG_Bit bit = eb.nextElement();
+			bit = eb.nextElement();
+			bits[i] = bit;
 			bitnames[i++] = bit.getBit();
 			if (bit.getPosition() == null) {
 				if (highest.compareTo(YangBuiltInTypes.uint32ub
 						.add(new BigInteger("1"))) == 0)
-					throw new YangParserException("@" + bit.getLine() + "."
-							+ bit.getCol()
-							+ ":position must be given because max is given");
-				bitspos.add(highest);
-				highest = highest.add(new BigInteger("1"));
+					YangErrorManager.addError(bit.getFileName(), bit.getLine(),
+							bit.getCol(), "bits_max");
+				else {
+					bitspos.add(highest);
+					highest = highest.add(new BigInteger("1"));
+				}
 			} else {
 				String strpos = YangBuiltInTypes.removeQuotesAndTrim(bit
 						.getPosition().getPosition());
@@ -584,136 +520,140 @@ public class YANG_Type extends SimpleNode {
 				try {
 					biginteger = new BigInteger(strpos);
 				} catch (NumberFormatException e) {
-					throw new YangParserException("@" + bit.getLine() + "."
-							+ bit.getCol() + ":bit position is not an integer");
+					YangErrorManager.addError(bit.getFileName(), bit.getLine(),
+							bit.getCol(), "bits_pos_not_int");
+					return;
 				}
 				if (biginteger.compareTo(YangBuiltInTypes.uint32ub) == 1)
-					throw new YangParserException("@" + bit.getLine() + "."
-							+ bit.getCol() + ":" + biginteger
-							+ " is a too much higher position");
-				if (biginteger.compareTo(highest) >= 0) {
+					YangErrorManager.addError(bit.getFileName(), bit.getLine(),
+							bit.getCol(), "bits_pos_too_high");
+				if (biginteger.compareTo(highest) > 0) {
 					highest = biginteger;
 					bitspos.add(highest);
 					highest = highest.add(new BigInteger("1"));
+				} else if (biginteger.add(new BigInteger("1")).compareTo(
+						highest) == 0) {
+					YangErrorManager.addError(filename, bit.getPosition()
+							.getLine(), bit.getPosition().getCol(),
+							"dup_value", "position", biginteger, "bit",
+							bits[biginteger.subtract(new BigInteger("2"))
+									.intValue()].getFileName()
+									+ ":"
+									+ bits[biginteger.subtract(
+											new BigInteger("2")).intValue()]
+											.getLine());
+					return;
 				} else if (biginteger.compareTo(highest) == -1) {
 					bitspos.add(biginteger);
-				} else if (biginteger.compareTo(highest) == 0) {
-					throw new YangParserException("@" + bit.getLine() + "."
-							+ bit.getCol()
-							+ ":ambigous; a position must be specified");
 				}
 			}
 		}
-		boolean duplicate = false;
-		for (Enumeration<BigInteger> eb = bitspos.elements(); eb
-				.hasMoreElements()
-				&& !duplicate;) {
-			BigInteger bi = eb.nextElement();
-			for (Enumeration<BigInteger> eb2 = bitspos.elements(); eb2
-					.hasMoreElements()
-					&& !duplicate;) {
-				BigInteger bi2 = eb2.nextElement();
-				duplicate = (bi.compareTo(bi2) == 0 && bi != bi2);
-			}
-		}
-		if (duplicate)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":position must be unique");
 
-		for (int j = 0; j < bitnames.length && !duplicate; j++)
-			for (int k = j + 1; k < bitnames.length && !duplicate; k++) {
-				duplicate = bitnames[j].compareTo(bitnames[k]) == 0;
-			}
-		if (duplicate)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":duplicate bit name");
 	}
 
-	private void checkEnum() throws YangParserException {
+	private void checkEnum(YangContext context) {
 		int highest = 0;
 		int[] enumvalues = new int[getEnums().size()];
+		YANG_Enum[] tenums = new YANG_Enum[getEnums().size()];
 		String[] enumnames = new String[getEnums().size()];
 		int i = 0;
+		boolean maxraised = false;
 		for (Enumeration<YANG_Enum> ee = getEnums().elements(); ee
 				.hasMoreElements();) {
 			YANG_Enum yenum = ee.nextElement();
 			enumnames[i] = yenum.getEnum();
+			tenums[i] = yenum;
 			if (yenum.getValue() == null) {
-				enumvalues[i++] = highest;
+				if (maxraised)
+					YangErrorManager.addError(filename, yenum.getLine(), yenum
+							.getCol(), "enum_auto_too_big", yenum.getEnum());
+				if (highest == 2147483647)
+					maxraised = true;
+				enumvalues[i++] = (int) highest;
 				highest++;
 			} else {
-				String strenum = YangBuiltInTypes.removeQuotesAndTrim(yenum
-						.getValue().getValue());
+				String strenum = yenum.getValue().getValue();
 				Integer integer = null;
 				try {
 					integer = Integer.parseInt(strenum);
 				} catch (NumberFormatException n) {
-					throw new YangParserException("@" + yenum.getLine() + "."
-							+ yenum.getCol() + ":enum value is not an integer");
+					YangErrorManager.addError(yenum.getFileName(), yenum
+							.getLine(), yenum.getCol(), "enum_expr", strenum);
+					return;
 				}
-				if (integer.compareTo(new Integer(highest)) >= 0) {
+				if (integer.compareTo(new Integer((int) highest)) >= 0) {
 					highest = integer.intValue();
-					enumvalues[i++] = highest++;
-				} else if (integer.compareTo(new Integer(highest)) == -1) {
+					enumvalues[i++] = (int) highest++;
+				} else if (integer.compareTo(new Integer((int) highest)) == -1) {
 					enumvalues[i++] = integer.intValue();
-				} else if (integer.compareTo(new Integer(highest)) == 0) {
-					throw new YangParserException("@" + yenum.getLine() + "."
-							+ yenum.getCol() + highest
-							+ ":ambigous; a value must be specified");
+				} else if (integer.compareTo(new Integer((int) highest)) == 0) {
+					YangErrorManager.addError(yenum.getFileName(), yenum
+							.getLine(), yenum.getCol(), "enum_ambigous");
 				}
 			}
 		}
 		boolean duplicate = false;
 		int dupvalue = 0;
 		String dupname = "";
+		YANG_Enum dupenum = null;
+		YANG_Enum firstenum = null;
 		for (int j = 0; j < enumvalues.length && !duplicate; j++)
 			for (int k = j + 1; k < enumvalues.length && !duplicate; k++) {
-				duplicate = enumvalues[j] == enumvalues[k];
-				dupvalue = enumvalues[j];
+				if (enumvalues[j] == enumvalues[k]) {
+					duplicate = true;
+					dupvalue = enumvalues[j];
+					dupenum = tenums[j].getLine() > tenums[k].getLine() ? tenums[j]
+							: tenums[k];
+					firstenum = tenums[j].getLine() <= tenums[k].getLine() ? tenums[j]
+							: tenums[k];
+				}
 			}
-		if (duplicate)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":duplicate enum value " + dupvalue);
-
+		if (duplicate) {
+			YangErrorManager.addError(dupenum.getFileName(), dupenum.getValue()
+					.getLine(), dupenum.getValue().getCol(), "dupp_enum_val",
+					dupvalue, getFileName() + ":" + firstenum.getLine());
+			// return;
+		}
+		duplicate = false;
 		for (int j = 0; j < enumnames.length && !duplicate; j++)
 			for (int k = j + 1; k < enumnames.length && !duplicate; k++) {
-				duplicate = YangBuiltInTypes.removeQuotesAndTrim(enumnames[j])
-						.compareTo(
-								YangBuiltInTypes
-										.removeQuotesAndTrim(enumnames[k])) == 0;
-				dupname = enumnames[j];
+				if (enumnames[j].compareTo(enumnames[k]) == 0) {
+					duplicate = true;
+					dupname = enumnames[j];
+					dupvalue = enumvalues[j];
+					dupenum = tenums[j].getLine() > tenums[k].getLine() ? tenums[j]
+							: tenums[k];
+					firstenum = tenums[j].getLine() <= tenums[k].getLine() ? tenums[j]
+							: tenums[k];
+				}
+
 			}
-		if (duplicate)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":duplicate enum name " + dupname);
-
-	}
-
-	protected void checkPattern(YangContext context) throws YangParserException {
-		if (getStringRest() == null)
+		if (duplicate) {
+			YangErrorManager.addError(filename, dupenum.getLine(), dupenum
+					.getCol(), "dupp_enum_name", dupname, getFileName() + ":"
+					+ firstenum.getLine());
 			return;
-		for (Enumeration<YANG_Pattern> ep = getStringRest().getPatterns()
-				.elements(); ep.hasMoreElements();) {
-
-			String pattern = ep.nextElement().getPattern();
-			String canopattern = pattern.replaceAll("IsBasicLatin",
-					"InBasicLatin");
-			try {
-				Pattern.compile(canopattern);
-			} catch (PatternSyntaxException p) {
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":pattern definition " + p.getMessage());
-			}
 		}
+
 	}
 
+	/*
+	 * protected void checkPattern(YangContext context) { if (getStringRest() ==
+	 * null) return; for (Enumeration<YANG_Pattern> ep =
+	 * getStringRest().getPatterns() .elements(); ep.hasMoreElements();) {
+	 * 
+	 * String pattern = ep.nextElement().getPattern(); String canopattern =
+	 * pattern.replaceAll("IsBasicLatin", "InBasicLatin"); try {
+	 * Pattern.compile(canopattern); } catch (PatternSyntaxException p) {
+	 * YangErrorManager.tadd(getFileName(), getLine(), getCol(), "pattern_exp",
+	 * p.getMessage()); } } }
+	 */
 	/**
 	 * check if the range is a restriction
 	 * 
 	 * @param context
-	 * @throws YangParserException
 	 */
-	protected void checkRange(YangContext context) throws YangParserException {
+	protected void checkRange(YangContext context) {
 
 		YANG_Type basetype = null;
 		YANG_TypeDef typedef = null;
@@ -750,10 +690,8 @@ public class YANG_Type extends SimpleNode {
 	 * check with itself. If there is no defining typedef, check with itself
 	 * 
 	 * @param context
-	 * @throws YangParserException
 	 */
-	protected void checkStringLength(YangContext context)
-			throws YangParserException {
+	protected void checkStringLength(YangContext context) {
 
 		YANG_Type basetype = null;
 		YANG_TypeDef typedef = null;
@@ -762,7 +700,15 @@ public class YANG_Type extends SimpleNode {
 		// check its range and the built-in bounds
 		if (YangBuiltInTypes.string.compareTo(getType()) == 0
 				|| YangBuiltInTypes.binary.compareTo(getType()) == 0) {
-			checkStringRange(context, getBuiltInBounds(context));
+
+			if (getStringRest() != null) {
+				if (getStringRest().getLength() != null) {
+					checkStringRange(context, getStringRest().getLength()
+							.getLengthIntervals());
+				} else
+					checkStringRange(context, getBuiltInBounds(context));
+			} else
+				checkStringRange(context, getBuiltInBounds(context));
 		} else {
 			// the type is not a buit-in type
 			// check only if there is a range specification
@@ -793,10 +739,8 @@ public class YANG_Type extends SimpleNode {
 	 *            the typedef
 	 * @return the first type with a length restriction or null either if the
 	 *         typedef has a length restriction or a built-in type is reached.
-	 * @throws YangParserException
 	 */
-	private YANG_Type getFirstLengthDefined(YangContext context, YANG_TypeDef td)
-			throws YangParserException {
+	private YANG_Type getFirstLengthDefined(YangContext context, YANG_TypeDef td) {
 
 		YANG_Type basetype = td.getType();
 		YANG_TypeDef typedef = null;
@@ -823,13 +767,52 @@ public class YANG_Type extends SimpleNode {
 
 	}
 
-	private YANG_Type getFirstRangeDefined(YangContext context, YANG_TypeDef td)
-			throws YangParserException {
+	/**
+	 * Get the first type with a pattern restriction from the type used by the
+	 * given typedef and to the bases typedef until a built-in type
+	 * 
+	 * @param context
+	 * @param td
+	 *            the typedef
+	 * @return the first type with a pattern restriction or null either if the
+	 *         typedef has a length restriction or a built-in type is reached.
+	 */
+	private YANG_Type getFirstPatternDefined(YangContext context,
+			YANG_TypeDef td) {
+
 		YANG_Type basetype = td.getType();
 		YANG_TypeDef typedef = null;
 		YANG_TypeDef oldtd = null;
 		boolean end = false;
 
+		if (basetype.getStringRest() != null) {
+			if (basetype.getStringRest().getPatterns().size() != 0)
+				return basetype;
+		}
+		oldtd = td;
+		while (!end) {
+			typedef = context.getBaseTypeDef(oldtd);
+			if (typedef != null) {
+				if (typedef.getType().getStringRest() != null)
+					if (typedef.getType().getStringRest().getPatterns().size() != 0)
+						return typedef.getType();
+
+				oldtd = typedef;
+			} else
+				end = true;
+		}
+		return null;
+
+	}
+
+	private YANG_Type getFirstRangeDefined(YangContext context, YANG_TypeDef td) {
+
+		if (td == null)
+			return null;
+		YANG_Type basetype = td.getType();
+		YANG_TypeDef typedef = null;
+		YANG_TypeDef oldtd = null;
+		boolean end = false;
 		if (basetype.getNumRest() != null) {
 			return basetype;
 		}
@@ -852,10 +835,8 @@ public class YANG_Type extends SimpleNode {
 	 * @param context
 	 * @param supranges
 	 *            the range of the typedef defining this type
-	 * @throws YangParserException
 	 */
-	private void checkNumberRange(YangContext context, String[][] supranges)
-			throws YangParserException {
+	private void checkNumberRange(YangContext context, String[][] supranges) {
 		if (numrest == null)
 			return;
 		String[][] subranges = getRanges(context);
@@ -869,41 +850,44 @@ public class YANG_Type extends SimpleNode {
 	 * @param context
 	 * @param supranges
 	 *            the range of the typedef defining this type
-	 * @throws YangParserException
 	 */
-	private void checkStringRange(YangContext context, String[][] supranges)
-			throws YangParserException {
+	private void checkStringRange(YangContext context, String[][] supranges) {
 		String[][] subranges = getLength(context);
 		checkSubTyping(context, subranges, supranges);
 	}
 
 	public void checkSubTyping(YangContext context, String[][] subranges,
-			String[][] supranges) throws YangParserException {
+			String[][] supranges) {
+		try {
+			checkRangeValues(context, subranges);
+			checkRangeValues(context, supranges);
+			checkRangeOrder(context, subranges);
+			checkRangeOrder(context, supranges);
+			subranges = normalizeRange(context, subranges);
+			supranges = normalizeRange(context, supranges);
 
-		checkRangeValues(context, subranges);
-		checkRangeValues(context, supranges);
-		checkRangeOrder(context, subranges);
-		checkRangeOrder(context, supranges);
-		subranges = normalizeRange(context, subranges);
-		supranges = normalizeRange(context, supranges);
+			for (int i = 0; i < subranges.length; i++) {
+				boolean inside = false;
+				for (int j = 0; j < supranges.length && !inside; j++) {
+					if (compareTo(context, subranges[i][0], supranges[j][0]) >= 0
+							&& compareTo(context, subranges[i][1],
+									supranges[j][1]) <= 0)
+						inside = true;
+				}
+				if (!inside)
+					YangErrorManager.addError(getFileName(), getLine(),
+							getCol(), "bad_subtyping", subranges[i][0] + ".."
+									+ subranges[i][1]);
 
-		for (int i = 0; i < subranges.length; i++) {
-			boolean inside = false;
-			for (int j = 0; j < supranges.length && !inside; j++) {
-				if (compareTo(context, subranges[i][0], supranges[j][0]) >= 0
-						&& compareTo(context, subranges[i][1], supranges[j][1]) <= 0)
-					inside = true;
 			}
-			if (!inside)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":subtyping error " + subranges[i][0] + ".."
-						+ subranges[i][1]);
+		} catch (NumberFormatException n) {
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+					"range_value");
 		}
 
 	}
 
-	private String[][] normalizeRange(YangContext context, String[][] r)
-			throws YangParserException {
+	private String[][] normalizeRange(YangContext context, String[][] r) {
 		for (int i = 0; i < r.length; i++)
 			for (int j = 0; j < 2; j++)
 				if (r[i][j].compareTo("min") == 0)
@@ -913,8 +897,7 @@ public class YANG_Type extends SimpleNode {
 		return r;
 	}
 
-	private String normalizeValue(YangContext context, String v)
-			throws YangParserException {
+	private String normalizeValue(YangContext context, String v) {
 		if (v.compareTo("min") == 0) {
 			if (YangBuiltInTypes.int8.compareTo(context.getBuiltInType(this)) == 0)
 				return (new Integer(YangBuiltInTypes.int8lb)).toString();
@@ -951,9 +934,7 @@ public class YANG_Type extends SimpleNode {
 			else if (YangBuiltInTypes.decimal64.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return ("-INF");
-			else
-				throw new YangParserException("panic in normalize min value "
-						+ v + " " + getType());
+
 		} else if (v.compareTo("max") == 0) {
 			if (YangBuiltInTypes.int8.compareTo(context.getBuiltInType(this)) == 0)
 				return (new Integer(YangBuiltInTypes.int8ub)).toString();
@@ -990,14 +971,12 @@ public class YANG_Type extends SimpleNode {
 			else if (YangBuiltInTypes.decimal64.compareTo(context
 					.getBuiltInType(this)) == 0)
 				return ("INF");
-			else
-				throw new YangParserException("panic in normalize max value");
-		} else
-			throw new YangParserException("panic in normalize value");
+
+		}
+		return "";
 	}
 
-	public void checkRangeValues(YangContext context, String[][] r)
-			throws YangParserException {
+	public void checkRangeValues(YangContext context, String[][] r) {
 		if (YangBuiltInTypes.isInteger(context.getBuiltInType(this))
 				|| YangBuiltInTypes.string.compareTo(context
 						.getBuiltInType(this)) == 0
@@ -1036,9 +1015,8 @@ public class YANG_Type extends SimpleNode {
 							BigInteger Bi = new BigInteger(bound, radix);
 							r[i][j] = Bi.toString();
 						} catch (NumberFormatException e) {
-							throw new YangParserException("@" + getLine() + "."
-									+ getCol() + ":" + bound
-									+ " is not an integer");
+							YangErrorManager.addError(getFileName(), getLine(),
+									getCol(), "range_not_int", bound);
 						}
 					}
 				}
@@ -1056,9 +1034,8 @@ public class YANG_Type extends SimpleNode {
 						try {
 							new BigDecimal(bound);
 						} catch (NumberFormatException e) {
-							throw new YangParserException("@" + getLine() + "."
-									+ getCol() + ":" + bound
-									+ " is not a float");
+							YangErrorManager.addError(getFileName(), getLine(),
+									getCol(), "range_not_float", bound);
 						}
 
 					}
@@ -1069,27 +1046,24 @@ public class YANG_Type extends SimpleNode {
 	}
 
 	public void checkRangeOrder(YangContext context, String[][] r)
-			throws YangParserException {
+			throws NumberFormatException {
 
 		String bi = r[0][0];
 		String bs = r[0][1];
 		for (int i = 1; i < r.length; i++) {
 			String oldbs = bs;
 			if (compareTo(context, bi, bs) == 1)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":not ascending order in range because " + bi + " > "
-						+ bs);
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
+						"bad_range_order", bi + " > " + bs);
 			bi = r[i][0];
 			bs = r[i][1];
 			if (compareTo(context, oldbs, bi) != -1)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":not ascending order in range because " + oldbs
-						+ " >= " + bi);
+				YangErrorManager.addError(getFileName(), getLine(), getCol(),
+						"bad_range_order", oldbs + " >= " + bi);
 		}
 		if (compareTo(context, bi, bs) == 1)
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":not ascending order in range because " + bi + " > "
-					+ bs);
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+					"bad_range_order", bi + " > " + bs);
 	}
 
 	/**
@@ -1098,10 +1072,9 @@ public class YANG_Type extends SimpleNode {
 	 * @param bi
 	 * @param bs
 	 * @return -1 if bi < bs, 0 if bi == bs and 1 if bi > bs
-	 * @throws YangParserException
 	 */
 	private int compareTo(YangContext context, String bi, String bs)
-			throws YangParserException {
+			throws NumberFormatException {
 
 		if (YangBuiltInTypes.isInteger(context.getBuiltInType(this))
 				|| YangBuiltInTypes.string.compareTo(context
@@ -1124,13 +1097,9 @@ public class YANG_Type extends SimpleNode {
 				return 1;
 			if (bs.compareTo("min") == 0)
 				return 1;
-			try {
-				BigInteger bbi = new BigInteger(bi);
-				BigInteger bbs = new BigInteger(bs);
-				return bbi.compareTo(bbs);
-			} catch (NumberFormatException e) {
-				throw new YangParserException("Panic in in range comparaison");
-			}
+			BigInteger bbi = new BigInteger(bi);
+			BigInteger bbs = new BigInteger(bs);
+			return bbi.compareTo(bbs);
 
 		} else if (YangBuiltInTypes.isFloat(context.getBuiltInType(this))) {
 			if (bi.compareTo("min") == 0 || bi.compareTo("-INF") == 0) {
@@ -1149,21 +1118,15 @@ public class YANG_Type extends SimpleNode {
 				return 1;
 			if (bs.compareTo("min") == 0 || bs.compareTo("-INF") == 0)
 				return 1;
-			try {
-				BigDecimal bbi = new BigDecimal(bi);
-				BigDecimal bbs = new BigDecimal(bs);
-				return bbi.compareTo(bbs);
+			BigDecimal bbi = new BigDecimal(bi);
+			BigDecimal bbs = new BigDecimal(bs);
+			return bbi.compareTo(bbs);
 
-			} catch (NumberFormatException e) {
-				throw new YangParserException("Panic in in range comparaison");
-			}
 		} else
-			throw new YangParserException("Panic in range comparaison");
-
+			throw new NumberFormatException();
 	}
 
-	public String[][] getBuiltInBounds(YangContext context)
-			throws YangParserException {
+	public String[][] getBuiltInBounds(YangContext context) {
 		String[][] birange = new String[1][2];
 		if (YangBuiltInTypes.int8.compareTo(getType()) == 0) {
 			birange[0][0] = (new Integer(YangBuiltInTypes.int8lb)).toString();
@@ -1205,38 +1168,597 @@ public class YANG_Type extends SimpleNode {
 		return birange;
 	}
 
-	public void checkValue(YangContext context, String value)
-			throws YangParserException {
+	public void checkDefaultValue(YangContext context, YangNode usernode,
+			YANG_Default ydefault) {
+		String value = ydefault.getDefault();
+
+		if (typedef == null)
+			typedef = context.getTypeDef(this);
+		if (context.getBuiltInType(this) == null) {
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+					"type_not_found", getType());
+			return;
+		}
+
 		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
-			value = YangBuiltInTypes.removeQuotesAndTrim(value);
 			String[][] ranges = null;
+			YANG_NumericalRestriction lnumrest = null;
+
 			if (getNumRest() != null) {
 				ranges = getRanges(context);
+				lnumrest = getNumRest();
 			} else {
-				YANG_TypeDef td = context.getBaseType(this);
+				YANG_TypeDef td = context.getTypeDef(this);
 				if (td != null) {
 					YANG_Type bt = getFirstRangeDefined(context, td);
-					if (bt != null)
+					if (bt != null) {
 						ranges = bt.getRanges(context);
-					else
+						lnumrest = bt.getNumRest();
+					} else
 						ranges = getRanges(context);
 				} else {
 					ranges = getRanges(context);
 				}
 			}
-			// }
 
 			if (YangBuiltInTypes.isInteger(context.getBuiltInType(this))) {
 				if (value.compareTo("min") == 0) {
 					if (ranges[0][0].compareTo("min") != 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":min value is not in the "
-								+ getType() + " range values");
+						YangErrorManager.addError(filename, getLine(),
+								getCol(), "value_not_in_range", "min", context
+										.getBuiltInType(this));
 				} else if (value.compareTo("max") == 0) {
 					if (ranges[ranges.length - 1][1].compareTo("max") != 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":max value is not in the "
-								+ getType() + " range values");
+						YangErrorManager.addError(filename, getLine(),
+								getCol(), "value_not_in_range", "max", context
+										.getBuiltInType(this));
+
+				} else {
+					BigInteger bilb = null;
+					BigInteger biub = null;
+					try {
+						BigInteger bi = new BigInteger(value);
+						boolean inside = false;
+						for (int i = 0; i < ranges.length && !inside; i++) {
+							if (ranges[i][0].compareTo("min") != 0
+									&& ranges[i][1].compareTo("max") != 0) {
+								bilb = new BigInteger(ranges[i][0]);
+								biub = new BigInteger(ranges[i][1]);
+							} else if (ranges[i][0].compareTo("min") == 0
+									&& ranges[i][1].compareTo("max") != 0) {
+								if (YangBuiltInTypes.int8.compareTo(context
+										.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int8lb).toString());
+								else if (YangBuiltInTypes.int16
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int16lb)
+											.toString());
+								else if (YangBuiltInTypes.int32
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int32lb)
+											.toString());
+								else if (YangBuiltInTypes.int64
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = YangBuiltInTypes.int64lb;
+								else if (YangBuiltInTypes.uint8
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint8lb)
+											.toString());
+								else if (YangBuiltInTypes.uint16
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint16lb)
+											.toString());
+								else if (YangBuiltInTypes.uint32
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint32lb)
+											.toString());
+								else if (YangBuiltInTypes.uint64
+										.compareTo(context.getBuiltInType(this)) == 0)
+									bilb = YangBuiltInTypes.uint64lb;
+								biub = new BigInteger(ranges[i][1]);
+							} else if (ranges[i][1].compareTo("max") == 0
+									&& ranges[i][0].compareTo("min") != 0) {
+								if (YangBuiltInTypes.int8.compareTo(context
+										.getBuiltInType(this)) == 0)
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int8ub).toString());
+								else if (YangBuiltInTypes.int16
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int16ub)
+											.toString());
+								else if (YangBuiltInTypes.int32
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int32ub)
+											.toString());
+								else if (YangBuiltInTypes.int64
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = YangBuiltInTypes.int64ub;
+								else if (YangBuiltInTypes.uint8
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.uint8ub)
+											.toString());
+								else if (YangBuiltInTypes.uint16
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.uint16ub)
+											.toString());
+								else if (YangBuiltInTypes.uint32
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = YangBuiltInTypes.uint32ub;
+								else if (YangBuiltInTypes.uint64
+										.compareTo(context.getBuiltInType(this)) == 0)
+									biub = YangBuiltInTypes.uint64ub;
+								bilb = new BigInteger(ranges[i][0]);
+							} else {
+								if (YangBuiltInTypes.int8.compareTo(context
+										.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int8lb).toString());
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int8ub).toString());
+								} else if (YangBuiltInTypes.int16
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int16lb)
+											.toString());
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int16ub)
+											.toString());
+								} else if (YangBuiltInTypes.int32
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.int32lb)
+											.toString());
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.int32ub)
+											.toString());
+								} else if (YangBuiltInTypes.int64
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = YangBuiltInTypes.int64lb;
+									biub = YangBuiltInTypes.int64ub;
+								} else if (YangBuiltInTypes.uint8
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint8lb)
+											.toString());
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.uint8ub)
+											.toString());
+								} else if (YangBuiltInTypes.uint16
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint16lb)
+											.toString());
+									biub = new BigInteger(new Integer(
+											YangBuiltInTypes.uint16ub)
+											.toString());
+								} else if (YangBuiltInTypes.uint32
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = new BigInteger(new Integer(
+											YangBuiltInTypes.uint32lb)
+											.toString());
+									biub = YangBuiltInTypes.uint32ub;
+								} else if (YangBuiltInTypes.uint64
+										.compareTo(context.getBuiltInType(this)) == 0) {
+									bilb = YangBuiltInTypes.uint64lb;
+									biub = YangBuiltInTypes.uint64ub;
+								}
+							}
+
+							inside = (bilb.compareTo(bi) <= 0 && biub
+									.compareTo(bi) >= 0);
+						}
+						if (!inside) {
+							if (lnumrest == null) {
+								YANG_TypeDef td = this.getTypedef();
+								YangErrorManager.addError(filename, ydefault
+										.getLine(), ydefault.getCol(),
+										"default_match_fail", YangBuiltInTypes
+												.removeQuotes(value), td
+												.getFileName()
+												+ ":" + td.getLine(),
+										"range error", "range", getFileName()
+												+ ":"
+												+ context.getTypeDef(this)
+														.getType().getLine());
+
+							} else {
+								YANG_Type t = this;
+								if (getFirstRangeDefined(context, context
+										.getBaseType(this)) != null)
+									t = getFirstRangeDefined(context, context
+											.getBaseType(this));
+								String message = "";
+								if (t == this) {
+									message = "direct_default_match_fail";
+									YangErrorManager.addError(filename,
+											ydefault.getLine(), ydefault
+													.getCol(), message,
+											YangBuiltInTypes
+													.removeQuotes(value),
+											"range error", "range", lnumrest
+													.getFileName()
+													+ ":" + lnumrest.getLine());
+								} else {
+									message = "default_match_fail";
+									YANG_TypeDef td = this.getTypedef();
+									YangErrorManager.addError(filename,
+											lnumrest.getLine(), lnumrest
+													.getCol(), message,
+											YangBuiltInTypes
+													.removeQuotes(value), td
+													.getFileName()
+													+ ":" + td.getLine(),
+											"range error", "range",
+											getFileName()
+													+ ":"
+													+ context.getTypeDef(this)
+															.getLine());
+								}
+							}
+						}
+
+					} catch (NumberFormatException ne) {
+						YangErrorManager.addError(ydefault.getFileName(),
+								ydefault.getLine(), ydefault.getCol(),
+								"default_not_int", value, getType());
+					}
+				}
+			} else if (YangBuiltInTypes.isFloat(context.getBuiltInType(this))) {
+				int fd = -1;
+				if (getDec64Spec() != null)
+					if (getDec64Spec().getFractionDigit() != null)
+						fd = Integer
+								.parseInt(getDec64Spec().getFractionDigit());
+
+				if (fd != -1) {
+					int idec = value.indexOf('.');
+					if (idec != -1) {
+						int nbdec = value.length() - idec - 1;
+						if (fd < nbdec)
+							YangErrorManager.addError(getFileName(), getLine(),
+									getCol(), "too_many_fd", value, fd);
+
+					}
+				}
+
+				if (value.compareTo("min") == 0 || value.compareTo("-INF") == 0) {
+					if (ranges[0][0].compareTo("min") != 0
+							&& ranges[0][0].compareTo("-INF") != 0)
+						YangErrorManager.addError(filename, getLine(),
+								getCol(), "value_not_in_range", "-INF", context
+										.getBuiltInType(this));
+				} else if (value.compareTo("max") == 0
+						|| value.compareTo("INF") == 0) {
+					if (ranges[ranges.length - 1][1].compareTo("max") != 0
+							&& ranges[ranges.length - 1][1].compareTo("INF") != 0)
+						YangErrorManager.addError(filename, getLine(),
+								getCol(), "value_not_in_range", "INF", context
+										.getBuiltInType(this));
+				} else {
+					BigDecimal bdlb = null;
+					BigDecimal bdub = null;
+					try {
+						BigDecimal bd = new BigDecimal(value);
+						boolean inside = false;
+						for (int i = 0; i < ranges.length && !inside; i++) {
+							if ((ranges[i][0].compareTo("min") != 0 && ranges[i][0]
+									.compareTo("-INF") != 0)
+									&& (ranges[i][1].compareTo("max") != 0 && ranges[i][1]
+											.compareTo("INF") != 0)) {
+								bdlb = new BigDecimal(ranges[i][0]);
+								bdub = new BigDecimal(ranges[i][1]);
+								inside = bdlb.compareTo(bd) <= 0
+										&& bdub.compareTo(bd) >= 0;
+							} else if ((ranges[i][0].compareTo("min") == 0 || ranges[i][0]
+									.compareTo("-INF") == 0)
+									&& (ranges[i][1].compareTo("max") != 0 && ranges[i][1]
+											.compareTo("INF") != 0)) {
+								bdub = new BigDecimal(ranges[i][1]);
+								inside = bdub.compareTo(bd) >= 0;
+							} else if ((ranges[i][0].compareTo("min") != 0 && ranges[i][0]
+									.compareTo("-INF") != 0)
+									&& (ranges[i][1].compareTo("max") == 0 || ranges[i][1]
+											.compareTo("INF") == 0)) {
+								bdlb = new BigDecimal(ranges[i][0]);
+								inside = bdlb.compareTo(bd) <= 0;
+							} else
+								inside = true;
+						}
+						if (!inside) {
+							if (lnumrest == null) {
+								YANG_TypeDef td = this.getTypedef();
+								YangErrorManager.addError(filename, ydefault
+										.getLine(), ydefault.getCol(),
+										"default_match_fail", YangBuiltInTypes
+												.removeQuotes(value), td
+												.getFileName()
+												+ ":" + td.getLine(),
+										"range error", "range", getFileName()
+												+ ":"
+												+ context.getTypeDef(this)
+														.getType().getLine());
+
+							} else {
+								YANG_Type t = this;
+								if (getFirstRangeDefined(context, context
+										.getTypeDef(this)) != this)
+									t = getFirstRangeDefined(context, context
+											.getTypeDef(this));
+								if (t == this) {
+									YangErrorManager.addError(filename,
+											lnumrest.getLine(), lnumrest
+													.getCol(),
+											"direct_default_match_fail",
+											YangBuiltInTypes
+													.removeQuotes(value),
+											"range error", "range", this
+													.getFileName()
+													+ ":" + getLine());
+								} else {
+									YANG_TypeDef td = this.getTypedef();
+									YangErrorManager.addError(filename,
+											lnumrest.getLine(), lnumrest
+													.getCol(),
+											"default_match_fail",
+											YangBuiltInTypes
+													.removeQuotes(value), td
+													.getFileName()
+													+ ":" + td.getLine(),
+											"range error", "range", this
+													.getFileName()
+													+ ":" + getLine());
+								}
+							}
+						}
+					} catch (NumberFormatException ne) {
+						YangErrorManager.addError(ydefault.getFileName(),
+								ydefault.getLine(), ydefault.getCol(),
+								"default_not_float", value);
+					}
+				}
+			}
+		} else if (YangBuiltInTypes.string.compareTo(context
+				.getBuiltInType(this)) == 0
+				|| YangBuiltInTypes.binary.compareTo(context
+						.getBuiltInType(this)) == 0) {
+			value = YangBuiltInTypes.removeQuotes(ydefault.getDefault());
+
+			String[][] ranges = null;
+			boolean isStringRestricted = false;
+
+			Enumeration<YANG_Pattern> patterns = null;
+
+			if (getStringRest() != null) {
+				if (getStringRest().getLength() != null)
+					isStringRestricted = true;
+				else
+					isStringRestricted = false;
+
+				patterns = getStringRest().getPatterns().elements();
+
+			} else
+				isStringRestricted = false;
+
+			if (isStringRestricted) {
+				ranges = getLength(context);
+			} else {
+				YANG_TypeDef td = context.getTypeDef(this);
+				if (td != null) {
+					YANG_Type bt = getFirstLengthDefined(context, td);
+					if (bt != null)
+						ranges = bt.getLength(context);
+					else
+						ranges = getLength(context);
+				} else {
+					ranges = getLength(context);
+				}
+			}
+
+			BigInteger bi = new BigInteger(new Integer(value.length())
+					.toString());
+			BigInteger bilb = null;
+			BigInteger biub = null;
+			boolean inside = false;
+			for (int i = 0; i < ranges.length && !inside; i++) {
+				if (ranges[i][0].compareTo("min") != 0
+						&& ranges[i][1].compareTo("max") != 0) {
+					bilb = new BigInteger(ranges[i][0]);
+					biub = new BigInteger(ranges[i][1]);
+					inside = (bilb.compareTo(bi) <= 0 && biub.compareTo(bi) >= 0);
+				} else if (ranges[i][0].compareTo("min") == 0
+						&& ranges[i][1].compareTo("max") != 0) {
+					biub = new BigInteger(ranges[i][1]);
+					inside = biub.compareTo(bi) >= 0;
+				} else if (ranges[i][0].compareTo("min") != 0
+						&& ranges[i][1].compareTo("max") == 0) {
+					bilb = new BigInteger(ranges[i][0]);
+					inside = bilb.compareTo(bi) <= 0;
+				} else if (ranges[i][0].compareTo("min") == 0
+						&& ranges[i][1].compareTo("max") == 0) {
+					inside = true;
+				}
+			}
+			if (!inside)
+				YangErrorManager.addError(filename, ydefault.getLine(),
+						ydefault.getCol(), "direct_default_match_fail",
+						YangBuiltInTypes.removeQuotes(value), "length error",
+						"length", this.getFileName() + ":");
+			// + getStringRest().getLine());
+
+			boolean direct = true;
+			YANG_TypeDef indirectTd = null;
+			if (patterns != null) {
+				if (getStringRest().getPatterns().size() == 0) {
+					YANG_TypeDef td = context.getTypeDef(this);
+					if (td != null) {
+						YANG_Type bt = getFirstPatternDefined(context, td);
+						if (bt != null)
+							patterns = bt.getStringRest().getPatterns()
+									.elements();
+					}
+
+				}
+			} else {
+				direct = false;
+				indirectTd = context.getTypeDef(this);
+				if (indirectTd != null) {
+					YANG_Type bt = getFirstPatternDefined(context, indirectTd);
+					if (bt != null)
+						patterns = bt.getStringRest().getPatterns().elements();
+				}
+
+			}
+
+			if (patterns != null)
+				while (patterns.hasMoreElements()) {
+					YANG_Pattern pattern = patterns.nextElement();
+					if (!pattern.checkExp(value)) {
+						if (direct) {
+							YangErrorManager.addError(filename, ydefault
+									.getLine(), ydefault.getCol(),
+									"direct_default_match_fail",
+									YangBuiltInTypes.removeQuotes(value),
+									"pattern mismatch", "pattern", this
+											.getFileName()
+											+ ":" + pattern.getLine());
+						} else {
+							YangErrorManager.addError(filename, ydefault
+									.getLine(), ydefault.getCol(),
+									"default_match_fail", YangBuiltInTypes
+											.removeQuotes(value), indirectTd
+											.getFileName()
+											+ ":" + indirectTd.getLine(),
+									"pattern mismatch", "pattern", this
+											.getFileName()
+											+ ":" + pattern.getLine());
+						}
+
+					}
+				}
+			if (YangBuiltInTypes.binary.compareTo(context.getBuiltInType(this)) == 0) {
+
+				Pattern path_arg = null;
+
+				try {
+					path_arg = Pattern.compile("[A-Z0-9]*");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				Matcher m = path_arg.matcher(value);
+				if (!m.matches()) {
+					YangErrorManager.addError(filename, getLine(), getCol(),
+							"bad_binary_expr", value, getType());
+				}
+			}
+
+		} else if (YangBuiltInTypes.enumeration.compareTo(context
+				.getBuiltInType(this)) == 0) {
+			value = YangBuiltInTypes.removeQuotesAndTrim(value);
+			String[] enums = getFirstEnumDefined(context, this);
+			boolean match = false;
+			int i = 0;
+			while (!match && i < enums.length)
+				match = enums[i++].compareTo(value) == 0;
+			if (!match)
+				YangErrorManager.addError(ydefault.getFileName(), ydefault
+						.getLine(), ydefault.getCol(), "default_mismatch",
+						value, getType(), getFileName(), getLine());
+		} else if (YangBuiltInTypes.bits
+				.compareTo(context.getBuiltInType(this)) == 0) {
+			value = YangBuiltInTypes.removeQuotesAndTrim(value);
+			String[] bv = value.split("\\s");
+			
+			if (bv.length > getFirstBitDefined(context, this))
+				YangErrorManager.addError(ydefault.getFileName(), ydefault
+						.getLine(), ydefault.getCol(), "default_mismatch",
+						value, getType(), getFileName(), getLine());
+			else {
+				YANG_BitSpecification bs = getBitSpec();
+				boolean allfound = true;
+				for (String defbit : bv){
+					boolean foundone = false;
+					for (YANG_Bit bit : bs.getBits()){
+						if (bit.getBit().compareTo(defbit) == 0)
+							foundone = true;
+					}
+					allfound = allfound && foundone;
+				}
+			}
+		} else if (YangBuiltInTypes.union.compareTo(context
+				.getBuiltInType(this)) == 0) {
+			YANG_Type ut = getFirstUnionDefined(context, this);
+			boolean found = false;
+			for (Enumeration<YANG_Type> et = ut.getUnionSpec().getTypes()
+					.elements(); et.hasMoreElements() && !found;) {
+				YANG_Type type = et.nextElement();
+
+				found = found
+						|| type.checkUnionDefaultValue(context, ut, ydefault);
+			}
+			if (!found)
+				YangErrorManager.addError(filename, getLine(), getCol(),
+						"bad_default_union", value, ut.getFileName(), ut
+								.getLine());
+
+		} else if (YangBuiltInTypes.empty.compareTo(context
+				.getBuiltInType(this)) == 0) {
+			if (value.length() != getFirstBitDefined(context, this))
+				YangErrorManager.addError(ydefault.getFileName(), ydefault
+						.getLine(), ydefault.getCol(), "default_mismatch",
+						value, getType(), getFileName(), getLine());
+		} else if (YangBuiltInTypes.yboolean.compareTo(context
+				.getBuiltInType(this)) == 0) {
+			value = YangBuiltInTypes.removeQuotesAndTrim(value);
+			if (value.compareTo("true") != 0 && value.compareTo("false") != 0)
+				YangErrorManager.addError(ydefault.getFileName(), ydefault
+						.getLine(), ydefault.getCol(), "default_mismatch",
+						value, getType(), getFileName(), getLine());
+		}
+
+	}
+
+	public boolean checkUnionDefaultValue(YangContext context,
+			YangNode usernode, YANG_Default ydefault) {
+		String value = ydefault.getDefault();
+
+		if (YangBuiltInTypes.isNumber(context.getBuiltInType(this))) {
+			String[][] ranges = null;
+			YANG_NumericalRestriction lnumrest = null;
+
+			if (getNumRest() != null) {
+				ranges = getRanges(context);
+				lnumrest = getNumRest();
+			} else {
+				YANG_TypeDef td = context.getTypeDef(this);
+				if (td != null) {
+					YANG_Type bt = getFirstRangeDefined(context, td);
+					if (bt != null) {
+						ranges = bt.getRanges(context);
+						lnumrest = bt.getNumRest();
+					} else
+						ranges = getRanges(context);
+				} else {
+					ranges = getRanges(context);
+				}
+			}
+
+			if (YangBuiltInTypes.isInteger(context.getBuiltInType(this))) {
+				if (value.compareTo("min") == 0) {
+					if (ranges[0][0].compareTo("min") != 0)
+						return false;
+				} else if (value.compareTo("max") == 0) {
+					if (ranges[ranges.length - 1][1].compareTo("max") != 0)
+						return false;
 
 				} else {
 					BigInteger bilb = null;
@@ -1383,30 +1905,25 @@ public class YANG_Type extends SimpleNode {
 									.compareTo(bi) >= 0);
 						}
 						if (!inside)
-							throw new YangParserException("@" + getLine() + "."
-									+ getCol() + ":" + value
-									+ " is not inside " + getType() + " values");
+							return false;
+						else
+							return true;
+
 					} catch (NumberFormatException ne) {
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ":illegal integer value " + value);
+						return false;
 					}
 				}
 			} else if (YangBuiltInTypes.isFloat(context.getBuiltInType(this))) {
+
 				if (value.compareTo("min") == 0 || value.compareTo("-INF") == 0) {
 					if (ranges[0][0].compareTo("min") != 0
 							&& ranges[0][0].compareTo("-INF") != 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol()
-								+ ":negative infinite value is not in the "
-								+ getType() + " range values");
+						return false;
 				} else if (value.compareTo("max") == 0
 						|| value.compareTo("INF") == 0) {
 					if (ranges[ranges.length - 1][1].compareTo("max") != 0
 							&& ranges[ranges.length - 1][1].compareTo("INF") != 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol()
-								+ ":positive infinite value is not in the "
-								+ getType() + " range values");
+						return false;
 				} else {
 					BigDecimal bdlb = null;
 					BigDecimal bdub = null;
@@ -1438,13 +1955,11 @@ public class YANG_Type extends SimpleNode {
 								inside = true;
 						}
 						if (!inside)
-							throw new YangParserException("@" + getLine() + "."
-									+ getCol() + ": " + value
-									+ " is not in the " + getType() + " range "
-									+ bdlb + "  " + bdub);
+							return false;
+						else
+							return true;
 					} catch (NumberFormatException ne) {
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() + ": " + value + " is not a float");
+						return false;
 					}
 				}
 			}
@@ -1452,15 +1967,19 @@ public class YANG_Type extends SimpleNode {
 				.getBuiltInType(this)) == 0
 				|| YangBuiltInTypes.binary.compareTo(context
 						.getBuiltInType(this)) == 0) {
-			value = YangBuiltInTypes.removeQuotes(value);
+			value = YangBuiltInTypes.removeQuotes(ydefault.getDefault());
+
 			String[][] ranges = null;
 			boolean isStringRestricted = false;
+
 			Enumeration<YANG_Pattern> patterns = null;
+
 			if (getStringRest() != null) {
 				if (getStringRest().getLength() != null)
 					isStringRestricted = true;
 				else
 					isStringRestricted = false;
+
 				patterns = getStringRest().getPatterns().elements();
 
 			} else
@@ -1469,7 +1988,7 @@ public class YANG_Type extends SimpleNode {
 			if (isStringRestricted) {
 				ranges = getLength(context);
 			} else {
-				YANG_TypeDef td = context.getBaseType(this);
+				YANG_TypeDef td = context.getTypeDef(this);
 				if (td != null) {
 					YANG_Type bt = getFirstLengthDefined(context, td);
 					if (bt != null)
@@ -1506,14 +2025,52 @@ public class YANG_Type extends SimpleNode {
 				}
 			}
 			if (!inside)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ": " + value + " has not correct length");
+				return false;
 
+			boolean direct = true;
+			YANG_TypeDef indirectTd = null;
+			if (patterns != null) {
+				if (getStringRest().getPatterns().size() == 0) {
+					YANG_TypeDef td = context.getTypeDef(this);
+					if (td != null) {
+						YANG_Type bt = getFirstPatternDefined(context, td);
+						if (bt != null)
+							patterns = bt.getStringRest().getPatterns()
+									.elements();
+					}
+
+				}
+			} else {
+				direct = false;
+				indirectTd = context.getTypeDef(this);
+				if (indirectTd != null) {
+					YANG_Type bt = getFirstPatternDefined(context, indirectTd);
+					if (bt != null)
+						patterns = bt.getStringRest().getPatterns().elements();
+				}
+
+			}
 			if (patterns != null)
 				while (patterns.hasMoreElements()) {
 					YANG_Pattern pattern = patterns.nextElement();
-					pattern.checkExp(value);
+					if (!pattern.checkExp(value))
+						return false;
 				}
+			if (YangBuiltInTypes.binary.compareTo(context.getBuiltInType(this)) == 0) {
+
+				Pattern path_arg = null;
+
+				try {
+					path_arg = Pattern.compile("[A-Z0-9]*");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				Matcher m = path_arg.matcher(value);
+				if (!m.matches()) {
+					return false;
+				}
+			}
+			return true;
 
 		} else if (YangBuiltInTypes.enumeration.compareTo(context
 				.getBuiltInType(this)) == 0) {
@@ -1524,9 +2081,7 @@ public class YANG_Type extends SimpleNode {
 			while (!match && i < enums.length)
 				match = enums[i++].compareTo(value) == 0;
 			if (!match)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":enum value " + value + " is not in the type "
-						+ getType());
+				return false;
 		} else if (YangBuiltInTypes.bits
 				.compareTo(context.getBuiltInType(this)) == 0) {
 			value = YangBuiltInTypes.removeQuotesAndTrim(value);
@@ -1535,11 +2090,10 @@ public class YANG_Type extends SimpleNode {
 			for (int i = 0; i < bv.length && binary; i++)
 				binary = bv[i] == '1' || bv[i] == '0';
 			if (!binary)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bit value " + value + " is not binary");
+				return false;
 			if (value.length() != getFirstBitDefined(context, this))
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":bit value " + value + " has not correct length");
+				return false;
+
 		} else if (YangBuiltInTypes.union.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			YANG_Type ut = getFirstUnionDefined(context, this);
@@ -1547,35 +2101,26 @@ public class YANG_Type extends SimpleNode {
 			for (Enumeration<YANG_Type> et = ut.getUnionSpec().getTypes()
 					.elements(); et.hasMoreElements() && !found;) {
 				YANG_Type type = et.nextElement();
-				try {
-					type.checkValue(context, value);
-					found = true;
-				} catch (YangParserException ye) {
-					// nothing to do; try an other union type
-				}
+				found = found
+						|| type.checkUnionDefaultValue(context, ut, ydefault);
 			}
 			if (!found)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":value " + value
-						+ " does not match in any union type");
+				return false;
+
 		} else if (YangBuiltInTypes.empty.compareTo(context
 				.getBuiltInType(this)) == 0) {
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":value " + value + " can not be of the empty type");
+			return false;
 		} else if (YangBuiltInTypes.yboolean.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			value = YangBuiltInTypes.removeQuotesAndTrim(value);
 			if (value.compareTo("true") != 0 && value.compareTo("false") != 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":value " + value
-						+ " can not be of the boolean type (true or false)");
+				return false;
 
 		}
-
+		return true;
 	}
 
-	private YANG_Type getFirstUnionDefined(YangContext context, YANG_Type bt)
-			throws YangParserException {
+	private YANG_Type getFirstUnionDefined(YangContext context, YANG_Type bt) {
 
 		YANG_Type basetype = bt;
 		YANG_TypeDef typedef = null;
@@ -1595,8 +2140,7 @@ public class YANG_Type extends SimpleNode {
 
 	}
 
-	private int getFirstBitDefined(YangContext context, YANG_Type bt)
-			throws YangParserException {
+	private int getFirstBitDefined(YangContext context, YANG_Type bt) {
 		YANG_Type basetype = bt;
 		YANG_TypeDef typedef = null;
 		boolean found = false;
@@ -1620,8 +2164,7 @@ public class YANG_Type extends SimpleNode {
 		return basetype.getBitSpec().getBits().size();
 	}
 
-	private String[] getFirstEnumDefined(YangContext context, YANG_Type bt)
-			throws YangParserException {
+	private String[] getFirstEnumDefined(YangContext context, YANG_Type bt) {
 
 		YANG_Type basetype = bt;
 		YANG_TypeDef typedef = null;
@@ -1652,40 +2195,62 @@ public class YANG_Type extends SimpleNode {
 
 	}
 
-	private void checkEmptyUnion(YangContext context, Vector<YANG_Type> chain, Vector<YANG_Type> unions)
-			throws YangParserException {
-
+	private void checkEmptyUnion(YangContext context, Vector<YANG_Type> chain,
+			Vector<YANG_Type> unions) {
 		for (Enumeration<YANG_Type> et = unions.elements(); et
 				.hasMoreElements();) {
+			boolean empty = false;
 			YANG_Type utype = et.nextElement();
-			if (context.getBuiltInType(utype).compareTo(YangBuiltInTypes.empty) == 0)
-				throw new YangParserException("@" + getLine() + "." + getCol()
-						+ ":union type " + getType() + " can not have empty type");
-			else if (context.getBuiltInType(utype).compareTo(
-					YangBuiltInTypes.union) == 0) {
-				if (utype.getUnionSpec() != null){
-					chain.add(utype);
-					checkEmptyUnion(context, chain, utype.getUnionSpec().getTypes());
-				}
-				else {
-					while (utype.getUnionSpec() == null) {
-						YANG_TypeDef suptype = context.getTypeDef(utype);
-						if (!suptype.isCorrect())
-							return;
-						utype = suptype.getType();
-					}
-					if (!chain.contains(utype)){
-						chain.add(utype);
-						checkEmptyUnion(context, chain, utype.getUnionSpec().getTypes());
-					}
+			empty = checkRecEmptyUnion(context, chain, utype);
+			if (empty) {
+				if (context.getTypeDef(utype) != null) {
+					YANG_TypeDef td = context.getTypeDef(utype);
+					YangErrorManager.addError(utype.getFileName(), utype
+							.getLine(), utype.getCol(), "empty_union", td
+							.getFileName(), td.getLine());
+				} else {
+					YangErrorManager.addError(utype.getFileName(), utype
+							.getLine(), utype.getCol(), "empty_union", utype
+							.getFileName(), utype.getLine());
 				}
 			}
+
 		}
+	}
+
+	private boolean checkRecEmptyUnion(YangContext context,
+			Vector<YANG_Type> chain, YANG_Type utype) {
+
+		boolean empty = false;
+		if (context.getBuiltInType(utype).compareTo(YangBuiltInTypes.empty) == 0) {
+			return true;
+		} else if (context.getBuiltInType(utype).compareTo(
+				YangBuiltInTypes.union) == 0) {
+			if (utype.getUnionSpec() != null) {
+				chain.add(utype);
+				for (YANG_Type t : utype.getUnionSpec().getTypes())
+					empty = empty || checkRecEmptyUnion(context, chain, t);
+			} else {
+				while (utype.getUnionSpec() == null) {
+					YANG_TypeDef suptype = context.getTypeDef(utype);
+					// if (!suptype.isCorrect())
+					// return;
+					utype = suptype.getType();
+				}
+				if (!chain.contains(utype)) {
+					chain.add(utype);
+					for (YANG_Type t : utype.getUnionSpec().getTypes())
+						empty = empty || checkRecEmptyUnion(context, chain, t);
+				}
+			}
+
+		}
+		return empty;
 
 	}
 
 	public String toString() {
-		String result = new String();
+		String result = "";
 		result += "type " + type;
 		if (bracked) {
 			result += "{\n";

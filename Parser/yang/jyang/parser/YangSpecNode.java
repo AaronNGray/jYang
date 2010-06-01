@@ -1,27 +1,29 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.*;
 
-
-public class YangSpecNode {
+public class YangSpecNode implements Serializable {
 
 	protected Hashtable<String, YANG_Body> bodies = new Hashtable<String, YANG_Body>();
 
@@ -52,6 +54,8 @@ public class YangSpecNode {
 	private final static String gprefix = "grouping:";
 	private final static String tprefix = "typedef:";
 	private final static String eprefix = "extension:";
+	private final static String iprefix = "identity:";
+	private final static String fprefix = "feature:";
 
 	public boolean isDefined(String k) {
 		return isDefinedAsNode(k) || isDefinedAsGrouping(k)
@@ -72,7 +76,9 @@ public class YangSpecNode {
 				|| bodies.containsKey(rleprefix + k)
 				|| bodies.containsKey(rchprefix + k)
 				|| bodies.containsKey(raprefix + k)
-				|| bodies.containsKey(eprefix + k))
+				|| bodies.containsKey(eprefix + k)
+				|| bodies.containsKey(iprefix + k)
+				|| bodies.containsKey(fprefix + k))
 			return true;
 		else
 			return false;
@@ -85,9 +91,9 @@ public class YangSpecNode {
 		else
 			return false;
 	}
-	
-	public YANG_Grouping getUsedGrouping(String k){
-		return (YANG_Grouping)bodies.get(gprefix + k);
+
+	public YANG_Grouping getUsedGrouping(String k) {
+		return (YANG_Grouping) bodies.get(gprefix + k);
 	}
 
 	public boolean isDefinedAsExtension(String k) {
@@ -97,7 +103,7 @@ public class YangSpecNode {
 			return false;
 
 	}
-	
+
 	public YANG_Extension getExtension(String k) {
 		return (YANG_Extension) bodies.get(eprefix + k);
 	}
@@ -110,95 +116,209 @@ public class YangSpecNode {
 
 	}
 
-	public void put(YANG_Body b) throws YangParserException {
-		put(b.getBody(), b);
+	public boolean isDefinedAsFeature(String k) {
+		if (bodies.containsKey(fprefix + k))
+			return true;
+		else
+			return false;
+
+	}
+
+	public boolean isDefinedAsIdentity(String k) {
+		if (bodies.containsKey(iprefix + k))
+			return true;
+		else
+			return false;
+
 	}
 
 	/**
 	 * Put the body only if not already present
 	 * 
+	 * @param module
+	 *            : the yang module name
 	 * @param name
+	 *            the node name
 	 * @param b
-	 * @throws YangParserException
+	 *            the body node
 	 */
-	public void put(String name, YANG_Body b) throws YangParserException {
-
-		YANG_Body existingb = null;
-		boolean found = false;
-		String what = "";
+	public void put(String name, YANG_Body b) {
+		String modulefilename = b.getFileName();
 		if (b instanceof YANG_TypeDef) {
-			found = isDefinedAsTypeDef(name);
-			existingb = bodies.get(tprefix + name);
-			what = "typedef ";
+			if (isDefinedAsTypeDef(name)) {
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_name", "typedef", b.getBody(),
+						get(name).getFileName(), get(name).getLine());
+				return;
+			}
 		} else if (b instanceof YANG_Grouping) {
-			found = isDefinedAsGrouping(name);
-			existingb = bodies.get(gprefix + name);
-			what = "grouping ";
-		} else if (b instanceof YANG_Extension){
-			found = isDefinedAsExtension(name);
-			existingb = bodies.get(eprefix + name);
-			what = "extension ";
-		}
-		else {
-			found = isDefinedAsNode(name);
-			existingb = get(name);
-			if (b instanceof YANG_Leaf)
-				what = "leaf ";
-			else if (b instanceof YANG_List)
-				what = "list ";
-			else if (b instanceof YANG_LeafList)
-				what = "leaf-list ";
-			else if (b instanceof YANG_Choice)
-				what = "choice ";
-			else if (b instanceof YANG_AnyXml)
-				what = "anyxml ";
-			else if (b instanceof YANG_Container)
-				what = "container ";
-		}
-		if (found) {
-			throw new YangParserException("@" + b.getLine() + "." + b.getCol()
-					+ ":" + what + name + " is already defined at line "
-					+ existingb.getLine() + ", col " + existingb.getCol());
+			if (isDefinedAsGrouping(name)) {
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_name", "grouping", b.getBody(), get(
+						name).getFileName(), get(name).getLine());
+				return;
+			}
+		} else if (b instanceof YANG_Extension) {
+			if (isDefinedAsExtension(name)) {
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_name", "extension", b.getBody(), get(
+						name).getFileName(), get(name).getLine());
+				return;
+			}
+		} else if (b instanceof YANG_Identity) {
+			if (isDefinedAsIdentity(name)) {
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_name", "identity", b.getBody(), get(
+						name).getFileName(), get(name).getLine());
+				return;
+			}
+		} else if (b instanceof YANG_Feature) {
+			if (isDefinedAsFeature(name)) {
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_name", "feature", b.getBody(),
+						get(name).getFileName(), get(name).getLine());
+				return;
+			}
 		} else {
-			if (b instanceof YANG_Leaf)
-				bodies.put(lprefix + name, b);
-//			else if (b instanceof YANG_RefineLeaf)
-//				bodies.put(rlprefix + name, b);
-			else if (b instanceof YANG_Container)
-				bodies.put(cprefix + name, b);
-//			else if (b instanceof YANG_RefineContainer)
-//				bodies.put(rcprefix + name, b);
-			else if (b instanceof YANG_List)
-				bodies.put(liprefix + name, b);
-//			else if (b instanceof YANG_RefineList)
-//				bodies.put(rliprefix + name, b);
-			else if (b instanceof YANG_LeafList)
-				bodies.put(leprefix + name, b);
-//			else if (b instanceof YANG_RefineLeafList)
-//				bodies.put(rleprefix + name, b);
-			else if (b instanceof YANG_Choice)
-				bodies.put(chprefix + name, b);
-//			else if (b instanceof YANG_RefineChoice)
-//				bodies.put(rchprefix + name, b);
-			else if (b instanceof YANG_AnyXml)
-				bodies.put(aprefix + name, b);
-//			else if (b instanceof YANG_RefineAnyXml)
-//				bodies.put(raprefix + name, b);
-			else if (b instanceof YANG_Rpc)
-				bodies.put(rprefix + name, b);
-			else if (b instanceof YANG_Notification)
-				bodies.put(notprefix + name, b);
-			else if (b instanceof YANG_Grouping)
-				bodies.put(gprefix + name, b);
-			else if (b instanceof YANG_TypeDef)
-				bodies.put(tprefix + name, b);
-			else if (b instanceof YANG_Extension)
-				bodies.put(eprefix + name, b);
+			boolean found = false;
+			if (isDefinedAsNode(name)) {
+				if (b instanceof YANG_Leaf)
+					found = true;
+				else if (b instanceof YANG_List)
+					found = true;
+				else if (b instanceof YANG_LeafList)
+					found = true;
+				else if (b instanceof YANG_Choice)
+					found = true;
+				else if (b instanceof YANG_AnyXml)
+					found = true;
+				else if (b instanceof YANG_Container)
+					found = true;
+			}
+			if (found) {
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "dup_child", b.getBody(), get(name)
+						.getFileName(), get(name).getLine());
+				return;
+			}
 		}
+
+		if (b instanceof YANG_Leaf)
+			bodies.put(lprefix + name, b);
+		else if (b instanceof YANG_Container)
+			bodies.put(cprefix + name, b);
+		else if (b instanceof YANG_List)
+			bodies.put(liprefix + name, b);
+		else if (b instanceof YANG_LeafList)
+			bodies.put(leprefix + name, b);
+		else if (b instanceof YANG_Choice)
+			bodies.put(chprefix + name, b);
+		else if (b instanceof YANG_AnyXml)
+			bodies.put(aprefix + name, b);
+		else if (b instanceof YANG_Rpc)
+			bodies.put(rprefix + name, b);
+		else if (b instanceof YANG_Notification)
+			bodies.put(notprefix + name, b);
+		else if (b instanceof YANG_Grouping)
+			bodies.put(gprefix + name, b);
+		else if (b instanceof YANG_TypeDef)
+			bodies.put(tprefix + name, b);
+		else if (b instanceof YANG_Extension)
+			bodies.put(eprefix + name, b);
+		else if (b instanceof YANG_Identity)
+			bodies.put(iprefix + name, b);
+		else if (b instanceof YANG_Feature)
+			bodies.put(fprefix + name, b);
+	}
+
+	public void putUsed(YANG_Uses uses, String name, YANG_Body b) {
+		String modulefilename = b.getFileName();
+		if (b instanceof YANG_TypeDef) {
+			if (isDefinedAsTypeDef(name)) {
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "typedef", b.getBody(), modulefilename, get(
+						name).getLine());
+				return;
+			}
+		} else if (b instanceof YANG_Grouping) {
+			if (isDefinedAsGrouping(name)) {
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "grouping", b.getBody(), modulefilename,
+						get(name).getLine());
+				return;
+			}
+		} else if (b instanceof YANG_Extension) {
+			if (isDefinedAsExtension(name)) {
+				YangErrorManager.addError(modulefilename, b.getLine(), b
+						.getCol(), "extension", b.getBody(), modulefilename,
+						get(name).getLine());
+				return;
+			}
+		} else {
+			boolean found = false;
+			if (isDefinedAsNode(name)) {
+				if (b instanceof YANG_Leaf)
+					found = true;
+				else if (b instanceof YANG_List)
+					found = true;
+				else if (b instanceof YANG_LeafList)
+					found = true;
+				else if (b instanceof YANG_Choice)
+					found = true;
+				else if (b instanceof YANG_AnyXml)
+					found = true;
+				else if (b instanceof YANG_Container)
+					found = true;
+			}
+			if (found) {
+				YangErrorManager.addError(uses.getFileName(), uses.getLine(),
+						uses.getCol(), "dup_child_used", b.getBody(), get(name)
+								.getFileName(), get(name).getLine(), uses
+								.getUses());
+				return;
+			}
+		}
+
+		if (b instanceof YANG_Leaf)
+			bodies.put(lprefix + name, b);
+		else if (b instanceof YANG_Container)
+			bodies.put(cprefix + name, b);
+		else if (b instanceof YANG_List)
+			bodies.put(liprefix + name, b);
+		else if (b instanceof YANG_LeafList)
+			bodies.put(leprefix + name, b);
+		else if (b instanceof YANG_Choice)
+			bodies.put(chprefix + name, b);
+		else if (b instanceof YANG_AnyXml)
+			bodies.put(aprefix + name, b);
+		else if (b instanceof YANG_Rpc)
+			bodies.put(rprefix + name, b);
+		else if (b instanceof YANG_Notification)
+			bodies.put(notprefix + name, b);
+		else if (b instanceof YANG_Grouping)
+			bodies.put(gprefix + name, b);
+		else if (b instanceof YANG_TypeDef)
+			bodies.put(tprefix + name, b);
+		else if (b instanceof YANG_Extension)
+			bodies.put(eprefix + name, b);
+	}
+
+	public YANG_Body getFeature(String k) {
+		if (isDefined(k))
+			if (bodies.containsKey(fprefix + k))
+				return bodies.get(fprefix + k);
+		return null;
+	}
+
+	public YANG_Body getIdentity(String k) {
+		if (isDefined(k))
+			if (bodies.containsKey(iprefix + k))
+				return bodies.get(iprefix + k);
+		return null;
 	}
 
 	public YANG_Body get(String k) {
-		if (isDefined(k)) 
+		if (isDefined(k))
 			if (bodies.containsKey(lprefix + k))
 				return bodies.get(lprefix + k);
 			else if (bodies.containsKey(rlprefix + k))
@@ -233,60 +353,72 @@ public class YangSpecNode {
 				return bodies.get(tprefix + k);
 			else if (bodies.containsKey(eprefix + k))
 				return bodies.get(eprefix + k);
-		 else
-			return null;
+			else if (bodies.containsKey(iprefix + k))
+				return bodies.get(iprefix + k);
+			else if (bodies.containsKey(fprefix + k))
+				return bodies.get(fprefix + k);
+			else
+				return null;
 		return null;
-		
+
 	}
-/**
- * Merge all nodes in the YangSpecNode. Replace existing nodes
- * @param p external specification nodes
- */
+
+	/**
+	 * Merge all nodes in the YangSpecNode. Replace existing nodes
+	 * 
+	 * @param p
+	 *            external specification nodes
+	 */
 	public void merge(YangSpecNode p) {
 		for (Enumeration<String> ek = p.getNodes().keys(); ek.hasMoreElements();) {
 			String k = ek.nextElement();
-			if (!bodies.containsKey(k)){
-				bodies.put(k, p.bodies.get(k));}
-
+			if (!bodies.containsKey(k)) {
+				bodies.put(k, p.bodies.get(k));
+			}
 		}
 	}
 
-	public boolean contains(YangSpecNode n){
+	public void mergeChecked(YangSpecNode p) {
+		for (Enumeration<String> ek = p.getNodes().keys(); ek.hasMoreElements();) {
+			String k = ek.nextElement();
+			if (!bodies.containsKey(k)) {
+				bodies.put(k, p.bodies.get(k));
+			} else {
+				if (p.getNodes().get(k).getFileName().compareTo(
+						bodies.get(k).getFileName()) != 0)
+					YangErrorManager.addError(
+							p.getNodes().get(k).getFileName(), p.getNodes()
+									.get(k).getLine(), p.getNodes().get(k)
+									.getCol(), "dup_child", p.getNodes().get(k)
+									.getBody(), bodies.get(k).getFileName(),
+							bodies.get(k).getLine());
+			}
+		}
+	}
+
+	public boolean contains(YangSpecNode n) {
 		boolean contain = true;
 		Hashtable<String, YANG_Body> nodes = n.getNodes();
-		for(Enumeration<String> eb = nodes.keys(); eb.hasMoreElements() && contain;){
+		for (Enumeration<String> eb = nodes.keys(); eb.hasMoreElements()
+				&& contain;) {
 			String k = eb.nextElement();
 			contain = bodies.containsKey(k);
 		}
 		return contain;
-		
+
 	}
-	
+
 	public void addSubNode(String k, YANG_Body b) {
 		bodies.put(k, b);
 	}
 
-	/*
-	 * public void addNodes(YangSpecNode n) throws YangParserException { for
-	 * (Enumeration<String> ek = n.getNodes().keys(); ek.hasMoreElements();) {
-	 * String k = ek.nextElement(); YANG_Body b = (YANG_Body) n.get(k); if
-	 * (!bodies.containsKey(k)) bodies.put(k, b); else if(b instanceof
-	 * YANG_Grouping || b instanceof YANG_TypeDef) throw new
-	 * YangParserException("@" + b.getLine() + "." + b.getCol() + ":" + "illegal
-	 * use of the existing identifier " + b.getBody()); } }
-	 */
 	public Hashtable<String, YANG_Body> getNodes() {
 		return bodies;
 	}
 
-	/*
-	 * public Hashtable<String, YANG_Body> getTypeDefAndGrouping() { Hashtable<String,
-	 * YANG_Body> result = new Hashtable<String, YANG_Body>(); for (Enumeration<String>
-	 * ek = bodies.keys(); ek.hasMoreElements();) { String k = ek.nextElement();
-	 * if (k.indexOf(':') != -1) if (k.substring(0, k.indexOf(':') +
-	 * 1).equals(tprefix) || k.substring(0, k.indexOf(':') + 1).equals(gprefix))
-	 * result.put(k, bodies.get(k)); } return result; }
-	 */
+	public void setNodes(YangSpecNode y) {
+		bodies = y.getNodes();
+	}
 
 	public String toString() {
 		String result = new String();
@@ -295,6 +427,19 @@ public class YangSpecNode {
 			result += k + "\n";
 		}
 		return result;
+	}
+
+	public void removeNode(String module, YangSpecNode specNodes) {
+		YangSpecNode res = new YangSpecNode();
+		for (Enumeration<String> eb = getNodes().keys(); eb.hasMoreElements();) {
+			String b = eb.nextElement();
+			String m = b.substring(b.indexOf(':') + 1, b.indexOf(':', b
+					.indexOf(':') + 1));
+
+			if (m.compareTo(module) == 0)
+				res.bodies.put(b, getNodes().get(b));
+		}
+		setNodes(res);
 	}
 
 }

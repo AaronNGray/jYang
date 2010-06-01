@@ -2,21 +2,23 @@
 
 package jyang.parser;
 
+import java.text.MessageFormat;
 
-public class YANG_Identity extends YANG_Body {
+public class YANG_Identity extends StatuedBody {
 
 	private String identity = null;
 
 	private YANG_Base base = null;
 
-	private YANG_Status status = null;
+	public String getIdentity() {
+		return identity;
+	}
 
-	private YANG_Description description = null;
+	public YANG_Base getBase() {
+		return base;
+	}
 
-	private YANG_Reference reference = null;
-
-	private boolean b_base = false, b_status = false, b_description = false,
-			b_reference = false;
+	private boolean b_base = false;
 
 	public YANG_Identity(int id) {
 		super(id);
@@ -27,54 +29,70 @@ public class YANG_Identity extends YANG_Body {
 	}
 
 	public void setIdentity(String i) {
-		identity = i;
+		identity = unquote(i);
 	}
 
-	public void setBase(YANG_Base b)  throws YangParserException {
-		if (b_base)
-			throw new YangParserException(
-					"Base is already defined in identity " + identity, b
-							.getLine(), b.getCol());
-		base = b;
-		b_base = true;
+	public void setBase(YANG_Base b) {
+		if (!b_base) {
+			base = b;
+			b_base = true;
+		} else
+			YangErrorManager.addError(filename, b.getLine(), b.getCol(), "unex_kw",
+					"base");
 	}
 
-	public void setStatus(YANG_Status s)  throws YangParserException{
-		if (b_status)
-			throw new YangParserException(
-					"Status is already defined in identity " + identity, s
-							.getLine(), s.getCol());
-		status = s;
-		b_status = true;
-	}
-
-	public void setDescription(YANG_Description d)  throws YangParserException{
-		if (b_description)
-			throw new YangParserException(
-					"Description is already defined in identity " + identity, d
-							.getLine(), d.getCol());
-		description = d;
-		b_description = true;
-	}
-
-	public void setReference(YANG_Reference r)  throws YangParserException {
-		if (b_reference)
-			throw new YangParserException(
-					"Reference is already defined in identity " + identity, r
-							.getLine(), r.getCol());
-		reference = r;
-		b_reference = true;
+	public boolean isBracked() {
+		return b_base || super.isBracked();
 	}
 
 	@Override
-	public void check(YangContext context) throws YangParserException {
-		// TODO Auto-generated method stub
-		
+	public void check(YangContext context){
+
+		if (getBase() != null) {
+			YANG_Base base = getBase();
+			YANG_Body b = context.getIdentity(base);
+			if (b == null)
+				YangErrorManager.addError(base.getFileName(), base.getLine(), base
+						.getCol(), "base_not_found", base.getBase());
+			else
+				checkRecursion(context, this, base);
+
+		}
+
+	}
+
+	private void checkRecursion(YangContext context, YANG_Identity id,
+			YANG_Base yb) {
+		YANG_Body b = context.getIdentity(yb);
+		if (b != null)
+			if (b instanceof YANG_Identity) {
+				YANG_Identity bid = (YANG_Identity) b;
+				if (bid.getIdentity().compareTo(id.getIdentity()) == 0)
+					YangErrorManager.addError(getFileName(), getLine(), getCol(),
+							"circ_identity", getBody());
+				else {
+					if (bid.getBase() != null)
+						checkRecursion(context, id, bid.getBase());
+				}
+			}
+
 	}
 
 	@Override
 	public String getBody() {
 		return identity;
+	}
+
+	public String toString() {
+		String result = "";
+		result += "identity " + identity;
+		if (isBracked()) {
+			result += "\n{";
+			result += super.toString() + "\n";
+			result += "}";
+		} else
+			result += ";";
+		return result;
 	}
 
 }

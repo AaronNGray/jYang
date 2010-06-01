@@ -1,25 +1,25 @@
 package jyang.parser;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
  * This file is part of jyang.
 
-    jyang is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jyang is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jyang is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ jyang is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with jyang.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 import java.util.*;
-
 
 public class YANG_Unknown extends YANG_Body {
 
@@ -37,22 +37,8 @@ public class YANG_Unknown extends YANG_Body {
 		super(p, id);
 	}
 
-	public void setExtension(String p) throws YangParserException {
-		String[]  splitted =  p.split(":");
-		if (splitted != null){
-			if (splitted.length == 2){
-				setPrefix(splitted[0]);
-				extension = splitted[1];
-			}
-			else
-				throw new YangParserException("@" + getLine() + "." + getCol()
-							+ ":extension syntax error " + p);
-		}
-		else {
-			throw new YangParserException("@" + getLine() + "." + getCol()
-					+ ":extension syntax error " + p);
-			
-		}
+	public void setExtension(String p) {
+		extension = unquote(p);
 	}
 
 	public String getExtension() {
@@ -79,38 +65,27 @@ public class YANG_Unknown extends YANG_Body {
 		return prefix;
 	}
 
-	public void check(YangContext context) throws YangParserException {
+	public void check(YangContext context) {
 		if (!context.isExtensionDefined((YANG_Unknown) this)) {
-
-			System.err.println(context.getSpec().getName() + "@" + getLine()
-					+ "." + getCol() + ":extension " + prefix + ":" + extension
-					+ " not found");
+			YangErrorManager.addError(getFileName(), getLine(), getCol(),
+					"unknown", "extension", prefix + ":" + extension);
+			return;
 		} else {
 			YANG_Extension extension = context
 					.getExtension((YANG_Unknown) this);
-			if (extension.getArgument() != null){
-				if (getArgument() != null) {
-					/*if (extension.getArgument().getArgument().compareTo(
-							getArgument()) != 0)
-						throw new YangParserException("@" + getLine() + "."
-								+ getCol() +":extension "
-								+ extension.getBody() + " defines "
-								+ extension.getArgument().getArgument()
-								+ " as argument and not " + getArgument());
-								*/
-				} else {
-					throw new YangParserException("@" + getLine() + "." + getCol()
-							+ ":extension " + extension.getBody()
-							+ " defines " + extension.getArgument().getArgument()
-							+ " as argument");
+			if (extension.getArgument() != null) {
+				if (getArgument() == null) {
+					YangErrorManager.addError(getFileName(), getLine(), getCol(),
+							"extension_arg", extension.getBody(), extension
+									.getArgument().getArgument(), extension
+									.getFileName(), extension.getLine());
 				}
-			}
-			else {
+			} else {
 				if (getArgument() != null)
-					throw new YangParserException("@" + getLine() + "." + getCol()
-							+ ":extension " + extension.getBody()
-							+ " does not defines any argument as "
-							+ getArgument());
+					YangErrorManager.addError(getFileName(), getLine(), getCol(),
+							"unexpected_arg", extension.getBody(), extension
+									.getArgument().getArgument(), extension
+									.getFileName(), extension.getLine());
 			}
 		}
 	}
