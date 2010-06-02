@@ -240,8 +240,8 @@ public class jyang {
 						if (format.compareTo("yin") == 0) {
 							new Yang2Yin(yangspec, paths, out);
 						} 
-						else
-							System.err.println("only yin, "
+						else if (format.compareTo("dsdl") != 0)
+							System.err.println("only yin, dsdl, "
 									+ "  format available");
 					}
 				} else

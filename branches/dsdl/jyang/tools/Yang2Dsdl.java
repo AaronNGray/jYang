@@ -17,7 +17,7 @@
  along with jyang.  If not, see <http://www.gnu.org/licenses/>.
 
  */
- package jyang.tools;
+package jyang.tools;
 
 import java.io.PrintStream;
 import java.util.Enumeration;
@@ -85,11 +85,14 @@ import jyang.parser.YANG_Status;
 import jyang.parser.YANG_StringRestriction;
 import jyang.parser.YANG_Type;
 import jyang.parser.YANG_TypeDef;
+import jyang.parser.YANG_UnionSpecification;
 import jyang.parser.YANG_Unique;
 import jyang.parser.YANG_Units;
 import jyang.parser.YANG_Uses;
 import jyang.parser.YANG_Value;
 import jyang.parser.YANG_When;
+import jyang.parser.YangBuiltInTypes;
+import jyang.parser.YangTreeNode;
 
 public class Yang2Dsdl {
 
@@ -119,6 +122,8 @@ public class Yang2Dsdl {
 	private final static String NOTIF = "notification";
 	private final static String RNG = "rng";
 	private final static String DEFINE = "define";
+	private final static String REF = "ref";
+	private final static String CHOICE = "choice";
 
 	private String defines = "";
 
@@ -169,58 +174,95 @@ public class Yang2Dsdl {
 	}
 
 	private void gExternalBodies(YANG_Specification spec, YANG_Body body,
-			PrintStream out, String prefix , String indent) {
+			PrintStream out, String prefix, String indent) {
 
 		String specname = spec.getName();
+
 		if (body instanceof YANG_TypeDef) {
 			YANG_TypeDef td = (YANG_TypeDef) body;
 			YANG_Type type = td.getType();
-			gPrefixedType(spec, type, out, indent);
+			gType(spec, type, out, indent);
 
 		} else if (body instanceof YANG_Leaf) {
 			YANG_Leaf leaf = (YANG_Leaf) body;
 			YANG_Type type = leaf.getType();
-			gPrefixedType(spec, type, out, indent);
+			gType(spec, type, out, indent);
 
 		} else if (body instanceof YANG_Uses) {
 
 			YANG_Uses uses = (YANG_Uses) body;
-			out.print(indent + LB + DEFINE + " " + "name=\"");
-			out.print(PRE + specname + SEP + uses.getGrouping());
+			out.print(indent + LB + REF + " " + "name=\"");
+			out.print(PRE + specname + SEP + uses.getGrouping().getBody());
 			out.println("\"" + RB);
 			out.println(indent + LB + "/" + DEFINE + RB);
 
 		} else if (body instanceof YANG_Augment) {
+		} else if (body instanceof YANG_Container) {
+			YANG_Container c = (YANG_Container) body;
+			gTGDExternal(spec, c.getTypeDefs(), c.getGroupings(), c
+					.getDataDefs(), out, prefix, indent);
+		} else if (body instanceof YANG_Grouping) {
+			YANG_Grouping g = (YANG_Grouping) body;
+			gTGDExternal(spec, g.getTypeDefs(), g.getGroupings(), g
+					.getDataDefs(), out, prefix, indent);
+
 		}
 	}
 
-	private void gPrefixedType(YANG_Specification spec, YANG_Type type,
+	private Vector<YANG_TypeDef> gType(YANG_Specification spec, YANG_Type type,
 			PrintStream out, String indent) {
+
+		Vector<YANG_TypeDef> result = new Vector<YANG_TypeDef>();
+
+		YANG_Specification defspec = null;
+		String specnameprefix = null;
+		boolean external = false;
 
 		if (type.isPrefixed()) {
 			String tpref = type.getPrefix();
 			for (YANG_Import i : spec.getImports()) {
 				if (i.getPrefix().getPrefix().compareTo(tpref) == 0) {
-					String specnameprefix = i.getName();
-					out.print(indent + LB + DEFINE + " " + "name=\"");
-					out.print(specnameprefix + SEP + type.getSuffix());
-					out.println("\"" + RB);
-
-					YANG_Specification importedspec = i.getImportedmodule();
-
-					out.println(indent + LB + "/" + DEFINE + RB);
-
+					specnameprefix = i.getName();
+					defspec = i.getImportedmodule();
+					external = true;
 				}
 			}
-
 		}
+		if (!external) {
+			defspec = spec;
+			specnameprefix = spec.getName();
+		}
+//		out.print(indent + LB + REF + " " + "name=\"");
+//		out.print(specnameprefix + SEP + type.getSuffix());
+//		out.println("\"" + "/" + RB);
 
+		if (!YangBuiltInTypes.isBuiltIn(type.getType())) {
+			YANG_TypeDef tdrec = type.getTypedef();
+			YANG_Type trec = tdrec.getType();
+			out.print(indent + LB + REF + " " + "name=\"");
+			out.print(defspec.getName() + SEP + type.getType());
+			out.println("\"" + "/" + RB);
+		}
+		// out.println(indent + LB + "/" + DEFINE + RB);
+
+		if (type.getUnionSpec() != null) {
+			out.println(indent + INDENT + LB + CHOICE + RB);
+			YANG_UnionSpecification uspec = type.getUnionSpec();
+			for (YANG_Type ut : uspec.getTypes()) {
+				gType(defspec, ut, out, indent + INDENT);
+			}
+			out.println(indent + INDENT + LB + "/" + CHOICE + RB);
+		} else {
+			out.print(indent + LB + DEFINE + " " + "name=\"");
+			out.print(defspec.getName() + SEP + type.getType());
+			out.println("\"" + RB);
+			out.println(indent + LB + "/" + DEFINE + RB);
+		}
+		return result;
 	}
 
 	private void gBodies(YANG_Specification spec, YANG_Body body,
 			PrintStream out, String prefix, String indent) {
-
-		
 
 		if (body instanceof YANG_TypeDef) {
 			YANG_TypeDef td = (YANG_TypeDef) body;
@@ -249,8 +291,7 @@ public class Yang2Dsdl {
 		} else if (body instanceof YANG_List) {
 			YANG_List list = (YANG_List) body;
 			gTGD(spec, list.getTypeDefs(), list.getGroupings(), list
-					.getDataDefs(), out, prefix + SEP + list.getList(),
-					indent);
+					.getDataDefs(), out, prefix + SEP + list.getList(), indent);
 
 		}
 
@@ -261,11 +302,24 @@ public class Yang2Dsdl {
 			PrintStream out, String prefix, String indent) {
 
 		for (YANG_Body lbody : groupings)
-			gBodies(spec, lbody, out, prefix,  indent);
+			gBodies(spec, lbody, out, prefix, indent);
 		for (YANG_Body ltd : typeDefs)
-			gBodies(spec, ltd, out, prefix,indent);
+			gBodies(spec, ltd, out, prefix, indent);
 		for (YANG_Body ldd : dataDefs)
-			gBodies(spec, ldd, out, prefix,indent);
+			gBodies(spec, ldd, out, prefix, indent);
+	}
+
+	private void gTGDExternal(YANG_Specification spec,
+			Vector<YANG_TypeDef> typeDefs, Vector<YANG_Grouping> groupings,
+			Vector<YANG_DataDef> dataDefs, PrintStream out, String prefix,
+			String indent) {
+
+		for (YANG_Body lbody : groupings)
+			gExternalBodies(spec, lbody, out, prefix, indent);
+		for (YANG_Body ltd : typeDefs)
+			gExternalBodies(spec, ltd, out, prefix, indent);
+		for (YANG_Body ldd : dataDefs)
+			gExternalBodies(spec, ldd, out, prefix, indent);
 	}
 
 	private void gNotifications(Hashtable<String, YANG_Specification> specs,
