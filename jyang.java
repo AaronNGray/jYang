@@ -270,7 +270,12 @@ public class jyang {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		parsingOk = noError;
+		parsingOk = noError;	
+		if (format != null)
+			if (format.compareTo("dsdl") == 0) {
+				new Yang2Dsdl(yangsSpecs, out);
+			}
+
 	}
 
 	public boolean isParsingOk() {
