@@ -43,6 +43,10 @@ public class YANG_Type extends SimpleYangNode {
 	public YANG_TypeDef getTypedef() {
 		return typedef;
 	}
+	
+	protected void setTypeDef(YANG_TypeDef t){
+		typedef = t;
+	}
 
 	public String getInstanceIdentifierSpec() {
 		return instanceIdentifierSpec;
@@ -2233,14 +2237,17 @@ public class YANG_Type extends SimpleYangNode {
 			} else {
 				while (utype.getUnionSpec() == null) {
 					YANG_TypeDef suptype = context.getTypeDef(utype);
+					utype.setTypeDef(suptype);
 					// if (!suptype.isCorrect())
 					// return;
 					utype = suptype.getType();
 				}
 				if (!chain.contains(utype)) {
 					chain.add(utype);
-					for (YANG_Type t : utype.getUnionSpec().getTypes())
+					for (YANG_Type t : utype.getUnionSpec().getTypes()){
+						t.setTypeDef(context.getTypeDef(t));
 						empty = empty || checkRecEmptyUnion(context, chain, t);
+					}
 				}
 			}
 
