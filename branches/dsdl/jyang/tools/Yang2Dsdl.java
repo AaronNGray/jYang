@@ -123,6 +123,8 @@ public class Yang2Dsdl {
 	private final static String RNG = "rng";
 	private final static String DEFINE = "define";
 	private final static String REF = "ref";
+	private final static String DATA = "data";
+	private final static String PARAM = "param";
 	private final static String CHOICE = "choice";
 
 	private String defines = "";
@@ -161,15 +163,24 @@ public class Yang2Dsdl {
 	private void gDefines(Hashtable<String, YANG_Specification> specs,
 			PrintStream out, String indent) {
 		for (YANG_Specification spec : specs.values()) {
-			for (YANG_Body body : spec.getBodies())
-				gBodies(spec, body, out, spec.getName(), indent);
+			for (YANG_Body body : spec.getBodies()) {
+				Vector<SimpleYangNode> r = gBodies(spec, body, out, spec
+						.getName(), indent);
+				for (SimpleYangNode n : r) {
+					if (n instanceof YANG_Type) {
+						gType(spec, (YANG_Type) n, out, spec.getName(), indent);
+					}
+				}
+			}
 
 		}
-		for (YANG_Specification spec : specs.values()) {
-			for (YANG_Body body : spec.getBodies())
-				gExternalBodies(spec, body, out, spec.getName(), indent);
-
-		}
+		/*
+		 * for (YANG_Specification spec : specs.values()) { for (YANG_Body body
+		 * : spec.getBodies()) gExternalBodies(spec, body, out, spec.getName(),
+		 * indent);
+		 * 
+		 * }
+		 */
 
 	}
 
@@ -181,12 +192,12 @@ public class Yang2Dsdl {
 		if (body instanceof YANG_TypeDef) {
 			YANG_TypeDef td = (YANG_TypeDef) body;
 			YANG_Type type = td.getType();
-			gType(spec, type, out, indent);
+			// gType(spec, type, out, indent);
 
 		} else if (body instanceof YANG_Leaf) {
 			YANG_Leaf leaf = (YANG_Leaf) body;
 			YANG_Type type = leaf.getType();
-			gType(spec, type, out, indent);
+			// gType(spec, type, out, indent);
 
 		} else if (body instanceof YANG_Uses) {
 
@@ -197,21 +208,61 @@ public class Yang2Dsdl {
 			out.println(indent + LB + "/" + DEFINE + RB);
 
 		} else if (body instanceof YANG_Augment) {
-		} else if (body instanceof YANG_Container) {
-			YANG_Container c = (YANG_Container) body;
-			gTGDExternal(spec, c.getTypeDefs(), c.getGroupings(), c
-					.getDataDefs(), out, prefix, indent);
-		} else if (body instanceof YANG_Grouping) {
-			YANG_Grouping g = (YANG_Grouping) body;
-			gTGDExternal(spec, g.getTypeDefs(), g.getGroupings(), g
-					.getDataDefs(), out, prefix, indent);
+		}
+	}
+
+	private void gType(YANG_Specification spec, YANG_Type type,
+			PrintStream out, String prefix, String indent) {
+
+		if (YangBuiltInTypes.isBuiltIn(type.getType())) {
+			if (type.getUnionSpec() != null) {
+
+				out.println(indent + LB + CHOICE + RB);
+				YANG_UnionSpecification uspec = type.getUnionSpec();
+				String utype = "";
+				for (YANG_Type ut : uspec.getTypes()) {
+					out.println(indent + INDENT + LB + REF + " name=\""
+							+ prefix + SEP + ut.getSuffix() + "\"/" + RB);
+				}
+				out.println(indent + LB + "/" + CHOICE + RB);
+			} else {
+				out.println(indent + LB + DATA + " type=\"" + type.getType()
+						+ "\"" + RB);
+				if (type.getStringRest() != null) {
+					YANG_StringRestriction strest = type.getStringRest();
+					for (YANG_Pattern pat : strest.getPatterns()) {
+						gPattern(pat, out, indent + INDENT);
+					}
+				}
+			}
+		} else {
+			YANG_Specification defspec = spec;
+			String specnameprefix = prefix;
+
+			if (type.isPrefixed()) {
+				String tpref = type.getPrefix();
+				for (YANG_Import i : spec.getImports()) {
+					if (i.getPrefix().getPrefix().compareTo(tpref) == 0) {
+						specnameprefix = i.getName();
+						defspec = i.getImportedmodule();
+					}
+				}
+			}
+			out.print(indent + LB + REF + " " + "name=\"");
+			out.print(specnameprefix + SEP + type.getType());
+			out.println("\"" + "/" + RB);
 
 		}
 	}
 
-	private Vector<YANG_TypeDef> gType(YANG_Specification spec, YANG_Type type,
-			PrintStream out, String indent) {
+	private void gPattern(YANG_Pattern pat, PrintStream out, String indent) {
+		out.print(indent + LB + PARAM + " name=\"pattern\"" + RB);
+		out.print(pat.getPattern());
+		out.println(LB + "/" + PARAM + RB);
+	}
 
+	private Vector<YANG_TypeDef> OldgType(YANG_Specification spec,
+			YANG_Type type, PrintStream out, String prefix, String indent) {
 		Vector<YANG_TypeDef> result = new Vector<YANG_TypeDef>();
 
 		YANG_Specification defspec = null;
@@ -232,9 +283,9 @@ public class Yang2Dsdl {
 			defspec = spec;
 			specnameprefix = spec.getName();
 		}
-//		out.print(indent + LB + REF + " " + "name=\"");
-//		out.print(specnameprefix + SEP + type.getSuffix());
-//		out.println("\"" + "/" + RB);
+		// out.print(indent + LB + REF + " " + "name=\"");
+		// out.print(specnameprefix + SEP + type.getSuffix());
+		// out.println("\"" + "/" + RB);
 
 		if (!YangBuiltInTypes.isBuiltIn(type.getType())) {
 			YANG_TypeDef tdrec = type.getTypedef();
@@ -249,7 +300,7 @@ public class Yang2Dsdl {
 			out.println(indent + INDENT + LB + CHOICE + RB);
 			YANG_UnionSpecification uspec = type.getUnionSpec();
 			for (YANG_Type ut : uspec.getTypes()) {
-				gType(defspec, ut, out, indent + INDENT);
+				gType(defspec, ut, out, prefix, indent + INDENT);
 			}
 			out.println(indent + INDENT + LB + "/" + CHOICE + RB);
 		} else {
@@ -261,65 +312,96 @@ public class Yang2Dsdl {
 		return result;
 	}
 
-	private void gBodies(YANG_Specification spec, YANG_Body body,
-			PrintStream out, String prefix, String indent) {
+	private Vector<SimpleYangNode> gBodies(YANG_Specification spec,
+			YANG_Body body, PrintStream out, String prefix, String indent) {
+
+		Vector<SimpleYangNode> result = new Vector<SimpleYangNode>();
 
 		if (body instanceof YANG_TypeDef) {
 			YANG_TypeDef td = (YANG_TypeDef) body;
-			out.print(indent + LB + DEFINE + " " + "name=\"");
-			out.print(prefix + SEP + td.getTypeDef());
-			out.println("\"" + RB);
-			out.println(indent + LB + "/" + DEFINE + RB);
+			result.add(gTypeDef(spec, td, out, prefix, indent + INDENT));
+
+		} else if (body instanceof YANG_Leaf) {
+			YANG_Leaf leaf = (YANG_Leaf) body;
+			result.add(gLeaf(spec, leaf, out, prefix, indent));
 
 		} else if (body instanceof YANG_Grouping) {
 			YANG_Grouping grouping = (YANG_Grouping) body;
 			out.print(indent + LB + DEFINE + " " + "name=\"");
 			out.print(PRE + prefix + SEP + grouping.getGrouping());
 			out.println("\"" + RB);
-			out.println(indent + LB + "/" + DEFINE + RB);
 
-			gTGD(spec, grouping.getTypeDefs(), grouping.getGroupings(),
-					grouping.getDataDefs(), out, prefix + SEP
-							+ grouping.getGrouping(), indent);
+			result = gTGD(spec, grouping.getTypeDefs(),
+					grouping.getGroupings(), grouping.getDataDefs(), out,
+					prefix + SEP + grouping.getGrouping(), indent + INDENT);
+
+			out.println(indent + LB + "/" + DEFINE + RB);
 
 		} else if (body instanceof YANG_Container) {
 			YANG_Container container = (YANG_Container) body;
-			gTGD(spec, container.getTypeDefs(), container.getGroupings(),
-					container.getDataDefs(), out, prefix + SEP
-							+ container.getContainer(), indent);
+			result = gTGD(spec, container.getTypeDefs(), container
+					.getGroupings(), container.getDataDefs(), out, prefix + SEP
+					+ container.getContainer(), indent);
 
 		} else if (body instanceof YANG_List) {
 			YANG_List list = (YANG_List) body;
-			gTGD(spec, list.getTypeDefs(), list.getGroupings(), list
+			result = gTGD(spec, list.getTypeDefs(), list.getGroupings(), list
 					.getDataDefs(), out, prefix + SEP + list.getList(), indent);
 
-		}
+		} else if (body instanceof YANG_Uses) {
 
+			YANG_Uses uses = (YANG_Uses) body;
+			out.print(indent + LB + REF + " " + "name=\"");
+			out.print(PRE + prefix + SEP + uses.getGrouping().getBody());
+			out.println("\"" + RB);
+			out.println(indent + LB + "/" + DEFINE + RB);
+
+		}
+		return result;
 	}
 
-	private void gTGD(YANG_Specification spec, Vector<YANG_TypeDef> typeDefs,
-			Vector<YANG_Grouping> groupings, Vector<YANG_DataDef> dataDefs,
+	private YANG_Type gLeaf(YANG_Specification spec, YANG_Leaf leaf,
 			PrintStream out, String prefix, String indent) {
 
-		for (YANG_Body lbody : groupings)
-			gBodies(spec, lbody, out, prefix, indent);
-		for (YANG_Body ltd : typeDefs)
-			gBodies(spec, ltd, out, prefix, indent);
-		for (YANG_Body ldd : dataDefs)
-			gBodies(spec, ldd, out, prefix, indent);
+		YANG_Type type = leaf.getType();
+		out.println(indent + LB + ELT + " name=\""
+				+ spec.getPrefix().getPrefix() + ":" + leaf.getLeaf() + "\""
+				+ RB);
+		gType(spec, type, out, prefix, indent + INDENT);
+		out.println(indent + LB + "/" + ELT + RB);
+		return type;
+
 	}
 
-	private void gTGDExternal(YANG_Specification spec,
+	private YANG_Type gTypeDef(YANG_Specification spec, YANG_TypeDef td,
+			PrintStream out, String prefix, String indent) {
+		out.print(indent + LB + DEFINE + " " + "name=\"");
+		out.print(prefix + SEP + td.getTypeDef());
+		out.println("\"" + RB);
+		YANG_Type type = td.getType();
+		gType(spec, type, out, prefix, indent);
+		out.println(indent + LB + "/" + DEFINE + RB);
+		if (YangBuiltInTypes.isBuiltIn(type.getType()))
+			return null;
+		else
+			return type;
+
+	}
+
+	private Vector<SimpleYangNode> gTGD(YANG_Specification spec,
 			Vector<YANG_TypeDef> typeDefs, Vector<YANG_Grouping> groupings,
 			Vector<YANG_DataDef> dataDefs, PrintStream out, String prefix,
 			String indent) {
 
+		Vector<SimpleYangNode> result = new Vector<SimpleYangNode>();
+
 		for (YANG_Body lbody : groupings)
-			gExternalBodies(spec, lbody, out, prefix, indent);
+			result.addAll(gBodies(spec, lbody, out, prefix, indent));
 		for (YANG_Body ltd : typeDefs)
-			gExternalBodies(spec, ltd, out, prefix, indent);
+			result.addAll(gBodies(spec, ltd, out, prefix, indent));
 		for (YANG_Body ldd : dataDefs)
-			gExternalBodies(spec, ldd, out, prefix, indent);
+			result.addAll(gBodies(spec, ldd, out, prefix, indent));
+		return result;
 	}
 
 	private void gNotifications(Hashtable<String, YANG_Specification> specs,
