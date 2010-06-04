@@ -17,14 +17,30 @@
        container "cont" {
            grouping "grp2" {
                leaf "address" {
+                   
                    type "inet:ip-address";
-               }
-           }
-           leaf foo {
-               type vowels;
-           }
-           uses "grp1";
-           uses "grp2";
-       }
-   }
-
+                  }
+                  
+                  container ccc {
+                  	
+                  	leaf truc {
+                  		type truc;
+                  	}
+                  	
+                  }
+                  }
+                  leaf foo {
+                  	
+                  	type vowels;
+                  }
+                  
+                  uses "grp1";
+                  uses "grp2";
+                 }
+                 
+                 typedef truc { type trac {pattern "aert";}}
+                 
+                 typedef trac { type string {pattern "e";}}
+                 
+                }
+                

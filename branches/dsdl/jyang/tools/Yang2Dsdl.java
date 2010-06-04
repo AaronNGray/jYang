@@ -160,28 +160,165 @@ public class Yang2Dsdl {
 
 	}
 
+	private Hashtable<YANG_TypeDef, String> definestypedefs = new Hashtable<YANG_TypeDef, String>();
+	private Hashtable<YANG_Grouping, String> definesgroupings = new Hashtable<YANG_Grouping, String>();
+
 	private void gDefines(Hashtable<String, YANG_Specification> specs,
 			PrintStream out, String indent) {
 		for (YANG_Specification spec : specs.values()) {
 			for (YANG_Body body : spec.getBodies()) {
-				Vector<SimpleYangNode> r = gBodies(spec, body, out, spec
-						.getName(), indent);
-				for (SimpleYangNode n : r) {
-					if (n instanceof YANG_Type) {
-						gType(spec, (YANG_Type) n, out, spec.getName(), indent);
+				looksForTypesAndGroupings(spec, body, spec.getName());
+				/*
+				 * Vector<SimpleYangNode> r = gBodies(spec, body, out, spec
+				 * .getName(), indent); for (SimpleYangNode n : r) { if (n
+				 * instanceof YANG_Type) { gType(spec, (YANG_Type) n, out,
+				 * spec.getName(), indent); } }
+				 */
+			}
+			for (YANG_TypeDef t : definestypedefs.keySet())
+				gTypeDef(t, out);
+			for (String s : definesgroupings.values())
+				System.out.println(s);
+		}
+	}
+
+	private void gTypeDef(YANG_TypeDef td, PrintStream out) {
+		out.println(LB + DEFINE + " name=\"" + definestypedefs.get(td) + "\""
+				+ RB);
+		YANG_Type type = td.getType();
+		if (!YangBuiltInTypes.isBuiltIn(type.getType())) {
+
+			YANG_TypeDef ttd = type.getTypedef();
+			out.println(INDENT + LB + REF + " type=\""
+					+ definestypedefs.get(ttd) + "\"" + RB);
+			if (type.getStringRest() != null) {
+				YANG_StringRestriction strest = type.getStringRest();
+				for (YANG_Pattern pat : strest.getPatterns()) {
+					gPattern(pat, out, INDENT + INDENT);
+				}
+			}
+		} else {
+
+			if (type.getUnionSpec() != null) {
+
+				out.println(INDENT + LB + CHOICE + RB);
+				YANG_UnionSpecification uspec = type.getUnionSpec();
+				String utype = "";
+				for (YANG_Type ut : uspec.getTypes()) {
+					out
+							.println(INDENT + INDENT + LB + REF + " name=\""
+									+ definestypedefs.get(ut.getTypedef())
+									+ "\"/" + RB);
+				}
+				out.println(INDENT + LB + "/" + CHOICE + RB);
+			} else {
+				out.println(INDENT + LB + DATA + " type=\"" + type.getType()
+						+ "\"" + RB);
+				if (type.getStringRest() != null) {
+					YANG_StringRestriction strest = type.getStringRest();
+					for (YANG_Pattern pat : strest.getPatterns()) {
+						gPattern(pat, out, INDENT + INDENT);
+					}
+				}
+				out.println(INDENT + LB + "/" + DATA + RB);
+			}
+		}
+		out.println(LB + "/" + DEFINE + RB);
+
+	}
+
+	private void looksForTypesAndGroupings(YANG_Specification spec,
+			YANG_Body body, String prefix) {
+		Vector<YANG_TypeDef> typedefs = null;
+		Vector<YANG_Grouping> groupings = null;
+		Vector<YANG_DataDef> datadefs = null;
+
+		if (body instanceof YANG_TypeDef) {
+			YANG_TypeDef td = (YANG_TypeDef) body;
+			prefix += SEP + body.getBody();
+
+			YANG_Type t = td.getType();
+
+			if (t.isPrefixed()) {
+				String tpref = t.getPrefix();
+				for (YANG_Import i : spec.getImports()) {
+					if (i.getPrefix().getPrefix().compareTo(tpref) == 0) {
+						prefix = i.getName();
+						spec = i.getImportedmodule();
+					}
+				}
+
+			}
+			definestypedefs.put(td, prefix);
+			while (t.getTypedef() != null) {
+				YANG_TypeDef dtd = t.getTypedef();
+				looksForTypesAndGroupings(spec, dtd, prefix);
+				t = dtd.getType();
+			}
+			if (t.getType().compareTo(YangBuiltInTypes.union) == 0) {
+				YANG_UnionSpecification u = t.getUnionSpec();
+				for (YANG_Type ut : u.getTypes()) {
+					while (ut.getTypedef() != null) {
+						YANG_TypeDef dtd = ut.getTypedef();
+						looksForTypesAndGroupings(spec, dtd, prefix);
+						ut = dtd.getType();
 					}
 				}
 			}
+		} else if (body instanceof YANG_Leaf) {
+			YANG_Type t = ((YANG_Leaf) body).getType();
+			if (t.isPrefixed()) {
+				String tpref = t.getPrefix();
+				for (YANG_Import i : spec.getImports()) {
+					if (i.getPrefix().getPrefix().compareTo(tpref) == 0) {
+						prefix = i.getName();
+						spec = i.getImportedmodule();
+					}
+				}
 
+				YANG_TypeDef td = t.getTypedef();
+				looksForTypesAndGroupings(spec, td, prefix);
+				while (t.getTypedef() != null) {
+					YANG_TypeDef dtd = t.getTypedef();
+					looksForTypesAndGroupings(spec, dtd, prefix);
+					t = dtd.getType();
+				}
+			}
+
+		} else if (body instanceof YANG_Grouping) {
+			prefix += SEP + body.getBody();
+			YANG_Grouping y = (YANG_Grouping) body;
+			definesgroupings.put(y, prefix);
+			typedefs = y.getTypeDefs();
+			groupings = y.getGroupings();
+			datadefs = y.getDataDefs();
+		} else if (body instanceof YANG_Container) {
+			prefix += SEP + body.getBody();
+			YANG_Container y = (YANG_Container) body;
+			typedefs = y.getTypeDefs();
+			groupings = y.getGroupings();
+			datadefs = y.getDataDefs();
+		} else if (body instanceof YANG_List) {
+			prefix += SEP + body.getBody();
+			YANG_List y = (YANG_List) body;
+			typedefs = y.getTypeDefs();
+			groupings = y.getGroupings();
+			datadefs = y.getDataDefs();
 		}
-		/*
-		 * for (YANG_Specification spec : specs.values()) { for (YANG_Body body
-		 * : spec.getBodies()) gExternalBodies(spec, body, out, spec.getName(),
-		 * indent);
-		 * 
-		 * }
-		 */
+		if (typedefs != null)
+			looksInside(spec, typedefs, groupings, datadefs, prefix);
+	}
 
+	private void looksInside(YANG_Specification spec,
+			Vector<YANG_TypeDef> typeDefs, Vector<YANG_Grouping> groupings,
+			Vector<YANG_DataDef> dataDefs, String prefix) {
+
+		for (YANG_Body lbody : groupings)
+			looksForTypesAndGroupings(spec, lbody, prefix);
+		for (YANG_Body ltd : typeDefs)
+			looksForTypesAndGroupings(spec, ltd, prefix);
+		for (YANG_Body ldd : dataDefs)
+			looksForTypesAndGroupings(spec, ldd, prefix);
 	}
 
 	private void gExternalBodies(YANG_Specification spec, YANG_Body body,
