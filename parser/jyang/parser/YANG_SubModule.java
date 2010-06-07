@@ -41,19 +41,28 @@ public class YANG_SubModule extends YANG_Specification {
 
 	private YANG_Belong belong = null;
 
-	public void setSubModule(String n) {
+	protected void setSubModule(String n) {
 		submodule = n;
 	}
 
+	/**
+	 * Get the name of this sub-module
+	 * 
+	 * @return the sub-module name String
+	 */
 	public String getSubModule() {
 		return submodule;
 	}
-
+	/**
+	 * Get the name of this sub-module
+	 * 
+	 * @return the sub-module name String
+	 */
 	public String getName() {
 		return getSubModule();
 	}
 
-	public void addHeader(YANG_Header m) {
+	protected void addHeader(YANG_Header m) {
 
 		if (m instanceof YANG_YangVersion) {
 			if (!b_yangversion) {
@@ -69,12 +78,13 @@ public class YANG_SubModule extends YANG_Specification {
 				b_belong = true;
 			belong = (YANG_Belong) m;
 		} else
-			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "belong");
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(),
+					"belong");
 
 		headers.add(m);
 	}
 
-	public YANG_Belong getBelong() {
+	protected YANG_Belong getBelong() {
 		return belong;
 	}
 
@@ -83,15 +93,15 @@ public class YANG_SubModule extends YANG_Specification {
 	 * existing module. The presence of the module and its syntax are checked
 	 * but no semantical checking.
 	 */
-	public void checkHeader(String[] p) {
+	protected void checkHeader(String[] p) {
 		if (!b_belong)
 			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"expected_kw", "belongs-to");
 		else {
 			YANG_Specification belonged = getExternal(p, belong.getBelong());
 			if (!(belonged instanceof YANG_Module))
-				YangErrorManager.addError(getFileName(), belong.getLine(), belong
-						.getCol(), "not_module", belong.getBelong());
+				YangErrorManager.addError(getFileName(), belong.getLine(),
+						belong.getCol(), "not_module", belong.getBelong());
 		}
 	}
 
@@ -117,8 +127,9 @@ public class YANG_SubModule extends YANG_Specification {
 
 				if (submod.getBelong().getBelong().compareTo(
 						getBelong().getBelong()) != 0)
-					YangErrorManager.addError(getFileName(), l, c, "not_belong",
-							submod.getName(), getBelong().getBelong());
+					YangErrorManager.addError(getFileName(), l, c,
+							"not_belong", submod.getName(), getBelong()
+									.getBelong());
 				else if (!includeds.contains(submod))
 					includeds.add(submod);
 			}
@@ -149,7 +160,7 @@ public class YANG_SubModule extends YANG_Specification {
 
 	@Override
 	protected void cleanExternalWarning() {
-		
+
 	}
 
 }

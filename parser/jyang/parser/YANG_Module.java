@@ -34,15 +34,15 @@ public class YANG_Module extends YANG_Specification {
 	private boolean b_yangversion = false, b_namespace = false,
 			b_prefix = false;
 
-	public YANG_Module(int id) {
+	protected YANG_Module(int id) {
 		super(id);
 	}
 
-	public YANG_Module(yang p, int id) {
+	protected YANG_Module(yang p, int id) {
 		super(p, id);
 	}
 
-	public void setName(String n) {
+	protected void setName(String n) {
 		name = unquote(n);
 	}
 
@@ -54,7 +54,7 @@ public class YANG_Module extends YANG_Specification {
 		return getModule();
 	}
 
-	public void addHeader(YANG_Header m) {
+	protected void addHeader(YANG_Header m) {
 
 		if (m instanceof YANG_YangVersion) {
 			if (!b_yangversion) {
@@ -98,7 +98,7 @@ public class YANG_Module extends YANG_Specification {
 	/**
 	 * Check the presence of the namespace and the prefix statements
 	 */
-	public void checkHeader(String[] p) {
+	protected void checkHeader(String[] p) {
 		if (!b_prefix)
 			YangErrorManager.addError(getFileName(), getLine()+1, getCol(),
 					"expected", "prefix");
@@ -136,7 +136,7 @@ public class YANG_Module extends YANG_Specification {
 		}
 	}
 	
-	public void cleanExternalWarning(){
+	protected void cleanExternalWarning(){
 		YangErrorManager.cleanWarning(getModule());
 	}
 

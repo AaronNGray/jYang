@@ -8,15 +8,15 @@ public class YANG_AnyXml extends MustDataDef implements YANG_ShortCase {
 	private YANG_Mandatory mandatory = null;
 	private boolean b_mandatory = false;
 
-	public YANG_AnyXml(int id) {
+	protected YANG_AnyXml(int id) {
 		super(id);
 	}
 
-	public YANG_AnyXml(yang p, int id) {
+	protected YANG_AnyXml(yang p, int id) {
 		super(p, id);
 	}
 
-	public void setAnyXml(String a) {
+	protected void setAnyXml(String a) {
 		anyxml = unquote(a);
 	}
 
@@ -24,19 +24,29 @@ public class YANG_AnyXml extends MustDataDef implements YANG_ShortCase {
 		return getAnyXml();
 	}
 
+	/**
+	 * Get the name of this any-xml statement
+	 * 
+	 * @return the name of the statement
+	 */
 	public String getAnyXml() {
 		return anyxml;
 	}
 
-	public void setMandatory(YANG_Mandatory m) {
+	protected void setMandatory(YANG_Mandatory m) {
 		if (!b_mandatory) {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
-					"mandatory");
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(),
+					"unex_kw", "mandatory");
 	}
 
+	/**
+	 * Get the mandatory statement of this any-xml statement
+	 * 
+	 * @return a mandatory object or null if not mandatory
+	 */
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
@@ -46,11 +56,11 @@ public class YANG_AnyXml extends MustDataDef implements YANG_ShortCase {
 	}
 
 	public void check(YangContext context) {
-			super.check(context);
+		super.check(context);
 
 	}
 
-	public void deleteMandatory() {
+	protected void deleteMandatory() {
 		mandatory = null;
 		b_mandatory = false;
 	}
@@ -95,7 +105,7 @@ public class YANG_AnyXml extends MustDataDef implements YANG_ShortCase {
 		return cl;
 	}
 
-	public void refines(YANG_RefineAnyXml rl) {
+	protected void refines(YANG_RefineAnyXml rl) {
 		if (rl.getConfig() != null)
 			config = rl.getConfig();
 		if (rl.getDescription() != null)

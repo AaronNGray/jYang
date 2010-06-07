@@ -25,7 +25,13 @@ import java.io.FileNotFoundException;
 import java.rmi.server.ExportException;
 import java.text.MessageFormat;
 import java.util.*;
-
+/**
+ * 
+ * @author nataf
+ * 
+ * The abstract class YANG_Specification is a common class for YANG module or sub-module.
+ *
+ */
 public abstract class YANG_Specification extends SimpleYangNode {
 
 	static protected Hashtable<String, YANG_Specification> checkedSpecs = new Hashtable<String, YANG_Specification>();
@@ -47,15 +53,20 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 	private YangTreeNode schemaTree = null;
 
+	/**
+	 * Get the yang schema tree of this yang specification
+	 * 
+	 * @return a yang schema tree
+	 */
 	public YangTreeNode getSchemaTree() {
 		return schemaTree;
 	}
 
-	public YANG_Specification(int i) {
+	protected YANG_Specification(int i) {
 		super(i);
 	}
 
-	public YANG_Specification(yang p, int i) {
+	protected YANG_Specification(yang p, int i) {
 		super(p, i);
 	}
 
@@ -198,8 +209,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	/**
 	 * Check of this specification.
 	 * 
-	 * @param p
-	 *            path for yang files used in import or include statements
+	 * @param path for yang files used in import or include statements
 	 */
 	public void check(String[] path) {
 		Vector<String> cked = new Vector<String>();
@@ -277,7 +287,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	protected abstract void cleanExternalWarning();
 
 	@SuppressWarnings("unchecked")
-	private YangContext buildSpecContext(String[] paths, Vector<String> builded) {
+	public YangContext buildSpecContext(String[] paths, Vector<String> builded) {
 		YangContext context = new YangContext(getImports(), this);
 		if (getPrefix() != null)
 			context.addLocalPrefix(getPrefix());
@@ -362,6 +372,13 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 	public abstract String getName();
 
+	/**
+	 * Get imported yang modules
+	 * 
+	 * @param paths
+	 *            file system paths where to find modules
+	 * @return a vector of yang specifications
+	 */
 	public Vector<YANG_Specification> getImportedModules(String[] paths) {
 		Vector<YANG_Specification> im = new Vector<YANG_Specification>();
 		for (Enumeration<YANG_Linkage> el = getLinkages().elements(); el
@@ -379,6 +396,11 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		return im;
 	}
 
+	/**
+	 * Get import statement of this yang module
+	 * 
+	 * @return a vector of imports
+	 */
 	public Vector<YANG_Import> getImports() {
 		Vector<YANG_Import> imports = new Vector<YANG_Import>();
 		for (Enumeration<YANG_Linkage> el = getLinkages().elements(); el
@@ -391,6 +413,11 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		return imports;
 	}
 
+	/**
+	 * Get include statement of this yang module
+	 * 
+	 * @return a vector of includes
+	 */
 	public Vector<YANG_Include> getIncludes() {
 		Vector<YANG_Include> includes = new Vector<YANG_Include>();
 		for (Enumeration<YANG_Linkage> el = getLinkages().elements(); el
@@ -402,6 +429,13 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		return includes;
 	}
 
+	/**
+	 * Get included yang sub-modules
+	 * 
+	 * @param paths
+	 *            file system paths where to find sub-modules
+	 * @return a vector of yang specifications
+	 */
 	public Vector<YANG_Specification> getIncludedSubModules(String[] paths) {
 
 		Vector<YANG_Specification> is = new Vector<YANG_Specification>();
