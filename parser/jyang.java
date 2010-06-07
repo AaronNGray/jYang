@@ -44,13 +44,14 @@ public class jyang {
 	}
 
 	public jyang(String[] args) {
-		this (args, true);
+		this(args, true);
 	}
 
 	public void parse(String[] args) {
 		// Parsing arguments
 		if (args.length == 0) {
-			System.err.println("no module name");
+			System.err.println("Usage: jyang [-h] [-o output_file] [-p paths] "
+					+ "[-f output_format] + filename");
 			System.exit(-1);
 		}
 		int i = 0, j;
@@ -89,7 +90,7 @@ public class jyang {
 					switch (flag) {
 					case 'h':
 						System.out
-								.println("Usage : java jyang [-h] [-w] [-o output_file] [-p paths] "
+								.println("Usage : jyang [-h] [-w] [-o output_file] [-p paths] "
 										+ "[-f output_format]  filename");
 						System.exit(0);
 						break;
@@ -105,9 +106,8 @@ public class jyang {
 			}
 		}
 		if (i == args.length) {
-			System.err
-					.println("Usage: java jyang [-h] [-o output_file] [-p paths] "
-							+ "[-f output_format] + filename");
+			System.err.println("Usage: jyang [-h] [-o output_file] [-p paths] "
+					+ "[-f output_format] + filename");
 			System.exit(-1);
 		}
 
@@ -239,8 +239,7 @@ public class jyang {
 					if (format != null) {
 						if (format.compareTo("yin") == 0) {
 							new Yang2Yin(yangspec, paths, out);
-						} 
-						else
+						} else
 							System.err.println("only yin, "
 									+ "  format available");
 					}
