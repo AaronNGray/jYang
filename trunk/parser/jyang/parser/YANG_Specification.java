@@ -362,7 +362,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 	public abstract String getName();
 
-	protected Vector<YANG_Specification> getImportedModules(String[] paths) {
+	public Vector<YANG_Specification> getImportedModules(String[] paths) {
 		Vector<YANG_Specification> im = new Vector<YANG_Specification>();
 		for (Enumeration<YANG_Linkage> el = getLinkages().elements(); el
 				.hasMoreElements();) {
@@ -379,7 +379,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		return im;
 	}
 
-	protected Vector<YANG_Import> getImports() {
+	public Vector<YANG_Import> getImports() {
 		Vector<YANG_Import> imports = new Vector<YANG_Import>();
 		for (Enumeration<YANG_Linkage> el = getLinkages().elements(); el
 				.hasMoreElements();) {
