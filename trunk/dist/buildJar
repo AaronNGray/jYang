@@ -1,4 +1,5 @@
 #/bin/bash
 
-cd ../yang
-jar cvfm ../dist/jYang.jar ../dist/MANIFEST.MF *.class jyang/parser/*.class jyang/tools/*.class
+cd ../parser
+jar cvfm ../dist/jyang ../dist/MANIFEST.MF *.class jyang/parser/*.class jyang/parser/*.properties jyang/tools/*.class
+chmod 755 ../dist/jyang
