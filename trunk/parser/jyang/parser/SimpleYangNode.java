@@ -8,8 +8,6 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 	private Vector<YANG_Unknown> unknowns = new Vector<YANG_Unknown>();
 	protected String filename;
 	private String label;
-	
-	
 
 	public String getLabel() {
 		return label;
@@ -40,10 +38,6 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 		unknowns = u;
 	}
 
-	// public void addUnknowns(Vector<YANG_Unknown> uns){
-	// unknowns.addAll(uns);
-	// }
-
 	public Vector<YANG_Unknown> getUnknowns() {
 		return unknowns;
 	}
@@ -66,10 +60,14 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 
 	private SimpleYangNode parent = null;
 
-	public void setParent(SimpleYangNode b) {
+	protected void setParent(SimpleYangNode b) {
 		parent = b;
 	}
 
+	/**
+	 * return the base filename (without directories or /)
+	 * 
+	 */
 	public String getFileName() {
 		if (filename.indexOf('/') != -1)
 			return filename.substring(filename.lastIndexOf('/') + 1);
@@ -84,15 +82,15 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 		return parent;
 	}
 
-	public void setRootNode(boolean b) {
+	protected void setRootNode(boolean b) {
 		isRootNode = b;
 	}
 
-	public boolean isRootNode() {
+	protected boolean isRootNode() {
 		return isRootNode;
 	}
 
-	public YANG_Config getParentConfig() {
+	protected YANG_Config getParentConfig() {
 		if (this instanceof YANG_Grouping)
 			return null;
 		if (isRootNode) {
@@ -114,7 +112,7 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 		return null;
 	}
 
-	public String unquote(String s) {
+	protected String unquote(String s) {
 		if (s.length() > 0) {
 			if (s.charAt(0) == '"') {
 				s = s.substring(1);
@@ -129,7 +127,7 @@ public abstract class SimpleYangNode extends SimpleNode implements YangNode {
 		return s;
 	}
 
-	public YANG_Config getConfig() {
+	protected YANG_Config getConfig() {
 		return null;
 	}
 
