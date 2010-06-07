@@ -177,9 +177,20 @@ public class Yang2Dsdl {
 			}
 			for (YANG_TypeDef t : definestypedefs.keySet())
 				gTypeDef(t, out);
-			for (String s : definesgroupings.values())
-				System.out.println(s);
+			for (YANG_Grouping g : definesgroupings.keySet())
+				gGrouping(spec, g, out);
 		}
+	}
+
+	private void gGrouping(YANG_Specification spec, YANG_Grouping g, PrintStream out) {
+		out.println(LB + DEFINE + " name=\"" + definesgroupings.get(g) + "\""
+				+ RB);
+		for (YANG_DataDef ddef : g.getDataDefs()){
+			if (ddef instanceof YANG_Leaf)
+				gLeaf(spec, (YANG_Leaf)ddef, out, "",INDENT);
+		}
+		out.println(LB + "/" + DEFINE + RB);
+		
 	}
 
 	private void gTypeDef(YANG_TypeDef td, PrintStream out) {
@@ -229,11 +240,13 @@ public class Yang2Dsdl {
 
 	private void looksForTypesAndGroupings(YANG_Specification spec,
 			YANG_Body body, String prefix) {
+		
 		Vector<YANG_TypeDef> typedefs = null;
 		Vector<YANG_Grouping> groupings = null;
 		Vector<YANG_DataDef> datadefs = null;
 
 		if (body instanceof YANG_TypeDef) {
+			String baseprefix = prefix;
 			YANG_TypeDef td = (YANG_TypeDef) body;
 			prefix += SEP + body.getBody();
 
@@ -252,7 +265,7 @@ public class Yang2Dsdl {
 			definestypedefs.put(td, prefix);
 			while (t.getTypedef() != null) {
 				YANG_TypeDef dtd = t.getTypedef();
-				looksForTypesAndGroupings(spec, dtd, prefix);
+				looksForTypesAndGroupings(spec, dtd, baseprefix);
 				t = dtd.getType();
 			}
 			if (t.getType().compareTo(YangBuiltInTypes.union) == 0) {
@@ -260,7 +273,7 @@ public class Yang2Dsdl {
 				for (YANG_Type ut : u.getTypes()) {
 					while (ut.getTypedef() != null) {
 						YANG_TypeDef dtd = ut.getTypedef();
-						looksForTypesAndGroupings(spec, dtd, prefix);
+						looksForTypesAndGroupings(spec, dtd, baseprefix);
 						ut = dtd.getType();
 					}
 				}
