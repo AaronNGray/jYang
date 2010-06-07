@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: YANG Editor
 Bundle-SymbolicName: fr.loria.madynes.yangeditor;singleton:=true
-Bundle-Version: 0.0.0.test
+Bundle-Version: 0.0.0.test2
 Bundle-Activator: fr.loria.madynes.yangeditor.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,

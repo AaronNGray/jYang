@@ -4,6 +4,8 @@
       A file parser YANG named &quot;jYang&quot; was developed by the Madynes Inria Team. This plug-in support the language analyzer YANG &quot;jYang.
 It will be made from a development interface with a file system syntax highlighting, error handling system, automatic indentation, a tree view, a perspective, a system for internationalization and preference page...
    </description>
-   <feature url="features/fr.loria.madynes.yangeditor.feature_0.0.0.test.jar" id="fr.loria.madynes.yangeditor.feature" version="0.0.0.test"/>
+   <feature url="features/fr.loria.madynes.yangeditor.feature_0.0.0.test2.jar" id="fr.loria.madynes.yangeditor.feature" version="0.0.0.test2">
+      <category name="YANG Editor"/>
+   </feature>
    <category-def name="YANG Editor" label="YANG Editor"/>
 </site>

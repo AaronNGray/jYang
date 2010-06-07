@@ -2,7 +2,7 @@
 <feature
       id="fr.loria.madynes.yangeditor.feature"
       label="YANG Editor"
-      version="0.0.0.test"
+      version="0.0.0.test2"
       plugin="fr.loria.madynes.yangeditor">
 
    <description url="http://jyang.gforge.inria.fr/">
@@ -697,7 +697,7 @@ Public License instead of this License.  But first, please read
          id="fr.loria.madynes.yangeditor"
          download-size="0"
          install-size="0"
-         version="0.0.0.test"
+         version="0.0.0.test2"
          unpack="false"/>
 
 </feature>

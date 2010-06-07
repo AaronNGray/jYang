@@ -46,7 +46,7 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="fr.loria.madynes.yangeditor.actionSet"
-            label="Ying2Yang"
+            label="YANG"
             visible="true">
          <menu
                id="fr.loria.madynes.yangeditor.menu"
