@@ -59,38 +59,75 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		super(p, i);
 	}
 
+	/**
+	 * Get the header of this yang specification. An header is either a
+	 * namespace, a prefix, a yang version or a belongs-to a module.
+	 * 
+	 * @return a non-empty vector of header.
+	 */
 	public Vector<YANG_Header> getHeaders() {
 		return headers;
 	}
 
+	/**
+	 * Get the namespace of this yang specification
+	 * 
+	 * @return a namespace object.
+	 */
 	public YANG_NameSpace getNameSpace() {
 		return namespace;
 	}
 
+	/**
+	 * Get the prefix of this yang specification
+	 * 
+	 * @return a prefix object.
+	 */
 	public YANG_Prefix getPrefix() {
 		return prefix;
 	}
 
+	/**
+	 * Get the linkage of this yang specification. A linkage is either an import
+	 * or an include.
+	 * 
+	 * @return a vector of linkage
+	 */
 	public Vector<YANG_Linkage> getLinkages() {
 		return linkages;
 	}
 
+	/**
+	 * Get the version of the yang language
+	 * 
+	 * @return a yang version object or null if no version was defined.
+	 */
 	public YANG_YangVersion getYangVersion() {
 		return yangversion;
 	}
 
+	/**
+	 * Get the meta statements or this yang specification
+	 * 
+	 * @return a vector of meta statements
+	 */
 	public Vector<YANG_Meta> getMetas() {
 		return metas;
 	}
 
-	public void addLinkage(YANG_Linkage l) {
+	protected void addLinkage(YANG_Linkage l) {
 		linkages.add(l);
 	}
 
-	public void addRevision(YANG_Revision r) {
+	protected void addRevision(YANG_Revision r) {
 		revisions.add(r);
 	}
 
+	/**
+	 * Get the revisions versions of this yang specification
+	 * 
+	 * @return a vector of revisions
+	 */
 	public Vector<YANG_Revision> getRevisions() {
 		return revisions;
 	}
@@ -99,11 +136,16 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		bodies.add(b);
 	}
 
+	/**
+	 * Get the bodies of this yang specification
+	 * 
+	 * @return a vector of yang bodies
+	 */
 	public Vector<YANG_Body> getBodies() {
 		return bodies;
 	}
 
-	public void addMeta(YANG_Meta m) {
+	protected void addMeta(YANG_Meta m) {
 
 		if (m instanceof YANG_Organization) {
 			if (organization)
@@ -136,7 +178,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		metas.add(m);
 	}
 
-	public void check() {
+	protected void check() {
 		String[] path = new String[1];
 		path[0] = ".";
 		Vector<String> cked = new Vector<String>();
@@ -144,23 +186,27 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 	}
 
+	/**
+	 * Is this yang specification checked wihout error
+	 * 
+	 * @return true if no error are detected.
+	 */
 	public static boolean isCheckOk() {
 		return isCheckOk;
 	}
 
 	/**
-	 * Initial check of this specification. It starts the checking with an empty
-	 * context
+	 * Check of this specification.
 	 * 
 	 * @param p
-	 *            path for yang files
+	 *            path for yang files used in import or include statements
 	 */
 	public void check(String[] path) {
 		Vector<String> cked = new Vector<String>();
 		check(path, cked);
 	}
 
-	public YangContext check(String[] p, Vector<String> checked) {
+	protected YangContext check(String[] p, Vector<String> checked) {
 		YangContext c = checkContext(p, checked);
 		checkTreeNode(p);
 		return c;
@@ -173,7 +219,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	}
 
 	@SuppressWarnings("unchecked")
-	public YangContext checkContext(String[] p, Vector<String> checkeds) {
+	protected YangContext checkContext(String[] p, Vector<String> checkeds) {
 
 		checkHeader(p);
 		checkLinkage(p);
@@ -231,7 +277,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	protected abstract void cleanExternalWarning();
 
 	@SuppressWarnings("unchecked")
-	public YangContext buildSpecContext(String[] paths, Vector<String> builded) {
+	private YangContext buildSpecContext(String[] paths, Vector<String> builded) {
 		YangContext context = new YangContext(getImports(), this);
 		if (getPrefix() != null)
 			context.addLocalPrefix(getPrefix());
@@ -301,7 +347,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		return specontext;
 	}
 
-	public YangContext getThisSpecContext(YangContext context) {
+	private YangContext getThisSpecContext(YangContext context) {
 
 		for (Enumeration<YANG_Body> eb = getBodies().elements(); eb
 				.hasMoreElements();) {
@@ -312,11 +358,11 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		return context;
 	}
 
-	public abstract void checkHeader(String[] p);
+	protected abstract void checkHeader(String[] p);
 
 	public abstract String getName();
 
-	public Vector<YANG_Specification> getImportedModules(String[] paths) {
+	protected Vector<YANG_Specification> getImportedModules(String[] paths) {
 		Vector<YANG_Specification> im = new Vector<YANG_Specification>();
 		for (Enumeration<YANG_Linkage> el = getLinkages().elements(); el
 				.hasMoreElements();) {
@@ -333,7 +379,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		return im;
 	}
 
-	public Vector<YANG_Import> getImports() {
+	protected Vector<YANG_Import> getImports() {
 		Vector<YANG_Import> imports = new Vector<YANG_Import>();
 		for (Enumeration<YANG_Linkage> el = getLinkages().elements(); el
 				.hasMoreElements();) {
@@ -533,7 +579,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		schemaTree.check(this, schemaTree, schemaTree, importedtreenodes);
 	}
 
-	public YangTreeNode buildTreeNode(String[] p, Vector<String> builded,
+	private YangTreeNode buildTreeNode(String[] p, Vector<String> builded,
 			Hashtable<String, YangTreeNode> importedtreenodes) {
 
 		for (Enumeration<YANG_Specification> ei = getImportedModules(p)
