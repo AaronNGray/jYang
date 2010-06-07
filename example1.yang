@@ -1,46 +1,77 @@
-   module example1 {
-       namespace "http://example.com/ns/example1";
-       prefix ex1;
-       import "ietf-inet-types" {
-           prefix "inet";
-       }
-       typedef vowels {
-           type string {
-               pattern "[aeiouy]*";
-           }
-       }
-       grouping "grp1" {
-           leaf "void" {
-               type "empty";
-           }
-       }
-       container "cont" {
-           grouping "grp2" {
-               leaf "address" {
-                   
-                   type "inet:ip-address";
-                  }
-                  
-                  container ccc {
-                  	
-                  	leaf truc {
-                  		type truc;
-                  	}
-                  	
-                  }
-                  }
-                  leaf foo {
-                  	
-                  	type vowels;
-                  }
-                  
-                  uses "grp1";
-                  uses "grp2";
-                 }
-                 
-                 typedef truc { type trac {pattern "aert";}}
-                 
-                 typedef trac { type string {pattern "e";}}
-                 
-                }
-                
+module example1 {
+  	
+  	namespace "http:
+  	//example.com/ns/example1";
+  	prefix ex1;
+  	import "ietf-inet-types" {
+  		
+  		prefix "inet";
+  	}
+  	
+  	typedef vowels {
+  		
+  		type string {
+  			
+  			pattern "[aeiouy]*";
+  		}
+  		
+  	}
+  	
+  	grouping "grp1" {
+  		
+  		leaf "void" {
+  			
+  			type "empty";
+  		}
+  		
+  	}
+  	
+  	container "cont" {
+  		
+  		grouping "grp2" {
+  			
+  			leaf "address" {
+  				
+  				type "inet:ip-address";
+  			}
+  			
+  			container ccc {
+  				
+  				leaf truc {
+  					
+  					type truc;
+  				}
+  				
+  			}
+  			
+  		}
+  		
+  		leaf foo {
+  			
+  			type vowels;
+  		}
+  		
+  		uses "grp1";
+  		uses "grp2";
+  	}
+  	
+  	typedef truc {
+  		
+  		type trac {
+  			
+  			pattern "aert";
+  		}
+  		
+  	}
+  	
+  	typedef trac {
+  		
+  		type string {
+  			
+  			pattern "e";
+  		}
+  		
+  	}
+  	
+  }
+  
