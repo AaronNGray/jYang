@@ -59,22 +59,49 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		super(p, i);
 	}
 
+	/**
+	 * Get the header of this yang specification. An header is either a
+	 * namespace, a prefix, a yang version or a belongs-to a module.
+	 * 
+	 * @return a non-empty vector of header.
+	 */
 	public Vector<YANG_Header> getHeaders() {
 		return headers;
 	}
 
+	/**
+	 * Get the namespace of this yang specification
+	 * 
+	 * @return a namespace object.
+	 */
 	public YANG_NameSpace getNameSpace() {
 		return namespace;
 	}
 
+	/**
+	 * Get the prefix of this yang specification
+	 * 
+	 * @return a prefix object.
+	 */
 	public YANG_Prefix getPrefix() {
 		return prefix;
 	}
 
+	/**
+	 * Get the linkage of this yang specification. A linkage is either an import
+	 * or an include.
+	 * 
+	 * @return a vector of linkage
+	 */
 	public Vector<YANG_Linkage> getLinkages() {
 		return linkages;
 	}
 
+	/**
+	 * Get the version of the yang language
+	 * 
+	 * @return a yang version object or null if no version was defined.
+	 */
 	public YANG_YangVersion getYangVersion() {
 		return yangversion;
 	}
@@ -83,7 +110,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 		return metas;
 	}
 
-	public void addLinkage(YANG_Linkage l) {
+	protected void addLinkage(YANG_Linkage l) {
 		linkages.add(l);
 	}
 
