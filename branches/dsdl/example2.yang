@@ -1,0 +1,44 @@
+module example2 {
+	
+	namespace "http://example.com/ns/example2";
+	prefix ex2;
+	grouping leaves {
+		
+		uses fr;
+		uses es;
+		uses en;
+	}
+	
+	grouping fr {
+		
+		leaf feuille {
+			
+			type string;
+		}
+		
+	}
+	grouping en {
+		
+		leaf leaf {
+			
+			type string;
+		}
+		
+	}
+	
+	grouping es {
+		
+		leaf hoja {
+			
+			type string;
+		}
+		
+	}
+	  
+	uses leaves {
+		refine "hoja" {
+			default "alamo";
+		}
+	}
+	
+}
