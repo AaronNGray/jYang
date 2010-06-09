@@ -195,47 +195,120 @@ public class Yang2Dsdl {
 			out.print(usedgrouping);
 			out.println("\"" + "/" + RB);
 		} else {
-			
-			YANG_Grouping g = uses.getGrouping();
-			for (YANG_RefineAnyNode ref : uses.getRefinements()) {
-				expand(spec, g, ref, out, indent);
-			}
+			for (YANG_DataDef ddef : uses.getGrouping().getDataDefs())
+				expandRefinement(spec, ddef, uses.getRefinements(), out, indent);
+
 		}
 
 	}
 
-	private void expand(YANG_Specification spec, YANG_Grouping g,
-			YANG_RefineAnyNode ref, PrintStream out, String indent) {
-		String refinednodepath = ref.getRefineNodeId();
-		String[] path = refinednodepath.split("/");
-		YANG_DataDef refinednode = null;
-		for (String s : path) {
-			for (YANG_DataDef ddef : g.getDataDefs()) {
-				if (!(ddef instanceof YANG_Uses))
-					if (ddef.getBody().compareTo(s) == 0) {
-						refinednode = ddef;
-					}
+	private void expandRefinement(YANG_Specification spec, YANG_DataDef ddef,
+			Vector<YANG_RefineAnyNode> refs, PrintStream out, String indent) {
+		boolean generated = false;
+		for (YANG_RefineAnyNode ref : refs) {
+			String refinednodepath = ref.getRefineNodeId();
+			YANG_DataDef refinednode = isInSubTree(spec, ddef, refinednodepath);
+			if (refinednode != null) {
+				gDataDef(spec, ddef, refinednode, ref, refinednodepath, out,
+						indent);
+			} else {
+				if (!generated) {
+					gDataDef(spec, ddef, out, indent);
+					generated = true;
+				}
 			}
 		}
-		if (refinednode == null) {
-			for (YANG_DataDef ddef : g.getDataDefs()) {
-				if (ddef instanceof YANG_Uses) {
-					expand(spec, ((YANG_Uses) ddef).getGrouping(), ref, out,
-							indent);
-				}
-			}
-		} else {
-			if (refinednode instanceof YANG_Leaf) {
-				YANG_Leaf leaf = (YANG_Leaf) refinednode;
-				YANG_Leaf cleaf = null;
-				YANG_RefineLeaf rl = ref.getRefineLeaf();
-				if (rl.getDefault() != null) {
-					cleaf = leaf.clone();
-					cleaf.setDefault(rl.getDefault());
-				}
-				gLeaf(spec, cleaf, out, "", indent);
+	}
 
+	private void gDataDef(YANG_Specification spec, YANG_DataDef ddef,
+			YANG_DataDef refinednode, YANG_RefineAnyNode ref,
+			String descendant, PrintStream out, String indent) {
+
+		String[] path = descendant.split("/");
+
+		if (ddef instanceof YANG_Uses) {
+			YANG_Grouping g = ((YANG_Uses) ddef).getGrouping();
+			YANG_DataDef result = null;
+			for (YANG_DataDef gddef : g.getDataDefs()) {
+				YANG_DataDef lr = isInSubTree(spec, gddef, descendant);
+				if (lr != null)
+					result = lr;
 			}
+		} else if (ddef instanceof YANG_Choice) {
+
+		} else if (path.length == 1) {
+			if (ddef.getBody().compareTo(path[0]) == 0)
+				if (refinednode instanceof YANG_Leaf) {
+					YANG_Leaf leaf = (YANG_Leaf) refinednode;
+					YANG_Leaf cleaf = null;
+					YANG_RefineLeaf rl = ref.getRefineLeaf();
+					if (rl.getDefault() != null) {
+						cleaf = leaf.clone();
+						cleaf.setDefault(rl.getDefault());
+					}
+					gLeaf(spec, cleaf, out, "", indent);
+				}
+
+		} else {
+			String descendantname = descendant.substring(descendant
+					.indexOf("/") + 1);
+			if (ddef.getBody().compareTo(path[0]) == 0) {
+				if (ddef instanceof YANG_Container) {
+					out.println(indent + LB + ELT + " name=\"" + spec.getPrefix().getPrefix() + ":" + ddef.getBody() + "\"" + RB);
+					for (YANG_DataDef dddef : ((YANG_Container) ddef)
+							.getDataDefs()) {
+						gDataDef(spec, dddef, refinednode, ref, descendantname,
+								out, indent + INDENT);
+						out.println(indent + LB + "/" + ELT + RB);
+					}
+				} else if (ddef instanceof YANG_List) {
+					for (YANG_DataDef dddef : ((YANG_List) ddef).getDataDefs()) {
+						gDataDef(spec, dddef, refinednode, ref, descendantname,
+								out, indent);
+					}
+				}
+			}
+		}
+	}
+
+	private YANG_DataDef isInSubTree(YANG_Specification spec,
+			YANG_DataDef ddef, String descendant) {
+		String[] path = descendant.split("/");
+		YANG_DataDef refinednode = null;
+		if (ddef instanceof YANG_Uses) {
+			YANG_Grouping g = ((YANG_Uses) ddef).getGrouping();
+			YANG_DataDef result = null;
+			for (YANG_DataDef gddef : g.getDataDefs()) {
+				YANG_DataDef lr = isInSubTree(spec, gddef, descendant);
+				if (lr != null)
+					result = lr;
+			}
+			return result;
+		} else if (ddef instanceof YANG_Choice) {
+			return null;
+		} else if (path.length == 1) {
+			if (ddef.getBody().compareTo(path[0]) == 0)
+				return ddef;
+			else
+				return null;
+		} else {
+			String descendantname = descendant.substring(descendant
+					.indexOf("/") + 1);
+			if (ddef.getBody().compareTo(path[0]) == 0) {
+				Vector<YANG_DataDef> dddef = new Vector<YANG_DataDef>();
+				if (ddef instanceof YANG_Container)
+					dddef = ((YANG_Container) ddef).getDataDefs();
+				else if (ddef instanceof YANG_List)
+					dddef = ((YANG_List) ddef).getDataDefs();
+				YANG_DataDef result = null;
+				for (YANG_DataDef ld : dddef) {
+					YANG_DataDef ldd = isInSubTree(spec, ld, descendantname);
+					if (ldd != null)
+						result = ldd;
+				}
+				return result;
+			}
+			return null;
 		}
 
 	}
@@ -493,8 +566,8 @@ public class Yang2Dsdl {
 		out.print(indent + LB + ELT + " name=\"" + spec.getPrefix().getPrefix()
 				+ ":" + leaf.getLeaf() + "\"");
 		if (leaf.getDefault() != null)
-			out.println(" " + NMADEF + "=\"" + leaf.getDefault().getDefault() + "\""
-					+ RB);
+			out.println(" " + NMADEF + "=\"" + leaf.getDefault().getDefault()
+					+ "\"" + RB);
 		else
 			out.println("\"" + RB);
 		gType(spec, type, out, prefix, indent + INDENT);
