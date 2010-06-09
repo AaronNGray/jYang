@@ -6,7 +6,11 @@ module example2 {
 		
 		uses fr;
 		uses es;
-		uses en;
+		container en {
+		   leaf leaf {
+			type string;
+			}
+		}
 	}
 	
 	grouping fr {
@@ -39,6 +43,7 @@ module example2 {
 		refine "hoja" {
 			default "alamo";
 		}
+		refine en/leaf { default "toto";}
 	}
 	
 }
