@@ -42,30 +42,34 @@ public class YANGFormattingStrategy extends DefaultFormattingStrategy {
 		}
 
 		content = formatContent(content);
+		if (!content.isEmpty()) {
+			if (lastTagWasOpening) {
+				indentation = indentation + "\t";
+			}
 
-		if (lastTagWasOpening) {
-			indentation = indentation + "\t";
+			lastTagWasOpening = false;
+
+			if (content.equals("}")) {
+				indentation = indentation
+						.substring(0, indentation.length() - 1);
+				return lineSeparator + indentation + content;
+			}
+
+			content = content.replaceAll(lineSeparator, lineSeparator
+					+ indentation);
+
+			if (content.equals("{")) {
+				lastTagWasOpening = true;
+				return " " + content;
+			}
+
+			if (!isLineStart) {
+				return lineSeparator + indentation + content;
+			} else {
+				return indentation + content;
+			}
 		}
-
-		lastTagWasOpening = false;
-
-		if (content.equals("}")) {
-			indentation = indentation.substring(0, indentation.length() - 1);
-		}
-
-		content = content
-				.replaceAll(lineSeparator, lineSeparator + indentation);
-
-		if (content.equals("{")) {
-			lastTagWasOpening = true;
-			return " " + content;
-		}
-
-		if (!isLineStart) {
-			return lineSeparator + indentation + content;
-		} else {
-			return indentation + content;
-		}
+		return content;
 	}
 
 	private String formatContent(String content) {
@@ -74,17 +78,18 @@ public class YANGFormattingStrategy extends DefaultFormattingStrategy {
 		String[] ts = content.split("\n");
 		ArrayList<String> als = new ArrayList<String>();
 		for (String s : ts) {
-			als.add(s.trim());
+			s = s.trim();
+			if (!s.isEmpty()) {
+				als.add(s);
+			}
 		}
 		String res = new String();
 		for (int i = 0; i < als.size(); i++) {
 			String s = als.get(i);
-			if (!s.isEmpty()) {
-				if (i > 0) {
-					res += lineSeparator + s;
-				} else {
-					res += s;
-				}
+			if (i > 0) {
+				res += lineSeparator + s;
+			} else {
+				res += s;
 			}
 		}
 		return res;

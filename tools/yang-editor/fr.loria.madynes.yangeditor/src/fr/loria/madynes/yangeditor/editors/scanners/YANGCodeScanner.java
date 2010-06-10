@@ -73,8 +73,8 @@ public class YANGCodeScanner extends RuleBasedScanner {
 
 		List<IRule> rules = new ArrayList<IRule>();
 		// Add rule for string.
-		rules.add(new SingleLineRule("\"", "\"", string));
-		rules.add(new SingleLineRule("'", "'", string));
+		rules.add(new MultiLineRule("\"", "\"", string));
+		rules.add(new MultiLineRule("'", "'", string));
 		// Add rule for tokens and types.
 		rules.add(wr);
 
