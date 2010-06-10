@@ -31,6 +31,7 @@ public class Parser {
 	private static jyang jy = null;
 
 	public static void parse(String fname) {
+		SimpleCharStream.setTabSize(1);
 		filename = fname;
 		try {
 			File f = new File(filename);

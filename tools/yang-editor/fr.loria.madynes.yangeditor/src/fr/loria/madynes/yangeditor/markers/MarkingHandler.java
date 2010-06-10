@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with jyang.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package fr.loria.madynes.yangeditor.editors.markers;
+package fr.loria.madynes.yangeditor.markers;
 
 import java.util.*;
 
@@ -59,7 +59,7 @@ public class MarkingHandler {
 		Activator.getLogger().config(
 				Activator.getResourceString("Logger.Marker.Add") + " (" + err
 						+ ")");
-
+		System.out.println(err);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put(IMarker.SEVERITY, err.getSeverity());
 		map.put(IMarker.MESSAGE, err.getMessageId());
@@ -68,12 +68,13 @@ public class MarkingHandler {
 		try {
 			int i = document.getLineOffset(err.getLine() - 1) + err.getColumn()
 					- 1;
-			map.put(IMarker.CHAR_START, i);
+			int j = i;	
 			char c = '\0';
 			do {
-				c = document.getChar(++i);
+				c = document.getChar(++j);
 			} while (c != ';' && c != '\n' && c != '\r');
-			map.put(IMarker.CHAR_END, i);
+			map.put(IMarker.CHAR_START, i);
+			map.put(IMarker.CHAR_END, j);
 		} catch (BadLocationException e) {
 		}
 

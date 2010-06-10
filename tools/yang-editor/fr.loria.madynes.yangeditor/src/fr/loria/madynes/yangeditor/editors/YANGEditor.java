@@ -32,9 +32,9 @@ import org.eclipse.ui.texteditor.*;
 import org.eclipse.ui.views.contentoutline.*;
 
 import fr.loria.madynes.yangeditor.*;
-import fr.loria.madynes.yangeditor.editors.markers.*;
 import fr.loria.madynes.yangeditor.editors.menus.*;
 import fr.loria.madynes.yangeditor.editors.outline.*;
+import fr.loria.madynes.yangeditor.markers.*;
 
 /**
  * YANGEditor
