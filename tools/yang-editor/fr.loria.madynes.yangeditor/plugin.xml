@@ -52,13 +52,14 @@
                id="fr.loria.madynes.yangeditor.menu"
                label="YANG" />
          <action
-               class="fr.loria.madynes.yangeditor.editors.menus.YANGToYin"
-               icon="icons/yang2yin.png"
-               id="fr.loria.madynes.yangeditor.menu.yang2yin"
-               label="Yang 2 Yin"
-               style="push"
+               class="fr.loria.madynes.yangeditor.editors.menus.YANGBackend"
+               icon="icons/be.png"
+               id="fr.loria.madynes.yangeditor.menu.yangbackend"
+               label="Yang Backend"
+               state="false"
+               style="pulldown"
                toolbarPath="fr.loria.madynes.yangeditor.menu"
-               tooltip="Convert YANG file into YIN file"/>
+               tooltip="Convert YANG file into other format"/>
       </actionSet>
    </extension>
 </plugin>

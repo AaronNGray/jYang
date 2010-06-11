@@ -56,4 +56,8 @@ public class Parser {
 						filename.lastIndexOf(File.separatorChar) + 1, filename
 								.length() - 5));
 	}
+
+	public static Hashtable<String, YANG_Specification> getYangsSpecs() {
+		return jy.getYangsSpecs();
+	}
 }

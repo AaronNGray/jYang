@@ -23,6 +23,7 @@ import java.util.*;
 
 import org.eclipse.jface.text.rules.*;
 import org.eclipse.jface.text.*;
+import org.eclipse.swt.SWT;
 
 import fr.loria.madynes.yangeditor.editors.*;
 import fr.loria.madynes.yangeditor.editors.rules.*;
@@ -36,21 +37,24 @@ import fr.loria.madynes.yangeditor.preferences.*;
  */
 public class YANGCodeScanner extends RuleBasedScanner {
 
-	private static String[] tokens = new String[] { "anyxml", "argument",
-			"augment", "base", "belongs-to", "bit", "case", "choice", "config",
-			"contact", "container", "default", "description", "enum",
-			"error-app-tag", "error-message", "extension", "deviation",
-			"deviate", "feature", "fraction-digits", "grouping", "identity",
-			"if-feature", "import", "include", "input", "key", "leaf",
-			"leaf-list", "length", "list", "mandatory", "max-elements",
-			"min-elements", "module", "must", "namespace", "notification",
-			"ordered-by", "organization", "output", "path", "pattern",
-			"position", "prefix", "presence", "range", "reference", "refine",
-			"require-instance", "revision", "revision-date", "rpc", "status",
-			"submodule", "type", "typedef", "unique", "units", "uses", "value",
-			"when", "yang-version", "yin-element", "add", "current", "delete",
-			"deprecated", "false", "max", "min", "not-supported", "obsolete",
-			"replace", "system", "true", "unbounded", "user" };
+	private static String[] tokens = new String[] { "argument", "base",
+			"belongs-to", "bit", "config", "default", "enum", "error-app-tag",
+			"error-message", "deviation", "deviate", "feature",
+			"fraction-digits", "identity", "if-feature", "length", "mandatory",
+			"max-elements", "min-elements", "must", "ordered-by", "path",
+			"pattern", "position", "presence", "range", "refine",
+			"require-instance", "status", "unique", "units", "value", "when",
+			"add", "current", "delete", "deprecated", "false", "max", "min",
+			"not-supported", "obsolete", "replace", "system", "true",
+			"unbounded", "user" };
+
+	private static String[] datanodes = new String[] { "anyxml", "augment",
+			"case", "choice", "contact", "container", "description",
+			"extension", "grouping", "import", "include", "input", "key",
+			"leaf", "leaf-list", "list", "module", "namespace", "notification",
+			"organization", "output", "prefix", "reference", "revision",
+			"revision-date", "rpc", "submodule", "type", "typedef", "uses",
+			"yang-version", "yin-element" };
 
 	private static String[] types = new String[] { "binary", "bits", "boolean",
 			"decimal64", "empty", "enumeration", "identityref",
@@ -63,12 +67,16 @@ public class YANGCodeScanner extends RuleBasedScanner {
 
 		IToken token = new Token(new TextAttribute(manager
 				.getColor(YANGPreferences.getTokenColor())));
+		
+		IToken datanode = new Token(new TextAttribute(manager
+				.getColor(YANGPreferences.getDataNodeColor()),null,SWT.BOLD));
 
 		IToken type = new Token(new TextAttribute(manager
 				.getColor(YANGPreferences.getTypeColor())));
 
 		YANGWordRule wr = new YANGWordRule();
 		wr.addWords(tokens, token);
+		wr.addWords(datanodes, datanode);
 		wr.addWords(types, type);
 
 		List<IRule> rules = new ArrayList<IRule>();

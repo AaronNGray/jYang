@@ -41,7 +41,6 @@ public class YangContentOutlinePage extends ContentOutlinePage {
 	}
 
 	public void createControl(Composite parent) {
-
 		super.createControl(parent);
 		TreeViewer viewer = getTreeViewer();
 		outlineContentProvider = new OutlineContentProvider(editor
@@ -97,7 +96,7 @@ public class YangContentOutlinePage extends ContentOutlinePage {
 			if (control != null && !control.isDisposed()) {
 				control.setRedraw(false);
 				viewer.setInput(input);
-				viewer.expandAll();
+				//viewer.expandAll();
 				control.setRedraw(true);
 			}
 		}

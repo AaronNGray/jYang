@@ -58,6 +58,8 @@ public class OutlineLabelProvider implements ILabelProvider {
 			descriptor = Activator.getImageDescriptor("type");
 		} else if (e instanceof YANG_Grouping) {
 			descriptor = Activator.getImageDescriptor("grouping");
+		} else if (e instanceof YANG_Uses) {
+			descriptor = Activator.getImageDescriptor("uses");
 		} else {
 			descriptor = Activator.getImageDescriptor("other");
 		}

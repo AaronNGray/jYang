@@ -36,7 +36,8 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 	public static final String KEY_COLOR_TYPE = "color_type";
 	public static final String KEY_COLOR_COMMENT = "color_comment";
 	public static final String KEY_COLOR_BRACKET = "color_bracket";
-
+	public static final String KEY_COLOR_DATANODE = "color_datanode";
+	
 	// Default values
 	private static boolean DEFAULT_PARSER_ACTIVE = true;
 	private static RGB DEFAULT_COLOR_TEXT = new RGB(0, 0, 0);
@@ -45,6 +46,7 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 	private static RGB DEFAULT_COLOR_TYPE = new RGB(0, 128, 128);
 	private static RGB DEFAULT_COLOR_COMMENT = new RGB(0, 128, 0);
 	private static RGB DEFAULT_COLOR_BRACKET = new RGB(128, 0, 0);
+	private static RGB DEFAULT_COLOR_DATANODE = new RGB(128,128,0);
 
 	// Fields in the option pane
 	protected BooleanFieldEditor bParser;
@@ -54,6 +56,7 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 	protected ColorFieldEditor cType;
 	protected ColorFieldEditor cComment;
 	protected ColorFieldEditor cBracket;
+	protected ColorFieldEditor cDataNode;
 
 	public YANGPreferences() {
 		super(Activator.getResourceString("Preference.Title"),
@@ -78,6 +81,9 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 		cBracket = new ColorFieldEditor(KEY_COLOR_BRACKET, Activator
 				.getResourceString("Preference.Bracket"),
 				getFieldEditorParent());
+		cDataNode = new ColorFieldEditor(KEY_COLOR_DATANODE, Activator
+				.getResourceString("Preference.DataNode"),
+				getFieldEditorParent());
 
 		addField(bParser);
 		addField(cText);
@@ -86,6 +92,7 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 		addField(cType);
 		addField(cComment);
 		addField(cBracket);
+		addField(cDataNode);
 
 		// Set the default values
 		IPreferenceStore store = getPreferenceStore();
@@ -102,6 +109,8 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 				DEFAULT_COLOR_COMMENT);
 		PreferenceConverter.setDefault(store, KEY_COLOR_BRACKET,
 				DEFAULT_COLOR_BRACKET);
+		PreferenceConverter.setDefault(store, KEY_COLOR_DATANODE,
+				DEFAULT_COLOR_DATANODE);
 	}
 
 	@Override
@@ -146,6 +155,8 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 			return DEFAULT_COLOR_TOKEN;
 		}
 	}
+	
+	
 
 	public static RGB getTypeColor() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
@@ -171,6 +182,15 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 			return PreferenceConverter.getColor(store, KEY_COLOR_BRACKET);
 		} else {
 			return DEFAULT_COLOR_BRACKET;
+		}
+	}
+
+	public static RGB getDataNodeColor() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		if (store.contains(KEY_COLOR_DATANODE)) {
+			return PreferenceConverter.getColor(store, KEY_COLOR_DATANODE);
+		} else {
+			return DEFAULT_COLOR_DATANODE;
 		}
 	}
 }
