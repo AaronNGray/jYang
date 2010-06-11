@@ -74,10 +74,10 @@ public class OutlineContentProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getElements(Object inputElement) {
-		if (root != null && root.jjtGetNumChildren() > 0) {
-			return getChildren(root);
-		}
-		return new Object[0];
+//		if (root != null && root.jjtGetNumChildren() > 0) {
+//			return getChildren(root);
+//		}
+		return new Object[] { root };
 	}
 
 	public void dispose() {

@@ -49,7 +49,6 @@ public class YangContentOutlinePage extends ContentOutlinePage {
 		outlineLabelProvider = new OutlineLabelProvider();
 		viewer.setLabelProvider(outlineLabelProvider);
 		viewer.addSelectionChangedListener(this);
-
 		// control is created after input is set
 		if (input != null) {
 			viewer.setInput(input);
@@ -96,7 +95,7 @@ public class YangContentOutlinePage extends ContentOutlinePage {
 			if (control != null && !control.isDisposed()) {
 				control.setRedraw(false);
 				viewer.setInput(input);
-				//viewer.expandAll();
+				// viewer.expandAll();
 				control.setRedraw(true);
 			}
 		}

@@ -60,9 +60,13 @@ public class OutlineLabelProvider implements ILabelProvider {
 			descriptor = Activator.getImageDescriptor("grouping");
 		} else if (e instanceof YANG_Uses) {
 			descriptor = Activator.getImageDescriptor("uses");
-		} else {
+		} else if (e instanceof YANG_Module) {
+			descriptor = Activator.getImageDescriptor("module");
+		} else if (e instanceof YANG_SubModule) {
+			descriptor = Activator.getImageDescriptor("module");
+		}else {
 			descriptor = Activator.getImageDescriptor("other");
-		}
+		}		
 
 		if (descriptor != null) {
 			// obtain the cached image corresponding to the descriptor
@@ -91,7 +95,11 @@ public class OutlineLabelProvider implements ILabelProvider {
 				}
 			} else
 			/* Begin of DocumentedNode */
-			if (e instanceof YANG_Body) { // Body
+			if (e instanceof YANG_Module) {
+				res += " " + ((YANG_Module) e).getModule();
+			} else if (e instanceof YANG_SubModule) {
+				res += " " + ((YANG_SubModule) e).getSubModule();
+			} else if (e instanceof YANG_Body) { // Body
 				res += " " + ((YANG_Body) e).getBody();
 			} else if (e instanceof YANG_Pattern) { // Pattern
 				res += " " + ((YANG_Pattern) e).getPattern();
