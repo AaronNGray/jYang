@@ -37,7 +37,7 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 	public static final String KEY_COLOR_COMMENT = "color_comment";
 	public static final String KEY_COLOR_BRACKET = "color_bracket";
 	public static final String KEY_COLOR_DATANODE = "color_datanode";
-	
+
 	// Default values
 	private static boolean DEFAULT_PARSER_ACTIVE = true;
 	private static RGB DEFAULT_COLOR_TEXT = new RGB(0, 0, 0);
@@ -46,7 +46,7 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 	private static RGB DEFAULT_COLOR_TYPE = new RGB(0, 128, 128);
 	private static RGB DEFAULT_COLOR_COMMENT = new RGB(0, 128, 0);
 	private static RGB DEFAULT_COLOR_BRACKET = new RGB(128, 0, 0);
-	private static RGB DEFAULT_COLOR_DATANODE = new RGB(128,128,0);
+	private static RGB DEFAULT_COLOR_DATANODE = new RGB(128, 0, 128);
 
 	// Fields in the option pane
 	protected BooleanFieldEditor bParser;
@@ -155,8 +155,6 @@ public class YANGPreferences extends FieldEditorPreferencePage implements
 			return DEFAULT_COLOR_TOKEN;
 		}
 	}
-	
-	
 
 	public static RGB getTypeColor() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
