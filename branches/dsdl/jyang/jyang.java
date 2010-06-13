@@ -1,3 +1,5 @@
+package jyang;
+
 /*
  * Copyright 2008 Emmanuel Nataf, Olivier Festor
  * 
@@ -44,7 +46,7 @@ public class jyang {
 	}
 
 	public jyang(String[] args) {
-		this (args, true);
+		this(args, true);
 	}
 
 	public void parse(String[] args) {
@@ -239,8 +241,7 @@ public class jyang {
 					if (format != null) {
 						if (format.compareTo("yin") == 0) {
 							new Yang2Yin(yangspec, paths, out);
-						} 
-						else if (format.compareTo("dsdl") != 0)
+						} else if (format.compareTo("dsdl") != 0)
 							System.err.println("only yin, dsdl, "
 									+ "  format available");
 					}
@@ -270,7 +271,7 @@ public class jyang {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		parsingOk = noError;	
+		parsingOk = noError;
 		if (format != null)
 			if (format.compareTo("dsdl") == 0) {
 				new Yang2Dsdl(yangsSpecs, out);

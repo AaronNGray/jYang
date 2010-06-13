@@ -22,6 +22,7 @@ package fr.loria.madynes.yangeditor;
 import java.io.*;
 import java.util.*;
 
+import jyang.jyang;
 import jyang.parser.*;
 import jyang.parser.YangErrorManager.Error;
 
