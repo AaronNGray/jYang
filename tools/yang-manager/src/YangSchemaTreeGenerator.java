@@ -41,6 +41,7 @@ import yangtree.attributes.builtinTypes.BuiltinType;
 import yangtree.nodes.*;
 import yangtree.nodes.YangNode;
 
+import jyang.jyang;
 import jyang.parser.*;
 
 /**
@@ -102,7 +103,7 @@ public class YangSchemaTreeGenerator {
 		for (Enumeration<YANG_Specification> especs = specs.elements(); especs
 				.hasMoreElements();) {
 			YANG_Specification spec = especs.nextElement();
-				context = spec.buildSpecContext(new String[0], null,
+				context = spec.buildSpecContext(new String[0],
 						new Vector<String>());
 				// TODO Auto-generated catch block
 				

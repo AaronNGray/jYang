@@ -41,7 +41,7 @@ import yangtree.nodes.YangNode;
 @SuppressWarnings("serial")
 public class YangApplet extends JApplet implements TreeSelectionListener {
 
-	private static DocumentBuilderFactory documentBuilderFactory = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
+	private static DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
 	private String agentIP;
 
