@@ -277,7 +277,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	protected abstract void cleanExternalWarning();
 
 	@SuppressWarnings("unchecked")
-	private YangContext buildSpecContext(String[] paths, Vector<String> builded) {
+	public YangContext buildSpecContext(String[] paths, Vector<String> builded) {
 		YangContext context = new YangContext(getImports(), this);
 		if (getPrefix() != null)
 			context.addLocalPrefix(getPrefix());
