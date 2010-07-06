@@ -240,9 +240,11 @@ public class jyang {
 					if (format != null) {
 						if (format.compareTo("yin") == 0) {
 							new Yang2Yin(yangspec, paths, out);
+						} else if (format.compareTo("netconf") == 0) {
+							new Yang2NetconfHello(yangspec, paths, out);
 						} else
-							System.err.println("only yin, "
-									+ "  format available");
+							System.err.println("only yin, netconf"
+									+ "  formats available");
 					}
 				} else
 					noError = false;

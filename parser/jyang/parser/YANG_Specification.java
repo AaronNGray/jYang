@@ -25,12 +25,14 @@ import java.io.FileNotFoundException;
 import java.rmi.server.ExportException;
 import java.text.MessageFormat;
 import java.util.*;
+
 /**
  * 
  * @author nataf
  * 
- * The abstract class YANG_Specification is a common class for YANG module or sub-module.
- *
+ *         The abstract class YANG_Specification is a common class for YANG
+ *         module or sub-module.
+ * 
  */
 public abstract class YANG_Specification extends SimpleYangNode {
 
@@ -209,7 +211,8 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	/**
 	 * Check of this specification.
 	 * 
-	 * @param path for yang files used in import or include statements
+	 * @param path
+	 *            for yang files used in import or include statements
 	 */
 	public void check(String[] path) {
 		Vector<String> cked = new Vector<String>();
@@ -233,6 +236,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 
 		checkHeader(p);
 		checkLinkage(p);
+		checkRevisions();
 
 		YangContext localcontext = buildSpecContext(p,
 				(Vector<String>) checkeds.clone());
@@ -248,6 +252,24 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					localcontext);
 		}
 		return localcontext;
+	}
+
+	private void checkRevisions() {
+		Vector<YANG_Revision> duprev = new Vector<YANG_Revision>();
+		for (YANG_Revision rev : getRevisions()) {
+			rev.check();
+			for (YANG_Revision rev2 : getRevisions()) {
+				if (rev2 != rev && rev2.getDate().compareTo(rev.getDate()) == 0) {
+					if (!duprev.contains(rev)){
+						duprev.add(rev);
+						duprev.add(rev2);
+					YangErrorManager.addError(getFileName(), rev.getLine(), rev
+							.getCol(), "dup_rev", rev2.getLine());
+					}
+				}
+			}
+		}
+
 	}
 
 	private void checkBodies(String[] p, Vector<String> ckd, YangContext context) {
