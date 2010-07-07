@@ -23,7 +23,7 @@
 #   Email: nataf@loria.fr										              #
 #                                                                             #
 ###############################################################################
-**/
+ **/
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,74 +43,60 @@ import yangtree.nodes.YangNode;
 
 import jyang.jyang;
 import jyang.parser.*;
+import jyang.*;
 
 /**
  * 
  * @author Cornu - nataf
  * 
- * This class generates a yangTreeNode from  yang specifications and xpath
- * It writes a file object for the netconf agent that has announced its yang 
- * capabilities
- *
+ *         This class generates a yangTreeNode from yang specifications and
+ *         xpath It writes a file object for the netconf agent that has
+ *         announced its yang capabilities
+ * 
  */
 public class YangSchemaTreeGenerator {
 
 	private jyang parser = null;
 
 	private static YangContext context = null;
-	
-/**
- * 
- * @param args : a list of parameters to build the tree node
- * - IP address of the NETCONF server
- * - the number of prefixes the server will recognize
- *     - one prefix
- *     - the urn or url of the prefix
- *   repeated number or prefixes times
- *  - the number of yang modules
- *  - the filename of each yang module
- *  - the name of each module, its location in the DataStore and its urn 
- */
+
+	/**
+	 * 
+	 * @param args
+	 *            : a list of parameters to build the tree node - IP address of
+	 *            the NETCONF server - the number of prefixes the server will
+	 *            recognize - one prefix - the urn or url of the prefix repeated
+	 *            number or prefixes times - the number of yang modules - the
+	 *            filename of each yang module - the name of each module, its
+	 *            location in the DataStore and its urn
+	 */
 	public YangSchemaTreeGenerator(String[] args) {
+
 		String ip = args[0];
 
-		int nbPrefixes = Integer.parseInt(args[1]);
+		String[] yarg = new String[args.length - 1];
 
-		String[] prefixes = new String[2 * nbPrefixes];
-		for (int i = 0; i < nbPrefixes * 2; i++) {
-			prefixes[i] = args[i + 2];
-		}
+		for (int i = 1; i < args.length; i++)
+			yarg[i - 1] = args[i];
 
-		int nbmodules = Integer.parseInt(args[nbPrefixes * 2 + 2]);
-
-		String[] yarg = new String[nbmodules];
-
-		for (int i = 0; i < nbmodules; i++) {
-			yarg[i] = args[i + nbPrefixes * 2 + 3];
-		}
-
-		String modulesArgs[] = new String[3 * nbmodules];
-		for (int i = 0; i < 3 * nbmodules; i++) {
-			modulesArgs[i] = args[3 + nbPrefixes * 2 + nbmodules + i];
-		}
-		
 		parser = new jyang(yarg);
 		if (!parser.isParsingOk())
 			System.exit(-1);
-		
+
 		Hashtable<String, YANG_Specification> specs = parser.getYangsSpecs();
 		Map<String, YangInnerNode> treeMap = new HashMap<String, YangInnerNode>();
 		for (Enumeration<YANG_Specification> especs = specs.elements(); especs
 				.hasMoreElements();) {
 			YANG_Specification spec = especs.nextElement();
+
 				context = spec.buildSpecContext(new String[0],
 						new Vector<String>());
 				// TODO Auto-generated catch block
-				
+
 
 			treeMap.put(spec.getName(), buildModuleTree(spec));
 		}
-		RootNode schemaTree = buildGeneralTree(modulesArgs, prefixes, treeMap);
+		RootNode schemaTree = buildGeneralTree(treeMap);
 
 		try {
 			ObjectOutputStream os = new ObjectOutputStream(
@@ -127,133 +113,58 @@ public class YangSchemaTreeGenerator {
 
 	}
 
-
 	/*
 	 * Link the different module Trees, and build the namespaces.
 	 */
-	public static RootNode buildGeneralTree(String[] modulesArgs,
-			String[] prefixes, Map<String, YangInnerNode> treeMap) {
+	public static RootNode buildGeneralTree(Map<String, YangInnerNode> treeMap) {
 
-		LinkedList<ContainerNode> usedNodes = new LinkedList<ContainerNode>();
 		RootNode rootNode = new RootNode("Yang Specifications");
-
-		for (int i = 0; i < modulesArgs.length; i = i + 3) {
-			String[] pathNodes = modulesArgs[i + 1].split("/");
-			ContainerNode lastUsedNode = rootNode;
-			boolean mismatchFound = false;
-
-			for (int j = 1; j < pathNodes.length; j++) {
-				String[] splitNodeName = pathNodes[j].split(":");
-				ContainerNode currentNode;
-				if (splitNodeName.length == 1) {
-					currentNode = new ContainerNode(splitNodeName[0]);
-				} else {
-					currentNode = new ContainerNode(splitNodeName[1]);
-					String prefixNS = splitNodeName[0];
-					currentNode.setNameSpace(new NameSpace(prefixNS, true));
-					// Searching for the NS prefix in the prefix list
-					for (int k = 0; k < prefixes.length; k = k + 2) {
-						if (prefixNS.equals(prefixes[k])) {
-							currentNode.setNameSpace(new NameSpace(prefixNS,
-									prefixes[k + 1]));
-						}
-					}
-				}
-
-				if (mismatchFound) {
-
-					lastUsedNode.addChild(currentNode);
-					usedNodes.add(currentNode);
-					lastUsedNode = currentNode;
-
-				} else {
-
-					ContainerNode match = null;
-					for (ContainerNode node : usedNodes) {
-						if (node.equalsTo(currentNode)) {
-							match = node;
-						}
-					}
-
-					if (match == null) {
-						mismatchFound = true;
-						usedNodes.add(currentNode);
-						lastUsedNode.addChild(currentNode);
-						lastUsedNode = currentNode;
-					} else {
-						lastUsedNode = match;
-					}
-
-				}
-
-			}
-			NameSpace moduleNS = new NameSpace(modulesArgs[i + 2], false);
-			YangInnerNode subroot = treeMap.get(modulesArgs[i]);
-
-			// Special handling if two linked containers have the same name : in
-			// this case, there are merged.
-			YangNode secondSubRoot = subroot.getDescendantNodes().getFirst();
-			if (subroot.getDescendantNodes().size() == 1
-					&& lastUsedNode.toString().equals(secondSubRoot.toString())) {
-				lastUsedNode.setNameSpace(lastUsedNode.getNameSpace()
-						.mergeWith(moduleNS));
-				subroot = (YangInnerNode) secondSubRoot;
-			}
-
-			// If a module have a prefix and an explicit namespace, they are
-			// merged.
-			if (lastUsedNode.getNameSpace().getPrefix() == null) {
-				lastUsedNode.setNameSpace(moduleNS);
-			} else {
-				lastUsedNode.setNameSpace(lastUsedNode.getNameSpace()
-						.mergeWith(moduleNS));
-			}
-
-			for (YangNode node : subroot.getDescendantNodes()) {
-				lastUsedNode.addChild(node);
-			}
-		}
+		for (YangInnerNode subroot : treeMap.values())
+			for (YangNode n : subroot.getDescendantNodes())
+				rootNode.addChild(n);
 
 		return rootNode;
 	}
 
 	public static YangInnerNode buildModuleTree(YANG_Specification spec) {
 		YangTreeNode ytn = spec.getSchemaTree();
+		YANG_Module m = (YANG_Module) spec;
+		String prefix = m.getPrefix().getPrefix();
+		String namespace = m.getNameSpace().getNameSpace();
 		RootNode rootNode = new RootNode();
 		Vector<YangTreeNode> childs = ytn.getChilds();
 		for (YangTreeNode child : childs) {
-			rootNode.addChild(buildModuleTree(child));
+			rootNode.addChild(buildModuleTree(child, prefix, namespace));
 		}
 		return rootNode;
 	}
-	
-	
 
-	public static YangNode buildModuleTree(YangTreeNode ytn) {
+	public static YangNode buildModuleTree(YangTreeNode ytn, String... para) {
 
 		YANG_Body body = ytn.getNode();
 
 		if (body instanceof YANG_Container) {
 			YANG_Container cont = (YANG_Container) body;
 			ContainerNode node = new ContainerNode(cont);
-			
-			for (YANG_TypeDef typeDef : cont.getTypeDefs()){
-					context.addNode(typeDef);
+
+			for (YANG_TypeDef typeDef : cont.getTypeDefs()) {
+				context.addNode(typeDef);
 			}
-			
+
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
 				node.addChild(buildModuleTree(child));
 			}
-
+			if (para.length != 0)
+				node.setNameSpace(new NameSpace(para[0], para[1]));
 			return node;
 
 		} else if (body instanceof YANG_List) {
 			YANG_List list = (YANG_List) body;
 			ListNode node = new ListNode(list, list.getKey().getKeyLeaves());
-			
-			for (YANG_TypeDef typeDef : list.getTypeDefs()){
-					context.addNode(typeDef);
+
+			for (YANG_TypeDef typeDef : list.getTypeDefs()) {
+				context.addNode(typeDef);
 			}
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
@@ -261,6 +172,8 @@ public class YangSchemaTreeGenerator {
 				node.addChild(buildModuleTree(child));
 			}
 
+			if (para.length != 0)
+				node.setNameSpace(new NameSpace(para[0], para[1]));
 			return node;
 
 		} else if (body instanceof YANG_Choice) {
@@ -269,10 +182,12 @@ public class YangSchemaTreeGenerator {
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
-				
+
 				node.addChild(buildModuleTree(child));
 			}
 
+			if (para.length != 0)
+				node.setNameSpace(new NameSpace(para[0], para[1]));
 			return node;
 
 		} else if (body instanceof CaseDataDef) {
@@ -311,42 +226,46 @@ public class YangSchemaTreeGenerator {
 			}
 
 			LeafType typeDef = null;
-				if (context.getTypeDef(leaf.getType()) != null) {
-					YANG_TypeDef ytypeDef = context.getTypeDef(leaf.getType());
-					
+			if (context.getTypeDef(leaf.getType()) != null) {
+				YANG_TypeDef ytypeDef = context.getTypeDef(leaf.getType());
 
-					while (!BuiltinType.isBuiltinType(ytypeDef.getType().getType())){
-						ytypeDef = context.getTypeDef(ytypeDef.getType());
-					}
-					
-					typeDef = new LeafType(ytypeDef,leaf.getType().getType());
-				} else {
-					typeDef = new LeafType(leaf.getType());
+				while (!BuiltinType.isBuiltinType(ytypeDef.getType().getType())) {
+					ytypeDef = context.getTypeDef(ytypeDef.getType());
 				}
-			
+
+				typeDef = new LeafType(ytypeDef, leaf.getType().getType());
+			} else {
+				typeDef = new LeafType(leaf.getType());
+			}
 
 			node.setTypeDef(typeDef);
+
+			if (para.length != 0)
+				node.setNameSpace(new NameSpace(para[0], para[1]));
 			return node;
 
 		} else if (body instanceof YANG_LeafList) {
 			YANG_LeafList leafList = (YANG_LeafList) body;
 			LeafListNode node = new LeafListNode(leafList);
-			
+
 			LeafType typeDef = null;
 
-				if (context.getTypeDef(leafList.getType()) != null) {
-					YANG_TypeDef ytypeDef = context.getTypeDef(leafList.getType());
-					
-					while (!BuiltinType.isBuiltinType(ytypeDef.getType().getType())){
-						ytypeDef = context.getTypeDef(ytypeDef.getType());
-					}
-					
-					typeDef = new LeafType(ytypeDef,leafList.getType().getType());
-				} else {
-					typeDef = new LeafType(leafList.getType());
+			if (context.getTypeDef(leafList.getType()) != null) {
+				YANG_TypeDef ytypeDef = context.getTypeDef(leafList.getType());
+
+				while (!BuiltinType.isBuiltinType(ytypeDef.getType().getType())) {
+					ytypeDef = context.getTypeDef(ytypeDef.getType());
 				}
-			
+
+				typeDef = new LeafType(ytypeDef, leafList.getType().getType());
+			} else {
+				typeDef = new LeafType(leafList.getType());
+			}
+
 			node.setType(typeDef);
+
+			if (para.length != 0)
+				node.setNameSpace(new NameSpace(para[0], para[1]));
 			return node;
 
 		}
