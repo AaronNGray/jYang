@@ -25,8 +25,8 @@ public class ContainerNode extends YangInnerNode {
 	}
 
 	public boolean equalsTo(ContainerNode node) {
-		return (getNameSpace() + ":" + getName()).equals(node.getNameSpace()
-				+ ":" + node.getName());
+		return (getNameSpace() + ":" + getName()).compareTo(node.getNameSpace()
+				+ ":" + node.getName()) == 0;
 	}
 
 	public ContainerNode cloneBody() {

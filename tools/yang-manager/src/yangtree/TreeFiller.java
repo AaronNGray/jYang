@@ -302,7 +302,6 @@ public class TreeFiller {
 			result = treeResult;
 
 		}
-
 		if (namespace != null) {
 			result.setNameSpace(namespace);
 		}

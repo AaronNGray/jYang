@@ -402,7 +402,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		} else {
 			firstNodePath = path[0].xmlFilter();
 		}
-
+		//System.out.println("FILTER : " + firstNodePath[0] + buildNetconfRequestFilter(newPath) + firstNodePath[1]);
 		return firstNodePath[0] + buildNetconfRequestFilter(newPath) + firstNodePath[1];
 
 	}
