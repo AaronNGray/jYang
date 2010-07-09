@@ -136,7 +136,7 @@ public class OutlineLabelProvider implements ILabelProvider {
 			} else if (e instanceof YANG_Case) { // Case
 				res += " " + ((YANG_Case) e).getCase();
 			} else if (e instanceof YANG_Config) { // Config
-				res += " " + ((YANG_Config) e).getConfig();
+				res += " " + ((YANG_Config) e).getConfigStr();
 			} else if (e instanceof YANG_Contact) { // Contact
 				res += " " + ((YANG_Contact) e).getContact();
 			} else if (e instanceof YANG_Decimal64Spec) { // Decimal64Spec

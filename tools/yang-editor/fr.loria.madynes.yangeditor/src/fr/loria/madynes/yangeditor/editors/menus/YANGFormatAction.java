@@ -22,6 +22,8 @@ package fr.loria.madynes.yangeditor.editors.menus;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.text.*;
 import org.eclipse.jface.text.source.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.ui.commands.ICommandService;
 
 import fr.loria.madynes.yangeditor.*;
 
@@ -32,6 +34,8 @@ public class YANGFormatAction extends Action {
 		this.target = target;
 		setText(Activator.getResourceString("Action.Format.Text"));
 		setToolTipText(Activator.getResourceString("Action.Format.ToolTipText"));
+		setAccelerator(SWT.CTRL | SWT.SHIFT | 'F');
+		
 	}
 
 	public void run() {
