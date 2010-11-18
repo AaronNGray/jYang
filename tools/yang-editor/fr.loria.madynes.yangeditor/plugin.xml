@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="yangeditor"
+         name="YANG Editor"
+         point="org.eclipse.ui.editors">
+      <editor
+            class="fr.loria.madynes.yangeditor.editors.YANGEditor"
+            contributorClass="fr.loria.madynes.yangeditor.editors.YANGEditorContributor"
+            default="true"
+            extensions="yang"
+            icon="icons/yang.png"
+            id="fr.loria.madynes.yangeditor.editors"
+            name="YANG Editor" />
+   </extension>
+   <extension
+         id="yangmarker"
+         point="org.eclipse.core.resources.markers"
+         name="YANG Marker">
+      <super type="org.eclipse.core.resources.problemmarker" />
+      <persistent value="false" />
+   </extension>
+   <extension
+         id="yangperspectives"
+         name="YANG Perspectives"
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="fr.loria.madynes.yangeditor.perspectives.YANGPerspective"
+            fixed="true"
+            icon="icons/yang.png"
+            id="fr.loria.madynes.yangeditor.perspectives"
+            name="YANG" />
+   </extension>
+   <extension
+         id="yangpreferences"
+         name="YANG Preferences"
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="fr.loria.madynes.yangeditor.preferences.YANGPreferences"
+            id="fr.loria.madynes.yangeditor.editors.preference.YANGPreferences"
+            name="YANG">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="fr.loria.madynes.yangeditor.actionSet"
+            label="YANG"
+            visible="true">
+         <menu
+               id="fr.loria.madynes.yangeditor.menu"
+               label="YANG" />
+         <action
+               class="fr.loria.madynes.yangeditor.editors.menus.YANGBackend"
+               icon="icons/be.png"
+               id="fr.loria.madynes.yangeditor.menu.yangbackend"
+               label="Yang Backend"
+               state="false"
+               style="pulldown"
+               toolbarPath="fr.loria.madynes.yangeditor.menu"
+               tooltip="Convert YANG file into other format"/>
+      </actionSet>
+   </extension>
+    <extension
+         point="org.eclipse.ui.commands">
+      <category
+            name="Yang Category"
+            id="fr.loria.madynes.yangeditor.commands.category">
+      </category>
+      <command
+            name="Yang Command"
+            categoryId="fr.loria.madynes.yangeditor.commands.category"
+            id="fr.loria.madynes.yangeditor.commands.YangCommand">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="fr.loria.madynes.yangeditor.commands.YangCommand"
+            class="fr.loria.madynes.yangeditor.handlers.OpenDeclarationHandler">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="fr.loria.madynes.yangeditor.commands.YangCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="F3"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               id="fr.loria.madynes.yangeditor.menus.YangMenu"
+               label="Yang Menu"
+               mnemonic="M">
+            <command
+                  commandId="fr.loria.madynes.yangeditor.commands.YangCommand"
+                  mnemonic="S"
+                  id="fr.loria.madynes.yangeditor.menus.YangCommand">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="fr.loria.madynes.yangeditor.toolbars.yangToolbar">
+            <command
+                  commandId="fr.loria.madynes.yangeditor.commands.YangCommand"
+                  icon="icons/module.png"
+                  tooltip="Say hello world"
+                  id="fr.loria.madynes.yangeditor.toolbars.YangCommand">
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="fr.loria.madynes.yangeditor"
+            name="Yang">
+      </category>
+      <wizard
+            category="fr.loria.madynes.yangeditor"
+            class="fr.loria.madynes.yangeditor.wizards.YangProjectWizard"
+            icon="icons/yang_project.png"
+            id="fr.loria.madynes.yangeditor.wizards.YangProjectWizard"
+            name="Yang Project">
+      </wizard>
+      <wizard
+            category="fr.loria.madynes.yangeditor"
+            class="fr.loria.madynes.yangeditor.wizards.YangSubmoduleWizard"
+            icon="icons/yang_submodule.png"
+            id="fr.loria.madynes.yangeditor.YangFileWizard"
+            name="Yang Submodule">
+      </wizard>
+      <wizard
+            category="fr.loria.madynes.yangeditor"
+            class="fr.loria.madynes.yangeditor.wizards.YangModuleWizard"
+            icon="icons/yang.png"
+            id="fr.loria.madynes.yangeditor.YangModuleWizard"
+            name="Yang Module">
+      </wizard>
+   </extension>
+</plugin>
