@@ -37,7 +37,7 @@ public class Parser {
 		filename = fname;
 		try {
 			File f = new File(filename);
-			jy = new jyang(new String[] { "-w", "-p", f.getCanonicalPath(),
+			jy = new jyang(new String[] { "-w", "-p", f.getParentFile().getCanonicalPath(),
 					filename }, false);
 		} catch (IOException e) {
 			e.printStackTrace();
