@@ -20,7 +20,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.SWTException;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -54,7 +53,7 @@ public class YangModuleWizard extends Wizard implements INewWizard {
 	 * This method is called when 'Finish' button is pressed in the wizard. We
 	 * will create an operation and run it using wizard as execution context.
 	 */
-	public boolean performFinish() {
+	public boolean performFinish() { // penser à créer une super-classe pour récupérer les champs et générer le fichier
 		final String containerName = page.getContainerName();
 		final String fileName = page.getFileName();
 		final String namespace = page.getNamespace();
