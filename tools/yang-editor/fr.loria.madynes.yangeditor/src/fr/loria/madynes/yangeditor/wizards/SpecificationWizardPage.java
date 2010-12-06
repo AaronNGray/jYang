@@ -47,12 +47,12 @@ public abstract class SpecificationWizardPage extends WizardPage {
 		layout.numColumns = 3;
 		layout.verticalSpacing = 9;
 	}
-	
+
 	protected void createContainer(Composite parent) {
 		container = new Composite(parent, SWT.NULL);
 		container.setLayout(layout);
 	}
-	
+
 	protected void createContainerText() {
 		label = new Label(container, SWT.NULL);
 		label.setText("&Parent project:");
@@ -345,5 +345,19 @@ public abstract class SpecificationWizardPage extends WizardPage {
 	
 	public String getContactName() {
 		return contactText.getText();
+	}
+	
+	public String getContents() {
+		String fileName = fileText.getText();
+		String organizationName = organizationText.getText();
+		String contactName = contactText.getText();
+		
+		return "module "
+		+ fileName.substring(0, fileName.lastIndexOf('.'))
+		+ " {\n\tnamespace\n\t\t\"" + namespaceText.getText()
+		+ "\";\n\n\tprefix\n\t\t\"" + prefixText.getText()
+		+ ((organizationName.equals("")) ? "" : ("\";\n\n\torganization\n\t\t\"" + organizationName))
+		+ ((contactName.equals("")) ? "" : ("\";\n\n\tcontact\n\t\t\"" + contactName)) 
+		+ "\";\n}";
 	}
 }

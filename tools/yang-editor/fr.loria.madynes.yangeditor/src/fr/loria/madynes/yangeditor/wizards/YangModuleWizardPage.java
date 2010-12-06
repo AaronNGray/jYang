@@ -4,7 +4,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 
 public class YangModuleWizardPage extends SpecificationWizardPage {
-
 	public YangModuleWizardPage(ISelection selection) {
 		super(selection);
 		setTitle("Yang Editor Module");

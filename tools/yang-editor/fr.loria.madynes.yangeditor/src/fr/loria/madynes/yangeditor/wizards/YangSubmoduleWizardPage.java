@@ -32,6 +32,10 @@ public class YangSubmoduleWizardPage extends SpecificationWizardPage {
 		vide = new Label(container, SWT.NULL);
 	}
 	
+	public String getBelongsToName() {
+		return belongsToText.getText();
+	}
+	
 	public void createControl(Composite parent) {
 		createContainer(parent);
 		createContainerText();
