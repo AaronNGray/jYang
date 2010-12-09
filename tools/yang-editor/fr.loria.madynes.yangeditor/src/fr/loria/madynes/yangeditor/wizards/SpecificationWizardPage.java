@@ -26,7 +26,7 @@ import org.eclipse.ui.dialogs.FileSelectionDialog;
 import org.eclipse.ui.dialogs.ResourceSelectionDialog;
 
 public abstract class SpecificationWizardPage extends WizardPage {
-	protected Text containerText, fileText, namespaceText, prefixText, organizationText, contactText;
+	protected Text containerText, fileText, prefixText, organizationText, contactText;
 	protected Table modulesText, submodulesText;
 	protected ISelection selection;
 	protected Composite container, addRemoveContainer;
@@ -70,7 +70,7 @@ public abstract class SpecificationWizardPage extends WizardPage {
 		browse.setText("Browse...");
 		browse.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				handleBrowse();
+				handleBrowse(containerText);
 			}
 		});
 	}
@@ -89,21 +89,7 @@ public abstract class SpecificationWizardPage extends WizardPage {
 		});
 		vide = new Label(container, SWT.NULL);
 	}
-	
-	protected void createNamespaceText() {
-		label = new Label(container, SWT.NULL);
-		label.setText("&Namespace:");
-		namespaceText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		namespaceText.setLayoutData(gd);
-		namespaceText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				dialogChanged();
-			}
-		});
-		vide = new Label(container, SWT.NULL);
-	}
-	
+
 	protected void createPrefixText() {
 		label = new Label(container, SWT.NULL);
 		label.setText("&Prefix:");
@@ -237,14 +223,14 @@ public abstract class SpecificationWizardPage extends WizardPage {
 	 * the container field.
 	 */
 
-	private void handleBrowse() {
+	protected void handleBrowse(Text champ) {
 		ContainerSelectionDialog dialog = new ContainerSelectionDialog(
 				getShell(), ResourcesPlugin.getWorkspace().getRoot(), false,
 				"Select new file container");
 		if (dialog.open() == ContainerSelectionDialog.OK) {
 			Object[] result = dialog.getResult();
 			if (result.length == 1) {
-				containerText.setText(((Path) result[0]).toString());
+				champ.setText(((Path) result[0]).toString());
 			}
 		}
 	}
@@ -277,11 +263,6 @@ public abstract class SpecificationWizardPage extends WizardPage {
 
 		if (getContainerName().length() == 0) {
 			updateStatus("File container must be specified");
-			return;
-		}
-		
-		if(getNamespace().length() == 0) {
-			updateStatus("Namespace must be specified");
 			return;
 		}
 		
@@ -318,7 +299,7 @@ public abstract class SpecificationWizardPage extends WizardPage {
 		updateStatus(null);
 	}
 
-	private void updateStatus(String message) {
+	protected void updateStatus(String message) {
 		setErrorMessage(message);
 		setPageComplete(message == null);
 	}
@@ -329,10 +310,6 @@ public abstract class SpecificationWizardPage extends WizardPage {
 
 	public String getFileName() {
 		return fileText.getText();
-	}
-	
-	public String getNamespace() {
-		return namespaceText.getText();
 	}
 	
 	public String getPrefix() {
@@ -347,17 +324,5 @@ public abstract class SpecificationWizardPage extends WizardPage {
 		return contactText.getText();
 	}
 	
-	public String getContents() {
-		String fileName = fileText.getText();
-		String organizationName = organizationText.getText();
-		String contactName = contactText.getText();
-		
-		return "module "
-		+ fileName.substring(0, fileName.lastIndexOf('.'))
-		+ " {\n\tnamespace\n\t\t\"" + namespaceText.getText()
-		+ "\";\n\n\tprefix\n\t\t\"" + prefixText.getText()
-		+ ((organizationName.equals("")) ? "" : ("\";\n\n\torganization\n\t\t\"" + organizationName))
-		+ ((contactName.equals("")) ? "" : ("\";\n\n\tcontact\n\t\t\"" + contactName)) 
-		+ "\";\n}";
-	}
+	public abstract String getContents();
 }

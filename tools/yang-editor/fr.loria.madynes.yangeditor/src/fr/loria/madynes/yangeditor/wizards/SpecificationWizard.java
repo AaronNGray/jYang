@@ -50,7 +50,7 @@ public abstract class SpecificationWizard extends Wizard implements INewWizard {
 	 * This method is called when 'Finish' button is pressed in the wizard. We
 	 * will create an operation and run it using wizard as execution context.
 	 */
-	public boolean performFinish() { // penser à créer une super-classe pour récupérer les champs et générer le fichier
+	public boolean performFinish() {
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor)
 					throws InvocationTargetException {
