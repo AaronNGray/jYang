@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Text;
 
 public class YangModuleWizardPage extends SpecificationWizardPage {
 	protected Text namespaceText;
+	protected String namespaceName;
 	
 	public YangModuleWizardPage(ISelection selection) {
 		super(selection);
@@ -50,21 +51,19 @@ public class YangModuleWizardPage extends SpecificationWizardPage {
 	}
 	
 	public String getContents() {
-		String fileName = fileText.getText();
-		String organizationName = organizationText.getText();
-		String contactName = contactText.getText();
-		
 		return "module "
 		+ fileName.substring(0, fileName.lastIndexOf('.'))
-		+ " {\n\tnamespace\n\t\t\"" + namespaceText.getText()
-		+ "\";\n\n\tprefix\n\t\t\"" + prefixText.getText()
-		+ ((organizationName.equals("")) ? "" : ("\";\n\n\torganization\n\t\t\"" + organizationName))
-		+ ((contactName.equals("")) ? "" : ("\";\n\n\tcontact\n\t\t\"" + contactName)) 
-		+ "\";\n}";
+		+ " { namespace \"" + namespaceName
+		+ "\";prefix " + prefixName + ";"
+		+ ((organizationName.equals("")) ? "" : ("organization \"" + organizationName + "\"; "))
+		+ ((contactName.equals("")) ? "" : ("contact \"" + contactName + "\"; ")) 
+		+ "}";
 	}
 	
 	protected void dialogChanged() {
-		if(getNamespace().length() == 0) {
+		this.namespaceName = namespaceText.getText();
+		
+		if(namespaceName.length() == 0) {
 			updateStatus("Namespace must be specified");
 			return;
 		}

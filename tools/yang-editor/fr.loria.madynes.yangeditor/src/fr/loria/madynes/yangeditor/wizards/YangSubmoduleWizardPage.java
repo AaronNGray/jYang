@@ -1,5 +1,6 @@
 package fr.loria.madynes.yangeditor.wizards;
 
+import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -16,6 +17,7 @@ import org.eclipse.ui.dialogs.ResourceSelectionDialog;
 
 public class YangSubmoduleWizardPage extends SpecificationWizardPage {
 	protected Text belongsToText;
+	protected String belongsToName;
 
 	public YangSubmoduleWizardPage(ISelection selection) {
 		super(selection);
@@ -38,7 +40,7 @@ public class YangSubmoduleWizardPage extends SpecificationWizardPage {
 		browse.setText("Browse...");
 		browse.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				handleBrowse(belongsToText);
+				handleFileBrowse(belongsToText);
 			}
 		});
 	}
@@ -49,10 +51,7 @@ public class YangSubmoduleWizardPage extends SpecificationWizardPage {
 		
 		if(dialog.open() == ResourceSelectionDialog.OK) {
 			Object[] result = dialog.getResult();
-			
-			for(Object o : result) {
-				System.out.println();
-			}
+			champ.setText(((File)result[0]).getFullPath().toString());
 		}
 	}
 	
@@ -70,7 +69,9 @@ public class YangSubmoduleWizardPage extends SpecificationWizardPage {
 	}
 	
 	protected void dialogChanged() {
-		if(belongsToText.getText().length() == 0) {
+		this.belongsToName = belongsToText.getText();
+		
+		if(belongsToName.length() == 0) {
 			updateStatus("Belongs to must be specified");
 			return;
 		}
@@ -79,16 +80,12 @@ public class YangSubmoduleWizardPage extends SpecificationWizardPage {
 	}
 
 	public String getContents() {
-		String fileName = fileText.getText();
-		String organizationName = organizationText.getText();
-		String contactName = contactText.getText();
-		
-		return "module "
+		return "submodule "
 		+ fileName.substring(0, fileName.lastIndexOf('.'))
-		+ " {\n\tbelongs-to\n\t\t\"" + belongsToText.getText()
-		+ "\";\n\n\tprefix\n\t\t\"" + prefixText.getText()
-		+ ((organizationName.equals("")) ? "" : ("\";\n\n\torganization\n\t\t\"" + organizationName))
-		+ ((contactName.equals("")) ? "" : ("\";\n\n\tcontact\n\t\t\"" + contactName)) 
-		+ "\";\n}";
+		+ " { belongs-to " + belongsToName
+		+ " { prefix " + prefixName + "; } "
+		+ ((organizationName.equals("")) ? "" : ("organization \"" + organizationName + "\"; "))
+		+ ((contactName.equals("")) ? "" : ("contact \"" + contactName)) 
+		+ "\";}";
 	}
 }

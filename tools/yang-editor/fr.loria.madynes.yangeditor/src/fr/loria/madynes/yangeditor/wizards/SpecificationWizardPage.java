@@ -34,6 +34,7 @@ public abstract class SpecificationWizardPage extends WizardPage {
 	protected GridData gd;
 	protected Button browse, add, remove;
 	protected GridLayout layout, addRemoveLayout;
+	protected String fileName, containerName, prefixName, organizationName, contactName;
 
 	/**
 	 * Constructor for SampleNewWizardPage.
@@ -257,15 +258,20 @@ public abstract class SpecificationWizardPage extends WizardPage {
 	 */
 
 	protected void dialogChanged() {
-		IResource container = ResourcesPlugin.getWorkspace().getRoot()
-				.findMember(new Path(getContainerName()));
-		String fileName = getFileName();
-
-		if (getContainerName().length() == 0) {
+		this.fileName = fileText.getText();
+		this.containerName = containerText.getText();
+		this.contactName = contactText.getText();
+		this.organizationName = organizationText.getText();
+		this.prefixName = prefixText.getText();
+		
+		if(containerName == null || containerName.length() == 0) {
 			updateStatus("File container must be specified");
 			return;
 		}
 		
+		IResource container = ResourcesPlugin.getWorkspace().getRoot()
+				.findMember(new Path(containerName));
+
 		if(getPrefix().length() == 0) {
 			updateStatus("Prefix must be specified");
 			return;
@@ -305,23 +311,23 @@ public abstract class SpecificationWizardPage extends WizardPage {
 	}
 
 	public String getContainerName() {
-		return containerText.getText();
+		return this.containerName;
 	}
 
 	public String getFileName() {
-		return fileText.getText();
+		return this.fileName;
 	}
 	
 	public String getPrefix() {
-		return prefixText.getText();
+		return this.prefixName;
 	}
 	
 	public String getOrganizationName() {
-		return organizationText.getText();
+		return this.organizationName;
 	}
 	
 	public String getContactName() {
-		return contactText.getText();
+		return this.contactName;
 	}
 	
 	public abstract String getContents();
