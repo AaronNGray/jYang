@@ -115,6 +115,7 @@ public abstract class SpecificationWizard extends Wizard implements INewWizard {
 				try {
 					IDE.openEditor(page, file, true);
 				} catch (PartInitException e) {
+					e.printStackTrace();
 				}
 			}
 		});
