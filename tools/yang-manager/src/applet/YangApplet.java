@@ -359,7 +359,6 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 */
 	public void displayEmptyTree() {
 		TreePath path = new TreePath(specTree);
-		path = path.pathByAddingChild(specTree.getDescendantNodes().getFirst());
 		displayEmptyTree(path);
 	}
 
