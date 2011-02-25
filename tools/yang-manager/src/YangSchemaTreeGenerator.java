@@ -118,7 +118,7 @@ public class YangSchemaTreeGenerator {
 	 */
 	public static RootNode buildGeneralTree(Map<String, YangInnerNode> treeMap) {
 
-		RootNode rootNode = new RootNode("Yang Specifications");
+		RootNode rootNode = new RootNode("Yang Schema Tree");
 		for (YangInnerNode subroot : treeMap.values())
 			for (YangNode n : subroot.getDescendantNodes())
 				rootNode.addChild(n);
@@ -128,6 +128,7 @@ public class YangSchemaTreeGenerator {
 
 	public static YangInnerNode buildModuleTree(YANG_Specification spec) {
 		YangTreeNode ytn = spec.getSchemaTree();
+		// TODO : take care of sub-module
 		YANG_Module m = (YANG_Module) spec;
 		String prefix = m.getPrefix().getPrefix();
 		String namespace = m.getNameSpace().getNameSpace();
@@ -142,15 +143,18 @@ public class YangSchemaTreeGenerator {
 	public static YangNode buildModuleTree(YangTreeNode ytn, String... para) {
 
 		YANG_Body body = ytn.getNode();
+		
 
 		if (body instanceof YANG_Container) {
 			YANG_Container cont = (YANG_Container) body;
 			ContainerNode node = new ContainerNode(cont);
 
-			for (YANG_TypeDef typeDef : cont.getTypeDefs()) {
-				context.addNode(typeDef);
-			}
+//			
+//			for (YANG_TypeDef typeDef : cont.getTypeDefs()) {
+//				context.addNode(typeDef);
+//			}
 
+			
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
 				node.addChild(buildModuleTree(child));
@@ -162,10 +166,10 @@ public class YangSchemaTreeGenerator {
 		} else if (body instanceof YANG_List) {
 			YANG_List list = (YANG_List) body;
 			ListNode node = new ListNode(list, list.getKey().getKeyLeaves());
-
-			for (YANG_TypeDef typeDef : list.getTypeDefs()) {
-				context.addNode(typeDef);
-			}
+//
+//			for (YANG_TypeDef typeDef : list.getTypeDefs()) {
+//				context.addNode(typeDef);
+//			}
 
 			Vector<YangTreeNode> childs = ytn.getChilds();
 			for (YangTreeNode child : childs) {
@@ -217,8 +221,8 @@ public class YangSchemaTreeGenerator {
 			}
 
 			if (leaf.getMandatory() != null) {
-				node.setMandatory(!leaf.getMandatory().getMandatory().equals(
-						"false"));
+				node.setMandatory(leaf.getMandatory().getMandatory().equals(
+						YangBuiltInTypes.ytrue));
 			}
 
 			if (leaf.getDescription() != null) {

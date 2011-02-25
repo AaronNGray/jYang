@@ -25,6 +25,8 @@ import javax.swing.tree.TreePath;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import edu.uci.ics.jung.visualization.*;
+
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -41,7 +43,8 @@ import yangtree.nodes.YangNode;
 @SuppressWarnings("serial")
 public class YangApplet extends JApplet implements TreeSelectionListener {
 
-	private static DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+	private static DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+			.newInstance();
 
 	private String agentIP;
 
@@ -55,7 +58,7 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 	private RootNode dataTree;
 	private TreePath currentlyDisplayedPath = null;
-	private boolean getConfig ;
+	private boolean getConfig;
 	private YangTreeViewer rightTreeViewer = null;
 
 	private JScrollPane infoView;
@@ -93,11 +96,12 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 		int horizontalDividerLocation = (int) Math.floor(width * 0.5);
 		if (horizontalSplitPane != null)
-			horizontalDividerLocation = horizontalSplitPane.getDividerLocation();
+			horizontalDividerLocation = horizontalSplitPane
+					.getDividerLocation();
 
 		mainPanel = new JPanel();
 		setContentPane(mainPanel);
-
+		
 		mainPanel.setLayout(new BorderLayout());
 
 		JScrollPane specTreeView = new JScrollPane(leftTreeViewer);
@@ -105,10 +109,12 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 		infoView = new JScrollPane(infoPanel);
 
-		horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, specTreeView, dataTreeView);
+		horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				specTreeView, dataTreeView);
 		horizontalSplitPane.setDividerLocation(horizontalDividerLocation);
 
-		verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, horizontalSplitPane, infoView);
+		verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				horizontalSplitPane, infoView);
 		verticalSplitPane.setDividerLocation(verticalDividerLocation);
 		mainPanel.add(verticalSplitPane, BorderLayout.CENTER);
 
@@ -125,15 +131,15 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				editionInProgress = false;
-				displayDataTree(currentlyDisplayedPath,getConfig);
+				displayDataTree(currentlyDisplayedPath, getConfig);
 			}
 		});
 		bottomPanel.add(buttonCancel);
-		
+
 		JButton buttonEdit = new JButton("Apply all modifications >");
 		buttonEdit.addActionListener(new ApplyModificationsActionListener());
 		bottomPanel.add(buttonEdit);
-		
+
 		bottomPanel.setVisible(editionInProgress);
 
 		mainPanel.add(bottomPanel, BorderLayout.SOUTH);
@@ -154,12 +160,15 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 
 			URL url = getCodeBase();
 
-			HttpsURLConnection connexion = (HttpsURLConnection) url.openConnection();
+			HttpsURLConnection connexion = (HttpsURLConnection) url
+					.openConnection();
 
-			connexion.addRequestProperty("Content-type", "multipart/form-data; boundary=A");
+			connexion.addRequestProperty("Content-type",
+					"multipart/form-data; boundary=A");
 
 			connexion.setDoOutput(true);
-			OutputStreamWriter wr = new OutputStreamWriter(connexion.getOutputStream());
+			OutputStreamWriter wr = new OutputStreamWriter(connexion
+					.getOutputStream());
 			wr.write(request);
 			wr.flush();
 			wr.close();
@@ -186,10 +195,22 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 */
 	private InputStream sendGetRequest(String filter, boolean getConfig) {
 		String operation = getConfig ? "get-config" : "get";
-		String requeteAvecPOST = "" + "--A\r\n" + "Content-Disposition: form-data; name=\"source\"\r\n\r\nrunning\r\n" + "--A\r\n"
-				+ "Content-Disposition: form-data; name=\"operation\"\r\n\r\n"+operation+"\r\n" + "--A\r\n" + "Content-Disposition: form-data; name=\"filter\"\r\n\r\n"
-				+ filter + "\r\n" + "--A\r\n" + "Content-Disposition: form-data; name=\"type\"\r\n\r\nsubtree\r\n" + "--A\r\n"
-				+ "Content-Disposition: form-data; name=\"noHTML\"\r\n\r\nyes\r\n" + "--A--\r\n";
+		String requeteAvecPOST = ""
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"source\"\r\n\r\nrunning\r\n"
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"operation\"\r\n\r\n"
+				+ operation
+				+ "\r\n"
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"filter\"\r\n\r\n"
+				+ filter
+				+ "\r\n"
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"type\"\r\n\r\nsubtree\r\n"
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"noHTML\"\r\n\r\nyes\r\n"
+				+ "--A--\r\n";
 		return sendRequestToServer(requeteAvecPOST);
 	}
 
@@ -201,13 +222,24 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 * @return an InputStream with the response of the manager.
 	 */
 	private InputStream sendEditRequest(String filter) {
-		String requeteAvecPOST = "" + "--A\r\n" + "Content-Disposition: form-data; name=\"target\"\r\n\r\nrunning\r\n" + "--A\r\n"
-				+ "Content-Disposition: form-data; name=\"default-operation\"\r\n\r\nmerge\r\n" + "--A\r\n"
-				+ "Content-Disposition: form-data; name=\"subtree\"\r\n\r\n" + filter + "\r\n" + "--A\r\n"
-				+ "Content-Disposition: form-data; name=\"error-option\"\r\n\r\nstop-on-error\r\n" + "--A\r\n"
-				+ "Content-Disposition: form-data; name=\"test-option\"\r\n\r\ntest-then-set\r\n" + "--A\r\n"
-				+ "Content-Disposition: form-data; name=\"operation\"\r\n\r\nedit-config\r\n" + "--A\r\n"
-				+ "Content-Disposition: form-data; name=\"noHTML\"\r\n\r\nyes\r\n" + "--A--\r\n";
+		String requeteAvecPOST = ""
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"target\"\r\n\r\nrunning\r\n"
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"default-operation\"\r\n\r\nmerge\r\n"
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"subtree\"\r\n\r\n"
+				+ filter
+				+ "\r\n"
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"error-option\"\r\n\r\nstop-on-error\r\n"
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"test-option\"\r\n\r\ntest-then-set\r\n"
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"operation\"\r\n\r\nedit-config\r\n"
+				+ "--A\r\n"
+				+ "Content-Disposition: form-data; name=\"noHTML\"\r\n\r\nyes\r\n"
+				+ "--A--\r\n";
 		return sendRequestToServer(requeteAvecPOST);
 	}
 
@@ -218,8 +250,10 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		try {
 
 			URL url = new URL(getCodeBase() + agentIP + ".yang.byte");
-			HttpsURLConnection connexion = (HttpsURLConnection) url.openConnection();
-			ObjectInputStream ois = new ObjectInputStream(connexion.getInputStream());
+			HttpsURLConnection connexion = (HttpsURLConnection) url
+					.openConnection();
+			ObjectInputStream ois = new ObjectInputStream(connexion
+					.getInputStream());
 			Object inputObject = ois.readObject();
 			ois.close();
 
@@ -247,15 +281,23 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 */
 	public void displayDataTree(TreePath path, boolean getConfig) {
 
-		YangNode[] ppath = new YangNode[path.getPath().length - 1];
-		for (int i = 0; i < ppath.length; i++) {
-			ppath[i] = (YangNode) path.getPath()[i + 1];
-		}
+		YangNode[] ppath = null;
+		if (path.getPath().length > 0) {
+			ppath = new YangNode[path.getPath().length - 1];
+
+			for (int i = 0; i < ppath.length; i++) {
+				ppath[i] = (YangNode) path.getPath()[i + 1];
+			}
+		} else
+			ppath = new YangNode[0];
+
 		String filter = buildNetconfRequestFilter(ppath);
+		//String filter2 = "<root> <path> " + filter + "</path> </root>";
 
 		try {
 
-			Document xmlDoc = documentBuilderFactory.newDocumentBuilder().parse(sendGetRequest(filter,getConfig));
+			Document xmlDoc = documentBuilderFactory.newDocumentBuilder()
+					.parse(sendGetRequest(filter, getConfig));
 
 			dataTree = TreeFiller.createDataTree(specTree, path, xmlDoc);
 			rightTreeViewer = new YangDataTreeViewer(this, dataTree);
@@ -284,16 +326,18 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 	 */
 	public void displayDataTree(boolean getConfig) {
 		TreePath path = new TreePath(specTree);
-		path = path.pathByAddingChild(specTree.getDescendantNodes().getFirst());
+		// for (YangNode n : specTree.getDescendantNodes())
+		// path = path.pathByAddingChild(n);
 		displayDataTree(path, getConfig);
 	}
-	
+
 	/**
 	 * Refreshes the applet so it will display an empty data tree
+	 * 
 	 * @param path
 	 *            : the path of the node that will be displayed.
 	 */
-	public void displayEmptyTree(TreePath path){
+	public void displayEmptyTree(TreePath path) {
 		YangNode node = (YangNode) path.getLastPathComponent();
 		RootNode root = new RootNode();
 		root.setPath(path.getParentPath());
@@ -302,18 +346,18 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		dataTree.recheckAll();
 		rightTreeViewer = new YangDataTreeViewer(this, dataTree);
 		rightTreeViewer.addTreeSelectionListener(this);
-		
+
 		currentlyDisplayedPath = path;
 		getConfig = true;
-		
+
 		buildDisplay();
 	}
-	
+
 	/**
 	 * Refreshes the applet so it will display the entire empty data tree
 	 * 
 	 */
-	public void displayEmptyTree(){
+	public void displayEmptyTree() {
 		TreePath path = new TreePath(specTree);
 		path = path.pathByAddingChild(specTree.getDescendantNodes().getFirst());
 		displayEmptyTree(path);
@@ -335,13 +379,15 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		editionInProgress = true;
 		bottomPanel.setVisible(true);
 	}
-	
+
 	/**
 	 * Updates the display after an edition have been performed in the data
 	 * tree, and selects a specific node in the data tree.
-	 * @param selectedPath : the path of the node that will be selected.
+	 * 
+	 * @param selectedPath
+	 *            : the path of the node that will be selected.
 	 */
-	public void editionPerformed(TreePath selectedPath){
+	public void editionPerformed(TreePath selectedPath) {
 		dataTree.recheckAll();
 		rightTreeViewer = new YangDataTreeViewer(this, dataTree);
 		rightTreeViewer.addTreeSelectionListener(this);
@@ -359,12 +405,14 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		YangNode selectedNode = null;
 
 		if (e.getSource() == leftTreeViewer) {
-			selectedNode = (YangNode) leftTreeViewer.getLastSelectedPathComponent();
+			selectedNode = (YangNode) leftTreeViewer
+					.getLastSelectedPathComponent();
 			infoPanel.setTreeFilled(false);
 			if (rightTreeViewer != null)
 				rightTreeViewer.removeSelection();
 		} else if (e.getSource() == rightTreeViewer) {
-			selectedNode = (YangNode) rightTreeViewer.getLastSelectedPathComponent();
+			selectedNode = (YangNode) rightTreeViewer
+					.getLastSelectedPathComponent();
 			infoPanel.setTreeFilled(true);
 			leftTreeViewer.removeSelection();
 		}
@@ -379,7 +427,8 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 			public void run() {
 				JScrollBar verticalScrollBar = infoView.getVerticalScrollBar();
 				verticalScrollBar.setValue(verticalScrollBar.getMinimum());
-				JScrollBar horizontalScrollBar = infoView.getHorizontalScrollBar();
+				JScrollBar horizontalScrollBar = infoView
+						.getHorizontalScrollBar();
 				horizontalScrollBar.setValue(verticalScrollBar.getMinimum());
 			}
 		});
@@ -402,30 +451,35 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 		} else {
 			firstNodePath = path[0].xmlFilter();
 		}
-		//System.out.println("FILTER : " + firstNodePath[0] + buildNetconfRequestFilter(newPath) + firstNodePath[1]);
-		return firstNodePath[0] + buildNetconfRequestFilter(newPath) + firstNodePath[1];
+		// System.out.println("FILTER : " + firstNodePath[0] +
+		// buildNetconfRequestFilter(newPath) + firstNodePath[1]);
+
+		return firstNodePath[0] + buildNetconfRequestFilter(newPath)
+				+ firstNodePath[1];
 
 	}
-	
+
 	private class ApplyModificationsActionListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			InputStream reply = null;
 			try {
-				
+
 				reply = sendEditRequest(dataTree.getXMLRepresentation());
-				
+
 			} catch (ChoiceStillPresentException e2) {
-				
-				infoPanel.displayPlainText("Modifications cannot be applied :\nsome choices remain unsolved.");
+
+				infoPanel
+						.displayPlainText("Modifications cannot be applied :\nsome choices remain unsolved.");
 				repaint();
 				return;
-				
+
 			}
-			
+
 			try {
-				Document replyDocument = documentBuilderFactory.newDocumentBuilder().parse(reply);
+				Document replyDocument = documentBuilderFactory
+						.newDocumentBuilder().parse(reply);
 				infoPanel.setEditionReplyInfo(replyDocument);
 			} catch (SAXException e1) {
 				e1.printStackTrace();
@@ -435,10 +489,10 @@ public class YangApplet extends JApplet implements TreeSelectionListener {
 				e1.printStackTrace();
 			}
 			editionInProgress = false;
-			displayDataTree(currentlyDisplayedPath,getConfig);
-			
+			displayDataTree(currentlyDisplayedPath, getConfig);
+
 		}
-		
+
 	}
 
 }

@@ -1,4 +1,4 @@
- package yangtree.nodes;
+package yangtree.nodes;
 
 import java.io.Serializable;
 import javax.swing.ImageIcon;
@@ -55,13 +55,13 @@ public abstract class YangNode implements Serializable {
 	public abstract void check();
 
 	/**
-	 * Performs the <code>check()</code> operation
-	 * on this node, and repeats this operation for all descendants nodes.
+	 * Performs the <code>check()</code> operation on this node, and repeats
+	 * this operation for all descendants nodes.
 	 */
 	protected void checkSubtree() {
 		check();
 	}
-	
+
 	/**
 	 * Removes all checks on this node and all its descendants.
 	 */
@@ -78,9 +78,10 @@ public abstract class YangNode implements Serializable {
 	 */
 	public String[] xmlFilter() {
 		String result = "<" + getName() + " ";
-		if (nameSpace != null && nameSpace.getNameSpace() != null) {
-			result = result + nameSpace.getXMLArg();
-		}
+		if (nameSpace != null)
+			if (nameSpace.getNameSpace() != null) {
+				result = result + nameSpace.getXMLArg();
+			}
 		result += ">";
 		return new String[] { result, "</" + getName() + ">" };
 	}
@@ -102,14 +103,18 @@ public abstract class YangNode implements Serializable {
 	 * clone will have no child; if this node is a leaf, the clone will have no
 	 * value.<br>
 	 * All other attributes, such as type or namespace are kept.
+	 * 
 	 * @see #cloneTree()
 	 */
 	public abstract YangNode cloneBody();
-	
+
 	/**
 	 * Creates an empty clone of this node and its descendants.<br>
-	 * <b>Note :</b> Descendant <code>ListNode</code>s and <code>LeafListNode</code>s will be ignored and will <u>not</u> be cloned.
-	 * @return An empty clone of this node, filled with empty clones of its children.
+	 * <b>Note :</b> Descendant <code>ListNode</code>s and
+	 * <code>LeafListNode</code>s will be ignored and will <u>not</u> be cloned.
+	 * 
+	 * @return An empty clone of this node, filled with empty clones of its
+	 *         children.
 	 * @see #cloneBody()
 	 */
 	public abstract YangNode cloneTree();
@@ -131,6 +136,7 @@ public abstract class YangNode implements Serializable {
 	 *             : if this node is a <code>ChoiceNode</code> of if there is
 	 *             such node in its descendants.
 	 */
-	abstract public String getXMLRepresentation() throws ChoiceStillPresentException;
+	abstract public String getXMLRepresentation()
+			throws ChoiceStillPresentException;
 
 }

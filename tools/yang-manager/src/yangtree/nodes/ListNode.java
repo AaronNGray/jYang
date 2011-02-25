@@ -43,9 +43,8 @@ public class ListNode extends YangInnerNode implements ListedYangNode {
 		if (d.getMaxElement() != null
 				&& !d.getMaxElement().getMaxElement().equals("unbounded"))
 			this.maxElements = new Integer(d.getMaxElement().getMaxElement());
-		for (int i = 0; i < keys.length; i++) {
-			keymap.put(keys[i], null);
-		}
+		for (String k : keys)
+			keymap.put(k, null);
 	}
 
 	private ListNode(YANG_List d, Map<String, LeafNode> keymap) {

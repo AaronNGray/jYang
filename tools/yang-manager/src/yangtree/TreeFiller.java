@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.swing.tree.TreePath;
 
+import jyang.parser.YANG_Leaf;
+import jyang.parser.YangBuiltInTypes;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -19,6 +22,7 @@ import yangtree.attributes.builtinTypes.EmptyType;
 import yangtree.attributes.builtinTypes.PathSensitiveType;
 import yangtree.nodes.CaseNode;
 import yangtree.nodes.ChoiceNode;
+import yangtree.nodes.ContainerNode;
 import yangtree.nodes.EmptyNode;
 import yangtree.nodes.LeafListNode;
 import yangtree.nodes.LeafNode;
@@ -37,7 +41,7 @@ public class TreeFiller {
 	private static final NodeDescriptor NO_CASE = new NodeDescriptor(-1, 0);
 
 	private static LinkedList<NameSpace> nameSpacePrefixList = new LinkedList<NameSpace>();
-	private static YangNode nodeToFill ;
+	private static YangNode nodeToFill;
 
 	/**
 	 * Creates the filled data Tree.
@@ -50,22 +54,25 @@ public class TreeFiller {
 	 *            : the Netconf reply XML document.
 	 * @return the root of the filled data tree.
 	 */
-	public static RootNode createDataTree(RootNode specRoot, TreePath treePath, Document xmlDocument) {
+	public static RootNode createDataTree(RootNode specRoot, TreePath treePath,
+			Document xmlDocument) {
 
-		nodeToFill = (YangNode) treePath.getLastPathComponent() ;
+		nodeToFill = (YangNode) treePath.getLastPathComponent();
 		String nodeToFillName = nodeToFill.getName();
 		Node currentXmlNode = null;
 
 		Node root = xmlDocument.getFirstChild();
 		if (!root.getNodeName().equals("rpc-reply")) {
-			throw new NetconfReplyMalformedException("Expected \"rpc-reply\" node not present");
+			throw new NetconfReplyMalformedException(
+					"Expected \"rpc-reply\" node not present");
 		}
 		NamedNodeMap map = root.getAttributes();
 		for (int i = 0; i < map.getLength(); i++) {
 			Node attr = map.item(i);
 			String[] attrName = attr.getNodeName().split(":");
 			if (attrName.length == 2 && attrName[0].equalsIgnoreCase("xmlns")) {
-				nameSpacePrefixList.add(new NameSpace(attrName[1], attr.getNodeValue()));
+				nameSpacePrefixList.add(new NameSpace(attrName[1], attr
+						.getNodeValue()));
 			}
 		}
 		NodeList list = root.getChildNodes();
@@ -76,27 +83,31 @@ public class TreeFiller {
 		}
 
 		if (currentXmlNode == null)
-			throw new NetconfReplyMalformedException("Expected \"data\" node not present");
+			throw new NetconfReplyMalformedException(
+					"Expected \"data\" node not present");
 
 		int emptyLevels = treePath.getPathCount() - 1;
-		RootNode result = new RootNode("Yang Data");
+		RootNode result = new RootNode("Yang Data Tree");
 
-		YangNode completeDataTree = dataTreeEngine(specRoot, currentXmlNode, emptyLevels, new YangTreePath(nodeToFillName));
+		YangNode completeDataTree = dataTreeEngine(specRoot, currentXmlNode,
+				emptyLevels, new YangTreePath(nodeToFillName));
 
 		YangInnerNode currentNode = (YangInnerNode) completeDataTree;
 		TreePath rootPath = new TreePath(currentNode);
 
 		while (emptyLevels > 1 && currentNode.getDescendantNodes().size() == 1) {
-			currentNode = (YangInnerNode) currentNode.getDescendantNodes().getFirst();
+			currentNode = (YangInnerNode) currentNode.getDescendantNodes()
+					.getFirst();
 			rootPath = rootPath.pathByAddingChild(currentNode);
 			emptyLevels--;
 		}
 
 		result.setPath(rootPath);
 		result.setDescendantsNodes(currentNode.getDescendantNodes());
-		
-		if (result.getDescendantNodes().size()==0)
-			result.addChild(new EmptyNode(nodeToFillName+" : No such leaf retrieved.",(LeafNode) nodeToFill));
+
+		if (result.getDescendantNodes().size() == 0)
+			result.addChild(new EmptyNode(nodeToFillName
+					+ " : No such leaf retrieved.", (LeafNode) nodeToFill));
 
 		result.recheckAll();
 		return result;
@@ -111,9 +122,9 @@ public class TreeFiller {
 	 *            : the xmlNode matching this specification tree.
 	 * @return the filled tree.
 	 */
-	private static YangNode dataTreeEngine(YangNode specNode, Node xmlNode, int emptyLevelsLeft, YangTreePath path) {
-		
-		
+	private static YangNode dataTreeEngine(YangNode specNode, Node xmlNode,
+			int emptyLevelsLeft, YangTreePath path) {
+
 		String[] nodeName = xmlNode.getNodeName().split(":");
 		String name = nodeName[0];
 		NameSpace namespace = null;
@@ -134,7 +145,8 @@ public class TreeFiller {
 					if (attrName.length == 1) {
 						namespace = new NameSpace(attr.getNodeValue());
 					} else if (attrName.length == 2) {
-						namespace = new NameSpace(attrName[1], attr.getNodeValue());
+						namespace = new NameSpace(attrName[1], attr
+								.getNodeValue());
 						nameSpacePrefixList.add(namespace);
 					}
 				}
@@ -158,9 +170,10 @@ public class TreeFiller {
 				} else {
 					value = null;
 				}
-				//PathSensitiveTypes have to know the path of their leaf.
-				if (filledNode.getType().getBuiltinType() instanceof PathSensitiveType){
-					((PathSensitiveType) filledNode.getType().getBuiltinType()).setPath(newPath);
+				// PathSensitiveTypes have to know the path of their leaf.
+				if (filledNode.getType().getBuiltinType() instanceof PathSensitiveType) {
+					((PathSensitiveType) filledNode.getType().getBuiltinType())
+							.setPath(newPath);
 				}
 				filledNode.setValue(value);
 			}
@@ -195,10 +208,13 @@ public class TreeFiller {
 				if (node instanceof ChoiceNode) {
 					choiceIndex++;
 					int caseIndex = 0;
-					for (YangNode caseNode : ((ChoiceNode) node).getDescendantNodes()) {
+					for (YangNode caseNode : ((ChoiceNode) node)
+							.getDescendantNodes()) {
 						caseIndex++;
-						for (YangNode caseNodeChild : ((CaseNode) caseNode).getDescendantNodes()) {
-							eligibleNodes.put(caseNodeChild, new NodeDescriptor(choiceIndex, caseIndex));
+						for (YangNode caseNodeChild : ((CaseNode) caseNode)
+								.getDescendantNodes()) {
+							eligibleNodes.put(caseNodeChild,
+									new NodeDescriptor(choiceIndex, caseIndex));
 						}
 					}
 				} else {
@@ -215,7 +231,7 @@ public class TreeFiller {
 				}
 			}
 			NamedNodeMap attrChildren = xmlNode.getAttributes();
-			for (int i=0;i<attrChildren.getLength();i++){
+			for (int i = 0; i < attrChildren.getLength(); i++) {
 				if (!attrChildren.item(i).getNodeName().contains("xmlns")) {
 					xmlChildren.add(attrChildren.item(i));
 				}
@@ -230,7 +246,8 @@ public class TreeFiller {
 				} else {
 					int choice = eligibleNodes.get(node).choiceIndex;
 					if (!alreadySolvedNodes.contains(choice)) {
-						yangChildren.addAll(caseChooser(choice, eligibleNodes, xmlChildren));
+						yangChildren.addAll(caseChooser(choice, eligibleNodes,
+								xmlChildren));
 						alreadySolvedNodes.add(choice);
 					}
 				}
@@ -241,7 +258,9 @@ public class TreeFiller {
 			Map<String, ListBuilder> listBuilders = new HashMap<String, ListBuilder>();
 			for (YangNode n : yangChildren) {
 				if (n instanceof ListedYangNode)
-					listBuilders.put(n.getName(), new ListBuilder((ListedYangNode) n, n.getNodeType() + " \"" + n.getName() + "\""));
+					listBuilders.put(n.getName(), new ListBuilder(
+							(ListedYangNode) n, n.getNodeType() + " \""
+									+ n.getName() + "\""));
 			}
 
 			// At last, search for matching between xmlChildren and
@@ -250,20 +269,28 @@ public class TreeFiller {
 				boolean matchFound = false;
 				for (Node xmlChild : xmlChildren) {
 					String[] xmlChildName = xmlChild.getNodeName().split(":");
-					if (xmlChildName[xmlChildName.length - 1].equals(nodeChild.getName())) {
-						YangNode newChild = dataTreeEngine(nodeChild, xmlChild, emptyLevelsLeft - 1, newPath);
+					if (xmlChildName[xmlChildName.length - 1].equals(nodeChild
+							.getName())) {
+						YangNode newChild = dataTreeEngine(nodeChild, xmlChild,
+								emptyLevelsLeft - 1, newPath);
 						matchFound = true;
 						if (newChild != null) {
 							// Special handling if the child is a ListedYangNode
 							// :
 							if (newChild instanceof ListedYangNode) {
-								listBuilders.get(newChild.getName()).addOccurrence((ListedYangNode) newChild);
+								listBuilders.get(newChild.getName())
+										.addOccurrence(
+												(ListedYangNode) newChild);
 							} else {
 
 								// At empty levels, list children must be
 								// "silently" added.
-								if (treeResult instanceof ListNode && !newChild.getName().equals(nodeToFill.getName()) && emptyLevelsLeft > 0) {
-									((ListNode) treeResult).addChildSilently(newChild);
+								if (treeResult instanceof ListNode
+										&& !newChild.getName().equals(
+												nodeToFill.getName())
+										&& emptyLevelsLeft > 0) {
+									((ListNode) treeResult)
+											.addChildSilently(newChild);
 								} else {
 									treeResult.addChild(newChild);
 								}
@@ -272,30 +299,31 @@ public class TreeFiller {
 						}
 					}
 				}
-				
+
 				// If the current node must be filled, unmatched parts of the
 				// tree will be built.
-				if (!matchFound && emptyLevelsLeft <= 0 ) {
+				if (!matchFound && emptyLevelsLeft <= 0) {
 					YangNode newChild = buildEmptyTree(nodeChild);
 					if (newChild != null) {
 						treeResult.addChild(newChild);
 					}
 				}
-				
+
 			}
 
 			// Now, the ListedYangNodes can be added :
 			for (String key : listBuilders.keySet()) {
-				treeResult.getCheck().addUnitCheck(listBuilders.get(key).check());
+				treeResult.getCheck().addUnitCheck(
+						listBuilders.get(key).check());
 				for (ListedYangNode n : listBuilders.get(key).occurrences) {
-					//Only non-empty list will be added :
-					if (n instanceof ListNode){
-						if (((ListNode) n).getDescendantNodes().size()>0)
+					// Only non-empty list will be added :
+					if (n instanceof ListNode) {
+						if (((ListNode) n).getDescendantNodes().size() > 0)
 							treeResult.addChild((YangNode) n);
 					} else {
 						treeResult.addChild((YangNode) n);
 					}
-						
+
 				}
 			}
 
@@ -305,7 +333,7 @@ public class TreeFiller {
 		if (namespace != null) {
 			result.setNameSpace(namespace);
 		}
-		
+
 		return result;
 
 	}
@@ -320,8 +348,17 @@ public class TreeFiller {
 		if (dataNode instanceof LeafNode) {
 
 			LeafNode filledNode = ((LeafNode) dataNode).cloneBody();
-			
-			filledNode.setValue(null);
+
+			YANG_Leaf leaf = (YANG_Leaf) filledNode.definition;
+			boolean mandatory = false;
+			if (leaf.getMandatory() != null)
+				if (leaf.getMandatory().getMandatory().compareTo(
+						YangBuiltInTypes.ytrue) == 0)
+					mandatory = true;
+			if (mandatory)
+				filledNode.setValue(null);
+			else
+				filledNode = null;
 			return filledNode;
 
 		} else if (dataNode instanceof LeafListNode) {
@@ -331,18 +368,20 @@ public class TreeFiller {
 			// Handle the tree cases
 		} else if (dataNode instanceof YangInnerNode) {
 
-			if (dataNode instanceof ChoiceNode || dataNode instanceof ListNode) {
+			if (dataNode instanceof ChoiceNode || dataNode instanceof ListNode || dataNode instanceof ContainerNode) {
 				return null;
 			}
-
+			/*
 			YangInnerNode filledNode = ((YangInnerNode) dataNode).cloneBody();
-			for (YangNode node : ((YangInnerNode) dataNode).getDescendantNodes()) {
+			for (YangNode node : ((YangInnerNode) dataNode)
+					.getDescendantNodes()) {
 				YangNode child = buildEmptyTree(node);
 				if (child != null) {
 					filledNode.addChild(child);
 				}
 			}
 			return filledNode;
+			*/
 		}
 		return null;
 	}
@@ -360,7 +399,9 @@ public class TreeFiller {
 	 * Walks through the list xmlChildren, searching for a match with an element
 	 * of a caseNode. Returns the nodes of the matching case.
 	 */
-	private static LinkedList<YangNode> caseChooser(int choice, Map<YangNode, NodeDescriptor> eligibleNodes, LinkedList<Node> xmlChildren) {
+	private static LinkedList<YangNode> caseChooser(int choice,
+			Map<YangNode, NodeDescriptor> eligibleNodes,
+			LinkedList<Node> xmlChildren) {
 		LinkedList<YangNode> caseNodes = new LinkedList<YangNode>();
 
 		for (YangNode nodeChild : eligibleNodes.keySet()) {
@@ -377,7 +418,8 @@ public class TreeFiller {
 
 						Integer caseKept = eligibleNodes.get(nodeChild).caseIndex;
 						for (YangNode node : eligibleNodes.keySet()) {
-							if (eligibleNodes.get(node).equals(new NodeDescriptor(choice, caseKept))) {
+							if (eligibleNodes.get(node).equals(
+									new NodeDescriptor(choice, caseKept))) {
 								caseNodes.add(node);
 							}
 						}
@@ -404,14 +446,14 @@ public class TreeFiller {
 		}
 
 		public boolean equals(NodeDescriptor other) {
-			return other.caseIndex == caseIndex && other.choiceIndex == choiceIndex;
+			return other.caseIndex == caseIndex
+					&& other.choiceIndex == choiceIndex;
 		}
 
 	}
 
 	/**
-	 * Special class used to sort a set of occurrences of a
-	 * ListedYangNode.
+	 * Special class used to sort a set of occurrences of a ListedYangNode.
 	 */
 	private static class ListBuilder {
 
@@ -429,7 +471,8 @@ public class TreeFiller {
 
 		public void addOccurrence(ListedYangNode occurrence) {
 			int i = 0;
-			while (i < occurrences.size() && occurrences.get(i).compareTo(occurrence) < 0) {
+			while (i < occurrences.size()
+					&& occurrences.get(i).compareTo(occurrence) < 0) {
 				i++;
 			}
 			if (i == occurrences.size()) {
@@ -441,9 +484,11 @@ public class TreeFiller {
 
 		public UnitValueCheck check() {
 			if (occurrences.size() < MinElements)
-				return new UnitValueCheck("Too less elements of " + listName + " (min = " + MinElements + ").");
+				return new UnitValueCheck("Too less elements of " + listName
+						+ " (min = " + MinElements + ").");
 			if (occurrences.size() > MaxElements)
-				return new UnitValueCheck("Too many elements of " + listName + " (max = " + MaxElements + ").");
+				return new UnitValueCheck("Too many elements of " + listName
+						+ " (max = " + MaxElements + ").");
 			return UnitValueCheck.checkOK();
 		}
 
