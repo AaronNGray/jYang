@@ -22,9 +22,12 @@ package jyang.parser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.rmi.server.ExportException;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -260,11 +263,11 @@ public abstract class YANG_Specification extends SimpleYangNode {
 			rev.check();
 			for (YANG_Revision rev2 : getRevisions()) {
 				if (rev2 != rev && rev2.getDate().compareTo(rev.getDate()) == 0) {
-					if (!duprev.contains(rev)){
+					if (!duprev.contains(rev)) {
 						duprev.add(rev);
 						duprev.add(rev2);
-					YangErrorManager.addError(getFileName(), rev.getLine(), rev
-							.getCol(), "dup_rev", rev2.getLine());
+						YangErrorManager.addError(getFileName(), rev.getLine(),
+								rev.getCol(), "dup_rev", rev2.getLine());
 					}
 				}
 			}
@@ -410,7 +413,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				YANG_Import imported = (YANG_Import) linkage;
 				String importedspecname = imported.getImportedModule();
 				YANG_Specification importedspec = getExternal(paths,
-						importedspecname);
+						importedspecname, imported.getLine(), imported.getCol());
 				im.add(importedspec);
 
 			}
@@ -472,9 +475,11 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				if (revision != null) {
 					String incname = includedspecname;
 					includedspecname += "." + revision.getDate();
-					includedspec = getExternal(paths, includedspecname, incname);
+					includedspec = getExternal(paths, includedspecname,
+							incname, included.getLine(), included.getCol());
 				} else
-					includedspec = getExternal(paths, includedspecname);
+					includedspec = getExternal(paths, includedspecname,
+							included.getLine(), included.getCol());
 
 				if (includedspec != null) {
 					included.setIncludedsubmodule(includedspec);
@@ -514,10 +519,12 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				YANG_Specification importedspec = null;
 				if (revision != null) {
 					String impname = importedspecname;
-					importedspecname += "." + revision.getDate();
-					importedspec = getExternal(paths, importedspecname, impname);
+					importedspecname += "@" + revision.getDate();
+					importedspec = getExternal(paths, importedspecname,
+							impname, imported.getLine(), imported.getCol());
 				} else
-					importedspec = getExternal(paths, importedspecname);
+					importedspec = getExternal(paths, importedspecname,
+							imported.getLine(), imported.getCol());
 				if (importedspec != null)
 					imported.setImportedmodule(importedspec);
 				if (!(importedspec instanceof YANG_Module))
@@ -533,7 +540,7 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	protected abstract void checkInclude(String[] paths);
 
 	protected YANG_Specification getExternal(String[] paths,
-			String externalmodulename) {
+			String externalmodulename, int line, int col) {
 		int i = 0;
 		boolean found = false;
 		YANG_Specification externalspec = null;
@@ -547,6 +554,9 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				File externalfile = new File(yangspecfilename);
 				yang.ReInit(new FileInputStream(externalfile));
 				found = true;
+				YangErrorManager.addWarning(getFileName(), line, col,
+						"no_revision", yangspecfilename);
+
 				try {
 					yang.setFileName(yangspecfilename);
 					externalspec = yang.Start();
@@ -562,22 +572,137 @@ public abstract class YANG_Specification extends SimpleYangNode {
 					else
 						System.out.println(pe);
 				}
-			} catch (NullPointerException np) {
 			} catch (FileNotFoundException fnf) {
 				// nothing to do
 				// pass to the next path
 			}
 		}
-		if (!found)
-			YangErrorManager.addError(getFileName(), getLine(), getCol(),
-					"file_not_found", externalmodulename);
+		if (!found) {
+			i = 0;
+			Hashtable<String, int[]> yversions = new Hashtable<String, int[]>();
+			while (i < paths.length) {
+				File directory = new File(paths[i++]);
+				FilenameFilter filter = new FilenameFilter() {
+					public boolean accept(File dir, String name) {
+						Pattern p = Pattern
+								.compile("[A-Za-z-0-9_]+@[1-9][0-9]{3}-[0-1][0-9]-[0-3][0-9].yang");
+						Matcher m = p.matcher(name);
+						return m.matches();
+					}
+				};
+				String[] fileNames = directory.list(filter);
+				for (String fileName : fileNames) {
+					String[] dates = fileName.split("@");
+					String yyyymm[] = dates[1].split("-");
+					String dd[] = yyyymm[2].split(".yang");
+					int yyyymmdd[] = new int[3];
+					yyyymmdd[0] = Integer.parseInt(yyyymm[0]);
+					yyyymmdd[1] = Integer.parseInt(yyyymm[1]);
+					yyyymmdd[2] = Integer.parseInt(dd[0]);
+					yversions.put(paths[i - 1] + File.separator + fileName,
+							yyyymmdd);
+				}
+
+			}
+			// Looks for the more recent version
+			if (yversions.size() >= 1)
+				found = true;
+			if (yversions.size() > 1) {
+				int ymax = 0, mmax = 0, dmax = 0;
+				String ymdmax = "";
+				for (String yfname : yversions.keySet()) {
+					for (String yfname2 : yversions.keySet()) {
+						if (yfname.compareTo(yfname2) != 0) {
+							int ymd[] = yversions.get(yfname);
+							int ymd2[] = yversions.get(yfname2);
+							if (ymd[0] > ymd2[0]) {
+								if (ymd[0] > ymax) {
+									ymax = ymd[0];
+									mmax = ymd[1];
+									dmax = ymd[2];
+									ymdmax = yfname;
+								} else if (ymd[0] == ymax) {
+									if (ymd[1] > mmax) {
+										mmax = ymd[1];
+										dmax = ymd[2];
+										ymdmax = yfname;
+									} else if (ymd[1] == mmax) {
+										if (ymd[2] > dmax) {
+											dmax = ymd[2];
+											ymdmax = yfname;
+										}
+									}
+								}
+							} else {
+								if (ymd2[0] > ymax) {
+									ymax = ymd2[0];
+									mmax = ymd2[1];
+									dmax = ymd2[2];
+									ymdmax = yfname2;
+								} else if (ymd2[0] == ymax) {
+									if (ymd2[1] > mmax) {
+										mmax = ymd2[1];
+										dmax = ymd2[2];
+										ymdmax = yfname2;
+									} else if (ymd2[1] == mmax) {
+										if (ymd2[2] > dmax) {
+											dmax = ymd2[2];
+											ymdmax = yfname2;
+										}
+									}
+								}
+							}
+
+						}
+					}
+				}
+				externalmodulename = ymdmax;
+			} else
+				for (String yn : yversions.keySet())
+					externalmodulename = yn;
+			if (!found)
+				YangErrorManager.addError(getFileName(), line, col,
+						"file_not_found", externalmodulename);
+			else {
+				YangErrorManager.addWarning(getFileName(), line, col,
+						"revision_choosen", externalmodulename);
+
+				if (checkedSpecs.containsKey(externalmodulename))
+					return checkedSpecs.get(externalmodulename);
+				try {
+					File externalfile = new File(externalmodulename);
+					yang.ReInit(new FileInputStream(externalfile));
+					found = true;
+					try {
+						yang.setFileName(externalmodulename);
+						externalspec = yang.Start();
+					} catch (ParseException pe) {
+						if (pe.currentToken != null)
+							if (pe.currentToken.next != null)
+								YangErrorManager.addError(getFileName(),
+										pe.currentToken.next.beginLine,
+										pe.currentToken.next.beginColumn,
+										"unex_kw", pe.currentToken.next.image);
+							else
+								System.out.println(pe);
+						else
+							System.out.println(pe);
+					}
+				} catch (NullPointerException np) {
+				} catch (FileNotFoundException fnf) {
+					// nothing to do // pass to the next path }
+				}
+
+			}
+		}
 		if (externalmodulename != null && externalspec != null)
 			checkedSpecs.put(externalmodulename, externalspec);
 		return externalspec;
+
 	}
 
 	protected YANG_Specification getExternal(String[] paths,
-			String revisionmodulename, String external) {
+			String revisionmodulename, String external, int line, int col) {
 		int i = 0;
 		boolean found = false;
 		YANG_Specification externalspec = null;
@@ -612,9 +737,12 @@ public abstract class YANG_Specification extends SimpleYangNode {
 				// pass to the next path
 			}
 		}
+
 		if (!found)
-			externalspec = getExternal(paths, external);
-		if (revisionmodulename != null && externalspec != null)
+			YangErrorManager.addError(getFileName(), line, col,
+					"file_not_found", revisionmodulename);
+		// externalspec = getExternal(paths, external, line, col);
+		else if (revisionmodulename != null && externalspec != null)
 			checkedSpecs.put(revisionmodulename, externalspec);
 		return externalspec;
 	}
@@ -638,9 +766,10 @@ public abstract class YANG_Specification extends SimpleYangNode {
 	private YangTreeNode buildTreeNode(String[] p, Vector<String> builded,
 			Hashtable<String, YangTreeNode> importedtreenodes) {
 
-		for (Enumeration<YANG_Specification> ei = getImportedModules(p)
-				.elements(); ei.hasMoreElements();) {
-			YANG_Specification spec = ei.nextElement();
+		// for (Enumeration<YANG_Specification> ei = getImportedModules(p)
+		// .elements(); ei.hasMoreElements();) {//
+		for (YANG_Specification spec : importeds) {
+			// YANG_Specification spec = ei.nextElement();
 			if (spec != null)
 				if (!builded.contains(spec.getName())) {
 					builded.add(spec.getName());

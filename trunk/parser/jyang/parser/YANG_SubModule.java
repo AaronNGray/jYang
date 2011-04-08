@@ -98,7 +98,7 @@ public class YANG_SubModule extends YANG_Specification {
 			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"expected_kw", "belongs-to");
 		else {
-			YANG_Specification belonged = getExternal(p, belong.getBelong());
+			YANG_Specification belonged = getExternal(p, belong.getBelong(), belong.getLine(), belong.getCol());
 			if (!(belonged instanceof YANG_Module))
 				YangErrorManager.addError(getFileName(), belong.getLine(),
 						belong.getCol(), "not_module", belong.getBelong());
