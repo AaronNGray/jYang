@@ -99,9 +99,14 @@ public class Yang2Dsdl {
 
 	private String INDENT = "   ";
 
+	private final static String RELAXNG_NS = "http://relaxng/org/ns/structure/1.0";
+	private final static String NETMOD_NS = "urn:ietf:params:xml:ns:netmod:dsdl-annotations:1";
+
 	private final static String LB = "<";
 	private final static String RB = ">";
-	private final static String NMT = "nmt";
+	private final static String NS = "ns";
+	private final static String RNG = "rng";
+	private final static String NMA = "nma";
 	private final static String DC = "dc";
 	private final static String GRAMMAR = "grammar";
 	private final static String START = "start";
@@ -121,7 +126,6 @@ public class Yang2Dsdl {
 	private final static String OUTPUT = "output";
 	private final static String NOTIFS = "notifications";
 	private final static String NOTIF = "notification";
-	private final static String RNG = "rng";
 	private final static String DEFINE = "define";
 	private final static String REF = "ref";
 	private final static String DATA = "data";
@@ -134,30 +138,24 @@ public class Yang2Dsdl {
 			PrintStream out) {
 
 		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		out.println(LB + NMT + ":" + GRAMMAR);
-		out.print(INDENT + "xmlns:" + NMT
-				+ "=\"urn:ietf:params:xml:ns:netmod:conceptual-tree:1\"");
+		out.print(LB + RNG + ":" + GRAMMAR + " ");
+		out.println("xmlns:" + RNG + "=\"" + RELAXNG_NS + "\"");
+		out.print(INDENT + "xmlns:" + NMA + "=\"" + NETMOD_NS + "\"");
 		for (YANG_Specification spec : specs.values()) {
 			out.print("\n" + INDENT + "xmlns:" + spec.getPrefix().getPrefix()
 					+ "=\"" + spec.getNameSpace().getNameSpace() + "\"");
 		}
 		out.println(RB);
+		out.println(INDENT  + LB + RNG + ":" + START + RB);
 
-		out.println(INDENT + LB + NMT + ":" + TOP + RB);
-		gData(specs, out, INDENT);
-		out.println(INDENT + LB + "/" + NMT + ":" + TOP + RB);
-
-		out.println(INDENT + LB + NMT + ":" + RPCMETHODS + RB);
-		gRpcs(specs, out, INDENT);
-		out.println(INDENT + LB + "/" + NMT + ":" + RPCMETHODS + RB);
-
-		out.println(INDENT + LB + NMT + ":" + NOTIFS + RB);
-		gNotifications(specs, out, INDENT);
-		out.println(INDENT + LB + "/" + NMT + ":" + NOTIFS + RB);
+		for (YANG_Specification spec : specs.values()) {
+			gSpec(spec, out, INDENT + INDENT);
+		}
+		out.println(INDENT  + LB + "/" + RNG + ":" + START + RB);
 
 		gDefines(specs, out, INDENT);
 
-		out.println(LB + "/" + NMT + ":" + GRAMMAR + RB);
+		out.println(LB + "/" + RNG + ":" + GRAMMAR + RB);
 
 	}
 
@@ -169,10 +167,10 @@ public class Yang2Dsdl {
 		for (YANG_Specification spec : specs.values()) {
 			for (YANG_Body body : spec.getBodies()) {
 				looksForTypesAndGroupings(spec, body, spec.getName());
-				gDataDef(spec, body, out, indent);
+				//gDataDef(spec, body, out, indent);
 			}
 			for (YANG_TypeDef t : definestypedefs.keySet())
-				gTypeDef(t, out);
+				gTypeDef(t, out, indent);
 			for (YANG_Grouping g : definesgroupings.keySet())
 				gGrouping(spec, g, out, indent);
 		}
@@ -181,7 +179,7 @@ public class Yang2Dsdl {
 	private void gDataDef(YANG_Specification spec, YANG_Body body,
 			PrintStream out, String indent) {
 		if (body instanceof YANG_Uses) {
-			gUses(spec, (YANG_Uses) body, out, indent);
+			gUses(spec, (YANG_Uses) body, out, indent +  INDENT);
 		}
 
 	}
@@ -254,7 +252,9 @@ public class Yang2Dsdl {
 					.indexOf("/") + 1);
 			if (ddef.getBody().compareTo(path[0]) == 0) {
 				if (ddef instanceof YANG_Container) {
-					out.println(indent + LB + ELT + " name=\"" + spec.getPrefix().getPrefix() + ":" + ddef.getBody() + "\"" + RB);
+					out.println(indent + LB + ELT + " name=\""
+							+ spec.getPrefix().getPrefix() + ":"
+							+ ddef.getBody() + "\"" + RB);
 					for (YANG_DataDef dddef : ((YANG_Container) ddef)
 							.getDataDefs()) {
 						gDataDef(spec, dddef, refinednode, ref, descendantname,
@@ -319,56 +319,56 @@ public class Yang2Dsdl {
 				+ "\"" + RB);
 		for (YANG_DataDef ddef : g.getDataDefs()) {
 			if (ddef instanceof YANG_Leaf)
-				gLeaf(spec, (YANG_Leaf) ddef, out, "", INDENT);
+				gLeaf(spec, (YANG_Leaf) ddef, out, "", indent + INDENT);
 			if (ddef instanceof YANG_Uses) {
-				gUses(spec, (YANG_Uses) ddef, out, indent + INDENT);
+				gUses(spec, (YANG_Uses) ddef, out, indent + indent + INDENT);
 			}
 		}
 		out.println(indent + LB + "/" + DEFINE + RB);
 
 	}
 
-	private void gTypeDef(YANG_TypeDef td, PrintStream out) {
-		out.println(LB + DEFINE + " name=\"" + definestypedefs.get(td) + "\""
+	private void gTypeDef(YANG_TypeDef td, PrintStream out, String iNDENT2) {
+		out.println(iNDENT2 + LB + DEFINE + " name=\"" + definestypedefs.get(td) + "\""
 				+ RB);
 		YANG_Type type = td.getType();
 		if (!YangBuiltInTypes.isBuiltIn(type.getType())) {
 
 			YANG_TypeDef ttd = type.getTypedef();
-			out.println(INDENT + LB + REF + " type=\""
+			out.println(iNDENT2 + LB + REF + " type=\""
 					+ definestypedefs.get(ttd) + "\"" + RB);
 			if (type.getStringRest() != null) {
 				YANG_StringRestriction strest = type.getStringRest();
 				for (YANG_Pattern pat : strest.getPatterns()) {
-					gPattern(pat, out, INDENT + INDENT);
+					gPattern(pat, out, iNDENT2 + INDENT);
 				}
 			}
 		} else {
 
 			if (type.getUnionSpec() != null) {
 
-				out.println(INDENT + LB + CHOICE + RB);
+				out.println(iNDENT2 + LB + CHOICE + RB);
 				YANG_UnionSpecification uspec = type.getUnionSpec();
 				for (YANG_Type ut : uspec.getTypes()) {
 					out
-							.println(INDENT + INDENT + LB + REF + " name=\""
+							.println(iNDENT2 + INDENT + LB + REF + " name=\""
 									+ definestypedefs.get(ut.getTypedef())
 									+ "\"/" + RB);
 				}
-				out.println(INDENT + LB + "/" + CHOICE + RB);
+				out.println(iNDENT2 + LB + "/" + CHOICE + RB);
 			} else {
-				out.println(INDENT + LB + DATA + " type=\"" + type.getType()
+				out.println(iNDENT2 + LB + DATA + " type=\"" + type.getType()
 						+ "\"" + RB);
 				if (type.getStringRest() != null) {
 					YANG_StringRestriction strest = type.getStringRest();
 					for (YANG_Pattern pat : strest.getPatterns()) {
-						gPattern(pat, out, INDENT + INDENT);
+						gPattern(pat, out, iNDENT2 + INDENT);
 					}
 				}
-				out.println(INDENT + LB + "/" + DATA + RB);
+				out.println(iNDENT2 + LB + "/" + DATA + RB);
 			}
 		}
-		out.println(LB + "/" + DEFINE + RB);
+		out.println(iNDENT2 + LB + "/" + DEFINE + RB);
 	}
 
 	private void looksForTypesAndGroupings(YANG_Specification spec,
@@ -608,14 +608,13 @@ public class Yang2Dsdl {
 	 * ldd : dataDefs) result.addAll(gBodies(spec, ldd, out, prefix, indent));
 	 * return result; }
 	 */
-	private void gNotifications(Hashtable<String, YANG_Specification> specs,
-			PrintStream out, String iNDENT2) {
+	private void gNotifications(YANG_Specification specs, PrintStream out,
+			String iNDENT2) {
 		// TODO Auto-generated method stub
 
 	}
 
-	private void gRpcs(Hashtable<String, YANG_Specification> specs,
-			PrintStream out, String iNDENT2) {
+	private void gRpcs(YANG_Specification specs, PrintStream out, String iNDENT2) {
 		// TODO Auto-generated method stub
 
 	}
@@ -623,6 +622,35 @@ public class Yang2Dsdl {
 	private void gData(Hashtable<String, YANG_Specification> specs,
 			PrintStream out, String iNDENT2) {
 		// TODO Auto-generated method stub
+
+	}
+
+	private void gSpec(YANG_Specification spec, PrintStream out, String iNDENT2) {
+		out.println(iNDENT2 + LB + RNG + ":" + GRAMMAR + " " + NMA
+				+ ":module=\"" + spec.getName() + "\"");
+		out.println(iNDENT2 + INDENT + NS + "=\""
+				+ spec.getNameSpace().getNameSpace() + "\"" + RB);
+		//
+		int nbrpc = 0;
+		for (YANG_Body b : spec.getBodies())
+			if (b instanceof YANG_Rpc)
+				nbrpc++;
+		if (nbrpc > 0) {
+			out.println(iNDENT2 + LB + NMA + ":" + RPCMETHODS + RB);
+			gRpcs(spec, out, iNDENT2);
+			out.println(iNDENT2 + LB + "/" + NMA + ":" + RPCMETHODS + RB);
+		}
+		int nbnotif = 0;
+		for (YANG_Body b : spec.getBodies())
+			if (b instanceof YANG_Notification)
+				nbnotif++;
+		if (nbnotif > 0) {
+			out.println(iNDENT2 + LB + NMA + ":" + NOTIFS + RB);
+			gNotifications(spec, out, iNDENT2);
+			out.println(iNDENT2 + LB + "/" + NMA + ":" + NOTIFS + RB);
+		}
+
+		out.println(iNDENT2 + LB + "/" + RNG + ":" + GRAMMAR + RB);
 
 	}
 }

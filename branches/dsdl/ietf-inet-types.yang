@@ -171,6 +171,75 @@ module ietf-inet-types {
   
   /*** collection of IP address and hostname related types ***/
 
+  typedef ip-prefix {
+    type union {
+      type inet:ipv4-prefix;
+      type inet:ipv6-prefix;
+    }
+    description
+     "The ip-prefix type represents an IP prefix and is IP
+      version neutral. The format of the textual representations
+      implies the IP version.";
+  }
+
+  typedef ipv4-prefix {
+    type string {
+      pattern '(([0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){3}'
+            + '([0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])'
+            + '/(([0-9])|([1-2][0-9])|(3[0-2]))';
+    }
+    description
+     "The ipv4-prefix type represents an IPv4 address prefix.
+      The prefix length is given by the number following the
+      slash character and must be less than or equal to 32. 
+
+      A prefix length value of n corresponds to an IP address
+      mask which has n contiguous 1-bits from the most
+      significant bit (MSB) and all other bits set to 0.
+
+      The canonical format of an IPv4 prefix has all bits of
+      the IPv4 address set to zero that are not part of the
+      IPv4 prefix.";
+  }
+
+  typedef ipv6-prefix {
+    type string {
+      pattern '((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}'
+            + '((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|'
+            + '(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}'
+            + '(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))'
+            + '(/(([0-9])|([0-9]{2})|(1[0-1][0-9])|(12[0-8])))';
+      pattern '(([^:]+:){6}(([^:]+:[^:]+)|(.*\..*)))|'
+            + '((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?)'
+            + '(/.+)';
+    }
+    description
+     "The ipv6-prefix type represents an IPv6 address prefix.
+      The prefix length is given by the number following the
+      slash character and must be less than or equal 128. 
+
+      A prefix length value of n corresponds to an IP address
+      mask which has n contiguous 1-bits from the most
+      significant bit (MSB) and all other bits set to 0.
+
+      The IPv6 address should have all bits that do not belong
+      to the prefix set to zero.
+
+      The canonical format of an IPv6 prefix has all bits of
+      the IPv6 address set to zero that are not part of the
+      IPv6 prefix. Furthermore, IPv6 address is represented
+      in the compressed format described in RFC 4291 section
+      2.2 item 2 with the following additional rules: The :: 
+      substitution must be applied to the longest sequence of
+      all-zero 16-bit chunks in an IPv6 address. If there is
+      a tie, the first sequence of all-zero 16-bit chunks is
+      replaced by ::. Single all-zero 16-bit chunks are not
+      compressed. The canonical format uses lower-case
+      characters and leading zeros are not allowed.";
+    reference
+     "RFC 4291: IP Version 6 Addressing Architecture";
+  }
+
   typedef ip-address {
     type union {
       type inet:ipv4-address;
@@ -240,75 +309,6 @@ module ietf-inet-types {
      "RFC 4291: IP Version 6 Addressing Architecture
       RFC 4007: IPv6 Scoped Address Architecture
       IDv6TREP: A Recommendation for IPv6 Address Text Representation";
-  }
-
-  typedef ip-prefix {
-    type union {
-      type inet:ipv4-prefix;
-      type inet:ipv6-prefix;
-    }
-    description
-     "The ip-prefix type represents an IP prefix and is IP
-      version neutral. The format of the textual representations
-      implies the IP version.";
-  }
-
-  typedef ipv4-prefix {
-    type string {
-      pattern '(([0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){3}'
-            + '([0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])'
-            + '/(([0-9])|([1-2][0-9])|(3[0-2]))';
-    }
-    description
-     "The ipv4-prefix type represents an IPv4 address prefix.
-      The prefix length is given by the number following the
-      slash character and must be less than or equal to 32. 
-
-      A prefix length value of n corresponds to an IP address
-      mask which has n contiguous 1-bits from the most
-      significant bit (MSB) and all other bits set to 0.
-
-      The canonical format of an IPv4 prefix has all bits of
-      the IPv4 address set to zero that are not part of the
-      IPv4 prefix.";
-  }
-
-  typedef ipv6-prefix {
-    type string {
-      pattern '((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}'
-            + '((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|'
-            + '(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}'
-            + '(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))'
-            + '(/(([0-9])|([0-9]{2})|(1[0-1][0-9])|(12[0-8])))';
-      pattern '(([^:]+:){6}(([^:]+:[^:]+)|(.*\..*)))|'
-            + '((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?)'
-            + '(/.+)';
-    }
-    description
-     "The ipv6-prefix type represents an IPv6 address prefix.
-      The prefix length is given by the number following the
-      slash character and must be less than or equal 128. 
-
-      A prefix length value of n corresponds to an IP address
-      mask which has n contiguous 1-bits from the most
-      significant bit (MSB) and all other bits set to 0.
-
-      The IPv6 address should have all bits that do not belong
-      to the prefix set to zero.
-
-      The canonical format of an IPv6 prefix has all bits of
-      the IPv6 address set to zero that are not part of the
-      IPv6 prefix. Furthermore, IPv6 address is represented
-      in the compressed format described in RFC 4291 section
-      2.2 item 2 with the following additional rules: The :: 
-      substitution must be applied to the longest sequence of
-      all-zero 16-bit chunks in an IPv6 address. If there is
-      a tie, the first sequence of all-zero 16-bit chunks is
-      replaced by ::. Single all-zero 16-bit chunks are not
-      compressed. The canonical format uses lower-case
-      characters and leading zeros are not allowed.";
-    reference
-     "RFC 4291: IP Version 6 Addressing Architecture";
   }
 
   /*** collection of domain name and URI types ***/
