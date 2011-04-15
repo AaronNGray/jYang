@@ -111,21 +111,36 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 
 		setContext(context);
 	}
+	
+	public YANG_DataDef[] getKeyDataDefs(){
+		String[] keys = getKey().getKeyLeaves();
+		YANG_DataDef[] result = new YANG_DataDef[keys.length]; 
+		int i = 0;
+		for (String key : keys){
+			for (YANG_DataDef ddef : getDataDefs()){
+				YANG_DataDef kdd = findKey(key, ddef);
+				if (kdd != null)
+					result[i++] = kdd;
+			}
+		}
+		return result;
+	}
 
-	private boolean findKey(YangContext context, String k, YANG_DataDef dd) {
+	private YANG_DataDef findKey(String k, YANG_DataDef dd) {
 
 		if (dd.getBody().compareTo(k) == 0)
-			return true;
+			return dd;;
 		if (dd instanceof YANG_Uses) {
 			YANG_Uses uses = (YANG_Uses) dd;
-			YANG_Grouping grouping = context.getUsedGrouping(uses);
+			YANG_Grouping grouping = getContext().getUsedGrouping(uses);
 			for (Enumeration<YANG_DataDef> edd = grouping.getDataDefs()
 					.elements(); edd.hasMoreElements();) {
 				YANG_DataDef gdd = edd.nextElement();
-				if (findKey(context, k, gdd))
-					return true;
+				YANG_DataDef kdd = findKey(k, gdd);
+				if (kdd != null)
+					return kdd;
 			}
-			return false;
+			return null;
 		}
 		if (dd instanceof YANG_Choice) {
 			YANG_Choice c = (YANG_Choice) dd;
@@ -135,14 +150,16 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 				for (Enumeration<YANG_DataDef> ecdef = ca.getDataDefs()
 						.elements(); ecdef.hasMoreElements();) {
 					YANG_DataDef cdef = ecdef.nextElement();
-					if (cdef instanceof YANG_DataDef)
-						if (findKey(context, k, (YANG_DataDef) cdef))
-							return true;
+					if (cdef instanceof YANG_DataDef){
+						YANG_DataDef kdd = findKey(k, (YANG_DataDef) cdef);
+						if (kdd != null)
+							return kdd;
+					}
 				}
 			}
-			return false;
+			return null;
 		}
-		return false;
+		return null;
 	}
 
 	public void deleteUniques(Vector<YANG_Unique> u) {

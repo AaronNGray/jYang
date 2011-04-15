@@ -16,6 +16,8 @@ module dhcp {
        "Partial data model for DHCP, based on the config of
         the ISC DHCP reference implementation.";
 
+
+
      container dhcp {
        description
          "configuration and operational parameters for a DHCP server.";
@@ -79,7 +81,8 @@ module dhcp {
          }
        }
      }
-
+     
+	
      grouping subnet-list {
        description "A reusable list of subnets";
        list subnet {

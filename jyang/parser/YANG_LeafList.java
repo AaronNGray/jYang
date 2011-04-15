@@ -90,8 +90,10 @@ public class YANG_LeafList extends ListedDataDef {
 				YangErrorManager
 						.addError(getFileName(), getType().getLine(), getType()
 								.getCol(), "unknown_type", getType().getType());
-			} else
+			} else {
 				context.getTypeDef(getType()).check(context);
+				getType().setTypeDef(context.getTypeDef(getType()));
+			}
 	}
 
 	public YANG_LeafList clone() {

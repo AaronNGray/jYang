@@ -99,7 +99,7 @@ public class YangContext implements Serializable{
 			YANG_Type ptype = pendinguniontypes.get(k);
 			if (spectypes.get(k) == null) {
 				YangErrorManager.addError(ptype.getFileName(), ptype.getLine(),
-						ptype.getCol(), "unlnow_type", ptype.getType());
+						ptype.getCol(), "unknown_type", ptype.getType());
 			}
 		}
 
@@ -402,8 +402,10 @@ public class YangContext implements Serializable{
 				pendinguniontype);
 		if (YangBuiltInTypes.union.compareTo(suffix) == 0) {
 			YANG_UnionSpecification unionspec = type.getUnionSpec();
-			if (unionspec != null)
+			if (unionspec != null){
+				//pendinguniontype.put(cn, type);
 				pendingUnionTypes(unionspec, pendinguniontype, imports, spec);
+			}
 			else
 				YangErrorManager.addError(type.getFileName(), type.getLine(), type
 						.getCol(), "union_no_type");
