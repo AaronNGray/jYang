@@ -46,6 +46,9 @@ public class YangBuiltInTypes {
 	public static final String uint32 = "uint32";
 	public static final String uint64 = "uint64";
 	public static final String union = "union";
+	
+	public static final String max = "max";
+	public static final String min = "min";
 
 	// Removed build-in type
 	// public static final String float32 = "float32";

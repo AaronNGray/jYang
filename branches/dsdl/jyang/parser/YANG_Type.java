@@ -464,7 +464,6 @@ public class YANG_Type extends SimpleYangNode {
 			if (getUnionSpec() != null)
 				checkEmptyUnion(context, new Vector<YANG_Type>(),
 						getUnionSpec().getTypes());
-
 		} else if (YangBuiltInTypes.instanceidentifier.compareTo(context
 				.getBuiltInType(this)) == 0) {
 			if (getBitSpec() != null)
@@ -2218,13 +2217,11 @@ public class YANG_Type extends SimpleYangNode {
 							.getFileName(), utype.getLine());
 				}
 			}
-
 		}
 	}
 
 	private boolean checkRecEmptyUnion(YangContext context,
 			Vector<YANG_Type> chain, YANG_Type utype) {
-
 		boolean empty = false;
 		if (context.getBuiltInType(utype).compareTo(YangBuiltInTypes.empty) == 0) {
 			return true;
@@ -2238,8 +2235,6 @@ public class YANG_Type extends SimpleYangNode {
 				while (utype.getUnionSpec() == null) {
 					YANG_TypeDef suptype = context.getTypeDef(utype);
 					utype.setTypeDef(suptype);
-					// if (!suptype.isCorrect())
-					// return;
 					utype = suptype.getType();
 				}
 				if (!chain.contains(utype)) {
@@ -2251,6 +2246,9 @@ public class YANG_Type extends SimpleYangNode {
 				}
 			}
 
+		}
+		else {
+			utype.setTypeDef(context.getTypeDef(utype));
 		}
 		return empty;
 
