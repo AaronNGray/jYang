@@ -36,6 +36,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 public class Yang2Dsdl {
 
@@ -74,6 +75,9 @@ public class Yang2Dsdl {
 	private final static String PARAM = "param";
 	private final static String CHOICE = "choice";
 
+	private final static String MANDATORY = "mandatory";
+	private final static String IMPLICIT = "implicit";
+
 	private DocumentBuilder docb = null;
 	private Document document = null;
 
@@ -106,11 +110,17 @@ public class Yang2Dsdl {
 		Element start = document.createElementNS(RNG, START);
 		root.appendChild(start);
 
+		Element defines = document.createElementNS(RNG, "defines");
+		gDefines(specs, defines);
+
 		for (YANG_Specification spec : specs.values()) {
-			gSpec(spec, start, INDENT + INDENT);
+			gSpec(spec, start);
 		}
 
-		gDefines(specs, start, INDENT);
+		NodeList nl = defines.getChildNodes();
+		for (int i = 0; i < nl.getLength(); i++) {
+			start.appendChild(nl.item(i).cloneNode(true));
+		}
 
 		DOMSource domSource = new DOMSource(document);
 		StringWriter writer = new StringWriter();
@@ -139,28 +149,19 @@ public class Yang2Dsdl {
 	private Hashtable<YANG_Grouping, String> definesgroupings = new Hashtable<YANG_Grouping, String>();
 
 	private void gDefines(Hashtable<String, YANG_Specification> specs,
-			Element elt, String indent) {
+			Element elt) {
 		for (YANG_Specification spec : specs.values()) {
 			for (YANG_Body body : spec.getBodies()) {
 				looksForTypesAndGroupings(spec, body, spec.getName());
 			}
 			for (YANG_TypeDef t : definestypedefs.keySet())
-				gTypeDef(t, elt, indent);
+				gTypeDef(t, elt);
 			for (YANG_Grouping g : definesgroupings.keySet())
-				gGrouping(spec, g, elt, indent);
+				gGrouping(spec, g, elt);
 		}
 	}
 
-	// private void gDataDef(YANG_Specification spec, YANG_Body body,
-	// Element define2, String indent) {
-	// if (body instanceof YANG_Uses) {
-	// gUses(spec, (YANG_Uses) body, define2, indent + INDENT);
-	// }
-	//
-	// }
-
-	private void gUses(YANG_Specification spec, YANG_Uses uses, Element elt,
-			String indent) {
+	private void gUses(YANG_Specification spec, YANG_Uses uses, Element elt) {
 		if (uses.getRefinements().size() == 0
 				&& uses.getUsesAugments().size() == 0) {
 			String usedgrouping = definesgroupings.get(uses.getGrouping());
@@ -169,24 +170,23 @@ public class Yang2Dsdl {
 			elt.appendChild(ref);
 		} else {
 			for (YANG_DataDef ddef : uses.getGrouping().getDataDefs())
-				expandRefinement(spec, ddef, uses.getRefinements(), elt, indent);
+				expandRefinement(spec, ddef, uses.getRefinements(), elt);
 
 		}
 
 	}
 
 	private void expandRefinement(YANG_Specification spec, YANG_DataDef ddef,
-			Vector<YANG_RefineAnyNode> refs, Element elt, String indent) {
+			Vector<YANG_RefineAnyNode> refs, Element elt) {
 		boolean generated = false;
 		for (YANG_RefineAnyNode ref : refs) {
 			String refinednodepath = ref.getRefineNodeId();
 			YANG_DataDef refinednode = isInSubTree(spec, ddef, refinednodepath);
 			if (refinednode != null) {
-				gDataDef(spec, ddef, refinednode, ref, refinednodepath, elt,
-						indent);
+				gDataDef(spec, ddef, refinednode, ref, refinednodepath, elt);
 			} else {
 				if (!generated) {
-					gDataDef(spec, ddef, elt, indent);
+					gDataDef(spec, ddef, elt);
 					generated = true;
 				}
 			}
@@ -195,7 +195,7 @@ public class Yang2Dsdl {
 
 	private void gDataDef(YANG_Specification spec, YANG_DataDef ddef,
 			YANG_DataDef refinednode, YANG_RefineAnyNode ref,
-			String descendant, Element elt, String indent) {
+			String descendant, Element elt) {
 
 		String[] path = descendant.split("/");
 
@@ -219,7 +219,7 @@ public class Yang2Dsdl {
 						cleaf = leaf.clone();
 						cleaf.setDefault(rl.getDefault());
 					}
-					gLeaf(spec, cleaf, elt, "", indent);
+					gLeaf(spec, cleaf, elt, "");
 				}
 
 		} else {
@@ -234,12 +234,12 @@ public class Yang2Dsdl {
 					for (YANG_DataDef dddef : ((YANG_Container) ddef)
 							.getDataDefs()) {
 						gDataDef(spec, dddef, refinednode, ref, descendantname,
-								element, indent + INDENT);
+								element);
 					}
 				} else if (ddef instanceof YANG_List) {
 					for (YANG_DataDef dddef : ((YANG_List) ddef).getDataDefs()) {
 						gDataDef(spec, dddef, refinednode, ref, descendantname,
-								elt, indent);
+								elt);
 					}
 				}
 			}
@@ -249,7 +249,6 @@ public class Yang2Dsdl {
 	private YANG_DataDef isInSubTree(YANG_Specification spec,
 			YANG_DataDef ddef, String descendant) {
 		String[] path = descendant.split("/");
-		YANG_DataDef refinednode = null;
 		if (ddef instanceof YANG_Uses) {
 			YANG_Grouping g = ((YANG_Uses) ddef).getGrouping();
 			YANG_DataDef result = null;
@@ -288,38 +287,128 @@ public class Yang2Dsdl {
 
 	}
 
-	private void gGrouping(YANG_Specification spec, YANG_Grouping g,
-			Element elt, String indent) {
+	private void gGrouping(YANG_Specification spec, YANG_Grouping g, Element elt) {
 
 		Element define = document.createElementNS(RNG, DEFINE);
 		define.setAttribute("name", definesgroupings.get(g));
 		elt.appendChild(define);
-		if (g.getDataDefs().size() > 1){
-			Element interleave = document.createElementNS(RNG,INTLV);
+		if (g.getDataDefs().size() > 1) {
+			Element interleave = document.createElementNS(RNG, INTLV);
 			define.appendChild(interleave);
 			define = interleave;
 		}
 		for (YANG_DataDef ddef : g.getDataDefs())
-			gDataDef(spec, ddef, define, indent + INDENT);
+			gDataDef(spec, ddef, define);
 	}
 
 	private void gDataDef(YANG_Specification spec, YANG_DataDef ddef,
-			Element elt, String indent) {
-		
+			Element elt) {
+
 		if (ddef instanceof YANG_Leaf)
-			gLeaf(spec, (YANG_Leaf) ddef, elt, "", indent + INDENT);
+			gLeaf(spec, (YANG_Leaf) ddef, elt, "");
 		else if (ddef instanceof YANG_Uses)
-			gUses(spec, (YANG_Uses) ddef, elt, indent + indent + INDENT);
+			gUses(spec, (YANG_Uses) ddef, elt);
 		else if (ddef instanceof YANG_Container)
-			gContainer(spec, (YANG_Container) ddef, elt, indent + INDENT);
+			gContainer(spec, (YANG_Container) ddef, elt);
 		else if (ddef instanceof YANG_List)
-			gList(spec, (YANG_List) ddef, elt, indent + INDENT);
+			gList(spec, (YANG_List) ddef, elt);
+		else if (ddef instanceof YANG_LeafList)
+			gLeafList(spec, (YANG_LeafList) ddef, elt);
+		else if (ddef instanceof YANG_Choice)
+			gChoice(spec, (YANG_Choice) ddef, elt);
 
 	}
 
-	private void gList(YANG_Specification spec, YANG_List list, Element elt,
-			String indent) {
+	private void gChoice(YANG_Specification spec, YANG_Choice choice,
+			Element elt) {
 
+		Element choiceelt = document.createElementNS(RNG, CHOICE);
+		boolean isOptional = true;
+
+		if (choice.getMandatory() != null) {
+			if (choice.getMandatory().getMandatory().compareTo(
+					YangBuiltInTypes.ytrue) == 0) {
+				choiceelt.setAttribute(MANDATORY, choice.getMandatory()
+						.getMandatory());
+				isOptional = false;
+			}
+		}
+
+		if (isOptional) {
+			Element optional = document.createElementNS(RNG, OPT);
+			elt.appendChild(optional);
+			elt = optional;
+		}
+		elt.appendChild(choiceelt);
+
+		String defaultcase = "";
+		if (choice.getDefault() != null)
+			defaultcase = choice.getDefault().getDefault();
+
+		for (YANG_Case ycase : choice.getCases()) {
+			Element interleave = document.createElementNS(RNG, INTLV);
+			if (ycase.getCase().compareTo(defaultcase) == 0)
+				interleave.setAttribute(IMPLICIT, "true");
+			choiceelt.appendChild(interleave);
+			gCase(spec, ycase, interleave);
+		}
+
+		for (YANG_ShortCase yscase : choice.getShortCases()) {
+			if (yscase.getBody().compareTo(defaultcase) == 0)
+				gShortCase(spec, yscase, choiceelt, true);
+			else
+				gShortCase(spec, yscase, choiceelt, false);
+		}
+
+	}
+
+	private void gShortCase(YANG_Specification spec, YANG_ShortCase ysc, Element elt, boolean b) {
+		if (ysc instanceof YANG_Container)
+			gContainer(spec,(YANG_Container)ysc,elt);
+		else if (ysc instanceof YANG_List)
+			gList(spec, (YANG_List) ysc, elt);
+		else if (ysc instanceof YANG_LeafList)
+			gLeafList(spec,(YANG_LeafList)ysc, elt);
+		else if (ysc instanceof YANG_AnyXml)
+			gAnyXml(spec, (YANG_AnyXml)ysc, elt);
+		else if (ysc instanceof YANG_Choice)
+			gChoice(spec, (YANG_Choice)ysc, elt);
+		else if (ysc instanceof YANG_Leaf)
+			gLeaf(spec, (YANG_Leaf)ysc, elt, "");
+		
+	}
+
+	private void gAnyXml(YANG_Specification spec, YANG_AnyXml ysc, Element elt2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void gCase(YANG_Specification spec, YANG_Case ycase, Element elt) {
+		for (YANG_DataDef ddef : ycase.getDataDefs())
+			gDataDef(spec, ddef, elt);
+
+	}
+
+	private void gChoiceInRpc(YANG_Specification spec, YANG_Choice choice,
+			Element elt) {
+
+	}
+
+	private void gLeafList(YANG_Specification spec, YANG_LeafList ddef,
+			Element elt) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void gKeyDataDef(YANG_Specification spec, YANG_DataDef ddef,
+			Element elt) {
+
+		if (ddef instanceof YANG_Leaf)
+			gKeyLeaf(spec, (YANG_Leaf) ddef, elt, "");
+
+	}
+
+	private void gList(YANG_Specification spec, YANG_List list, Element elt) {
 
 		Element zom = null;
 
@@ -342,54 +431,102 @@ public class Yang2Dsdl {
 		}
 
 		Element element = document.createElementNS(RNG, ELT);
-		element.setAttribute("name", spec.getPrefix().getPrefix() + ":" +list.getList());
+		element.setAttribute("name", spec.getPrefix().getPrefix() + ":"
+				+ list.getList());
 		String[] kl = list.getKey().getKeyLeaves();
 		for (int i = 0; i < kl.length; i++)
-			element.setAttribute("key", kl[i]);
+			element.setAttribute("key", spec.getPrefix().getPrefix() + ":"
+					+ kl[i]);
 		elt.appendChild(element);
-		
-		YANG_DataDef[] kdd = list.getKeyDataDefs();
-		for (YANG_DataDef ddef : kdd)
-			gDataDef(spec, ddef, element, "");
-		
-		Element interleave = document.createElementNS(RNG, INTLV);
-		elt.appendChild(interleave);
-		
 
-		for (YANG_DataDef ddef : list.getDataDefs())
-			gDataDef(spec, ddef,interleave , indent + INDENT);
+		YANG_DataDef[] kdd = list.getKeyDataDefs();
+		for (YANG_DataDef ddef : kdd) {
+			gKeyDataDef(spec, ddef, element);
+		}
+
+		YANG_DataDef[] nkdd = list.getNonKeyDataDefs();
+		if (nkdd.length > 1) {
+			Element interleave = document.createElementNS(RNG, INTLV);
+			element.appendChild(interleave);
+			element = interleave;
+		}
+
+		for (YANG_DataDef ddef : nkdd) {
+			gDataDef(spec, ddef, element);
+		}
 
 	}
 
 	private void gContainer(YANG_Specification spec, YANG_Container cont,
-			Element elt, String indent) {
+			Element elt) {
+		if (cont.getPresence() != null || !isOneMandatory(cont.getDataDefs())) {
+			Element optional = document.createElementNS(RNG, OPT);
+			elt.appendChild(optional);
+			elt = optional;
+		}
 		Element element = document.createElementNS(RNG, ELT);
-		element.setAttribute("name", cont.getContainer());
+		element.setAttribute("name", spec.getPrefix().getPrefix() + ":"
+				+ cont.getContainer());
 		elt.appendChild(element);
-		
-		Element interleave = document.createElementNS(RNG,INTLV);
-		element.appendChild(interleave);
+
+		if (cont.getDataDefs().size() > 1) {
+			Element interleave = document.createElementNS(RNG, INTLV);
+			element.appendChild(interleave);
+			element = interleave;
+		}
 		for (YANG_DataDef ddef : cont.getDataDefs())
-			gDataDef(spec, ddef, interleave, indent + INDENT);
+			gDataDef(spec, ddef, element);
 
 	}
 
-	private void gTypeDef(YANG_TypeDef td, Element elt, String indent) {
+	private boolean isOneMandatory(Vector<YANG_DataDef> dataDefs) {
+
+		for (YANG_DataDef ddef : dataDefs) {
+			if (ddef instanceof YANG_Leaf) {
+				YANG_Leaf leaf = (YANG_Leaf) ddef;
+				if (leaf.getMandatory() != null)
+					if (leaf.getMandatory().getMandatory().compareTo(
+							YangBuiltInTypes.ytrue) == 0)
+						return true;
+			} else if (ddef instanceof YANG_AnyXml) {
+				YANG_AnyXml axml = (YANG_AnyXml) ddef;
+				if (axml.getMandatory() != null)
+					if (axml.getMandatory().getMandatory().compareTo(
+							YangBuiltInTypes.ytrue) == 0)
+						return true;
+			} else if (ddef instanceof ListedDataDef) {
+				ListedDataDef list = (ListedDataDef) ddef;
+				if (list.getMinElement() != null)
+					if (list.getMinElement().getMinElementInt() > 0)
+						return true;
+			} else if (ddef instanceof YANG_Choice) {
+				YANG_Choice choice = (YANG_Choice) ddef;
+				if (choice.getMandatory() != null)
+					if (choice.getMandatory().getMandatory().compareTo(
+							YangBuiltInTypes.ytrue) == 0)
+						return true;
+			}
+
+		}
+		return false;
+	}
+
+	private void gTypeDef(YANG_TypeDef td, Element elt) {
 
 		Element define = document.createElementNS(RNG, DEFINE);
 		define.setAttribute("name", definestypedefs.get(td));
 		elt.appendChild(define);
-		gType(td.getType(), define, indent + INDENT);
+		gType(td.getType(), define);
 	}
 
-	private void gType(YANG_Type type, Element elt, String indent) {
+	private void gType(YANG_Type type, Element elt) {
 
 		if (!YangBuiltInTypes.isBuiltIn(type.getType())) {
 			YANG_TypeDef ttd = type.getTypedef();
 			Element ref = document.createElementNS(RNG, REF);
 			ref.setAttribute("type", definestypedefs.get(ttd));
 			elt.appendChild(ref);
-			gRestrictions(type, ref, indent + INDENT);
+			gRestrictions(type, ref);
 
 		} else {
 			if (type.getUnionSpec() != null) {
@@ -404,20 +541,18 @@ public class Yang2Dsdl {
 					choice.appendChild(ref);
 				}
 			} else {
-				gRestrictions(type, elt, indent);
+				gRestrictions(type, elt);
 			}
 		}
 
 	}
 
-	private void gRestrictions(YANG_Type type, Element elt, String indent) {
+	private void gRestrictions(YANG_Type type, Element elt) {
 
 		String[][] lengths = new String[0][0];
-		Vector<YANG_Pattern> patterns = null;
 
 		if (type.getStringRest() != null) {
 			YANG_StringRestriction strest = type.getStringRest();
-			patterns = strest.getPatterns();
 
 			if (strest.getLength() != null) {
 				lengths = strest.getLength().getLengthIntervals();
@@ -431,25 +566,25 @@ public class Yang2Dsdl {
 							.setAttribute("type", yangType2DsdlType(type
 									.getType()));
 					choice.appendChild(data);
-					gLength(l, data, indent + INDENT + INDENT);
+					gLength(l, data);
 					for (YANG_Pattern pat : strest.getPatterns()) {
-						gPattern(pat, data, indent + INDENT + INDENT);
+						gPattern(pat, data);
 					}
 				}
 			} else if (lengths.length == 1) {
 				Element data = document.createElementNS(RNG, DATA);
 				data.setAttribute("type", yangType2DsdlType(type.getType()));
 				elt.appendChild(data);
-				gLength(lengths[0], data, indent + INDENT);
+				gLength(lengths[0], data);
 				for (YANG_Pattern pat : strest.getPatterns()) {
-					gPattern(pat, data, indent + INDENT);
+					gPattern(pat, data);
 				}
 			} else {
 				Element data = document.createElementNS(RNG, DATA);
 				data.setAttribute("type", yangType2DsdlType(type.getType()));
 				elt.appendChild(data);
 				for (YANG_Pattern pat : strest.getPatterns()) {
-					gPattern(pat, data, indent + INDENT);
+					gPattern(pat, data);
 				}
 			}
 		} else {
@@ -459,7 +594,7 @@ public class Yang2Dsdl {
 		}
 	}
 
-	private void gLength(String[] l, Element elt, String indent) {
+	private void gLength(String[] l, Element elt) {
 
 		if (l[0].compareTo("0") != 0
 				&& l[0].compareTo(YangBuiltInTypes.uint64ub.toString()) != 0) {
@@ -506,49 +641,6 @@ public class Yang2Dsdl {
 			return "unknown_type";
 	}
 
-	private void gLength(YANG_Length length, PrintStream out, String indent) {
-
-		String[][] lengths = length.getLengthIntervals();
-		String lindent = indent;
-		boolean choice = lengths.length > 1;
-		if (choice) {
-			out.println(indent + LB + CHOICE + RB);
-			lindent += INDENT;
-		}
-		for (int i = 0; i < lengths.length; i++) {
-			if (choice) {
-				out.println(lindent + LB + DATA + " type=\"string\"" + RB);
-				lindent += INDENT;
-			}
-			if (lengths[i][0].compareTo(YangBuiltInTypes.min) != 0
-					|| lengths[i][0].compareTo(YangBuiltInTypes.max) != 0) {
-				if (lengths[i][0].compareTo(lengths[i][1]) == 0) {
-					out.println(lindent + LB + PARAM + " name=\"length\"" + RB
-							+ lengths[i][0] + LB + "/" + PARAM + RB);
-				} else {
-					out
-							.print(lindent + LB + PARAM + " name=\"minLength\""
-									+ RB);
-					out.print(lengths[i][0]);
-					out.println(LB + "/" + PARAM + RB);
-					if (lengths[i][1].compareTo(YangBuiltInTypes.max) != 0) {
-						out.print(lindent + LB + PARAM + " name=\"maxLength\""
-								+ RB);
-						out.print(lengths[i][1]);
-						out.println(LB + "/" + PARAM + RB);
-					}
-				}
-			}
-			if (choice) {
-				out.println(indent + INDENT + LB + "/" + DATA + RB);
-			}
-		}
-		if (choice) {
-			out.println(indent + LB + "/" + CHOICE + RB);
-		}
-
-	}
-
 	private void looksForTypesAndGroupings(YANG_Specification spec,
 			YANG_Body body, String prefix) {
 
@@ -584,11 +676,7 @@ public class Yang2Dsdl {
 						ut = dtd.getType();
 					}
 				}
-			}/*
-			 * else if (t.getTypedef() != null) { YANG_TypeDef dtd =
-			 * t.getTypedef(); looksForTypesAndGroupings(spec, dtd, baseprefix);
-			 * t = dtd.getType(); }
-			 */
+			}
 		} else if (body instanceof YANG_Leaf) {
 			YANG_Type t = ((YANG_Leaf) body).getType();
 			if (t.isPrefixed()) {
@@ -666,7 +754,7 @@ public class Yang2Dsdl {
 	}
 
 	private void gType(YANG_Specification spec, YANG_Type type, Element elt,
-			String prefix, String indent) {
+			String prefix) {
 
 		if (YangBuiltInTypes.isBuiltIn(type.getType())) {
 			if (type.getUnionSpec() != null) {
@@ -687,7 +775,7 @@ public class Yang2Dsdl {
 				if (type.getStringRest() != null) {
 					YANG_StringRestriction strest = type.getStringRest();
 					for (YANG_Pattern pat : strest.getPatterns()) {
-						gPattern(pat, data, indent + INDENT);
+						gPattern(pat, data);
 					}
 				}
 			}
@@ -708,52 +796,15 @@ public class Yang2Dsdl {
 		}
 	}
 
-	private void gPattern(YANG_Pattern pat, Element elt, String indent) {
+	private void gPattern(YANG_Pattern pat, Element elt) {
 		Element param = document.createElementNS(RNG, PARAM);
 		param.setAttribute("pattern", pat.getPattern());
 		elt.appendChild(param);
 	}
 
-	/*
-	 * private void gBodies(YANG_Specification spec, YANG_Body body, PrintStream
-	 * out, String prefix, String indent) {
-	 * 
-	 * 
-	 * 
-	 * if (body instanceof YANG_Leaf) { YANG_Leaf leaf = (YANG_Leaf) body;
-	 * 
-	 * } else if (body instanceof YANG_Grouping) { YANG_Grouping grouping =
-	 * (YANG_Grouping) body; out.print(indent + LB + DEFINE + " " + "name=\"");
-	 * out.print(PRE + prefix + SEP + grouping.getGrouping()); out.println("\""
-	 * + RB);
-	 * 
-	 * gTGD(spec, grouping.getTypeDefs(), grouping.getGroupings(),
-	 * grouping.getDataDefs(), out, prefix + SEP + grouping.getGrouping(),
-	 * indent + INDENT);
-	 * 
-	 * out.println(indent + LB + "/" + DEFINE + RB);
-	 * 
-	 * } else if (body instanceof YANG_Container) { YANG_Container container =
-	 * (YANG_Container) body; gTGD(spec, container.getTypeDefs(), container
-	 * .getGroupings(), container.getDataDefs(), out, prefix + SEP +
-	 * container.getContainer(), indent);
-	 * 
-	 * } else if (body instanceof YANG_List) { YANG_List list = (YANG_List)
-	 * body; gTGD(spec, list.getTypeDefs(), list.getGroupings(), list
-	 * .getDataDefs(), out, prefix + SEP + list.getList(), indent);
-	 * 
-	 * } else if (body instanceof YANG_Uses) {
-	 * 
-	 * YANG_Uses uses = (YANG_Uses) body; out.print(indent + LB + REF + " " +
-	 * "name=\""); out.print(PRE + prefix + SEP + uses.getGrouping().getBody());
-	 * out.println("\"" + RB); out.println(indent + LB + "/" + DEFINE + RB);
-	 * 
-	 * } }
-	 */
 	private YANG_Type gLeaf(YANG_Specification spec, YANG_Leaf leaf,
-			Element elt, String prefix, String indent) {
+			Element elt, String prefix) {
 
-		String lindent = indent;
 		YANG_Type type = leaf.getType();
 		boolean isOptional = true;
 		if (leaf.getMandatory() != null)
@@ -766,7 +817,7 @@ public class Yang2Dsdl {
 		if (leaf.getDefault() != null)
 			element.setAttribute(NMADEF, leaf.getDefault().getDefault());
 
-		gType(spec, type, element, prefix, indent + INDENT);
+		gType(spec, type, element, prefix);
 
 		if (isOptional) {
 			Element optional = document.createElementNS(RNG, OPT);
@@ -777,53 +828,33 @@ public class Yang2Dsdl {
 		return type;
 	}
 
-	private YANG_Type gTypeDef(YANG_Specification spec, YANG_TypeDef td,
-			PrintStream out, String prefix, String indent) {
-		out.print(indent + LB + DEFINE + " " + "name=\"");
-		out.print(prefix + SEP + td.getTypeDef());
-		out.println("\"" + RB);
-		YANG_Type type = td.getType();
-		// gType(spec, type, out, prefix, indent);
-		out.println(indent + LB + "/" + DEFINE + RB);
-		if (YangBuiltInTypes.isBuiltIn(type.getType()))
-			return null;
-		else
-			return type;
+	private YANG_Type gKeyLeaf(YANG_Specification spec, YANG_Leaf leaf,
+			Element elt, String prefix) {
 
+		YANG_Type type = leaf.getType();
+
+		Element element = document.createElementNS(RNG, ELT);
+		element.setAttribute("name", spec.getPrefix().getPrefix() + ":"
+				+ leaf.getLeaf());
+		if (leaf.getDefault() != null)
+			element.setAttribute(NMADEF, leaf.getDefault().getDefault());
+
+		gType(spec, type, element, prefix);
+
+		elt.appendChild(element);
+		return type;
 	}
 
-	/*
-	 * private Vector<SimpleYangNode> gTGD(YANG_Specification spec,
-	 * Vector<YANG_TypeDef> typeDefs, Vector<YANG_Grouping> groupings,
-	 * Vector<YANG_DataDef> dataDefs, PrintStream out, String prefix, String
-	 * indent) {
-	 * 
-	 * Vector<SimpleYangNode> result = new Vector<SimpleYangNode>();
-	 * 
-	 * for (YANG_Body lbody : groupings) result.addAll(gBodies(spec, lbody, out,
-	 * prefix, indent)); for (YANG_Body ltd : typeDefs)
-	 * result.addAll(gBodies(spec, ltd, out, prefix, indent)); for (YANG_Body
-	 * ldd : dataDefs) result.addAll(gBodies(spec, ldd, out, prefix, indent));
-	 * return result; }
-	 */
 	private void gNotifications(YANG_Specification specs, PrintStream out,
 			String iNDENT2) {
-		// TODO Auto-generated method stub
 
 	}
 
 	private void gRpcs(YANG_Specification specs, PrintStream out, String iNDENT2) {
-		// TODO Auto-generated method stub
 
 	}
 
-	private void gData(Hashtable<String, YANG_Specification> specs,
-			PrintStream out, String iNDENT2) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void gSpec(YANG_Specification spec, Element elt, String iNDENT2) {
+	private void gSpec(YANG_Specification spec, Element elt) {
 		Element grammar = document.createElementNS(RNG, GRAMMAR);
 		grammar.setAttribute("module", spec.getName());
 		grammar.setAttribute(NS, spec.getNameSpace().getNameSpace());
@@ -831,26 +862,12 @@ public class Yang2Dsdl {
 
 		for (YANG_Body body : spec.getBodies())
 			if (body instanceof YANG_DataDef)
-				gDataDef(spec, (YANG_DataDef) body, grammar, "");
+				gDataDef(spec, (YANG_DataDef) body, grammar);
 
 		int nbrpc = 0;
 		for (YANG_Body b : spec.getBodies())
 			if (b instanceof YANG_Rpc)
 				nbrpc++;
-		// if (nbrpc > 0) {
-		// elt.println(iNDENT2 + LB + NMA + ":" + RPCMETHODS + RB);
-		// gRpcs(spec, elt, iNDENT2);
-		// elt.println(iNDENT2 + LB + "/" + NMA + ":" + RPCMETHODS + RB);
-		// }
-		// int nbnotif = 0;
-		// for (YANG_Body b : spec.getBodies())
-		// if (b instanceof YANG_Notification)
-		// nbnotif++;
-		// if (nbnotif > 0) {
-		// elt.println(iNDENT2 + LB + NMA + ":" + NOTIFS + RB);
-		// gNotifications(spec, elt, iNDENT2);
-		// elt.println(iNDENT2 + LB + "/" + NMA + ":" + NOTIFS + RB);
-		// }
 
 	}
 }
