@@ -21,6 +21,11 @@ package jyang.tools;
 
 import java.io.PrintStream;
 import java.io.StringWriter;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.spi.DateFormatProvider;
+import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -41,11 +46,9 @@ import org.w3c.dom.NodeList;
 
 public class Yang2Dsdl {
 
-	private String INDENT = "   ";
 
 	private final static String XMLNS = "xmlns";
 	private final static String RELAXNG_NS = "http://relaxng/org/ns/structure/1.0";
-	private final static String NETMOD_NS = "urn:ietf:params:xml:ns:netmod:dsdl-annotations:1";
 
 	private final static String LB = "<";
 	private final static String RB = ">";
@@ -109,6 +112,35 @@ public class Yang2Dsdl {
 
 	private static final String DOC = "documentation";
 
+	private static final String DTLIB = "datatypeLibrary";
+
+	private static final String DTLIB_URI = "http://www.w3.org/2001/XMLSchema=datatypes";
+
+	private static final String CREATOR = "creator";
+
+	private static final String JYANG = "jYang 1.0, DSDL plugin";
+
+	private static final String DATE = "date";
+	private static final String SOURCE = "source";
+	private static final String YANGMODULE = "YANG module";
+	private static final String RPCS = "rpcs";
+	private static final String NOTIFICATIONS = "notifications";
+	private static final String EMPTY = "empty";
+	private static final String TRUE = "true";
+	private static final String FALSE = "false";
+	private static final String BASE64BINARY = "base64Binary";
+	private static final String TYPE = "type";
+	private static final String LIST = "list";
+	private static final String VALUE = "value";
+
+	private Hashtable<YANG_TypeDef, String> definestypedefs = new Hashtable<YANG_TypeDef, String>();
+	private Hashtable<YANG_Grouping, String> definesgroupings = new Hashtable<YANG_Grouping, String>();
+	private boolean defining = false;
+	private String prefix = "";
+
+	private boolean isThereOneAnyXml = false;
+
+
 	public Yang2Dsdl(Hashtable<String, YANG_Specification> specs,
 			PrintStream out) {
 
@@ -120,25 +152,31 @@ public class Yang2Dsdl {
 		}
 
 		document = docb.newDocument();
-		Element root = document.createElementNS(RELAXNG_NS, GRAMMAR);
-		document.appendChild(root);
+		Element grammar = document.createElementNS(RELAXNG_NS, GRAMMAR);
+		document.appendChild(grammar);
 
-		root.setAttribute(XMLNS + ":" + NMA, NMA_URI);
-		root.setAttribute(XMLNS + ":" + DC, DC_URI);
-		root.setAttribute(XMLNS + ":" + A, A_URI);
-
-		out.print(LB + RNG + ":" + GRAMMAR + " ");
-		out.println("xmlns:" + RNG + "=\"" + RELAXNG_NS + "\"");
-		out.print(INDENT + "xmlns:" + NMA + "=\"" + NETMOD_NS + "\"");
+		grammar.setAttribute(XMLNS + ":" + NMA, NMA_URI);
+		grammar.setAttribute(XMLNS + ":" + DC, DC_URI);
+		grammar.setAttribute(XMLNS + ":" + A, A_URI);
+		grammar.setAttribute(DTLIB, DTLIB_URI);
 
 		for (YANG_Specification spec : specs.values()) {
-			out.print("\n" + INDENT + "xmlns:" + spec.getPrefix().getPrefix()
-					+ "=\"" + spec.getNameSpace().getNameSpace() + "\"");
+			grammar.setAttribute(XMLNS + ":" + spec.getPrefix().getPrefix(), spec
+					.getNameSpace().getNameSpace());
+
 		}
-		out.println(RB);
+		Element creator = document.createElementNS(DC_URI, CREATOR);
+		creator.setTextContent(JYANG);
+		grammar.appendChild(creator);
+
+		Element date = document.createElementNS(DC_URI, DATE);
+		date.setTextContent(Calendar.getInstance().get(Calendar.YEAR) + "-"
+				+ (Calendar.getInstance().get(Calendar.MONTH) + 1) + "-" +
+				+ Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+		grammar.appendChild(date);
 
 		Element start = document.createElementNS(RELAXNG_NS, START);
-		root.appendChild(start);
+		grammar.appendChild(start);
 
 		Element defines = document.createElementNS(RELAXNG_NS, "defines");
 
@@ -150,12 +188,14 @@ public class Yang2Dsdl {
 
 		NodeList nl = defines.getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
-			start.appendChild(nl.item(i).cloneNode(true));
+			grammar.appendChild(nl.item(i).cloneNode(true));
 		}
 
 		if (isThereOneAnyXml)
-			start.appendChild(gDefineAnyXml());
+			grammar.appendChild(gDefineAnyXml());
 
+		
+		
 		DOMSource domSource = new DOMSource(document);
 		StringWriter writer = new StringWriter();
 		StreamResult result = new StreamResult(writer);
@@ -175,7 +215,7 @@ public class Yang2Dsdl {
 		}
 		String stringResult = writer.toString();
 
-		System.out.println(stringResult);
+		out.println(stringResult);
 
 	}
 
@@ -202,13 +242,6 @@ public class Yang2Dsdl {
 
 		return define;
 	}
-
-	private Hashtable<YANG_TypeDef, String> definestypedefs = new Hashtable<YANG_TypeDef, String>();
-	private Hashtable<YANG_Grouping, String> definesgroupings = new Hashtable<YANG_Grouping, String>();
-	private boolean defining = false;
-	private String prefix = "";
-
-	private boolean isThereOneAnyXml = false;
 
 	private void gDefines(Hashtable<String, YANG_Specification> specs,
 			Element parent) {
@@ -352,7 +385,8 @@ public class Yang2Dsdl {
 
 	}
 
-	private void gGrouping(YANG_Specification spec, YANG_Grouping g, Element parent) {
+	private void gGrouping(YANG_Specification spec, YANG_Grouping g,
+			Element parent) {
 
 		Element define = document.createElementNS(RELAXNG_NS, DEFINE);
 		define.setAttribute("name", definesgroupings.get(g));
@@ -389,22 +423,25 @@ public class Yang2Dsdl {
 	private void gConfigDataDef(ConfigDataDef cddef, Element parent) {
 		parent.setAttribute(NMA + ":" + CONFIG, String
 				.valueOf(cddef.isConfig()));
-		gMustDataDef((MustDataDef)cddef,parent);
+		gMustDataDef((MustDataDef) cddef, parent);
 	}
-	
-	private void gMustDataDef(MustDataDef mddef, Element parent){
+
+	private void gMustDataDef(MustDataDef mddef, Element parent) {
 		if (mddef.getMusts().size() > 0)
-			for (YANG_Must must : mddef.getMusts()){
+			for (YANG_Must must : mddef.getMusts()) {
 				Element mustelt = document.createElement(NMA + ":" + MUST);
 				mustelt.setAttribute(ASSERT, gXPath(must.getMust()));
 				parent.appendChild(mustelt);
-				if (must.getErrAppTag() != null){
-					Element errapptag = document.createElement(NMA + ":" + ERRORAPPTAG);
-					errapptag.setTextContent(must.getErrAppTag().getErrorAppt());
+				if (must.getErrAppTag() != null) {
+					Element errapptag = document.createElement(NMA + ":"
+							+ ERRORAPPTAG);
+					errapptag
+							.setTextContent(must.getErrAppTag().getErrorAppt());
 					mustelt.appendChild(errapptag);
 				}
-				if (must.getErrMess() != null){
-					Element errmsg = document.createElement(NMA + ":" + ERRORMSG);
+				if (must.getErrMess() != null) {
+					Element errmsg = document.createElement(NMA + ":"
+							+ ERRORMSG);
 					errmsg.setTextContent(must.getErrMess().getErrorMessage());
 					mustelt.appendChild(errmsg);
 				}
@@ -421,7 +458,7 @@ public class Yang2Dsdl {
 
 		Element choiceelt = document.createElementNS(RELAXNG_NS, CHOICE);
 		choiceelt.setAttribute(MANDATORY, String.valueOf(choice.isMandatory()));
-		
+
 		gDescription(choice, choiceelt);
 
 		if (choice.isMandatory()) {
@@ -469,7 +506,8 @@ public class Yang2Dsdl {
 
 	}
 
-	private void gAnyXml(YANG_Specification spec, YANG_AnyXml axml, Element parent) {
+	private void gAnyXml(YANG_Specification spec, YANG_AnyXml axml,
+			Element parent) {
 
 		isThereOneAnyXml = true;
 
@@ -478,7 +516,7 @@ public class Yang2Dsdl {
 			parent.appendChild(optional);
 			parent = optional;
 		}
-		
+
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
 		String aprefix = "";
 		if (!defining)
@@ -487,10 +525,8 @@ public class Yang2Dsdl {
 		parent.appendChild(element);
 
 		gDescription(axml, element);
-		
+
 		gConfigDataDef(axml, element);
-		
-		
 
 		Element ref = document.createElementNS(RELAXNG_NS, REF);
 		ref.setAttribute(NMA + ":" + "name", ANYXML);
@@ -498,14 +534,14 @@ public class Yang2Dsdl {
 
 	}
 
-	private void gDescription(DocumentedNode desc, Element element) {
+	private void gDescription(DocumentedNode desc, Element parent) {
 		if (desc.getDescription() != null) {
 			Element documentation = document.createElement(A + ":" + DOC);
-			documentation.setTextContent(desc.getDescription().getDescription());
-			element.appendChild(documentation);
+			documentation
+					.setTextContent(desc.getDescription().getDescription());
+			parent.appendChild(documentation);
 		}
-			
-		
+
 	}
 
 	private void gCase(YANG_Specification spec, YANG_Case ycase, Element parent) {
@@ -565,7 +601,6 @@ public class Yang2Dsdl {
 
 		for (int i = 0; i < kl.length; i++)
 			element.setAttribute(NMA + ":" + "key", kprefix + kl[i]);
-		
 
 		gListedAttribute(list, element);
 
@@ -602,7 +637,7 @@ public class Yang2Dsdl {
 
 		element.setAttribute("name", llprefix + leaflist.getLeafList());
 		element.setAttributeNS(NMA, "leaf-list", "true");
-		
+
 		gListedAttribute(leaflist, element);
 
 		gType(leaflist.getType(), element);
@@ -616,14 +651,14 @@ public class Yang2Dsdl {
 
 		if (l.getMinElement() != null) {
 			if (l.getMinElement().getMinElementInt() > 1)
-				parent.setAttribute(NMA + ":" + "min-elements", l.getMinElement()
-						.getMinElement());
+				parent.setAttribute(NMA + ":" + "min-elements", l
+						.getMinElement().getMinElement());
 		}
 		if (l.getMaxElement() != null) {
 			if (!(l.getMaxElement().getMaxElement().compareTo(
 					YangBuiltInTypes.UNBONDED) == 0))
-				parent.setAttribute(NMA + ":" + "max-elements", l.getMaxElement()
-						.getMaxElement());
+				parent.setAttribute(NMA + ":" + "max-elements", l
+						.getMaxElement().getMaxElement());
 		}
 
 	}
@@ -637,7 +672,7 @@ public class Yang2Dsdl {
 			parent = optional;
 		}
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
-		
+
 		gDescription(cont, element);
 
 		String cprefix = "";
@@ -708,7 +743,10 @@ public class Yang2Dsdl {
 			parent.appendChild(ref);
 			gRestrictions(type, ref);
 
-		} else {
+		} else {  
+			
+			// type is a built in type
+			
 			if (type.getUnionSpec() != null) {
 
 				Element choice = document.createElementNS(RELAXNG_NS, CHOICE);
@@ -722,6 +760,42 @@ public class Yang2Dsdl {
 				}
 			} else {
 				gRestrictions(type, parent);
+				
+				String st = type.getType();
+				
+				if (st.compareTo(YangBuiltInTypes.empty) == 0){
+					Element empty = document.createElementNS(RELAXNG_NS, EMPTY);
+					parent.appendChild(empty);
+				} else if (st.compareTo(YangBuiltInTypes.yboolean) == 0){
+					Element choice = document.createElementNS(RELAXNG_NS, CHOICE);
+					Element t = document.createElementNS(RELAXNG_NS, TRUE);
+					Element f = document.createElementNS(RELAXNG_NS, FALSE);
+					choice.appendChild(t);
+					choice.appendChild(f);
+					parent.appendChild(choice);
+				} else if (st.compareTo(YangBuiltInTypes.binary) == 0){
+					Element data = document.createElementNS(RELAXNG_NS, DATA);
+					data.setAttribute(TYPE, BASE64BINARY);
+					parent.appendChild(data);
+				} else if (st.compareTo(YangBuiltInTypes.bits) == 0){
+					Element list = document.createElementNS(RELAXNG_NS, LIST);
+					parent.appendChild(list);
+					
+					YANG_BitSpecification bs = type.getBitSpec();
+					for (YANG_Bit bit : bs.getBits()){
+						Element optional = document.createElementNS(RELAXNG_NS, OPT);
+						Element value = document.createElementNS(RELAXNG_NS, VALUE);
+						value.setTextContent(bit.getBit());
+						optional.appendChild(value);
+						list.appendChild(optional);
+					}
+				} else if (st.compareTo(YangBuiltInTypes.enumeration) == 0){
+					Element choice = document.createElementNS(RELAXNG_NS, CHOICE);
+					for (YANG_Enum yenum : type.getEnums()){
+						
+					}
+				}
+					
 			}
 		}
 
@@ -983,7 +1057,8 @@ public class Yang2Dsdl {
 		parent.appendChild(param);
 	}
 
-	private YANG_Type gLeaf(YANG_Specification spec, YANG_Leaf leaf, Element parent) {
+	private YANG_Type gLeaf(YANG_Specification spec, YANG_Leaf leaf,
+			Element parent) {
 
 		YANG_Type type = leaf.getType();
 
@@ -1000,8 +1075,6 @@ public class Yang2Dsdl {
 
 		gDescription(leaf, element);
 		gConfigDataDef(leaf, element);
-
-
 
 		gType(type, element);
 
@@ -1027,7 +1100,7 @@ public class Yang2Dsdl {
 		if (leaf.getDefault() != null)
 			element.setAttribute(NMA + ":" + DEFAULT, leaf.getDefault()
 					.getDefault());
-		
+
 		gDescription(leaf, element);
 		gConfigDataDef(leaf, element);
 
@@ -1037,14 +1110,7 @@ public class Yang2Dsdl {
 		return type;
 	}
 
-	private void gNotifications(YANG_Specification specs, PrintStream out,
-			String iNDENT2) {
-
-	}
-
-	private void gRpcs(YANG_Specification specs, PrintStream out, String iNDENT2) {
-
-	}
+	// private newElement()
 
 	private void gSpec(YANG_Specification spec, Element parent) {
 
@@ -1054,15 +1120,40 @@ public class Yang2Dsdl {
 		grammar.setAttribute("module", spec.getName());
 		grammar.setAttribute(NS, spec.getNameSpace().getNameSpace());
 		parent.appendChild(grammar);
-
+		
+		Element source = document.createElementNS(DC_URI, SOURCE);
+		source.setTextContent(YANGMODULE + " '" + spec.getName() + "'");
+		grammar.appendChild(source);
+		Element start = document.createElementNS(RELAXNG_NS, START);
+		grammar.appendChild(start);
+		
+		Element data = document.createElementNS(NMA_URI, DATA);
+		start.appendChild(data);
+		
+		Element rpcs = document.createElementNS(NMA_URI, RPCS);
+		start.appendChild(rpcs);
+		Element notifications = document.createElementNS(NMA_URI, NOTIFICATIONS);
+		start.appendChild(notifications);
+		
 		for (YANG_Body body : spec.getBodies())
 			if (body instanceof YANG_DataDef)
-				gDataDef(spec, (YANG_DataDef) body, grammar);
-
-		int nbrpc = 0;
-		for (YANG_Body b : spec.getBodies())
-			if (b instanceof YANG_Rpc)
-				nbrpc++;
+				gDataDef(spec, (YANG_DataDef) body, data);
+			 else if (body instanceof YANG_Rpc)
+				 gRpcs((YANG_Rpc) body, rpcs);
+			 else if (body instanceof YANG_Notification)
+				 gNotifications((YANG_Notification) body, notifications);
+		
 
 	}
+
+	private void gRpcs(YANG_Rpc body, Element rpc) {
+		
+		
+	}
+
+	private void gNotifications(YANG_Notification body, Element notification) {
+		
+		
+	}
+
 }
