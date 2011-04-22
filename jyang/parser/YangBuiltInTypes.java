@@ -152,6 +152,7 @@ public class YangBuiltInTypes {
 
 	public static final String config = "true";
 	public static final String mandatory = "false";
+	public static final String UNBONDED = "unbonded";
 
 	public String canonizeString(String s) {
 		String result = s;

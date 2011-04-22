@@ -77,7 +77,13 @@ public class YANG_Choice extends ConfigDataDef {
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
-
+	
+	public boolean isMandatory(){
+		if (getMandatory() == null)
+			return false;
+		return getMandatory().isMandatory();
+	}
+	
 	public void addShortCase(YANG_ShortCase s) {
 
 		shorts.add(s);

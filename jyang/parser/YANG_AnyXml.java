@@ -40,6 +40,12 @@ public class YANG_AnyXml extends MustDataDef implements YANG_ShortCase {
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
+	
+	public boolean isMandatory(){
+		if (getMandatory() == null)
+			return false;
+		return getMandatory().isMandatory();
+	}
 
 	public boolean isBracked() {
 		return super.isBracked() || b_mandatory;

@@ -58,8 +58,8 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 			b_type = true;
 			type = t;
 		} else
-			YangErrorManager.addError(filename, t.getLine(), t.getCol(), "unex_kw",
-					"type");
+			YangErrorManager.addError(filename, t.getLine(), t.getCol(),
+					"unex_kw", "type");
 	}
 
 	public YANG_Type getType() {
@@ -71,8 +71,8 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 			b_units = true;
 			units = u;
 		} else
-			YangErrorManager.addError(filename, u.getLine(), u.getCol(), "unex_kw",
-					"units");
+			YangErrorManager.addError(filename, u.getLine(), u.getCol(),
+					"unex_kw", "units");
 	}
 
 	public YANG_Units getUnits() {
@@ -84,8 +84,8 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 			b_default = true;
 			ydefault = d;
 		} else
-			YangErrorManager.addError(filename, d.getLine(), d.getCol(), "unex_kw",
-					"default");
+			YangErrorManager.addError(filename, d.getLine(), d.getCol(),
+					"unex_kw", "default");
 	}
 
 	public YANG_Default getDefault() {
@@ -97,12 +97,18 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 			b_mandatory = true;
 			mandatory = m;
 		} else
-			YangErrorManager.addError(filename, m.getLine(), m.getCol(), "unex_kw",
-					"mandatory");
+			YangErrorManager.addError(filename, m.getLine(), m.getCol(),
+					"unex_kw", "mandatory");
 	}
 
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
+	}
+
+	public boolean isMandatory() {
+		if (getMandatory() == null)
+			return false;
+		return getMandatory().isMandatory();
 	}
 
 	public boolean isBracked() {
@@ -112,23 +118,25 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 
 	public void check(YangContext context) {
 		super.check(context);
-		//setContext(context);
+		// setContext(context);
 		if (!b_type)
 			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"expected_kw", "type");
 		else {
-			if (!YangBuiltInTypes.isBuiltIn(getType().getType()))
+			if (!YangBuiltInTypes.isBuiltIn(getType().getType())) {
 				if (!context.isTypeDefined(getType())) {
-					YangErrorManager.addError(getFileName(), getType().getLine(),
-							getType().getCol(), "unknown_type", getType()
-									.getType());
+					YangErrorManager.addError(getFileName(), getType()
+							.getLine(), getType().getCol(), "unknown_type",
+							getType().getType());
 				} else {
 					getType().check(context);
 					if (!context.getTypeDef(getType()).isChecked())
 						context.getTypeDef(getType()).check(context);
 				}
+			}
+
 		}
-		
+
 		if (b_mandatory) {
 			if (getMandatory().getMandatory().compareTo("true") == 0
 					&& b_default)
@@ -137,22 +145,25 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 						getDefault().getLine());
 		}
 		if (b_default)
-			if (getType() != null)
-				getType().checkDefaultValue(context, this, getDefault());
-			else {
-				if (getType() != null) {
-					YANG_TypeDef defining = context.getTypeDef(getType());
+			// if (getType() != null)
+			// getType().checkDefaultValue(context, this, getDefault());
+			// else {
+			if (getType() != null) {
+				YANG_TypeDef defining = context.getTypeDef(getType());
+				if (defining == null) {
+					getType().checkDefaultValue(context, this, getDefault());
+				} else
 					while (defining != null) {
 						if (defining.getDefault() != null) {
-								getType().checkDefaultValue(context, this,
-										defining.getDefault());
-								defining = null;
+							getType().checkDefaultValue(context, this,
+									defining.getDefault());
+							defining = null;
 						} else {
 							defining = context.getBaseTypeDef(defining);
 						}
 					}
-				}
 			}
+		// }
 
 	}
 

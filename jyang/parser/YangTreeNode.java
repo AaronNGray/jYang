@@ -243,7 +243,7 @@ public class YangTreeNode implements java.io.Serializable {
 		String parentcfg = cstr;
 		for (YangTreeNode child : getChilds()) {
 			if (child.getNode() instanceof YANG_List) {
-				if (!(getNode() instanceof IoDataDef || getNode() instanceof YANG_Notification) ) {
+				if (!(getNode() instanceof IoDataDef || getNode() instanceof YANG_Notification)) {
 					YANG_List list = (YANG_List) child.getNode();
 					if (list.getConfig() == null) {
 						if (parentcfg.compareTo("true") == 0) {
@@ -257,8 +257,9 @@ public class YangTreeNode implements java.io.Serializable {
 											"config_list_true_no_key", list
 													.getList());
 								} else
-									YangErrorManager.addError(list.getFileName(),
-											list.getLine(), list.getCol(),
+									YangErrorManager.addError(list
+											.getFileName(), list.getLine(),
+											list.getCol(),
 											"config_list_true_no_key", list
 													.getList());
 							}
@@ -275,8 +276,9 @@ public class YangTreeNode implements java.io.Serializable {
 											"config_list_true_no_key", list
 													.getList());
 								} else
-									YangErrorManager.addError(list.getFileName(),
-											list.getLine(), list.getCol(),
+									YangErrorManager.addError(list
+											.getFileName(), list.getLine(),
+											list.getCol(),
 											"config_list_true_no_key", list
 													.getList());
 							}
@@ -359,8 +361,8 @@ public class YangTreeNode implements java.io.Serializable {
 								c1 = ytn.getNode().getCol();
 								l2 = getNode().getLine();
 							}
-							YangErrorManager.addError(getNode().getFileName(), l1,
-									c1, "dup_child", getNode().getBody(),
+							YangErrorManager.addError(getNode().getFileName(),
+									l1, c1, "dup_child", getNode().getBody(),
 									getNode().getFileName(), l2);
 
 						} else
@@ -398,10 +400,10 @@ public class YangTreeNode implements java.io.Serializable {
 								YANG_DataDef sddef = (YANG_DataDef) scase;
 								if (sddef.getBody().compareTo(
 										ytn.getNode().getBody()) == 0)
-									YangErrorManager.addError(uses.getFileName(),
-											uses.getLine(), uses.getCol(),
-											"dup_child", ytn.getNode()
-													.getBody(), sddef
+									YangErrorManager.addError(uses
+											.getFileName(), uses.getLine(),
+											uses.getCol(), "dup_child", ytn
+													.getNode().getBody(), sddef
 													.getFileName(), sddef
 													.getLine());
 
@@ -415,9 +417,9 @@ public class YangTreeNode implements java.io.Serializable {
 				String refnid = ref.getRefineNodeId();
 				if (refnds.containsKey(refnid)) {
 					YANG_Refine firstref = refnds.get(refnid);
-					YangErrorManager.addError(ref.getFileName(), ref.getLine(), ref
-							.getCol(), "dup_child", refnid, firstref
-							.getFileName(), firstref.getLine());
+					YangErrorManager.addError(ref.getFileName(), ref.getLine(),
+							ref.getCol(), "dup_child", refnid, firstref
+									.getFileName(), firstref.getLine());
 				} else
 					refnds.put(ref.getRefineNodeId(), ref);
 			}
@@ -425,8 +427,8 @@ public class YangTreeNode implements java.io.Serializable {
 				String refnode = ref.getRefineNodeId();
 				YANG_Body body = getBodyInTree(module, root, importeds, refnode);
 				if (body == null) {
-					YangErrorManager.addError(ref.getFileName(), ref.getLine(), ref
-							.getCol(), "unknown", "node", refnode);
+					YangErrorManager.addError(ref.getFileName(), ref.getLine(),
+							ref.getCol(), "unknown", "node", refnode);
 				} else {
 					if (body instanceof YANG_Leaf) {
 						YANG_Leaf refinedleaf = (YANG_Leaf) body;
@@ -509,8 +511,8 @@ public class YangTreeNode implements java.io.Serializable {
 								importeds, taugs[i]);
 					}
 					if (augmentedbody == null)
-						YangErrorManager.addError(vaugs.get(i).getFileName(), vaugs
-								.get(i).getLine(), vaugs.get(i).getCol(),
+						YangErrorManager.addError(vaugs.get(i).getFileName(),
+								vaugs.get(i).getLine(), vaugs.get(i).getCol(),
 								"augmented_not_found", taugs[i]);
 				} else {
 
@@ -538,15 +540,33 @@ public class YangTreeNode implements java.io.Serializable {
 				/**
 				 * The path specification is to evaluate on data tree
 				 */
-				/*
-				 * if (type.getLeafRef() != null) { YANG_LeafRefSpecification
-				 * krs = type.getLeafRef(); if (krs.getPath() != null) {
-				 * YANG_Path path = krs.getPath(); YangTreeNode referenced =
-				 * getNodeInTree(module, root, importeds, path.getPath()); if
-				 * (referenced == null)
-				 * YangErrorManager.tadd(path.getFileName(), path .getLine(),
-				 * path.getCol(), "unknown", "node", path.getPath()); } }
-				 */
+
+				if (type.getLeafRef() != null) {
+					YANG_LeafRefSpecification krs = type.getLeafRef();
+					if (krs.getPath() != null) {
+						YANG_Path path = krs.getPath();
+						YangTreeNode referenced = getNodeInTree(module, root,
+								importeds, path.getPath());
+						if (referenced == null)
+							YangErrorManager.addError(path.getFileName(), path
+									.getLine(), path.getCol(), "unknown",
+									"node", path.getPath());
+						else {
+							if (referenced.getNode() instanceof YANG_Leaf)
+								type.getLeafRef().setReferencedTypeLeaf(
+										((YANG_Leaf) (referenced.getNode()))
+												.getType());
+							else if (referenced.getNode() instanceof YANG_LeafList)
+								type.getLeafRef().setReferencedTypeLeaf(
+										((YANG_LeafList) (referenced.getNode()))
+												.getType());
+							else {
+								// TODO ERROR when a leafref doesn't refers to a leaf or leaflist
+							}
+						}
+					}
+				}
+
 			}
 		} else if (node instanceof YANG_List) {
 			YANG_List list = (YANG_List) node;
@@ -576,9 +596,10 @@ public class YangTreeNode implements java.io.Serializable {
 							if (context.getBuiltInType(leaf.getType()) != null) {
 								if (YangBuiltInTypes.empty.compareTo(context
 										.getBuiltInType(leaf.getType())) == 0)
-									YangErrorManager.addError(node.getFileName(), k
-											.getLine(), k.getCol(),
-											"key_empty", kstr, list.getList());
+									YangErrorManager.addError(node
+											.getFileName(), k.getLine(), k
+											.getCol(), "key_empty", kstr, list
+											.getList());
 
 								String configkeyleaf = null;
 								if (leaf.getConfig() == null)
@@ -598,17 +619,18 @@ public class YangTreeNode implements java.io.Serializable {
 														.getFileName(), list
 														.getLine());
 								} else if (configkeyleaf != null)
-									YangErrorManager.addError(node.getFileName(), k
-											.getLine(), k.getCol(),
-											"key_config", kstr, list.getList());
+									YangErrorManager.addError(node
+											.getFileName(), k.getLine(), k
+											.getCol(), "key_config", kstr, list
+											.getList());
 							}
 
 						}
 
 					} else
-						YangErrorManager.addError(node.getFileName(), k.getLine(),
-								k.getCol(), "key_not_found", kstr, list
-										.getList());
+						YangErrorManager.addError(node.getFileName(), k
+								.getLine(), k.getCol(), "key_not_found", kstr,
+								list.getList());
 				}
 			}
 			for (YANG_Unique u : list.getUniques()) {
@@ -616,9 +638,9 @@ public class YangTreeNode implements java.io.Serializable {
 				for (int i = 0; i < uniques.length; i++)
 					if (getBodyInTree(module, root, importeds, list.getBody()
 							+ "/" + uniques[i].trim()) == null) {
-						YangErrorManager.addError(node.getFileName(), u.getLine(),
-								u.getCol(), "unique_not_found", uniques[i],
-								node.getBody());
+						YangErrorManager.addError(node.getFileName(), u
+								.getLine(), u.getCol(), "unique_not_found",
+								uniques[i], node.getBody());
 					}
 			}
 		}
@@ -666,9 +688,9 @@ public class YangTreeNode implements java.io.Serializable {
 								c1 = son.getNode().getCol();
 								l2 = ddef.getLine();
 							}
-							YangErrorManager.addError(ddef.getFileName(), l1, c1,
-									"dup_child", ddef.getBody(), son.getNode()
-											.getFileName(), l2);
+							YangErrorManager.addError(ddef.getFileName(), l1,
+									c1, "dup_child", ddef.getBody(), son
+											.getNode().getFileName(), l2);
 
 						} else
 							YangErrorManager.addError(ddef.getFileName(), ddef
@@ -702,9 +724,9 @@ public class YangTreeNode implements java.io.Serializable {
 								c1 = son.getNode().getCol();
 								l2 = ddef.getLine();
 							}
-							YangErrorManager.addError(ddef.getFileName(), l1, c1,
-									"dup_child", ddef.getBody(), son.getNode()
-											.getFileName(), l2);
+							YangErrorManager.addError(ddef.getFileName(), l1,
+									c1, "dup_child", ddef.getBody(), son
+											.getNode().getFileName(), l2);
 
 						} else
 							YangErrorManager.addError(ddef.getFileName(), ddef

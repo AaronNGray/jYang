@@ -26,6 +26,10 @@ public class YANG_Config extends SimpleYangNode {
 	public String getConfigStr() {
 		return config;
 	}
+	
+	public boolean isConfig(){
+		return config.compareTo(YangBuiltInTypes.ytrue) == 0;
+	}
 
 	public void check(YangContext context) {
 	}
