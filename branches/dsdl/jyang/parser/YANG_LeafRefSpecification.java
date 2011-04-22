@@ -34,4 +34,15 @@ public class YANG_LeafRefSpecification extends SimpleYangNode {
 		return result;
 	}
 
+	private YANG_Type referencedTypeLeaf = null;
+	
+	public YANG_Type getReferencedTypeLeaf() {
+		return referencedTypeLeaf;
+	}
+
+	public void setReferencedTypeLeaf(YANG_Type type) {
+		referencedTypeLeaf = type;
+		
+	}
+
 }

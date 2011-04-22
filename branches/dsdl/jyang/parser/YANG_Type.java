@@ -43,8 +43,8 @@ public class YANG_Type extends SimpleYangNode {
 	public YANG_TypeDef getTypedef() {
 		return typedef;
 	}
-	
-	protected void setTypeDef(YANG_TypeDef t){
+
+	protected void setTypeDef(YANG_TypeDef t) {
 		typedef = t;
 	}
 
@@ -1363,16 +1363,34 @@ public class YANG_Type extends SimpleYangNode {
 						if (!inside) {
 							if (lnumrest == null) {
 								YANG_TypeDef td = this.getTypedef();
-								YangErrorManager.addError(filename, ydefault
-										.getLine(), ydefault.getCol(),
-										"default_match_fail", YangBuiltInTypes
-												.removeQuotes(value), td
-												.getFileName()
-												+ ":" + td.getLine(),
-										"range error", "range", getFileName()
-												+ ":"
-												+ context.getTypeDef(this)
-														.getType().getLine());
+								if (td != null)
+									YangErrorManager.addError(filename,
+											ydefault.getLine(), ydefault
+													.getCol(),
+											"default_match_fail",
+											YangBuiltInTypes
+													.removeQuotes(value), td
+													.getFileName()
+													+ ":" + td.getLine(),
+											"range error", "range",
+											getFileName()
+													+ ":"
+													+ context.getTypeDef(this)
+															.getType()
+															.getLine());
+								else 
+									YangErrorManager.addError(filename,
+										ydefault.getLine(), ydefault
+										.getCol(),
+								"default_match_fail",
+								YangBuiltInTypes
+										.removeQuotes(value), this
+										.getFileName()
+										+ ":" + this.getLine(),
+								"range error", "range",
+								getFileName()
+										+ ":"
+										+ this.getLine());
 
 							} else {
 								YANG_Type t = this;
@@ -1680,7 +1698,7 @@ public class YANG_Type extends SimpleYangNode {
 				.compareTo(context.getBuiltInType(this)) == 0) {
 			value = YangBuiltInTypes.removeQuotesAndTrim(value);
 			String[] bv = value.split("\\s");
-			
+
 			if (bv.length > getFirstBitDefined(context, this))
 				YangErrorManager.addError(ydefault.getFileName(), ydefault
 						.getLine(), ydefault.getCol(), "default_mismatch",
@@ -1688,9 +1706,9 @@ public class YANG_Type extends SimpleYangNode {
 			else {
 				YANG_BitSpecification bs = getBitSpec();
 				boolean allfound = true;
-				for (String defbit : bv){
+				for (String defbit : bv) {
 					boolean foundone = false;
-					for (YANG_Bit bit : bs.getBits()){
+					for (YANG_Bit bit : bs.getBits()) {
 						if (bit.getBit().compareTo(defbit) == 0)
 							foundone = true;
 					}
@@ -2239,15 +2257,14 @@ public class YANG_Type extends SimpleYangNode {
 				}
 				if (!chain.contains(utype)) {
 					chain.add(utype);
-					for (YANG_Type t : utype.getUnionSpec().getTypes()){
+					for (YANG_Type t : utype.getUnionSpec().getTypes()) {
 						t.setTypeDef(context.getTypeDef(t));
 						empty = empty || checkRecEmptyUnion(context, chain, t);
 					}
 				}
 			}
 
-		}
-		else {
+		} else {
 			utype.setTypeDef(context.getTypeDef(utype));
 		}
 		return empty;

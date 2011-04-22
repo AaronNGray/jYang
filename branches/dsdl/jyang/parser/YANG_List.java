@@ -125,6 +125,21 @@ public class YANG_List extends ListedDataDef implements DataDefsContainer {
 		}
 		return result;
 	}
+	
+	public YANG_DataDef[] getNonKeyDataDefs(){
+		String[] keys = getKey().getKeyLeaves();
+		YANG_DataDef[] result = new YANG_DataDef[getDataDefs().size() - keys.length]; 
+		int i = 0;
+		for (String key : keys){
+			for (YANG_DataDef ddef : getDataDefs()){
+				YANG_DataDef kdd = findKey(key, ddef);
+				if (kdd == null)
+					result[i++] = ddef;
+			}
+		}
+		return result;
+		
+	}
 
 	private YANG_DataDef findKey(String k, YANG_DataDef dd) {
 
