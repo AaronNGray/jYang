@@ -22,7 +22,7 @@ package jyang.parser;
 import java.io.Serializable;
 import java.util.*;
 
-public class YangContext implements Serializable{
+public class YangContext implements Serializable {
 
 	private YangSpecTypes spectypes = null;
 	private YangSpecNode specnodes = null;
@@ -203,8 +203,8 @@ public class YangContext implements Serializable{
 			String suffix = uses
 					.substring(uses.indexOf(':') + 1, uses.length());
 			String cn = null;
-			cn = canonicalTypeName(prefix, suffix,u.getFileName(), u.getLine(), u.getCol(),
-					new Hashtable<String, YANG_Type>());
+			cn = canonicalTypeName(prefix, suffix, u.getFileName(),
+					u.getLine(), u.getCol(), new Hashtable<String, YANG_Type>());
 			return specnodes.isDefinedAsGrouping(cn);
 		} else
 			return specnodes.isDefinedAsGrouping(getModuleSpecName() + ":"
@@ -223,8 +223,8 @@ public class YangContext implements Serializable{
 			String suffix = uses
 					.substring(uses.indexOf(':') + 1, uses.length());
 			String cn = null;
-			cn = canonicalTypeName(prefix, suffix, u.getFileName(), u.getLine(), u.getCol(),
-					new Hashtable<String, YANG_Type>());
+			cn = canonicalTypeName(prefix, suffix, u.getFileName(),
+					u.getLine(), u.getCol(), new Hashtable<String, YANG_Type>());
 			return specnodes.getUsedGrouping(cn);
 		} else {
 			return specnodes.getUsedGrouping(getModuleSpecName() + ":" + uses);
@@ -367,8 +367,8 @@ public class YangContext implements Serializable{
 		// Are we trying to redefine a built-in type ?
 
 		if (YangBuiltInTypes.isBuiltIn(td.getTypeDef())) {
-			YangErrorManager.addError(td.getFileName(), td.getLine(), td.getCol(),
-					"illegal_builtin", td.getBody());
+			YangErrorManager.addError(td.getFileName(), td.getLine(), td
+					.getCol(), "illegal_builtin", td.getBody());
 			return;
 		}
 
@@ -398,17 +398,16 @@ public class YangContext implements Serializable{
 			prefix = type.getPrefix();
 		suffix = type.getSuffix();
 		String cn = null;
-		cn = canonicalTypeName(prefix, suffix, type.getFileName(), type.getLine(), type.getCol(),
-				pendinguniontype);
+		cn = canonicalTypeName(prefix, suffix, type.getFileName(), type
+				.getLine(), type.getCol(), pendinguniontype);
 		if (YangBuiltInTypes.union.compareTo(suffix) == 0) {
 			YANG_UnionSpecification unionspec = type.getUnionSpec();
-			if (unionspec != null){
-				//pendinguniontype.put(cn, type);
+			if (unionspec != null) {
+				// pendinguniontype.put(cn, type);
 				pendingUnionTypes(unionspec, pendinguniontype, imports, spec);
-			}
-			else
-				YangErrorManager.addError(type.getFileName(), type.getLine(), type
-						.getCol(), "union_no_type");
+			} else
+				YangErrorManager.addError(type.getFileName(), type.getLine(),
+						type.getCol(), "union_no_type");
 		}
 		return cn;
 
@@ -423,8 +422,8 @@ public class YangContext implements Serializable{
 			prefix = iff.getPrefix();
 		suffix = iff.getSuffix();
 		String cn = null;
-		cn = canonicalTypeName(prefix, suffix, iff.getFileName(), iff.getLine(), iff.getCol(),
-				pendinguniontype);
+		cn = canonicalTypeName(prefix, suffix, iff.getFileName(),
+				iff.getLine(), iff.getCol(), pendinguniontype);
 		return cn;
 	}
 
@@ -437,13 +436,14 @@ public class YangContext implements Serializable{
 			prefix = base.getPrefix();
 		suffix = base.getSuffix();
 		String cn = null;
-		cn = canonicalTypeName(prefix, suffix, base.getFileName(), base.getLine(), base.getCol(),
-				pendinguniontype);
+		cn = canonicalTypeName(prefix, suffix, base.getFileName(), base
+				.getLine(), base.getCol(), pendinguniontype);
 		return cn;
 	}
 
-	private String canonicalTypeName(String prefix, String suffix, String filename, int line,
-			int col, Hashtable<String, YANG_Type> pendinguniontype) {
+	private String canonicalTypeName(String prefix, String suffix,
+			String filename, int line, int col,
+			Hashtable<String, YANG_Type> pendinguniontype) {
 		String result = null;
 		if (prefix == null) {
 			if (YangBuiltInTypes.isBuiltIn(suffix))
@@ -464,8 +464,9 @@ public class YangContext implements Serializable{
 					.hasMoreElements()
 					&& !found;) {
 				YANG_Import impo = ei.nextElement();
-
-				if (impo.getPrefix().getPrefix().compareTo(prefix) == 0) {
+				YANG_Specification impspec = impo.getImportedmodule();
+				if (impo.getPrefix().getPrefix().compareTo(prefix) == 0
+						|| impspec.getPrefix().getPrefix().compareTo(prefix) == 0) {
 					result = impo.getImportedModule() + ":" + suffix;
 					found = true;
 					impo.setUsed(found);
@@ -494,10 +495,14 @@ public class YangContext implements Serializable{
 		for (Enumeration<YANG_Type> et = us.getTypes().elements(); et
 				.hasMoreElements();) {
 			YANG_Type utype = et.nextElement();
-			if (!YangBuiltInTypes.isBuiltIn(utype.getType()))
-				pendinguniontype.put(
-						canonicalTypeName(utype, pendinguniontypes), utype);
-			else if (YangBuiltInTypes.union.compareTo(utype.getType()) == 0) {
+			if (!YangBuiltInTypes.isBuiltIn(utype.getType())) {
+				String cn = canonicalTypeName(utype, pendinguniontypes);
+				if (cn != null) {
+					pendinguniontype.put(cn, utype);
+				} else
+					System.out.println(utype.getType());
+
+			} else if (YangBuiltInTypes.union.compareTo(utype.getType()) == 0) {
 				YANG_UnionSpecification uspec = utype.getUnionSpec();
 				pendingUnionTypes(uspec, pendinguniontype, imports, spec);
 			}
@@ -566,7 +571,7 @@ public class YangContext implements Serializable{
 	public void removeContext(String module, YangContext importedcontext) {
 		specnodes.removeNode(module, importedcontext.getSpecNodes());
 		spectypes.removeType(module, importedcontext.getSpecTypes());
-		
+
 	}
 
 }

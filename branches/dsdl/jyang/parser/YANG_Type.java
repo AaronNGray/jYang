@@ -280,7 +280,7 @@ public class YANG_Type extends SimpleYangNode {
 					"unknown", "type", getType());
 			return;
 		}
-		typedef = context.getTypeDef(this);
+		setTypeDef(context.getTypeDef(this));
 		if (typedef != null)
 			typedef.setUsed(true);
 
@@ -1176,7 +1176,7 @@ public class YANG_Type extends SimpleYangNode {
 		String value = ydefault.getDefault();
 
 		if (typedef == null)
-			typedef = context.getTypeDef(this);
+			setTypeDef(context.getTypeDef(this));
 		if (context.getBuiltInType(this) == null) {
 			YangErrorManager.addError(getFileName(), getLine(), getCol(),
 					"type_not_found", getType());
@@ -1378,19 +1378,18 @@ public class YANG_Type extends SimpleYangNode {
 													+ context.getTypeDef(this)
 															.getType()
 															.getLine());
-								else 
+								else
 									YangErrorManager.addError(filename,
-										ydefault.getLine(), ydefault
-										.getCol(),
-								"default_match_fail",
-								YangBuiltInTypes
-										.removeQuotes(value), this
-										.getFileName()
-										+ ":" + this.getLine(),
-								"range error", "range",
-								getFileName()
-										+ ":"
-										+ this.getLine());
+											ydefault.getLine(), ydefault
+													.getCol(),
+											"default_match_fail",
+											YangBuiltInTypes
+													.removeQuotes(value), this
+													.getFileName()
+													+ ":" + this.getLine(),
+											"range error", "range",
+											getFileName() + ":"
+													+ this.getLine());
 
 							} else {
 								YANG_Type t = this;
@@ -1984,159 +1983,166 @@ public class YANG_Type extends SimpleYangNode {
 					}
 				}
 			}
-		} else if (YangBuiltInTypes.string.compareTo(context
-				.getBuiltInType(this)) == 0
-				|| YangBuiltInTypes.binary.compareTo(context
-						.getBuiltInType(this)) == 0) {
-			value = YangBuiltInTypes.removeQuotes(ydefault.getDefault());
+		} else {
+			//System.out.println(this);
+			if (YangBuiltInTypes.string.compareTo(context.getBuiltInType(this)) == 0
+					|| YangBuiltInTypes.binary.compareTo(context
+							.getBuiltInType(this)) == 0) {
+				value = YangBuiltInTypes.removeQuotes(ydefault.getDefault());
 
-			String[][] ranges = null;
-			boolean isStringRestricted = false;
+				String[][] ranges = null;
+				boolean isStringRestricted = false;
 
-			Enumeration<YANG_Pattern> patterns = null;
+				Enumeration<YANG_Pattern> patterns = null;
 
-			if (getStringRest() != null) {
-				if (getStringRest().getLength() != null)
-					isStringRestricted = true;
-				else
+				if (getStringRest() != null) {
+					if (getStringRest().getLength() != null)
+						isStringRestricted = true;
+					else
+						isStringRestricted = false;
+
+					patterns = getStringRest().getPatterns().elements();
+
+				} else
 					isStringRestricted = false;
 
-				patterns = getStringRest().getPatterns().elements();
-
-			} else
-				isStringRestricted = false;
-
-			if (isStringRestricted) {
-				ranges = getLength(context);
-			} else {
-				YANG_TypeDef td = context.getTypeDef(this);
-				if (td != null) {
-					YANG_Type bt = getFirstLengthDefined(context, td);
-					if (bt != null)
-						ranges = bt.getLength(context);
-					else
-						ranges = getLength(context);
-				} else {
+				if (isStringRestricted) {
 					ranges = getLength(context);
-				}
-			}
-
-			BigInteger bi = new BigInteger(new Integer(value.length())
-					.toString());
-			BigInteger bilb = null;
-			BigInteger biub = null;
-			boolean inside = false;
-			for (int i = 0; i < ranges.length && !inside; i++) {
-				if (ranges[i][0].compareTo("min") != 0
-						&& ranges[i][1].compareTo("max") != 0) {
-					bilb = new BigInteger(ranges[i][0]);
-					biub = new BigInteger(ranges[i][1]);
-					inside = (bilb.compareTo(bi) <= 0 && biub.compareTo(bi) >= 0);
-				} else if (ranges[i][0].compareTo("min") == 0
-						&& ranges[i][1].compareTo("max") != 0) {
-					biub = new BigInteger(ranges[i][1]);
-					inside = biub.compareTo(bi) >= 0;
-				} else if (ranges[i][0].compareTo("min") != 0
-						&& ranges[i][1].compareTo("max") == 0) {
-					bilb = new BigInteger(ranges[i][0]);
-					inside = bilb.compareTo(bi) <= 0;
-				} else if (ranges[i][0].compareTo("min") == 0
-						&& ranges[i][1].compareTo("max") == 0) {
-					inside = true;
-				}
-			}
-			if (!inside)
-				return false;
-
-			boolean direct = true;
-			YANG_TypeDef indirectTd = null;
-			if (patterns != null) {
-				if (getStringRest().getPatterns().size() == 0) {
+				} else {
 					YANG_TypeDef td = context.getTypeDef(this);
 					if (td != null) {
-						YANG_Type bt = getFirstPatternDefined(context, td);
+						YANG_Type bt = getFirstLengthDefined(context, td);
+						if (bt != null)
+							ranges = bt.getLength(context);
+						else
+							ranges = getLength(context);
+					} else {
+						ranges = getLength(context);
+					}
+				}
+
+				BigInteger bi = new BigInteger(new Integer(value.length())
+						.toString());
+				BigInteger bilb = null;
+				BigInteger biub = null;
+				boolean inside = false;
+				for (int i = 0; i < ranges.length && !inside; i++) {
+					if (ranges[i][0].compareTo("min") != 0
+							&& ranges[i][1].compareTo("max") != 0) {
+						bilb = new BigInteger(ranges[i][0]);
+						biub = new BigInteger(ranges[i][1]);
+						inside = (bilb.compareTo(bi) <= 0 && biub.compareTo(bi) >= 0);
+					} else if (ranges[i][0].compareTo("min") == 0
+							&& ranges[i][1].compareTo("max") != 0) {
+						biub = new BigInteger(ranges[i][1]);
+						inside = biub.compareTo(bi) >= 0;
+					} else if (ranges[i][0].compareTo("min") != 0
+							&& ranges[i][1].compareTo("max") == 0) {
+						bilb = new BigInteger(ranges[i][0]);
+						inside = bilb.compareTo(bi) <= 0;
+					} else if (ranges[i][0].compareTo("min") == 0
+							&& ranges[i][1].compareTo("max") == 0) {
+						inside = true;
+					}
+				}
+				if (!inside)
+					return false;
+
+				boolean direct = true;
+				YANG_TypeDef indirectTd = null;
+				if (patterns != null) {
+					if (getStringRest().getPatterns().size() == 0) {
+						YANG_TypeDef td = context.getTypeDef(this);
+						if (td != null) {
+							YANG_Type bt = getFirstPatternDefined(context, td);
+							if (bt != null)
+								patterns = bt.getStringRest().getPatterns()
+										.elements();
+						}
+
+					}
+				} else {
+					direct = false;
+					indirectTd = context.getTypeDef(this);
+					if (indirectTd != null) {
+						YANG_Type bt = getFirstPatternDefined(context,
+								indirectTd);
 						if (bt != null)
 							patterns = bt.getStringRest().getPatterns()
 									.elements();
 					}
 
 				}
-			} else {
-				direct = false;
-				indirectTd = context.getTypeDef(this);
-				if (indirectTd != null) {
-					YANG_Type bt = getFirstPatternDefined(context, indirectTd);
-					if (bt != null)
-						patterns = bt.getStringRest().getPatterns().elements();
-				}
+				if (patterns != null)
+					while (patterns.hasMoreElements()) {
+						YANG_Pattern pattern = patterns.nextElement();
+						if (!pattern.checkExp(value))
+							return false;
+					}
+				if (YangBuiltInTypes.binary.compareTo(context
+						.getBuiltInType(this)) == 0) {
 
-			}
-			if (patterns != null)
-				while (patterns.hasMoreElements()) {
-					YANG_Pattern pattern = patterns.nextElement();
-					if (!pattern.checkExp(value))
+					Pattern path_arg = null;
+
+					try {
+						path_arg = Pattern.compile("[A-Z0-9]*");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					Matcher m = path_arg.matcher(value);
+					if (!m.matches()) {
 						return false;
+					}
 				}
-			if (YangBuiltInTypes.binary.compareTo(context.getBuiltInType(this)) == 0) {
+				return true;
 
-				Pattern path_arg = null;
-
-				try {
-					path_arg = Pattern.compile("[A-Z0-9]*");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				Matcher m = path_arg.matcher(value);
-				if (!m.matches()) {
+			} else if (YangBuiltInTypes.enumeration.compareTo(context
+					.getBuiltInType(this)) == 0) {
+				value = YangBuiltInTypes.removeQuotesAndTrim(value);
+				String[] enums = getFirstEnumDefined(context, this);
+				boolean match = false;
+				int i = 0;
+				while (!match && i < enums.length)
+					match = enums[i++].compareTo(value) == 0;
+				if (!match)
 					return false;
+			} else if (YangBuiltInTypes.bits.compareTo(context
+					.getBuiltInType(this)) == 0) {
+				value = YangBuiltInTypes.removeQuotesAndTrim(value);
+				byte[] bv = value.getBytes();
+				boolean binary = true;
+				for (int i = 0; i < bv.length && binary; i++)
+					binary = bv[i] == '1' || bv[i] == '0';
+				if (!binary)
+					return false;
+				if (value.length() != getFirstBitDefined(context, this))
+					return false;
+
+			} else if (YangBuiltInTypes.union.compareTo(context
+					.getBuiltInType(this)) == 0) {
+				YANG_Type ut = getFirstUnionDefined(context, this);
+				boolean found = false;
+				for (Enumeration<YANG_Type> et = ut.getUnionSpec().getTypes()
+						.elements(); et.hasMoreElements() && !found;) {
+					YANG_Type type = et.nextElement();
+					found = found
+							|| type.checkUnionDefaultValue(context, ut,
+									ydefault);
 				}
+				if (!found)
+					return false;
+
+			} else if (YangBuiltInTypes.empty.compareTo(context
+					.getBuiltInType(this)) == 0) {
+				return false;
+			} else if (YangBuiltInTypes.yboolean.compareTo(context
+					.getBuiltInType(this)) == 0) {
+				value = YangBuiltInTypes.removeQuotesAndTrim(value);
+				if (value.compareTo("true") != 0
+						&& value.compareTo("false") != 0)
+					return false;
+
 			}
-			return true;
-
-		} else if (YangBuiltInTypes.enumeration.compareTo(context
-				.getBuiltInType(this)) == 0) {
-			value = YangBuiltInTypes.removeQuotesAndTrim(value);
-			String[] enums = getFirstEnumDefined(context, this);
-			boolean match = false;
-			int i = 0;
-			while (!match && i < enums.length)
-				match = enums[i++].compareTo(value) == 0;
-			if (!match)
-				return false;
-		} else if (YangBuiltInTypes.bits
-				.compareTo(context.getBuiltInType(this)) == 0) {
-			value = YangBuiltInTypes.removeQuotesAndTrim(value);
-			byte[] bv = value.getBytes();
-			boolean binary = true;
-			for (int i = 0; i < bv.length && binary; i++)
-				binary = bv[i] == '1' || bv[i] == '0';
-			if (!binary)
-				return false;
-			if (value.length() != getFirstBitDefined(context, this))
-				return false;
-
-		} else if (YangBuiltInTypes.union.compareTo(context
-				.getBuiltInType(this)) == 0) {
-			YANG_Type ut = getFirstUnionDefined(context, this);
-			boolean found = false;
-			for (Enumeration<YANG_Type> et = ut.getUnionSpec().getTypes()
-					.elements(); et.hasMoreElements() && !found;) {
-				YANG_Type type = et.nextElement();
-				found = found
-						|| type.checkUnionDefaultValue(context, ut, ydefault);
-			}
-			if (!found)
-				return false;
-
-		} else if (YangBuiltInTypes.empty.compareTo(context
-				.getBuiltInType(this)) == 0) {
-			return false;
-		} else if (YangBuiltInTypes.yboolean.compareTo(context
-				.getBuiltInType(this)) == 0) {
-			value = YangBuiltInTypes.removeQuotesAndTrim(value);
-			if (value.compareTo("true") != 0 && value.compareTo("false") != 0)
-				return false;
-
 		}
 		return true;
 	}
@@ -2241,6 +2247,10 @@ public class YANG_Type extends SimpleYangNode {
 	private boolean checkRecEmptyUnion(YangContext context,
 			Vector<YANG_Type> chain, YANG_Type utype) {
 		boolean empty = false;
+
+		if (context.getBuiltInType(utype) == null)
+			System.out.println("Yang Type : " + utype.getType());
+
 		if (context.getBuiltInType(utype).compareTo(YangBuiltInTypes.empty) == 0) {
 			return true;
 		} else if (context.getBuiltInType(utype).compareTo(

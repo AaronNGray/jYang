@@ -91,8 +91,13 @@ public class YANG_LeafList extends ListedDataDef {
 						.addError(getFileName(), getType().getLine(), getType()
 								.getCol(), "unknown_type", getType().getType());
 			} else {
-				context.getTypeDef(getType()).check(context);
+				if (context.getTypeDef(getType()) != null)
+					context.getTypeDef(getType()).setUsed(true);
+				if (!context.getTypeDef(getType()).isChecked()) {
+					context.getTypeDef(getType()).check(context);
+				}
 				getType().setTypeDef(context.getTypeDef(getType()));
+
 			}
 	}
 
