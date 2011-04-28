@@ -130,8 +130,12 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 							getType().getType());
 				} else {
 					getType().check(context);
-					if (!context.getTypeDef(getType()).isChecked())
+					if (context.getTypeDef(getType()) != null)
+						context.getTypeDef(getType()).setUsed(true);
+					if (!context.getTypeDef(getType()).isChecked()) 
 						context.getTypeDef(getType()).check(context);
+					
+					getType().setTypeDef(context.getTypeDef(getType()));
 				}
 			}
 

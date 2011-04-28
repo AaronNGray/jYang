@@ -3,7 +3,7 @@ module dhcp {
      prefix dhcp;
 
      import ietf-yang-types { prefix yang; }
-     import ietf-inet-types { prefix inet; }
+     import ietf-inet-types { prefix ineti; }
 
 
 
@@ -21,13 +21,39 @@ module dhcp {
      container dhcp {
        description
          "configuration and operational parameters for a DHCP server.";
+         
+         config true;
+         
+         must  "max-lease < 3" {error-message "Tres gross Error";
+         error-app-tag "TGE";}
 
        leaf max-lease-time {
-         type uint32;
+         type uint32 { range 4..8000|8003..8006;}
          units seconds;
          default 7200;
        }
+       
+       typedef dozen { type uint8 { range 1..12;} default 3;}
+       leaf mounth { type dozen {range 2..10;}}
+       
+       typedef test { type ineti:ip-prefix; default "0.0.0.0/5";}
+       
+       
+       leaf ref { type leafref { path max-lease-time;}}
+       leaf con { type test; default "1.1.1.1/6";}
+       
+       leaf tfloat { type decimal64 {fraction-digits 5;}}
+       /*
+       choice ch {
+         //default c;
+         mandatory true;
+         case a {leaf a{type int8;}leaf aa {type int8;}}
+         leaf c {type int8;}
+        }
+*/
 
+	anyxml configName ;
+	
        leaf default-lease-time {
          type uint32;
          units seconds;
@@ -43,6 +69,8 @@ module dhcp {
        container shared-networks {
          list shared-network {
            key name;
+           //min-elements 2;
+           max-elements 14;
 
            leaf name {
              type string;
@@ -58,7 +86,7 @@ module dhcp {
 
 
            leaf address {
-             type inet:ip-address;
+             type ineti:ip-address;
            }
            leaf starts {
              type yang:date-and-time;
@@ -88,7 +116,7 @@ module dhcp {
        list subnet {
          key net;
          leaf net {
-           type inet:ip-prefix;
+           type ineti:ip-prefix;
          }
          container range {
            presence "enables dynamic address assignment";
@@ -99,11 +127,11 @@ module dhcp {
            }
 
            leaf low {
-             type inet:ip-address;
+             type ineti:ip-address;
              mandatory true;
            }
            leaf high {
-             type inet:ip-address;
+             type ineti:ip-address;
              mandatory true;
            }
          }
@@ -111,12 +139,12 @@ module dhcp {
          container dhcp-options {
            description "Options in the DHCP protocol";
            leaf-list router {
-             type inet:host;
+             type ineti:host;
              ordered-by user;
              reference "RFC 2132, sec. 3.8";
            }
            leaf domain-name {
-             type inet:domain-name;
+             type ineti:domain-name;
              reference "RFC 2132, sec. 3.17";
            }
          }

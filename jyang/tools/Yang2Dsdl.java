@@ -406,8 +406,6 @@ public class Yang2Dsdl {
 
 	private void gDataDef(YANG_Specification spec, YANG_DataDef ddef,
 			Element parent) {
-		
-	
 
 		if (ddef instanceof YANG_AnyXml)
 			gAnyXml(spec, (YANG_AnyXml) ddef, parent);
@@ -633,11 +631,11 @@ public class Yang2Dsdl {
 
 	private void gLeafList(YANG_Specification spec, YANG_LeafList leaflist,
 			Element parent) {
-
 		parent = gListedParent(leaflist, parent);
 
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
-
+		parent.appendChild(element);
+		
 		String llprefix = "";
 		if (!defining)
 			llprefix = prefix + ":";
@@ -646,7 +644,7 @@ public class Yang2Dsdl {
 		element.setAttributeNS(NMA, "leaf-list", "true");
 
 		gListedAttribute(leaflist, element);
-
+		
 		gType(leaflist.getType(), element);
 
 	}
@@ -687,6 +685,11 @@ public class Yang2Dsdl {
 			cprefix = prefix + ":";
 
 		element.setAttribute("name", cprefix + cont.getContainer());
+
+		if (cont.getPresence() == null && !isOneMandatory(cont.getDataDefs())
+				&& isOneImplicit(cont.getDataDefs())) {
+			element.setAttributeNS(NMA_URI, IMPLICIT, TRUE);
+		}
 		parent.appendChild(element);
 
 		gConfigDataDef(cont, element);
@@ -699,6 +702,26 @@ public class Yang2Dsdl {
 		for (YANG_DataDef ddef : cont.getDataDefs())
 			gDataDef(spec, ddef, element);
 
+	}
+
+	private boolean isOneImplicit(Vector<YANG_DataDef> dataDefs) {
+
+		for (YANG_DataDef ddef : dataDefs) {
+			if (ddef instanceof YANG_Leaf) {
+				YANG_Leaf leaf = (YANG_Leaf) ddef;
+				if (leaf.getDefault() != null)
+					return true;
+				if (leaf.getType().getTypedef() != null) {
+					return leaf.getType().getTypedef().getDefault() != null;
+				}
+			} else if (ddef instanceof YANG_Container) {
+				YANG_Container cont = (YANG_Container) ddef;
+				return cont.getPresence() == null
+						&& !isOneMandatory(cont.getDataDefs())
+						&& isOneImplicit(cont.getDataDefs());
+			}
+		}
+		return false;
 	}
 
 	private boolean isOneMandatory(Vector<YANG_DataDef> dataDefs) {
@@ -718,15 +741,18 @@ public class Yang2Dsdl {
 						return true;
 			} else if (ddef instanceof ListedDataDef) {
 				ListedDataDef list = (ListedDataDef) ddef;
+
 				if (list.getMinElement() != null)
 					if (list.getMinElement().getMinElementInt() > 0)
 						return true;
 			} else if (ddef instanceof YANG_Choice) {
 				YANG_Choice choice = (YANG_Choice) ddef;
-				if (choice.getMandatory() != null)
-					if (choice.getMandatory().getMandatory().compareTo(
-							YangBuiltInTypes.ytrue) == 0)
-						return true;
+				return choice.isMandatory();
+
+			} else if (ddef instanceof YANG_Container) {
+				YANG_Container cont = (YANG_Container) ddef;
+				return cont.getPresence() == null
+						&& isOneMandatory(cont.getDataDefs());
 			}
 
 		}
@@ -736,7 +762,10 @@ public class Yang2Dsdl {
 	private void gTypeDef(YANG_TypeDef td, Element parent) {
 
 		Element define = document.createElementNS(RELAXNG_NS, DEFINE);
-		define.setAttribute("name", definestypedefs.get(td));
+		define.setAttribute(NAME, definestypedefs.get(td));
+		if (td.getDefault() != null)
+			define.setAttributeNS(NMA_URI, DEFAULT, td.getDefault()
+					.getDefault());
 		parent.appendChild(define);
 		gType(td.getType(), define);
 	}
@@ -744,12 +773,16 @@ public class Yang2Dsdl {
 	private void gType(YANG_Type type, Element parent) {
 
 		if (!YangBuiltInTypes.isBuiltIn(type.getType())) {
+			if (type.getStringRest() != null || type.getNumRest() != null){
+				
+				gRestrictions(type, parent);
+
+			}
 			YANG_TypeDef ttd = type.getTypedef();
 			Element ref = document.createElementNS(RELAXNG_NS, REF);
-			ref.setAttribute("name", definestypedefs.get(ttd));
+			ref.setAttribute(NAME, definestypedefs.get(ttd));
 			parent.appendChild(ref);
-			gRestrictions(type, ref);
-
+			
 		} else {
 
 			// type is a built in type
@@ -761,8 +794,9 @@ public class Yang2Dsdl {
 				YANG_UnionSpecification uspec = type.getUnionSpec();
 				for (YANG_Type ut : uspec.getTypes()) {
 					Element ref = document.createElementNS(RELAXNG_NS, REF);
-					ref.setAttribute("name", definestypedefs.get(ut
-							.getTypedef()));
+					ref
+							.setAttribute(NAME, definestypedefs.get(ut
+									.getTypedef()));
 					choice.appendChild(ref);
 				}
 			} else {
@@ -1013,7 +1047,7 @@ public class Yang2Dsdl {
 				String tpref = t.getPrefix();
 				for (YANG_Import i : spec.getImports()) {
 					if (i.getPrefix().getPrefix().compareTo(tpref) == 0) {
-						prefix = i.getName();
+						// prefix = i.getName();
 						spec = i.getImportedmodule();
 					}
 				}
@@ -1167,15 +1201,19 @@ public class Yang2Dsdl {
 		if (!defining)
 			lprefix = prefix + ":";
 
-		element.setAttribute("name", lprefix + leaf.getLeaf());
+		element.setAttribute(NAME, lprefix + leaf.getLeaf());
 		if (leaf.getDefault() != null)
-			element.setAttribute(NMA + ":" + DEFAULT, leaf.getDefault()
+			element.setAttributeNS(NMA_URI, DEFAULT, leaf.getDefault()
 					.getDefault());
 
 		gDescription(leaf, element);
 		gConfigDataDef(leaf, element);
-
-		gType(type, element);
+		
+		if (leaf.getDefault() != null) {
+			if (type.getTypedef() != null)
+				gType(type.getTypedef().getType(), element);
+		} else
+			gType(type, element);
 
 		if (!leaf.isMandatory()) {
 			Element optional = document.createElementNS(RELAXNG_NS, OPT);

@@ -91,7 +91,7 @@ public class YANG_TypeDef extends StatuedBody {
 		}
 
 		getType().check(context);
-		getType().setTypeDef(this);
+		//getType().setTypeDef(this);
 		
 
 		Vector<YANG_TypeDef> me = new Vector<YANG_TypeDef>();
