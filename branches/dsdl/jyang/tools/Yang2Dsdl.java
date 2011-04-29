@@ -38,6 +38,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -139,6 +142,7 @@ public class Yang2Dsdl {
 	private static final String TOTALDIGIT = "totalDigits";
 	private static final String _19 = "19";
 	private static final String FRACTDIGIT = "fractionDigits";
+	private static final String STATUS = "status";
 
 	private Hashtable<YANG_TypeDef, String> definestypedefs = new Hashtable<YANG_TypeDef, String>();
 	private Hashtable<YANG_Grouping, String> definesgroupings = new Hashtable<YANG_Grouping, String>();
@@ -426,9 +430,10 @@ public class Yang2Dsdl {
 
 	private void gConfigDataDef(ConfigDataDef cddef, Element parent) {
 		if (cddef.getConfig() != null)
-			parent.setAttribute(NMA + ":" + CONFIG, String.valueOf(cddef
+			parent.setAttributeNS(NMA_URI, CONFIG, String.valueOf(cddef
 					.isConfig()));
-		gMustDataDef((MustDataDef) cddef, parent);
+		if (cddef instanceof MustDataDef)
+			gMustDataDef((MustDataDef) cddef, parent);
 	}
 
 	private void gMustDataDef(MustDataDef mddef, Element parent) {
@@ -455,7 +460,18 @@ public class Yang2Dsdl {
 	}
 
 	private String gXPath(String xp) {
-		return xp;
+
+		xp = xp.replaceAll("<", "&lt;");
+		xp = xp.replaceAll(">", "&gt;");
+
+		if (!defining)
+			return xp;
+		String[] s = xp.split("/");
+		String result = "";
+		for (int i = 0; i < s.length - 1; i++)
+			result += "$pref:" + s[i] + "/";
+		result += "$pref:" + s[s.length - 1];
+		return result;
 	}
 
 	private void gChoice(YANG_Specification spec, YANG_Choice choice,
@@ -465,6 +481,8 @@ public class Yang2Dsdl {
 		choiceelt.setAttribute(MANDATORY, String.valueOf(choice.isMandatory()));
 
 		gDescription(choice, choiceelt);
+
+		gConfigDataDef(choice, parent);
 
 		if (choice.isMandatory()) {
 			Element optional = document.createElementNS(RELAXNG_NS, OPT);
@@ -635,7 +653,7 @@ public class Yang2Dsdl {
 
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
 		parent.appendChild(element);
-		
+
 		String llprefix = "";
 		if (!defining)
 			llprefix = prefix + ":";
@@ -644,7 +662,7 @@ public class Yang2Dsdl {
 		element.setAttributeNS(NMA, "leaf-list", "true");
 
 		gListedAttribute(leaflist, element);
-		
+
 		gType(leaflist.getType(), element);
 
 	}
@@ -773,16 +791,15 @@ public class Yang2Dsdl {
 	private void gType(YANG_Type type, Element parent) {
 
 		if (!YangBuiltInTypes.isBuiltIn(type.getType())) {
-			if (type.getStringRest() != null || type.getNumRest() != null){
-				
+			if (isRestrictedType(type)) {
 				gRestrictions(type, parent);
-
+			} else {
+				YANG_TypeDef ttd = type.getTypedef();
+				Element ref = document.createElementNS(RELAXNG_NS, REF);
+				ref.setAttribute(NAME, definestypedefs.get(ttd));
+				parent.appendChild(ref);
 			}
-			YANG_TypeDef ttd = type.getTypedef();
-			Element ref = document.createElementNS(RELAXNG_NS, REF);
-			ref.setAttribute(NAME, definestypedefs.get(ttd));
-			parent.appendChild(ref);
-			
+
 		} else {
 
 			// type is a built in type
@@ -840,6 +857,7 @@ public class Yang2Dsdl {
 						Element value = document.createElementNS(RELAXNG_NS,
 								VALUE);
 						value.setTextContent(yenum.getEnum());
+						gSatus(yenum, value);
 						choice.appendChild(value);
 					}
 				} else if (st.compareTo(YangBuiltInTypes.identityref) == 0) {
@@ -896,7 +914,26 @@ public class Yang2Dsdl {
 
 	}
 
+	private void gSatus(StatuedNode sb, Element value) {
+		if (sb.getStatus() != null)
+			value.setAttributeNS(NMA_URI, STATUS, sb.getStatus().getStatus());
+
+	}
+
+	private boolean isRestrictedType(YANG_Type type) {
+		return type.getStringRest() != null || type.getNumRest() != null;
+	}
+
 	private void gRestrictions(YANG_Type type, Element parent) {
+
+		YANG_Type ltype = type;
+		String typestr = ltype.getType();
+		while (!YangBuiltInTypes.isBuiltIn(typestr)) {
+			YANG_TypeDef td = ltype.getTypedef();
+			ltype = td.getType();
+			typestr = ltype.getType();
+		}
+		typestr = yangType2DsdlType(typestr);
 
 		if (type.getStringRest() != null) {
 			String[][] lengths = new String[0][0];
@@ -910,9 +947,7 @@ public class Yang2Dsdl {
 				parent.appendChild(choice);
 				for (String[] l : lengths) {
 					Element data = document.createElementNS(RELAXNG_NS, DATA);
-					data
-							.setAttribute("type", yangType2DsdlType(type
-									.getType()));
+					data.setAttribute(TYPE, typestr);
 					choice.appendChild(data);
 					gLength(l, data);
 					for (YANG_Pattern pat : strest.getPatterns()) {
@@ -921,7 +956,7 @@ public class Yang2Dsdl {
 				}
 			} else if (lengths.length == 1) {
 				Element data = document.createElementNS(RELAXNG_NS, DATA);
-				data.setAttribute("type", yangType2DsdlType(type.getType()));
+				data.setAttribute(TYPE, typestr);
 				parent.appendChild(data);
 				gLength(lengths[0], data);
 				for (YANG_Pattern pat : strest.getPatterns()) {
@@ -929,13 +964,14 @@ public class Yang2Dsdl {
 				}
 			} else {
 				Element data = document.createElementNS(RELAXNG_NS, DATA);
-				data.setAttribute("type", yangType2DsdlType(type.getType()));
+				data.setAttribute(TYPE, typestr);
 				parent.appendChild(data);
 				for (YANG_Pattern pat : strest.getPatterns()) {
 					gPattern(pat, data);
 				}
 			}
 		} else if (type.getNumRest() != null) {
+
 			YANG_NumericalRestriction numrest = type.getNumRest();
 
 			if (numrest instanceof YANG_Range) {
@@ -949,23 +985,18 @@ public class Yang2Dsdl {
 					for (String[] l : ranges) {
 						Element data = document.createElementNS(RELAXNG_NS,
 								DATA);
-						data.setAttribute("type", yangType2DsdlType(type
-								.getType()));
+						data.setAttribute(TYPE, typestr);
 						choice.appendChild(data);
-						gLength(l, data);
+						gRange(l, data);
 					}
 				} else if (ranges.length == 1) {
 					Element data = document.createElementNS(RELAXNG_NS, DATA);
-					data
-							.setAttribute("type", yangType2DsdlType(type
-									.getType()));
+					data.setAttribute(TYPE, typestr);
 					parent.appendChild(data);
-					gLength(ranges[0], data);
+					gRange(ranges[0], data);
 				} else {
 					Element data = document.createElementNS(RELAXNG_NS, DATA);
-					data
-							.setAttribute("type", yangType2DsdlType(type
-									.getType()));
+					data.setAttribute(TYPE, typestr);
 					parent.appendChild(data);
 				}
 			}
@@ -985,19 +1016,39 @@ public class Yang2Dsdl {
 				&& l[0].compareTo(YangBuiltInTypes.uint64ub.toString()) != 0) {
 			if (l[0].compareTo(l[1]) == 0) {
 				Element param = document.createElementNS(RELAXNG_NS, PARAM);
-				param.setAttribute("length", l[0]);
+				param.setAttribute(NAME, "length");
+				param.setTextContent(l[0]);
 				parent.appendChild(param);
 			} else {
 				Element paramin = document.createElementNS(RELAXNG_NS, PARAM);
-				paramin.setAttribute("minLength", l[0]);
+				paramin.setAttribute(NAME, "minLength");
+				paramin.setTextContent(l[0]);
 				parent.appendChild(paramin);
 				if (l[1].compareTo(YangBuiltInTypes.max) != 0) {
 					Element paramax = document.createElementNS(RELAXNG_NS,
 							PARAM);
-					paramax.setAttribute("maxLength", l[1]);
+					paramax.setAttribute(NAME, "maxLength");
+					paramax.setTextContent(l[1]);
 					parent.appendChild(paramax);
 				}
 			}
+		}
+
+	}
+
+	private void gRange(String[] l, Element parent) {
+
+		if (l[0].compareTo(YangBuiltInTypes.min) != 0) {
+			Element paramin = document.createElementNS(RELAXNG_NS, PARAM);
+			paramin.setAttribute(NAME, "minInclusive");
+			paramin.setTextContent(l[0]);
+			parent.appendChild(paramin);
+		}
+		if (l[1].compareTo(YangBuiltInTypes.max) != 0) {
+			Element paramax = document.createElementNS(RELAXNG_NS, PARAM);
+			paramax.setAttribute(NAME, "maxInclusive");
+			paramax.setTextContent(l[1]);
+			parent.appendChild(paramax);
 		}
 
 	}
@@ -1202,18 +1253,35 @@ public class Yang2Dsdl {
 			lprefix = prefix + ":";
 
 		element.setAttribute(NAME, lprefix + leaf.getLeaf());
+
 		if (leaf.getDefault() != null)
 			element.setAttributeNS(NMA_URI, DEFAULT, leaf.getDefault()
 					.getDefault());
+		else {
+			if (isRestrictedType(type)) {
+				YANG_Type ltype = type;
+				YANG_TypeDef td = ltype.getTypedef();
+				if (td != null) {
+					boolean finish = false;
+					while (!finish) {
+						finish = td.getDefault() != null;
+						if (!finish) {
+							YANG_Type t = td.getType();
+							td = t.getTypedef();
+							finish = td == null;
+						}
+					}
+					if (td != null) {
+						element.setAttributeNS(NMA_URI, DEFAULT, td
+								.getDefault().getDefault());
+					}
+				}
+			}
+		}
 
 		gDescription(leaf, element);
 		gConfigDataDef(leaf, element);
-		
-		if (leaf.getDefault() != null) {
-			if (type.getTypedef() != null)
-				gType(type.getTypedef().getType(), element);
-		} else
-			gType(type, element);
+		gType(type, element);
 
 		if (!leaf.isMandatory()) {
 			Element optional = document.createElementNS(RELAXNG_NS, OPT);

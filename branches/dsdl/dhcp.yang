@@ -33,8 +33,8 @@ module dhcp {
          default 7200;
        }
        
-       typedef dozen { type uint8 { range 1..12;} default 3;}
-       leaf mounth { type dozen {range 2..10;}}
+       typedef dozen { type uint8 { range 1..12;} default 7;}
+       leaf mounth { type dozen {range 7..12;} default 4; }
        
        typedef test { type ineti:ip-prefix; default "0.0.0.0/5";}
        
@@ -43,14 +43,14 @@ module dhcp {
        leaf con { type test; default "1.1.1.1/6";}
        
        leaf tfloat { type decimal64 {fraction-digits 5;}}
-       /*
+       
        choice ch {
          //default c;
          mandatory true;
          case a {leaf a{type int8;}leaf aa {type int8;}}
          leaf c {type int8;}
         }
-*/
+
 
 	anyxml configName ;
 	
@@ -114,6 +114,7 @@ module dhcp {
      grouping subnet-list {
        description "A reusable list of subnets";
        list subnet {
+         must "dhcp/max-lease-time < 12";
          key net;
          leaf net {
            type ineti:ip-prefix;
