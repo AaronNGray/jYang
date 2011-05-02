@@ -31,6 +31,7 @@ import java.util.Vector;
 
 import jyang.parser.*;
 
+import javax.swing.text.html.MinimalHTMLWriter;
 import javax.xml.parsers.*;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -62,11 +63,11 @@ public class Yang2Dsdl {
 	private final static String DC_URI = "http://purl.org/dc/terms";
 	private final static String A = "a";
 	private final static String A_URI = "http://relaxng.org/ns/compatibility/annotations/1.0";
-	private final static String GRAMMAR = "grammar";
-	private final static String START = "start";
-	private final static String INTLV = "interleave";
-	private final static String OPT = "optional";
-	private final static String ELT = "element";
+	private final static String GRAMMAR = "rng:grammar";
+	private final static String START = "rng:start";
+	private final static String INTLV = "rng:interleave";
+	private final static String OPT = "rng:optional";
+	private final static String ELT = "rng:element";
 	private final static String ZoM = "ZeroOrMore";
 	private final static String OoM = "OneOrMore";
 
@@ -80,9 +81,9 @@ public class Yang2Dsdl {
 	private final static String OUTPUT = "output";
 	private final static String NOTIFS = "notifications";
 	private final static String NOTIF = "notification";
-	private final static String DEFINE = "define";
-	private final static String REF = "ref";
-	private final static String DATA = "data";
+	private final static String DEFINE = "rng:define";
+	private final static String REF = "rng:ref";
+	private final static String DATA = "nma:data";
 	private final static String PARAM = "param";
 	private final static String CHOICE = "choice";
 
@@ -92,36 +93,21 @@ public class Yang2Dsdl {
 	private DocumentBuilder docb = null;
 	private Document document = null;
 
-	private static final String DEFAULT = "default";
-
+	private static final String DEFAULT = "nma:default";
 	private static final String ANYXML = "__anyxml__";
-
 	private static final String ATTRIBUTE = "attribute";
-
 	private static final String ANYNAME = "anyName";
-
 	private static final String TEXT = "text";
-
-	private static final String CONFIG = "config";
-
-	private static final String MUST = "must";
-
+	private static final String CONFIG = "nma:config";
+	private static final String MUST = NMA + ":" + "must";
 	private static final String ASSERT = "assert";
-
-	private static final String ERRORMSG = "error-message";
-
-	private static final String ERRORAPPTAG = "error-app-tag";
-
+	private static final String ERRORMSG = NMA + ":" + "error-message";
+	private static final String ERRORAPPTAG = NMA + ":" + "error-app-tag";
 	private static final String DOC = "documentation";
-
 	private static final String DTLIB = "datatypeLibrary";
-
 	private static final String DTLIB_URI = "http://www.w3.org/2001/XMLSchema=datatypes";
-
 	private static final String CREATOR = "creator";
-
 	private static final String JYANG = "jYang 1.0, DSDL plugin";
-
 	private static final String DATE = "date";
 	private static final String SOURCE = "source";
 	private static final String YANGMODULE = "YANG module";
@@ -143,6 +129,11 @@ public class Yang2Dsdl {
 	private static final String _19 = "19";
 	private static final String FRACTDIGIT = "fractionDigits";
 	private static final String STATUS = "status";
+	private static final String UNITS = "units";
+	private static final String KEY = "key";
+	private static final String UNIQUE = "unique";
+	private static final String MINELTS = "min-elements";
+	private static final String MAXELTS = "max-elements";
 
 	private Hashtable<YANG_TypeDef, String> definestypedefs = new Hashtable<YANG_TypeDef, String>();
 	private Hashtable<YANG_Grouping, String> definesgroupings = new Hashtable<YANG_Grouping, String>();
@@ -165,21 +156,21 @@ public class Yang2Dsdl {
 		Element grammar = document.createElementNS(RELAXNG_NS, GRAMMAR);
 		document.appendChild(grammar);
 
-		grammar.setAttribute(XMLNS + ":" + NMA, NMA_URI);
+		grammar.setAttribute(XMLNS + ":" + NMA,NMA_URI);
 		grammar.setAttribute(XMLNS + ":" + DC, DC_URI);
-		grammar.setAttribute(XMLNS + ":" + A, A_URI);
-		grammar.setAttribute(DTLIB, DTLIB_URI);
+		//grammar.setAttribute(XMLNS , A_URI);
+		//grammar.setAttribute(DTLIB, DTLIB_URI);
 
 		for (YANG_Specification spec : specs.values()) {
 			grammar.setAttribute(XMLNS + ":" + spec.getPrefix().getPrefix(),
 					spec.getNameSpace().getNameSpace());
 
 		}
-		Element creator = document.createElementNS(DC_URI, CREATOR);
+		Element creator = document.createElementNS(DC_URI, DC + ":" + CREATOR);
 		creator.setTextContent(JYANG);
 		grammar.appendChild(creator);
 
-		Element date = document.createElementNS(DC_URI, DATE);
+		Element date = document.createElementNS(DC_URI, DC + ":" + DATE);
 		date.setTextContent(Calendar.getInstance().get(Calendar.YEAR) + "-"
 				+ (Calendar.getInstance().get(Calendar.MONTH) + 1) + "-"
 				+ +Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
@@ -188,7 +179,7 @@ public class Yang2Dsdl {
 		Element start = document.createElementNS(RELAXNG_NS, START);
 		grammar.appendChild(start);
 
-		Element defines = document.createElementNS(RELAXNG_NS, "defines");
+		Element defines = document.createElementNS(RELAXNG_NS, DEFINE);
 
 		gDefines(specs, defines);
 
@@ -229,23 +220,23 @@ public class Yang2Dsdl {
 
 	private Node gDefineAnyXml() {
 		Element define = document.createElementNS(RELAXNG_NS, DEFINE);
-		define.setAttribute("name", ANYXML);
+		define.setAttributeNS(RELAXNG_NS, NAME, ANYXML);
 		Element zOm = document.createElementNS(RELAXNG_NS, ZoM);
 		define.appendChild(zOm);
-		Element choice = document.createElementNS(RELAXNG_NS, CHOICE);
+		Element choice = document.createElementNS(RELAXNG_NS, RNG + ":" + CHOICE);
 		zOm.appendChild(choice);
-		Element attribute = document.createElementNS(RELAXNG_NS, ATTRIBUTE);
+		Element attribute = document.createElementNS(RELAXNG_NS, RNG + ":" + ATTRIBUTE);
 		choice.appendChild(attribute);
-		Element anyname = document.createElementNS(RELAXNG_NS, ANYNAME);
+		Element anyname = document.createElementNS(RELAXNG_NS, RNG + ":" + ANYNAME);
 		attribute.appendChild(anyname);
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
-		Element anyname2 = document.createElementNS(RELAXNG_NS, ANYNAME);
+		Element anyname2 = document.createElementNS(RELAXNG_NS, RNG + ":" + ANYNAME);
 		element.appendChild(anyname2);
 		Element ref = document.createElementNS(RELAXNG_NS, REF);
-		ref.setAttribute(NMA + ":" + "name", ANYXML);
+		ref.setAttributeNS(NMA_URI,NAME, ANYXML);
 		element.appendChild(ref);
 		choice.appendChild(element);
-		Element text = document.createElementNS(RELAXNG_NS, TEXT);
+		Element text = document.createElementNS(RELAXNG_NS, RNG + ":" + TEXT);
 		choice.appendChild(text);
 
 		return define;
@@ -272,7 +263,7 @@ public class Yang2Dsdl {
 				&& uses.getUsesAugments().size() == 0) {
 			String usedgrouping = definesgroupings.get(uses.getGrouping());
 			Element ref = document.createElementNS(RELAXNG_NS, REF);
-			ref.setAttribute("name", usedgrouping);
+			ref.setAttributeNS(RELAXNG_NS, RNG + ":" + NAME, usedgrouping);
 			parent.appendChild(ref);
 		} else {
 			for (YANG_DataDef ddef : uses.getGrouping().getDataDefs())
@@ -334,7 +325,7 @@ public class Yang2Dsdl {
 			if (ddef.getBody().compareTo(path[0]) == 0) {
 				if (ddef instanceof YANG_Container) {
 					Element element = document.createElementNS(RELAXNG_NS, ELT);
-					element.setAttribute("name", spec.getPrefix().getPrefix()
+					element.setAttributeNS(RELAXNG_NS, RNG + ":" + NAME, spec.getPrefix().getPrefix()
 							+ ":" + ddef.getBody());
 					parent.appendChild(element);
 					for (YANG_DataDef dddef : ((YANG_Container) ddef)
@@ -400,7 +391,7 @@ public class Yang2Dsdl {
 		define.setAttribute("name", definesgroupings.get(g));
 		parent.appendChild(define);
 		if (g.getDataDefs().size() > 1) {
-			Element interleave = document.createElementNS(RELAXNG_NS, INTLV);
+			Element interleave = document.createElementNS(RELAXNG_NS, RNG + ":" + INTLV);
 			define.appendChild(interleave);
 			define = interleave;
 		}
@@ -439,19 +430,17 @@ public class Yang2Dsdl {
 	private void gMustDataDef(MustDataDef mddef, Element parent) {
 		if (mddef.getMusts().size() > 0)
 			for (YANG_Must must : mddef.getMusts()) {
-				Element mustelt = document.createElement(NMA + ":" + MUST);
+				Element mustelt = document.createElementNS(NMA_URI, MUST);
 				mustelt.setAttribute(ASSERT, gXPath(must.getMust()));
 				parent.appendChild(mustelt);
 				if (must.getErrAppTag() != null) {
-					Element errapptag = document.createElement(NMA + ":"
-							+ ERRORAPPTAG);
+					Element errapptag = document.createElementNS(NMA_URI, ERRORAPPTAG);
 					errapptag
 							.setTextContent(must.getErrAppTag().getErrorAppt());
 					mustelt.appendChild(errapptag);
 				}
 				if (must.getErrMess() != null) {
-					Element errmsg = document.createElement(NMA + ":"
-							+ ERRORMSG);
+					Element errmsg = document.createElementNS(NMA_URI, ERRORMSG);
 					errmsg.setTextContent(must.getErrMess().getErrorMessage());
 					mustelt.appendChild(errmsg);
 				}
@@ -477,7 +466,7 @@ public class Yang2Dsdl {
 	private void gChoice(YANG_Specification spec, YANG_Choice choice,
 			Element parent) {
 
-		Element choiceelt = document.createElementNS(RELAXNG_NS, CHOICE);
+		Element choiceelt = document.createElementNS(RELAXNG_NS, RNG + ":" + CHOICE);
 		choiceelt.setAttribute(MANDATORY, String.valueOf(choice.isMandatory()));
 
 		gDescription(choice, choiceelt);
@@ -544,7 +533,7 @@ public class Yang2Dsdl {
 		String aprefix = "";
 		if (!defining)
 			aprefix = prefix + ":";
-		element.setAttribute(NMA + ":" + "name", aprefix + axml.getAnyXml());
+		element.setAttributeNS(RELAXNG_NS, NAME, aprefix + axml.getAnyXml());
 		parent.appendChild(element);
 
 		gDescription(axml, element);
@@ -552,14 +541,14 @@ public class Yang2Dsdl {
 		gConfigDataDef(axml, element);
 
 		Element ref = document.createElementNS(RELAXNG_NS, REF);
-		ref.setAttribute(NMA + ":" + "name", ANYXML);
+		ref.setAttributeNS(RELAXNG_NS, NAME, ANYXML);
 		element.appendChild(ref);
 
 	}
 
 	private void gDescription(DocumentedNode desc, Element parent) {
 		if (desc.getDescription() != null) {
-			Element documentation = document.createElement(A + ":" + DOC);
+			Element documentation = document.createElementNS(A_URI, DOC);
 			documentation
 					.setTextContent(desc.getDescription().getDescription());
 			parent.appendChild(documentation);
@@ -619,13 +608,33 @@ public class Yang2Dsdl {
 			kprefix = prefix + ":";
 
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
-		element.setAttribute("name", kprefix + list.getList());
+		element.setAttribute(NAME, kprefix + list.getList());
 		String[] kl = list.getKey().getKeyLeaves();
 
 		for (int i = 0; i < kl.length; i++)
-			element.setAttribute(NMA + ":" + "key", kprefix + kl[i]);
+			element.setAttributeNS(NMA_URI, KEY, kprefix + kl[i]);
 
 		gListedAttribute(list, element);
+
+		if (list.getUniques().size() > 0) {
+			String uniques = "";
+			for (YANG_Unique unique : list.getUniques()) {
+				String u = unique.getUnique();
+				String[] oneu = u.split(" ");
+				String oneuniques = "";
+				for (int j = 0; j < oneu.length; j++) {
+					String[] s = oneu[j].split("/");
+					String result = "";
+					for (int i = 0; i < s.length - 1; i++) {
+						result += prefix + ":" + s[i] + "/";
+					}
+					result += prefix + ":" + s[s.length - 1];
+					oneuniques += " " + result;
+				}
+				uniques += " " + oneuniques;
+			}
+			element.setAttributeNS(NMA_URI, UNIQUE, uniques);
+		}
 
 		parent.appendChild(element);
 
@@ -658,8 +667,8 @@ public class Yang2Dsdl {
 		if (!defining)
 			llprefix = prefix + ":";
 
-		element.setAttribute("name", llprefix + leaflist.getLeafList());
-		element.setAttributeNS(NMA, "leaf-list", "true");
+		element.setAttributeNS(RELAXNG_NS,NAME, llprefix + leaflist.getLeafList());
+		element.setAttributeNS(NMA_URI, "leaf-list", "true");
 
 		gListedAttribute(leaflist, element);
 
@@ -674,14 +683,14 @@ public class Yang2Dsdl {
 
 		if (l.getMinElement() != null) {
 			if (l.getMinElement().getMinElementInt() > 1)
-				parent.setAttribute(NMA + ":" + "min-elements", l
-						.getMinElement().getMinElement());
+				parent.setAttributeNS(NMA_URI, MINELTS, l.getMinElement()
+						.getMinElement());
 		}
 		if (l.getMaxElement() != null) {
 			if (!(l.getMaxElement().getMaxElement().compareTo(
 					YangBuiltInTypes.UNBONDED) == 0))
-				parent.setAttribute(NMA + ":" + "max-elements", l
-						.getMaxElement().getMaxElement());
+				parent.setAttributeNS(NMA_URI, MAXELTS, l.getMaxElement()
+						.getMaxElement());
 		}
 
 	}
@@ -784,6 +793,8 @@ public class Yang2Dsdl {
 		if (td.getDefault() != null)
 			define.setAttributeNS(NMA_URI, DEFAULT, td.getDefault()
 					.getDefault());
+		if (td.getUnits() != null)
+			define.setAttributeNS(NMA_URI, UNITS, td.getUnits().getUnits());
 		parent.appendChild(define);
 		gType(td.getType(), define);
 	}
@@ -880,7 +891,7 @@ public class Yang2Dsdl {
 								.getInstanceIdentifierSpec());
 				} else if (st.compareTo(YangBuiltInTypes.leafref) == 0) {
 					gType(type.getLeafRef().getReferencedTypeLeaf(), parent);
-					parent.setAttribute(NMA + ":" + LEAFREF, type.getLeafRef()
+					parent.setAttributeNS(NMA_URI, LEAFREF, type.getLeafRef()
 							.getPath().getPath());
 				} else if (YangBuiltInTypes.isInteger(st)) {
 					gRestrictions(type, parent);
@@ -1303,7 +1314,7 @@ public class Yang2Dsdl {
 			kprefix = prefix + ":";
 		element.setAttribute("name", kprefix + leaf.getLeaf());
 		if (leaf.getDefault() != null)
-			element.setAttribute(NMA + ":" + DEFAULT, leaf.getDefault()
+			element.setAttributeNS(NMA_URI, DEFAULT, leaf.getDefault()
 					.getDefault());
 
 		gDescription(leaf, element);
@@ -1326,7 +1337,7 @@ public class Yang2Dsdl {
 		grammar.setAttribute(NS, spec.getNameSpace().getNameSpace());
 		parent.appendChild(grammar);
 
-		Element source = document.createElementNS(DC_URI, SOURCE);
+		Element source = document.createElementNS(DC_URI, DC + ":" + SOURCE);
 		source.setTextContent(YANGMODULE + " '" + spec.getName() + "'");
 		grammar.appendChild(source);
 		Element start = document.createElementNS(RELAXNG_NS, START);
@@ -1335,10 +1346,10 @@ public class Yang2Dsdl {
 		Element data = document.createElementNS(NMA_URI, DATA);
 		start.appendChild(data);
 
-		Element rpcs = document.createElementNS(NMA_URI, RPCS);
+		Element rpcs = document.createElementNS(NMA_URI, NMA + ":" + RPCS);
 		start.appendChild(rpcs);
 		Element notifications = document
-				.createElementNS(NMA_URI, NOTIFICATIONS);
+				.createElementNS(NMA_URI, NMA + ":" + NOTIFICATIONS);
 		start.appendChild(notifications);
 
 		for (YANG_Body body : spec.getBodies())

@@ -22,5 +22,5 @@ package jyang.parser;
 
 public interface YANG_Header extends YangNode{
 
-    public String toString();
+   // public String toString();
 }
