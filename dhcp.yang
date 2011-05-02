@@ -71,9 +71,18 @@ module dhcp {
            key name;
            //min-elements 2;
            max-elements 14;
+           
+           unique "name c/name";
 
            leaf name {
              type string;
+           }
+           
+           container c {
+             leaf name {
+               type string;
+           }
+            
            }
            uses subnet-list;
          }
@@ -116,6 +125,8 @@ module dhcp {
        list subnet {
          must "dhcp/max-lease-time < 12";
          key net;
+         
+         unique "net range/low dhcp-options/router";
          leaf net {
            type ineti:ip-prefix;
          }
