@@ -77,7 +77,10 @@ public class YANG_Choice extends ConfigDataDef {
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
-	
+	/**
+	 * Is this choice explicitly mandatory
+	 * @return true if mandatory statement is present and its value is  true
+	 */
 	public boolean isMandatory(){
 		if (getMandatory() == null)
 			return false;

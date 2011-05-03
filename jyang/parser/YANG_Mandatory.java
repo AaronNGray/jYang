@@ -25,7 +25,10 @@ public class YANG_Mandatory extends SimpleYangNode {
 	public String getMandatory() {
 		return mandatory;
 	}
-	
+	/**
+	 * Is this statement to the true value
+	 * @return the value of the mandatory statement
+	 */
 	public boolean isMandatory(){
 		return mandatory.compareTo(YangBuiltInTypes.ytrue) == 0;
 	}

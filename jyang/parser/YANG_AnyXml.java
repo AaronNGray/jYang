@@ -40,7 +40,10 @@ public class YANG_AnyXml extends MustDataDef implements YANG_ShortCase {
 	public YANG_Mandatory getMandatory() {
 		return mandatory;
 	}
-	
+	/**
+	 * Is this anyxml statement explicitly mandatory
+	 * @return true if mandatory statement is present and its value is  true
+	 */
 	public boolean isMandatory(){
 		if (getMandatory() == null)
 			return false;

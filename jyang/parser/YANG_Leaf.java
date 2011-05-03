@@ -105,6 +105,10 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 		return mandatory;
 	}
 
+	/**
+	 * Is this leaf explicitly mandatory
+	 * @return true if mandatory statement is present and its value is  true
+	 */
 	public boolean isMandatory() {
 		if (getMandatory() == null)
 			return false;
