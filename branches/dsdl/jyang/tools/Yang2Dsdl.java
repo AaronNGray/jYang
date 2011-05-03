@@ -51,89 +51,102 @@ import org.w3c.dom.NodeList;
 public class Yang2Dsdl {
 
 	private final static String XMLNS = "xmlns";
-	private final static String RELAXNG_NS = "http://relaxng/org/ns/structure/1.0";
 
-	private final static String LB = "<";
-	private final static String RB = ">";
-	private final static String NS = "ns";
-	private final static String RNG = "rng";
-	private final static String NMA = "nma";
-	private final static String NMA_URI = "urn:ietf:params:xml:ns:netmod:dsdl-annotations:1";
-	private final static String DC = "dc";
-	private final static String DC_URI = "http://purl.org/dc/terms";
-	private final static String A = "a";
-	private final static String A_URI = "http://relaxng.org/ns/compatibility/annotations/1.0";
-	private final static String GRAMMAR = "rng:grammar";
-	private final static String START = "rng:start";
-	private final static String INTLV = "rng:interleave";
-	private final static String OPT = "rng:optional";
-	private final static String ELT = "rng:element";
-	private final static String ZoM = "ZeroOrMore";
-	private final static String OoM = "OneOrMore";
-
-	private final static String NETMODTREE = "netmod-tree";
-	private final static String TOP = "top";
 	private final static String SEP = "__";
 	private final static String PRE = "_";
-	private final static String RPCMETHODS = "rpc-methods";
-	private final static String RPCMETHOD = "rpc-method";
-	private final static String INPUT = "input";
-	private final static String OUTPUT = "output";
-	private final static String NOTIFS = "notifications";
-	private final static String NOTIF = "notification";
-	private final static String DEFINE = "rng:define";
-	private final static String REF = "rng:ref";
-	private final static String DATA = "nma:data";
-	private final static String PARAM = "param";
-	private final static String CHOICE = "choice";
-
-	private final static String MANDATORY = "mandatory";
-	private final static String IMPLICIT = "implicit";
-
-	private DocumentBuilder docb = null;
-	private Document document = null;
-
-	private static final String DEFAULT = "nma:default";
-	private static final String ANYXML = "__anyxml__";
-	private static final String ATTRIBUTE = "attribute";
-	private static final String ANYNAME = "anyName";
-	private static final String TEXT = "text";
-	private static final String CONFIG = "nma:config";
-	private static final String MUST = NMA + ":" + "must";
-	private static final String ASSERT = "assert";
-	private static final String ERRORMSG = NMA + ":" + "error-message";
-	private static final String ERRORAPPTAG = NMA + ":" + "error-app-tag";
-	private static final String DOC = "documentation";
-	private static final String DTLIB = "datatypeLibrary";
-	private static final String DTLIB_URI = "http://www.w3.org/2001/XMLSchema=datatypes";
-	private static final String CREATOR = "creator";
-	private static final String JYANG = "jYang 1.0, DSDL plugin";
-	private static final String DATE = "date";
-	private static final String SOURCE = "source";
-	private static final String YANGMODULE = "YANG module";
-	private static final String RPCS = "rpcs";
-	private static final String NOTIFICATIONS = "notifications";
-	private static final String EMPTY = "empty";
 	private static final String TRUE = "true";
 	private static final String FALSE = "false";
+
+	private static final String ASSERT = "assert";
+	private final static String NS = "ns";
+	private static final String ANYXML = "__anyxml__";
 	private static final String BASE64BINARY = "base64Binary";
-	private static final String TYPE = "type";
-	private static final String LIST = "list";
-	private static final String VALUE = "value";
-	private static final String NAME = "name";
-	private static final String STRING = "string";
-	private static final String INSTID = "instance-identifier";
-	private static final String REQINST = "require-instance";
-	private static final String LEAFREF = "leafref";
 	private static final String TOTALDIGIT = "totalDigits";
 	private static final String _19 = "19";
 	private static final String FRACTDIGIT = "fractionDigits";
-	private static final String STATUS = "status";
-	private static final String UNITS = "units";
-	private static final String KEY = "key";
-	private static final String UNIQUE = "unique";
-	private static final String MINELTS = "min-elements";
-	private static final String MAXELTS = "max-elements";
+
+	private static final String JYANG = "jYang 1.0, DSDL plugin";
+	private static final String YANGMODULE = "YANG module";
+
+	// RELAX NG
+
+	private final static String RELAXNG_NS = "http://relaxng/org/ns/structure/1.0";
+	private final static String RNG = "rng";
+	private final static String GRAMMAR = RNG + ":" + "grammar";
+	private final static String START = RNG + ":" + "start";
+	private final static String INTLV = RNG + ":" + "interleave";
+	private final static String OPT = RNG + ":" + "optional";
+	private final static String ELT = RNG + ":" + "element";
+	private final static String ZoM = RNG + ":" + "ZeroOrMore";
+	private final static String OoM = RNG + ":" + "OneOrMore";
+	private final static String DEFINE = RNG + ":" + "define";
+	private final static String REF = RNG + ":" + "ref";
+	private final static String PARAM = RNG + ":" + "param";
+	private final static String CHOICE = RNG + ":" + "choice";
+	private static final String ATTRIBUTE = RNG + ":" + "attribute";
+	private static final String ANYNAME = RNG + ":" + "anyName";
+	private static final String TEXT = RNG + ":" + "text";
+	private static final String NAME = RNG + ":" + "name";
+	private static final String EMPTY = RNG + ":" + "empty";
+	private static final String TYPE = RNG + ":" + "type";
+	private static final String LIST = RNG + ":" + "list";
+	private static final String VALUE = RNG + ":" + "value";
+	private static final String MODULE = RNG + ":" + "module";
+
+	// NETMOD ANNOTATIONS
+
+	private final static String NMA_URI = "urn:ietf:params:xml:ns:netmod:dsdl-annotations:1";
+	private final static String NMA = "nma";
+	private static final String CONFIG = NMA + ":" + "config";
+	private final static String DATA = NMA + ":" + "data";
+	private static final String DEFAULT = NMA + ":" + "default";
+	private static final String ERRORMSG = NMA + ":" + "error-message";
+	private static final String ERRORAPPTAG = NMA + ":" + "error-app-tag";
+
+	private final static String IMPLICIT = NMA + ":" + "implicit";
+	private final static String INPUT = NMA + ":" + "input";
+	private static final String INSTID = NMA + ":" + "instance-identifier";
+	private static final String KEY = NMA + ":" + "key";
+	private static final String LEAFLIST = NMA + ":" + "leaf-list";
+	private static final String LEAFREF = NMA + ":" + "leafref";
+	private final static String MANDATORY = NMA + ":" + "mandatory";
+	private static final String MAXELTS = NMA + ":" + "max-elements";
+	private static final String MINELTS = NMA + ":" + "min-elements";
+
+	private static final String MUST = NMA + ":" + "must";
+	private final static String NOTIF = NMA + ":" + "notification";
+	private static final String NOTIFS = NMA + ":" + "notifications";
+
+	private final static String OUTPUT = NMA + ":" + "output";
+
+	private static final String RPCS = NMA + ":" + "rpcs";
+	private static final String REQINST = NMA + ":" + "require-instance";
+	private static final String STATUS = NMA + ":" + "status";
+	private static final String UNIQUE = NMA + ":" + "unique";
+	private static final String UNITS = NMA + ":" + "units";
+
+	// DUBLIN CORE
+
+	private final static String DC_URI = "http://purl.org/dc/terms";
+	private final static String DC = "dc";
+	private static final String CREATOR = DC + ":" + "creator";
+	private static final String DATE = DC + ":" + "date";
+	private static final String SOURCE = DC + ":" + "source";
+
+	// COMPTABILITY ANNOTATIONS
+
+	private final static String A = "a";
+	private final static String A_URI = "http://relaxng.org/ns/compatibility/annotations/1.0";
+	private static final String DOC = A + ":" + "documentation";
+
+	private static final String DTLIB = "datatypeLibrary";
+	private static final String DTLIB_URI = "http://www.w3.org/2001/XMLSchema=datatypes";
+
+	private final static String RPCMETHODS = "rpc-methods";
+	private final static String RPCMETHOD = "rpc-method";
+
+	private DocumentBuilder docb = null;
+	private Document document = null;
 
 	private Hashtable<YANG_TypeDef, String> definestypedefs = new Hashtable<YANG_TypeDef, String>();
 	private Hashtable<YANG_Grouping, String> definesgroupings = new Hashtable<YANG_Grouping, String>();
@@ -153,31 +166,31 @@ public class Yang2Dsdl {
 		}
 
 		document = docb.newDocument();
-		Element grammar = document.createElementNS(RELAXNG_NS, GRAMMAR);
+		Element grammar = document.createElement(GRAMMAR);
 		document.appendChild(grammar);
 
-		grammar.setAttribute(XMLNS + ":" + NMA,NMA_URI);
+		grammar.setAttribute(XMLNS + ":" + RNG, RELAXNG_NS);
+		grammar.setAttribute(XMLNS + ":" + NMA, NMA_URI);
 		grammar.setAttribute(XMLNS + ":" + DC, DC_URI);
-		//grammar.setAttribute(XMLNS , A_URI);
-		//grammar.setAttribute(DTLIB, DTLIB_URI);
+		grammar.setAttribute(XMLNS + ":" + A, A_URI);
+		grammar.setAttribute(XMLNS + ":" + DTLIB, DTLIB_URI);
 
 		for (YANG_Specification spec : specs.values()) {
 			grammar.setAttribute(XMLNS + ":" + spec.getPrefix().getPrefix(),
 					spec.getNameSpace().getNameSpace());
 
 		}
-		Element creator = document.createElementNS(DC_URI, DC + ":" + CREATOR);
+		Element creator = document.createElementNS(DC_URI, CREATOR);
 		creator.setTextContent(JYANG);
 		grammar.appendChild(creator);
 
-		Element date = document.createElementNS(DC_URI, DC + ":" + DATE);
+		Element date = document.createElementNS(DC_URI, DATE);
 		date.setTextContent(Calendar.getInstance().get(Calendar.YEAR) + "-"
 				+ (Calendar.getInstance().get(Calendar.MONTH) + 1) + "-"
 				+ +Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
 		grammar.appendChild(date);
 
 		Element start = document.createElementNS(RELAXNG_NS, START);
-		grammar.appendChild(start);
 
 		Element defines = document.createElementNS(RELAXNG_NS, DEFINE);
 
@@ -186,6 +199,7 @@ public class Yang2Dsdl {
 		for (YANG_Specification spec : specs.values()) {
 			gSpec(spec, start);
 		}
+		grammar.appendChild(start);
 
 		NodeList nl = defines.getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
@@ -223,20 +237,20 @@ public class Yang2Dsdl {
 		define.setAttributeNS(RELAXNG_NS, NAME, ANYXML);
 		Element zOm = document.createElementNS(RELAXNG_NS, ZoM);
 		define.appendChild(zOm);
-		Element choice = document.createElementNS(RELAXNG_NS, RNG + ":" + CHOICE);
+		Element choice = document.createElementNS(RELAXNG_NS, CHOICE);
 		zOm.appendChild(choice);
-		Element attribute = document.createElementNS(RELAXNG_NS, RNG + ":" + ATTRIBUTE);
+		Element attribute = document.createElementNS(RELAXNG_NS, ATTRIBUTE);
 		choice.appendChild(attribute);
-		Element anyname = document.createElementNS(RELAXNG_NS, RNG + ":" + ANYNAME);
+		Element anyname = document.createElementNS(RELAXNG_NS, ANYNAME);
 		attribute.appendChild(anyname);
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
-		Element anyname2 = document.createElementNS(RELAXNG_NS, RNG + ":" + ANYNAME);
+		Element anyname2 = document.createElementNS(RELAXNG_NS, ANYNAME);
 		element.appendChild(anyname2);
 		Element ref = document.createElementNS(RELAXNG_NS, REF);
-		ref.setAttributeNS(NMA_URI,NAME, ANYXML);
+		ref.setAttributeNS(RELAXNG_NS, NAME, ANYXML);
 		element.appendChild(ref);
 		choice.appendChild(element);
-		Element text = document.createElementNS(RELAXNG_NS, RNG + ":" + TEXT);
+		Element text = document.createElementNS(RELAXNG_NS, TEXT);
 		choice.appendChild(text);
 
 		return define;
@@ -263,7 +277,7 @@ public class Yang2Dsdl {
 				&& uses.getUsesAugments().size() == 0) {
 			String usedgrouping = definesgroupings.get(uses.getGrouping());
 			Element ref = document.createElementNS(RELAXNG_NS, REF);
-			ref.setAttributeNS(RELAXNG_NS, RNG + ":" + NAME, usedgrouping);
+			ref.setAttributeNS(RELAXNG_NS, NAME, usedgrouping);
 			parent.appendChild(ref);
 		} else {
 			for (YANG_DataDef ddef : uses.getGrouping().getDataDefs())
@@ -325,7 +339,8 @@ public class Yang2Dsdl {
 			if (ddef.getBody().compareTo(path[0]) == 0) {
 				if (ddef instanceof YANG_Container) {
 					Element element = document.createElementNS(RELAXNG_NS, ELT);
-					element.setAttributeNS(RELAXNG_NS, RNG + ":" + NAME, spec.getPrefix().getPrefix()
+					element.setAttributeNS(RELAXNG_NS, NAME, spec.getPrefix()
+							.getPrefix()
 							+ ":" + ddef.getBody());
 					parent.appendChild(element);
 					for (YANG_DataDef dddef : ((YANG_Container) ddef)
@@ -391,7 +406,8 @@ public class Yang2Dsdl {
 		define.setAttribute("name", definesgroupings.get(g));
 		parent.appendChild(define);
 		if (g.getDataDefs().size() > 1) {
-			Element interleave = document.createElementNS(RELAXNG_NS, RNG + ":" + INTLV);
+			Element interleave = document.createElementNS(RELAXNG_NS, RNG + ":"
+					+ INTLV);
 			define.appendChild(interleave);
 			define = interleave;
 		}
@@ -434,13 +450,15 @@ public class Yang2Dsdl {
 				mustelt.setAttribute(ASSERT, gXPath(must.getMust()));
 				parent.appendChild(mustelt);
 				if (must.getErrAppTag() != null) {
-					Element errapptag = document.createElementNS(NMA_URI, ERRORAPPTAG);
+					Element errapptag = document.createElementNS(NMA_URI,
+							ERRORAPPTAG);
 					errapptag
 							.setTextContent(must.getErrAppTag().getErrorAppt());
 					mustelt.appendChild(errapptag);
 				}
 				if (must.getErrMess() != null) {
-					Element errmsg = document.createElementNS(NMA_URI, ERRORMSG);
+					Element errmsg = document
+							.createElementNS(NMA_URI, ERRORMSG);
 					errmsg.setTextContent(must.getErrMess().getErrorMessage());
 					mustelt.appendChild(errmsg);
 				}
@@ -466,8 +484,8 @@ public class Yang2Dsdl {
 	private void gChoice(YANG_Specification spec, YANG_Choice choice,
 			Element parent) {
 
-		Element choiceelt = document.createElementNS(RELAXNG_NS, RNG + ":" + CHOICE);
-		choiceelt.setAttribute(MANDATORY, String.valueOf(choice.isMandatory()));
+		Element choiceelt = document.createElementNS(RELAXNG_NS, CHOICE);
+
 
 		gDescription(choice, choiceelt);
 
@@ -477,6 +495,9 @@ public class Yang2Dsdl {
 			Element optional = document.createElementNS(RELAXNG_NS, OPT);
 			parent.appendChild(optional);
 			parent = optional;
+		} else {
+			choiceelt.setAttributeNS(NMA_URI, MANDATORY, TRUE);
+			parent.setAttributeNS(NMA_URI, MANDATORY, TRUE);
 		}
 		parent.appendChild(choiceelt);
 
@@ -487,7 +508,7 @@ public class Yang2Dsdl {
 		for (YANG_Case ycase : choice.getCases()) {
 			Element interleave = document.createElementNS(RELAXNG_NS, INTLV);
 			if (ycase.getCase().compareTo(defaultcase) == 0)
-				interleave.setAttribute(IMPLICIT, "true");
+				interleave.setAttributeNS(NMA_URI, IMPLICIT, TRUE);
 			choiceelt.appendChild(interleave);
 			gCase(spec, ycase, interleave);
 		}
@@ -527,7 +548,8 @@ public class Yang2Dsdl {
 			Element optional = document.createElementNS(RELAXNG_NS, OPT);
 			parent.appendChild(optional);
 			parent = optional;
-		}
+		} else
+			parent.setAttributeNS(NMA_URI, MANDATORY, TRUE);
 
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
 		String aprefix = "";
@@ -593,6 +615,7 @@ public class Yang2Dsdl {
 		} else if (oneOrMore) {
 			zom = document.createElementNS(RELAXNG_NS, OoM);
 			parent.appendChild(zom);
+			parent.setAttributeNS(NMA_URI, MANDATORY, TRUE);
 			parent = zom;
 		}
 		return parent;
@@ -608,7 +631,7 @@ public class Yang2Dsdl {
 			kprefix = prefix + ":";
 
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
-		element.setAttribute(NAME, kprefix + list.getList());
+		element.setAttributeNS(RELAXNG_NS, NAME, kprefix + list.getList());
 		String[] kl = list.getKey().getKeyLeaves();
 
 		for (int i = 0; i < kl.length; i++)
@@ -633,7 +656,7 @@ public class Yang2Dsdl {
 				}
 				uniques += " " + oneuniques;
 			}
-			element.setAttributeNS(NMA_URI, UNIQUE, uniques);
+			element.setAttributeNS(NMA_URI, UNIQUE, uniques.trim());
 		}
 
 		parent.appendChild(element);
@@ -667,8 +690,9 @@ public class Yang2Dsdl {
 		if (!defining)
 			llprefix = prefix + ":";
 
-		element.setAttributeNS(RELAXNG_NS,NAME, llprefix + leaflist.getLeafList());
-		element.setAttributeNS(NMA_URI, "leaf-list", "true");
+		element.setAttributeNS(RELAXNG_NS, NAME, llprefix
+				+ leaflist.getLeafList());
+		element.setAttributeNS(NMA_URI, LEAFLIST, TRUE);
 
 		gListedAttribute(leaflist, element);
 
@@ -698,12 +722,15 @@ public class Yang2Dsdl {
 	private void gContainer(YANG_Specification spec, YANG_Container cont,
 			Element parent) {
 
+		Element element = document.createElementNS(RELAXNG_NS, ELT);
+		
 		if (cont.getPresence() != null || !isOneMandatory(cont.getDataDefs())) {
 			Element optional = document.createElementNS(RELAXNG_NS, OPT);
 			parent.appendChild(optional);
 			parent = optional;
-		}
-		Element element = document.createElementNS(RELAXNG_NS, ELT);
+		} else 
+			element.setAttributeNS(NMA_URI, MANDATORY, TRUE);
+		
 
 		gDescription(cont, element);
 
@@ -711,7 +738,7 @@ public class Yang2Dsdl {
 		if (!defining)
 			cprefix = prefix + ":";
 
-		element.setAttribute("name", cprefix + cont.getContainer());
+		element.setAttributeNS(RELAXNG_NS, NAME, cprefix + cont.getContainer());
 
 		if (cont.getPresence() == null && !isOneMandatory(cont.getDataDefs())
 				&& isOneImplicit(cont.getDataDefs())) {
@@ -789,7 +816,7 @@ public class Yang2Dsdl {
 	private void gTypeDef(YANG_TypeDef td, Element parent) {
 
 		Element define = document.createElementNS(RELAXNG_NS, DEFINE);
-		define.setAttribute(NAME, definestypedefs.get(td));
+		define.setAttributeNS(RELAXNG_NS, NAME, definestypedefs.get(td));
 		if (td.getDefault() != null)
 			define.setAttributeNS(NMA_URI, DEFAULT, td.getDefault()
 					.getDefault());
@@ -807,7 +834,7 @@ public class Yang2Dsdl {
 			} else {
 				YANG_TypeDef ttd = type.getTypedef();
 				Element ref = document.createElementNS(RELAXNG_NS, REF);
-				ref.setAttribute(NAME, definestypedefs.get(ttd));
+				ref.setAttributeNS(RELAXNG_NS, NAME, definestypedefs.get(ttd));
 				parent.appendChild(ref);
 			}
 
@@ -822,9 +849,8 @@ public class Yang2Dsdl {
 				YANG_UnionSpecification uspec = type.getUnionSpec();
 				for (YANG_Type ut : uspec.getTypes()) {
 					Element ref = document.createElementNS(RELAXNG_NS, REF);
-					ref
-							.setAttribute(NAME, definestypedefs.get(ut
-									.getTypedef()));
+					ref.setAttributeNS(RELAXNG_NS, NAME, definestypedefs.get(ut
+							.getTypedef()));
 					choice.appendChild(ref);
 				}
 			} else {
@@ -844,7 +870,7 @@ public class Yang2Dsdl {
 					parent.appendChild(choice);
 				} else if (st.compareTo(YangBuiltInTypes.binary) == 0) {
 					Element data = document.createElementNS(RELAXNG_NS, DATA);
-					data.setAttribute(TYPE, BASE64BINARY);
+					data.setAttributeNS(RELAXNG_NS, TYPE, BASE64BINARY);
 					parent.appendChild(data);
 				} else if (st.compareTo(YangBuiltInTypes.bits) == 0) {
 					Element list = document.createElementNS(RELAXNG_NS, LIST);
@@ -879,15 +905,17 @@ public class Yang2Dsdl {
 						idref = "__" + idref.replace(':', '_');
 					else
 						idref = "__" + prefix + "_" + idref;
-					ref.setAttribute(NAME, idref);
+					ref.setAttributeNS(RELAXNG_NS, NAME, idref);
 				} else if (st.compareTo(YangBuiltInTypes.instanceidentifier) == 0) {
 					Element data = document.createElementNS(RELAXNG_NS, DATA);
 					parent.appendChild(data);
-					data.setAttribute(TYPE, STRING);
+					data
+							.setAttributeNS(RELAXNG_NS, TYPE,
+									yangType2DsdlType(st));
 					Element ii = document.createElementNS(NMA_URI, INSTID);
 					parent.appendChild(ii);
 					if (type.getInstanceIdentifierSpec() != null)
-						ii.setAttribute(REQINST, type
+						ii.setAttributeNS(NMA_URI, REQINST, type
 								.getInstanceIdentifierSpec());
 				} else if (st.compareTo(YangBuiltInTypes.leafref) == 0) {
 					gType(type.getLeafRef().getReferencedTypeLeaf(), parent);
@@ -901,7 +929,8 @@ public class Yang2Dsdl {
 					else {
 						Element data = document.createElementNS(RELAXNG_NS,
 								DATA);
-						data.setAttribute(TYPE, STRING);
+						data.setAttributeNS(RELAXNG_NS, TYPE,
+								yangType2DsdlType(st));
 						parent.appendChild(data);
 					}
 				} else if (st.compareTo(YangBuiltInTypes.decimal64) == 0) {
@@ -909,12 +938,12 @@ public class Yang2Dsdl {
 					data.setAttribute(TYPE, yangType2DsdlType(st));
 					parent.appendChild(data);
 					Element param = document.createElementNS(RELAXNG_NS, PARAM);
-					param.setAttribute(NAME, TOTALDIGIT);
+					param.setAttributeNS(RELAXNG_NS, NAME, TOTALDIGIT);
 					param.setTextContent(_19);
 					data.appendChild(param);
 					Element param2 = document
 							.createElementNS(RELAXNG_NS, PARAM);
-					param2.setAttribute(NAME, FRACTDIGIT);
+					param2.setAttributeNS(RELAXNG_NS, NAME, FRACTDIGIT);
 					param2.setTextContent(type.getDec64Spec()
 							.getFractionDigit());
 					data.appendChild(param2);
@@ -1027,18 +1056,18 @@ public class Yang2Dsdl {
 				&& l[0].compareTo(YangBuiltInTypes.uint64ub.toString()) != 0) {
 			if (l[0].compareTo(l[1]) == 0) {
 				Element param = document.createElementNS(RELAXNG_NS, PARAM);
-				param.setAttribute(NAME, "length");
+				param.setAttributeNS(RELAXNG_NS, NAME, "length");
 				param.setTextContent(l[0]);
 				parent.appendChild(param);
 			} else {
 				Element paramin = document.createElementNS(RELAXNG_NS, PARAM);
-				paramin.setAttribute(NAME, "minLength");
+				paramin.setAttributeNS(RELAXNG_NS, NAME, "minLength");
 				paramin.setTextContent(l[0]);
 				parent.appendChild(paramin);
 				if (l[1].compareTo(YangBuiltInTypes.max) != 0) {
 					Element paramax = document.createElementNS(RELAXNG_NS,
 							PARAM);
-					paramax.setAttribute(NAME, "maxLength");
+					paramax.setAttributeNS(RELAXNG_NS, NAME, "maxLength");
 					paramax.setTextContent(l[1]);
 					parent.appendChild(paramax);
 				}
@@ -1051,13 +1080,13 @@ public class Yang2Dsdl {
 
 		if (l[0].compareTo(YangBuiltInTypes.min) != 0) {
 			Element paramin = document.createElementNS(RELAXNG_NS, PARAM);
-			paramin.setAttribute(NAME, "minInclusive");
+			paramin.setAttributeNS(RELAXNG_NS, NAME, "minInclusive");
 			paramin.setTextContent(l[0]);
 			parent.appendChild(paramin);
 		}
 		if (l[1].compareTo(YangBuiltInTypes.max) != 0) {
 			Element paramax = document.createElementNS(RELAXNG_NS, PARAM);
-			paramax.setAttribute(NAME, "maxInclusive");
+			paramax.setAttributeNS(RELAXNG_NS, NAME, "maxInclusive");
 			paramax.setTextContent(l[1]);
 			parent.appendChild(paramax);
 		}
@@ -1081,7 +1110,8 @@ public class Yang2Dsdl {
 			return "unsignedInt";
 		else if (type.compareTo(YangBuiltInTypes.uint64) == 0)
 			return "unsignedLong";
-		else if (type.compareTo(YangBuiltInTypes.string) == 0)
+		else if (type.compareTo(YangBuiltInTypes.string) == 0
+				|| type.compareTo(YangBuiltInTypes.instanceidentifier) == 0)
 			return "string";
 		else if (type.compareTo(YangBuiltInTypes.binary) == 0)
 			return "base64Binary";
@@ -1263,7 +1293,7 @@ public class Yang2Dsdl {
 		if (!defining)
 			lprefix = prefix + ":";
 
-		element.setAttribute(NAME, lprefix + leaf.getLeaf());
+		element.setAttributeNS(RELAXNG_NS, NAME, lprefix + leaf.getLeaf());
 
 		if (leaf.getDefault() != null)
 			element.setAttributeNS(NMA_URI, DEFAULT, leaf.getDefault()
@@ -1298,8 +1328,10 @@ public class Yang2Dsdl {
 			Element optional = document.createElementNS(RELAXNG_NS, OPT);
 			parent.appendChild(optional);
 			optional.appendChild(element);
-		} else
+		} else {
+			parent.setAttributeNS(NMA_URI, MANDATORY, TRUE);
 			parent.appendChild(element);
+		}
 		return type;
 	}
 
@@ -1312,7 +1344,8 @@ public class Yang2Dsdl {
 		String kprefix = "";
 		if (!defining)
 			kprefix = prefix + ":";
-		element.setAttribute("name", kprefix + leaf.getLeaf());
+		element.setAttributeNS(RELAXNG_NS, NAME, kprefix + leaf.getLeaf());
+		element.setAttributeNS(NMA_URI, MANDATORY, TRUE);
 		if (leaf.getDefault() != null)
 			element.setAttributeNS(NMA_URI, DEFAULT, leaf.getDefault()
 					.getDefault());
@@ -1333,11 +1366,11 @@ public class Yang2Dsdl {
 		prefix = spec.getPrefix().getPrefix();
 
 		Element grammar = document.createElementNS(RELAXNG_NS, GRAMMAR);
-		grammar.setAttribute("module", spec.getName());
+		grammar.setAttributeNS(RELAXNG_NS, MODULE, spec.getName());
 		grammar.setAttribute(NS, spec.getNameSpace().getNameSpace());
 		parent.appendChild(grammar);
 
-		Element source = document.createElementNS(DC_URI, DC + ":" + SOURCE);
+		Element source = document.createElementNS(DC_URI, SOURCE);
 		source.setTextContent(YANGMODULE + " '" + spec.getName() + "'");
 		grammar.appendChild(source);
 		Element start = document.createElementNS(RELAXNG_NS, START);
@@ -1346,10 +1379,9 @@ public class Yang2Dsdl {
 		Element data = document.createElementNS(NMA_URI, DATA);
 		start.appendChild(data);
 
-		Element rpcs = document.createElementNS(NMA_URI, NMA + ":" + RPCS);
+		Element rpcs = document.createElementNS(NMA_URI, RPCS);
 		start.appendChild(rpcs);
-		Element notifications = document
-				.createElementNS(NMA_URI, NMA + ":" + NOTIFICATIONS);
+		Element notifications = document.createElementNS(NMA_URI, NOTIFS);
 		start.appendChild(notifications);
 
 		for (YANG_Body body : spec.getBodies())
