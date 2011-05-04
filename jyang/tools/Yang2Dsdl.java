@@ -120,10 +120,12 @@ public class Yang2Dsdl {
 	private final static String OUTPUT = NMA + ":" + "output";
 
 	private static final String RPCS = NMA + ":" + "rpcs";
+	private static final String RPC = NMA + ":" + "rpc";
 	private static final String REQINST = NMA + ":" + "require-instance";
 	private static final String STATUS = NMA + ":" + "status";
 	private static final String UNIQUE = NMA + ":" + "unique";
 	private static final String UNITS = NMA + ":" + "units";
+	private static final String WHEN = NMA + ":" + "when";
 
 	// DUBLIN CORE
 
@@ -144,6 +146,8 @@ public class Yang2Dsdl {
 
 	private final static String RPCMETHODS = "rpc-methods";
 	private final static String RPCMETHOD = "rpc-method";
+
+
 
 	private DocumentBuilder docb = null;
 	private Document document = null;
@@ -272,7 +276,7 @@ public class Yang2Dsdl {
 		defining = false;
 	}
 
-	private void gUses(YANG_Specification spec, YANG_Uses uses, Element parent) {
+	private void gUses(YANG_Uses uses, Element parent) {
 		if (uses.getRefinements().size() == 0
 				&& uses.getUsesAugments().size() == 0) {
 			String usedgrouping = definesgroupings.get(uses.getGrouping());
@@ -281,30 +285,30 @@ public class Yang2Dsdl {
 			parent.appendChild(ref);
 		} else {
 			for (YANG_DataDef ddef : uses.getGrouping().getDataDefs())
-				expandRefinement(spec, ddef, uses.getRefinements(), parent);
+				expandRefinement(ddef, uses.getRefinements(), parent);
 
 		}
 
 	}
 
-	private void expandRefinement(YANG_Specification spec, YANG_DataDef ddef,
+	private void expandRefinement(YANG_DataDef ddef,
 			Vector<YANG_RefineAnyNode> refs, Element parent) {
 		boolean generated = false;
 		for (YANG_RefineAnyNode ref : refs) {
 			String refinednodepath = ref.getRefineNodeId();
-			YANG_DataDef refinednode = isInSubTree(spec, ddef, refinednodepath);
+			YANG_DataDef refinednode = isInSubTree(ddef, refinednodepath);
 			if (refinednode != null) {
-				gDataDef(spec, ddef, refinednode, ref, refinednodepath, parent);
+				gDataDef(ddef, refinednode, ref, refinednodepath, parent);
 			} else {
 				if (!generated) {
-					gDataDef(spec, ddef, parent);
+					gDataDef(ddef, parent);
 					generated = true;
 				}
 			}
 		}
 	}
 
-	private void gDataDef(YANG_Specification spec, YANG_DataDef ddef,
+	private void gDataDef(YANG_DataDef ddef,
 			YANG_DataDef refinednode, YANG_RefineAnyNode ref,
 			String descendant, Element parent) {
 
@@ -314,7 +318,7 @@ public class Yang2Dsdl {
 			YANG_Grouping g = ((YANG_Uses) ddef).getGrouping();
 			YANG_DataDef result = null;
 			for (YANG_DataDef gddef : g.getDataDefs()) {
-				YANG_DataDef lr = isInSubTree(spec, gddef, descendant);
+				YANG_DataDef lr = isInSubTree(gddef, descendant);
 				if (lr != null)
 					result = lr;
 			}
@@ -330,7 +334,7 @@ public class Yang2Dsdl {
 						cleaf = leaf.clone();
 						cleaf.setDefault(rl.getDefault());
 					}
-					gLeaf(spec, cleaf, parent);
+					gLeaf(cleaf, parent);
 				}
 
 		} else {
@@ -339,18 +343,17 @@ public class Yang2Dsdl {
 			if (ddef.getBody().compareTo(path[0]) == 0) {
 				if (ddef instanceof YANG_Container) {
 					Element element = document.createElementNS(RELAXNG_NS, ELT);
-					element.setAttributeNS(RELAXNG_NS, NAME, spec.getPrefix()
-							.getPrefix()
+					element.setAttributeNS(RELAXNG_NS, NAME, prefix
 							+ ":" + ddef.getBody());
 					parent.appendChild(element);
 					for (YANG_DataDef dddef : ((YANG_Container) ddef)
 							.getDataDefs()) {
-						gDataDef(spec, dddef, refinednode, ref, descendantname,
+						gDataDef(dddef, refinednode, ref, descendantname,
 								element);
 					}
 				} else if (ddef instanceof YANG_List) {
 					for (YANG_DataDef dddef : ((YANG_List) ddef).getDataDefs()) {
-						gDataDef(spec, dddef, refinednode, ref, descendantname,
+						gDataDef(dddef, refinednode, ref, descendantname,
 								parent);
 					}
 				}
@@ -358,14 +361,14 @@ public class Yang2Dsdl {
 		}
 	}
 
-	private YANG_DataDef isInSubTree(YANG_Specification spec,
+	private YANG_DataDef isInSubTree(
 			YANG_DataDef ddef, String descendant) {
 		String[] path = descendant.split("/");
 		if (ddef instanceof YANG_Uses) {
 			YANG_Grouping g = ((YANG_Uses) ddef).getGrouping();
 			YANG_DataDef result = null;
 			for (YANG_DataDef gddef : g.getDataDefs()) {
-				YANG_DataDef lr = isInSubTree(spec, gddef, descendant);
+				YANG_DataDef lr = isInSubTree(gddef, descendant);
 				if (lr != null)
 					result = lr;
 			}
@@ -388,7 +391,7 @@ public class Yang2Dsdl {
 					dddef = ((YANG_List) ddef).getDataDefs();
 				YANG_DataDef result = null;
 				for (YANG_DataDef ld : dddef) {
-					YANG_DataDef ldd = isInSubTree(spec, ld, descendantname);
+					YANG_DataDef ldd = isInSubTree(ld, descendantname);
 					if (ldd != null)
 						result = ldd;
 				}
@@ -412,33 +415,32 @@ public class Yang2Dsdl {
 			define = interleave;
 		}
 		for (YANG_DataDef ddef : g.getDataDefs())
-			gDataDef(spec, ddef, define);
+			gDataDef(ddef, define);
 	}
 
-	private void gDataDef(YANG_Specification spec, YANG_DataDef ddef,
+	private void gDataDef( YANG_DataDef ddef,
 			Element parent) {
 
 		if (ddef instanceof YANG_AnyXml)
-			gAnyXml(spec, (YANG_AnyXml) ddef, parent);
+			gAnyXml((YANG_AnyXml) ddef, parent);
 		else if (ddef instanceof YANG_Leaf)
-			gLeaf(spec, (YANG_Leaf) ddef, parent);
+			gLeaf((YANG_Leaf) ddef, parent);
 		else if (ddef instanceof YANG_Uses)
-			gUses(spec, (YANG_Uses) ddef, parent);
+			gUses((YANG_Uses) ddef, parent);
 		else if (ddef instanceof YANG_Container)
-			gContainer(spec, (YANG_Container) ddef, parent);
+			gContainer((YANG_Container) ddef, parent);
 		else if (ddef instanceof YANG_List)
-			gList(spec, (YANG_List) ddef, parent);
+			gList((YANG_List) ddef, parent);
 		else if (ddef instanceof YANG_LeafList)
-			gLeafList(spec, (YANG_LeafList) ddef, parent);
+			gLeafList((YANG_LeafList) ddef, parent);
 		else if (ddef instanceof YANG_Choice)
-			gChoice(spec, (YANG_Choice) ddef, parent);
+			gChoice((YANG_Choice) ddef, parent);
 
 	}
 
 	private void gConfigDataDef(ConfigDataDef cddef, Element parent) {
 		if (cddef.getConfig() != null)
-			parent.setAttributeNS(NMA_URI, CONFIG, String.valueOf(cddef
-					.isConfig()));
+			parent.setAttributeNS(NMA_URI, CONFIG, cddef.getConfig().getConfigStr());
 		if (cddef instanceof MustDataDef)
 			gMustDataDef((MustDataDef) cddef, parent);
 	}
@@ -481,17 +483,16 @@ public class Yang2Dsdl {
 		return result;
 	}
 
-	private void gChoice(YANG_Specification spec, YANG_Choice choice,
+	private void gChoice(YANG_Choice choice,
 			Element parent) {
 
 		Element choiceelt = document.createElementNS(RELAXNG_NS, CHOICE);
 
-
+		gWhen(choice, choiceelt);
 		gDescription(choice, choiceelt);
-
 		gConfigDataDef(choice, parent);
 
-		if (choice.isMandatory()) {
+		if (!choice.isMandatory()) {
 			Element optional = document.createElementNS(RELAXNG_NS, OPT);
 			parent.appendChild(optional);
 			parent = optional;
@@ -510,36 +511,36 @@ public class Yang2Dsdl {
 			if (ycase.getCase().compareTo(defaultcase) == 0)
 				interleave.setAttributeNS(NMA_URI, IMPLICIT, TRUE);
 			choiceelt.appendChild(interleave);
-			gCase(spec, ycase, interleave);
+			gCase(ycase, interleave);
 		}
 
 		for (YANG_ShortCase yscase : choice.getShortCases()) {
 			if (yscase.getBody().compareTo(defaultcase) == 0)
-				gShortCase(spec, yscase, choiceelt, true);
+				gShortCase(yscase, choiceelt, true);
 			else
-				gShortCase(spec, yscase, choiceelt, false);
+				gShortCase(yscase, choiceelt, false);
 		}
 
 	}
 
-	private void gShortCase(YANG_Specification spec, YANG_ShortCase ysc,
+	private void gShortCase(YANG_ShortCase ysc,
 			Element parent, boolean b) {
 		if (ysc instanceof YANG_Container)
-			gContainer(spec, (YANG_Container) ysc, parent);
+			gContainer((YANG_Container) ysc, parent);
 		else if (ysc instanceof YANG_List)
-			gList(spec, (YANG_List) ysc, parent);
+			gList((YANG_List) ysc, parent);
 		else if (ysc instanceof YANG_LeafList)
-			gLeafList(spec, (YANG_LeafList) ysc, parent);
+			gLeafList((YANG_LeafList) ysc, parent);
 		else if (ysc instanceof YANG_AnyXml)
-			gAnyXml(spec, (YANG_AnyXml) ysc, parent);
+			gAnyXml((YANG_AnyXml) ysc, parent);
 		else if (ysc instanceof YANG_Choice)
-			gChoice(spec, (YANG_Choice) ysc, parent);
+			gChoice((YANG_Choice) ysc, parent);
 		else if (ysc instanceof YANG_Leaf)
-			gLeaf(spec, (YANG_Leaf) ysc, parent);
+			gLeaf((YANG_Leaf) ysc, parent);
 
 	}
 
-	private void gAnyXml(YANG_Specification spec, YANG_AnyXml axml,
+	private void gAnyXml(YANG_AnyXml axml,
 			Element parent) {
 
 		isThereOneAnyXml = true;
@@ -550,14 +551,17 @@ public class Yang2Dsdl {
 			parent = optional;
 		} else
 			parent.setAttributeNS(NMA_URI, MANDATORY, TRUE);
+		;
 
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
 		String aprefix = "";
+		
 		if (!defining)
 			aprefix = prefix + ":";
 		element.setAttributeNS(RELAXNG_NS, NAME, aprefix + axml.getAnyXml());
 		parent.appendChild(element);
 
+		gWhen(axml, element);
 		gDescription(axml, element);
 
 		gConfigDataDef(axml, element);
@@ -566,6 +570,25 @@ public class Yang2Dsdl {
 		ref.setAttributeNS(RELAXNG_NS, NAME, ANYXML);
 		element.appendChild(ref);
 
+	}
+
+	private void gWhen(YANG_DataDef ddef, Element element) {
+		if (ddef.getWhen() != null){
+			element.setAttributeNS(NMA_URI, WHEN, gXPath(ddef.getWhen().getWhen()));
+		}
+		
+	}
+	private void gWhen(FeaturedNode f, Element element) {
+		if (f.getWhen() != null){
+			element.setAttributeNS(NMA_URI, WHEN, gXPath(f.getWhen().getWhen()));
+		}
+		
+	}
+	private void gWhen(YANG_Augment f, Element element) {
+		if (f.getWhen() != null){
+			element.setAttributeNS(NMA_URI, WHEN, gXPath(f.getWhen().getWhen()));
+		}
+		
 	}
 
 	private void gDescription(DocumentedNode desc, Element parent) {
@@ -578,9 +601,10 @@ public class Yang2Dsdl {
 
 	}
 
-	private void gCase(YANG_Specification spec, YANG_Case ycase, Element parent) {
+	private void gCase(YANG_Case ycase, Element parent) {
+		gWhen(ycase, parent);
 		for (YANG_DataDef ddef : ycase.getDataDefs())
-			gDataDef(spec, ddef, parent);
+			gDataDef(ddef, parent);
 
 	}
 
@@ -589,11 +613,11 @@ public class Yang2Dsdl {
 
 	}
 
-	private void gKeyDataDef(YANG_Specification spec, YANG_DataDef ddef,
+	private void gKeyDataDef(YANG_DataDef ddef,
 			Element parent) {
 
 		if (ddef instanceof YANG_Leaf)
-			gKeyLeaf(spec, (YANG_Leaf) ddef, parent);
+			gKeyLeaf((YANG_Leaf) ddef, parent);
 
 	}
 
@@ -622,7 +646,7 @@ public class Yang2Dsdl {
 
 	}
 
-	private void gList(YANG_Specification spec, YANG_List list, Element parent) {
+	private void gList(YANG_List list, Element parent) {
 
 		parent = gListedParent(list, parent);
 
@@ -663,7 +687,7 @@ public class Yang2Dsdl {
 
 		YANG_DataDef[] kdd = list.getKeyDataDefs();
 		for (YANG_DataDef ddef : kdd) {
-			gKeyDataDef(spec, ddef, element);
+			gKeyDataDef(ddef, element);
 		}
 
 		YANG_DataDef[] nkdd = list.getNonKeyDataDefs();
@@ -674,12 +698,12 @@ public class Yang2Dsdl {
 		}
 
 		for (YANG_DataDef ddef : nkdd) {
-			gDataDef(spec, ddef, element);
+			gDataDef(ddef, element);
 		}
 
 	}
 
-	private void gLeafList(YANG_Specification spec, YANG_LeafList leaflist,
+	private void gLeafList(YANG_LeafList leaflist,
 			Element parent) {
 		parent = gListedParent(leaflist, parent);
 
@@ -702,6 +726,7 @@ public class Yang2Dsdl {
 
 	private void gListedAttribute(ListedDataDef l, Element parent) {
 
+		gWhen(l, parent);
 		gDescription(l, parent);
 		gConfigDataDef(l, parent);
 
@@ -719,7 +744,7 @@ public class Yang2Dsdl {
 
 	}
 
-	private void gContainer(YANG_Specification spec, YANG_Container cont,
+	private void gContainer(YANG_Container cont,
 			Element parent) {
 
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
@@ -731,7 +756,7 @@ public class Yang2Dsdl {
 		} else 
 			element.setAttributeNS(NMA_URI, MANDATORY, TRUE);
 		
-
+		gWhen(cont, element);
 		gDescription(cont, element);
 
 		String cprefix = "";
@@ -754,7 +779,7 @@ public class Yang2Dsdl {
 			element = interleave;
 		}
 		for (YANG_DataDef ddef : cont.getDataDefs())
-			gDataDef(spec, ddef, element);
+			gDataDef(ddef, element);
 
 	}
 
@@ -1282,7 +1307,7 @@ public class Yang2Dsdl {
 		parent.appendChild(param);
 	}
 
-	private YANG_Type gLeaf(YANG_Specification spec, YANG_Leaf leaf,
+	private YANG_Type gLeaf(YANG_Leaf leaf,
 			Element parent) {
 
 		YANG_Type type = leaf.getType();
@@ -1319,7 +1344,6 @@ public class Yang2Dsdl {
 				}
 			}
 		}
-
 		gDescription(leaf, element);
 		gConfigDataDef(leaf, element);
 		gType(type, element);
@@ -1335,7 +1359,7 @@ public class Yang2Dsdl {
 		return type;
 	}
 
-	private YANG_Type gKeyLeaf(YANG_Specification spec, YANG_Leaf leaf,
+	private YANG_Type gKeyLeaf(YANG_Leaf leaf,
 			Element parent) {
 
 		YANG_Type type = leaf.getType();
@@ -1386,20 +1410,76 @@ public class Yang2Dsdl {
 
 		for (YANG_Body body : spec.getBodies())
 			if (body instanceof YANG_DataDef)
-				gDataDef(spec, (YANG_DataDef) body, data);
-			else if (body instanceof YANG_Rpc)
-				gRpcs((YANG_Rpc) body, rpcs);
-			else if (body instanceof YANG_Notification)
-				gNotifications((YANG_Notification) body, notifications);
+				gDataDef((YANG_DataDef) body, data);
+		
+		gRpcs(spec.getBodies(), data);
+		gNotifications(spec.getBodies(), data);
+		
 
 	}
 
-	private void gRpcs(YANG_Rpc body, Element rpc) {
-
+	private void gRpcs(Vector<YANG_Body> bodies, Element parent) {
+		boolean found = false;
+		for (Enumeration<YANG_Body> ib = bodies.elements(); !found && ib.hasMoreElements();)
+			found = (ib.nextElement()) instanceof YANG_Rpc;
+		if (found){
+			Element rpcs = document.createElementNS(NMA_URI, RPCS);
+			parent.appendChild(rpcs);
+			for (YANG_Body body : bodies)
+				if (body instanceof YANG_Rpc)
+					gRpc((YANG_Rpc) body, rpcs);
+		}
+	}
+	
+	private void gNotifications(Vector<YANG_Body> bodies, Element parent) {
+		boolean found = false;
+		for (Enumeration<YANG_Body> ib = bodies.elements(); !found && ib.hasMoreElements();)
+			found = (ib.nextElement()) instanceof YANG_Notification;
+		if (found){
+			Element notifs = document.createElementNS(NMA_URI, NOTIFS);
+			parent.appendChild(notifs);
+			for (YANG_Body body : bodies)
+				if (body instanceof YANG_Notification)
+					gNotification((YANG_Notification) body, notifs);
+		}
 	}
 
-	private void gNotifications(YANG_Notification body, Element notification) {
-
+	private void gNotification(YANG_Notification body, Element notifs2) {
+		// TODO Auto-generated method stub
+		
 	}
+
+	private void gRpc(YANG_Rpc rpc, Element parent) {
+		Element rpcelt = document.createElementNS(NMA_URI, RPC);
+		if (rpc.getInput() != null)
+			gInput(rpc.getInput(), rpcelt);
+		if (rpc.getOutput() != null)
+			gOutput(rpc.getOutput(), rpcelt);
+		parent.appendChild(rpcelt);
+	}
+	
+	private void gOutput(YANG_Output output, Element parent) {
+		Element outputelt = document.createElementNS(NMA_URI, OUTPUT);
+		if(output.getConfig() != null)
+			outputelt.setAttributeNS(NMA_URI, CONFIG, output.getConfig().getConfigStr());
+		for (YANG_DataDef ddef : output.getDataDefs()){
+			Element elt = document.createElementNS(RELAXNG_NS, ELT);
+			elt.setAttributeNS(RELAXNG_NS, NAME, prefix + ":" + ddef.getBody());
+			gDataDef(ddef, parent);
+		}
+	}
+
+	private void gInput(YANG_Input input, Element parent) {
+		Element inputelt = document.createElementNS(NMA_URI, INPUT);
+		if(input.getConfig() != null)
+			inputelt.setAttributeNS(NMA_URI, CONFIG, input.getConfig().getConfigStr());
+		for (YANG_DataDef ddef : input.getDataDefs()){
+			Element elt = document.createElementNS(RELAXNG_NS, ELT);
+			elt.setAttributeNS(RELAXNG_NS, NAME, prefix + ":" + ddef.getBody());
+			gDataDef(ddef, parent);
+		}
+	}
+	
+
 
 }
