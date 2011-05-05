@@ -96,7 +96,7 @@ public class YangTreeNode implements java.io.Serializable {
 					.indexOf(':'));
 			if (prefix.compareTo(module.getPrefix().getPrefix()) == 0) {
 				if (relativeXpath)
-					startnode = this.getParent();
+					startnode = this;
 				else
 					startnode = root;
 			} else {
@@ -117,7 +117,7 @@ public class YangTreeNode implements java.io.Serializable {
 			}
 		} else {
 			if (relativeXpath)
-				startnode = this.getParent();
+				startnode = this;
 			else
 				startnode = root;
 		}
@@ -125,19 +125,23 @@ public class YangTreeNode implements java.io.Serializable {
 		boolean foundchild = false;
 		boolean stop = false;
 		for (int i = starting; i < nids.length && !stop; i++) {
-			YangTreeNode child = null;
-			boolean foundonechild = false;
-			for (Enumeration<YangTreeNode> et = startnode.getChilds()
-					.elements(); et.hasMoreElements() && !foundonechild;) {
-				child = et.nextElement();
-				foundonechild = sameNode(nids[i], child);
-			}
-			if (foundonechild) {
-				startnode = child;
-				foundchild = true;
+			if (nids[i].compareTo("..") == 0) {
+				startnode = startnode.getParent();
 			} else {
-				foundchild = false;
-				stop = true;
+				YangTreeNode child = null;
+				boolean foundonechild = false;
+				for (Enumeration<YangTreeNode> et = startnode.getChilds()
+						.elements(); et.hasMoreElements() && !foundonechild;) {
+					child = et.nextElement();
+					foundonechild = sameNode(nids[i], child);
+				}
+				if (foundonechild) {
+					startnode = child;
+					foundchild = true;
+				} else {
+					foundchild = false;
+					stop = true;
+				}
 			}
 		}
 		if (foundchild)
@@ -557,11 +561,13 @@ public class YangTreeNode implements java.io.Serializable {
 										((YANG_Leaf) (referenced.getNode()))
 												.getType());
 							else if (referenced.getNode() instanceof YANG_LeafList)
-								type.getLeafRef().setReferencedTypeLeaf(
-										((YANG_LeafList) (referenced.getNode()))
-												.getType());
+								type.getLeafRef()
+										.setReferencedTypeLeaf(
+												((YANG_LeafList) (referenced
+														.getNode())).getType());
 							else {
-								// TODO ERROR when a leafref doesn't refers to a leaf or leaflist
+								// TODO ERROR when a leafref doesn't refers to a
+								// leaf or leaflist
 							}
 						}
 					}
