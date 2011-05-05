@@ -164,7 +164,7 @@ public class YANG_Leaf extends MustDataDef implements YANG_ShortCase {
 					while (defining != null) {
 						if (defining.getDefault() != null) {
 							getType().checkDefaultValue(context, this,
-									defining.getDefault());
+									getDefault());
 							defining = null;
 						} else {
 							defining = context.getBaseTypeDef(defining);
