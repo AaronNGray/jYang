@@ -537,7 +537,8 @@ public class YangTreeNode implements java.io.Serializable {
 				}
 			}
 
-		} else if (node instanceof YANG_Leaf) {
+		}
+		if (node instanceof YANG_Leaf) {
 			YANG_Leaf leaf = (YANG_Leaf) node;
 			YANG_Type type = leaf.getType();
 			if (type != null) {
@@ -641,13 +642,18 @@ public class YangTreeNode implements java.io.Serializable {
 			}
 			for (YANG_Unique u : list.getUniques()) {
 				String[] uniques = u.getUniqueLeaves();
-				for (int i = 0; i < uniques.length; i++)
-					if (getBodyInTree(module, root, importeds, list.getBody()
-							+ "/" + uniques[i].trim()) == null) {
+				for (int i = 0; i < uniques.length; i++){
+					YANG_Body uniquenode = getBodyInTree(module, root, importeds, list.getBody()
+							+ "/" + uniques[i].trim());
+					if (uniquenode == null) {
 						YangErrorManager.addError(node.getFileName(), u
 								.getLine(), u.getCol(), "unique_not_found",
 								uniques[i], node.getBody());
-					}
+					} else if (!(uniquenode instanceof YANG_Leaf))
+						YangErrorManager.addError(node.getFileName(), u
+								.getLine(), u.getCol(), "unique_not_a_leaf",
+								uniques[i], node.getBody());
+				}
 			}
 		}
 		for (Enumeration<YangTreeNode> ey = childs.elements(); ey
