@@ -22,7 +22,7 @@ module dhcp {
        description
          "configuration and operational parameters for a DHCP server.";
          
-         config true;
+         //config true;
          
          must  "max-lease < 3" {error-message "Tres gross Error";
          error-app-tag "TGE";}
@@ -34,12 +34,12 @@ module dhcp {
        }
        
        typedef dozen { type uint8 { range 1..12;} default 7;}
-       leaf mounth { type dozen {range 7..12;} default 4; }
+       leaf mounth { type dozen {range 7..12;} default 8; }
        
        typedef test { type ineti:ip-prefix; default "0.0.0.0/5";}
        
        
-       leaf ref { type leafref { path max-lease-time;}}
+       leaf ref { type leafref { path ../max-lease-time;}}
        leaf con { type test; default "1.1.1.1/6";}
        
        leaf tfloat { type decimal64 {fraction-digits 5;}}
@@ -61,6 +61,7 @@ module dhcp {
            error-message
              "The default-lease-time must be less than max-lease-time";
          }
+         
          default 600;
        }
 
@@ -126,7 +127,7 @@ module dhcp {
          must "dhcp/max-lease-time < 12";
          key net;
          
-         unique "net range/low dhcp-options/router";
+         unique "net range/low dhcp-options/domain-name";
          leaf net {
            type ineti:ip-prefix;
          }
