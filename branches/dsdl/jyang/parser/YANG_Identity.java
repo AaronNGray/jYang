@@ -2,13 +2,23 @@
 
 package jyang.parser;
 
-import java.text.MessageFormat;
 
 public class YANG_Identity extends StatuedBody {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private String identity = null;
 
 	private YANG_Base base = null;
+	
+	private YANG_Identity baseId = null;
+	
+	public YANG_Identity getBaseIdentity(){
+		return baseId;
+	}
 
 	public String getIdentity() {
 		return identity;
@@ -54,8 +64,10 @@ public class YANG_Identity extends StatuedBody {
 			if (b == null)
 				YangErrorManager.addError(base.getFileName(), base.getLine(), base
 						.getCol(), "base_not_found", base.getBase());
-			else
+			else {
+				baseId = (YANG_Identity) b;
 				checkRecursion(context, this, base);
+			}
 
 		}
 
