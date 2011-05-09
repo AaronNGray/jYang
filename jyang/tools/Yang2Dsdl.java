@@ -116,7 +116,7 @@ public class Yang2Dsdl {
 	private static final String DEFAULT = NMA + ":" + "default";
 	private static final String ERRORMSG = NMA + ":" + "error-message";
 	private static final String ERRORAPPTAG = NMA + ":" + "error-app-tag";
-
+	private static final String IFFEATURE = NMA + ":" + "if-feature";
 	private final static String IMPLICIT = NMA + ":" + "implicit";
 	private final static String INPUT = NMA + ":" + "input";
 	private static final String INSTID = NMA + ":" + "instance-identifier";
@@ -161,11 +161,14 @@ public class Yang2Dsdl {
 	private final static String RPCMETHODS = "rpc-methods";
 	private final static String RPCMETHOD = "rpc-method";
 
+
+
 	private DocumentBuilder docb = null;
 	private Document document = null;
 
 	private Hashtable<YANG_TypeDef, String> definestypedefs = new Hashtable<YANG_TypeDef, String>();
 	private Hashtable<YANG_Grouping, String> definesgroupings = new Hashtable<YANG_Grouping, String>();
+	private Hashtable<YANG_Identity, String> definesidentities = new Hashtable<YANG_Identity, String>();
 	private boolean defining = false;
 	private String prefix = "";
 
@@ -280,12 +283,23 @@ public class Yang2Dsdl {
 			for (YANG_Body body : spec.getBodies()) {
 				looksForTypesAndGroupings(spec, body, spec.getName());
 			}
+			
 			for (YANG_TypeDef t : definestypedefs.keySet())
 				gTypeDef(t, parent);
 			for (YANG_Grouping g : definesgroupings.keySet())
 				gGrouping(spec, g, parent);
 		}
 		defining = false;
+		gIdentities(parent);
+	}
+
+	private void gIdentities(Element parent) {
+		for (YANG_Identity id : definesidentities.keySet()){
+			if (id.getBase() == null){
+				
+			}
+		}
+		
 	}
 
 	private void gUses(YANG_Uses uses, Element parent) {
@@ -575,6 +589,7 @@ public class Yang2Dsdl {
 		Element choiceelt = document.createElementNS(RELAXNG_NS, CHOICE);
 
 		gWhen(choice, choiceelt);
+		gIfFeatures(choice, choiceelt);
 		gDescription(choice, choiceelt);
 		gConfigDataDef(choice, parent);
 
@@ -628,20 +643,23 @@ public class Yang2Dsdl {
 
 		isThereOneAnyXml = true;
 
-		if (!axml.isMandatory()) {
-			Element optional = document.createElementNS(RELAXNG_NS, OPT);
-			parent.appendChild(optional);
-			parent = optional;
-		} else
-			parent.setAttributeNS(NMA_URI, MANDATORY, TRUE);
-		;
-
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
 		String aprefix = "";
 
 		if (!defining)
 			aprefix = prefix + ":";
+
 		element.setAttribute(NAME, aprefix + axml.getAnyXml());
+
+		gIfFeatures(axml, element);
+
+		if (!axml.isMandatory()) {
+			Element optional = document.createElementNS(RELAXNG_NS, OPT);
+			parent.appendChild(optional);
+			parent = optional;
+		} else
+			element.setAttributeNS(NMA_URI, MANDATORY, TRUE);
+
 		parent.appendChild(element);
 
 		gWhen(axml, element);
@@ -693,6 +711,7 @@ public class Yang2Dsdl {
 
 	private void gCase(YANG_Case ycase, Element parent) {
 		gWhen(ycase, parent);
+		gIfFeatures(ycase, parent);
 		for (YANG_DataDef ddef : ycase.getDataDefs())
 			gDataDef(ddef, parent);
 
@@ -778,6 +797,7 @@ public class Yang2Dsdl {
 
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
 		element.setAttribute(NAME, kprefix + list.getList());
+		gIfFeatures(list, element);
 		String[] kl = list.getKey().getKeyLeaves();
 
 		for (int i = 0; i < kl.length; i++)
@@ -831,6 +851,8 @@ public class Yang2Dsdl {
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
 		parent.appendChild(element);
 
+		gIfFeatures(leaflist, element);
+
 		String llprefix = "";
 		if (!defining)
 			llprefix = prefix + ":";
@@ -872,6 +894,8 @@ public class Yang2Dsdl {
 	private void gContainer(YANG_Container cont, Element parent) {
 
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
+		
+		gIfFeatures(cont, element);
 
 		if (cont.getPresence() != null || !isOneMandatory(cont.getDataDefs())) {
 			Element optional = document.createElementNS(RELAXNG_NS, OPT);
@@ -1345,7 +1369,12 @@ public class Yang2Dsdl {
 				}
 			}
 
-		} else if (body instanceof YANG_Grouping) {
+		} else if (body instanceof YANG_Identity){
+		YANG_Identity id = (YANG_Identity) body;
+		String pref = spec.getPrefix().getPrefix();
+			definesidentities.put(id, "__" + pref + "_" + id.getIdentity());
+		}
+		else if (body instanceof YANG_Grouping) {
 			prefix += SEP + body.getBody();
 			YANG_Grouping y = (YANG_Grouping) body;
 			definesgroupings.put(y, PRE + prefix);
@@ -1441,6 +1470,8 @@ public class Yang2Dsdl {
 			lprefix = prefix + ":";
 
 		element.setAttribute(NAME, lprefix + leaf.getLeaf());
+		
+		gIfFeatures(leaf, element);
 
 		if (leaf.getUnits() != null) {
 			element.setAttributeNS(NMA_URI, UNITS, leaf.getUnits().getUnits());
@@ -1489,6 +1520,7 @@ public class Yang2Dsdl {
 		YANG_Type type = leaf.getType();
 
 		Element element = document.createElementNS(RELAXNG_NS, ELT);
+		gIfFeatures(leaf, element);
 		String kprefix = "";
 		if (!defining)
 			kprefix = prefix + ":";
@@ -1555,18 +1587,42 @@ public class Yang2Dsdl {
 
 	private void gNotification(YANG_Notification n, Element parent) {
 		Element notif = document.createElementNS(NMA_URI, NOTIF);
-
+		gIfFeatures(n, notif);
 		parent.appendChild(notif);
 	}
 
 	private void gRpc(YANG_Rpc rpc, Element parent) {
 		Element rpcelt = document.createElementNS(NMA_URI, RPC);
+		gIfFeatures(rpc, rpcelt);
 		if (rpc.getInput() != null)
 			gInput(rpc.getInput(), rpcelt);
 		if (rpc.getOutput() != null)
 			gOutput(rpc.getOutput(), rpcelt);
 		parent.appendChild(rpcelt);
 	}
+
+	private void gIfFeatures(FeaturedBody fb, Element parent) {
+		for (YANG_IfFeature iff : fb.getIfFeatures()) 
+			gIfFeature(iff, parent);
+	}
+	
+	private void gIfFeature(YANG_IfFeature iff, Element parent) {
+		String lpref = "";
+		if (defining)
+			lpref = prefix;
+		if (!iff.isPrefixed())
+			parent.setAttributeNS(NMA_URI, IFFEATURE, lpref + ":" + iff.getIfFeature());
+		else
+			parent.setAttributeNS(NMA_URI, IFFEATURE, iff.getIfFeature());
+			
+		
+	}
+
+	private void gIfFeatures(FeaturedNode fn, Element parent) {
+		for (YANG_IfFeature iff : fn.getIfFeatures())
+			gIfFeature(iff, parent);
+	}
+
 
 	private void gOutput(YANG_Output output, Element parent) {
 		Element outputelt = document.createElementNS(NMA_URI, OUTPUT);
