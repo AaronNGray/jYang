@@ -57,6 +57,7 @@ import jyang.*;
 public class YangSchemaTreeGenerator {
 
 	private jyang parser = null;
+	private int r;
 
 	private static YangContext context = null;
 

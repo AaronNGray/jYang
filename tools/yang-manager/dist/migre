@@ -1,0 +1,3 @@
+./buildYangTreeNodeGenerator > /dev/null
+./buildYangApplet > /dev/null
+cp *.jar ../../yencap-manager/www/
